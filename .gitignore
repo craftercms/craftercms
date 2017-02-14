@@ -22,7 +22,6 @@ gradle-app.setting
 gradle-app.setting
 .tags1
 .tags
-gradle/wrapper/gradle-wrapper.properties
 .gradle
 *.idea
 *.iml
