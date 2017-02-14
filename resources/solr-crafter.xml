@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<Context docBase="${catalina.home}/webapps/solr-crafter.war" crossContext="true">
+	<Environment name="solr/home" type="java.lang.String" value="${catalina.home}/solr-crafter" override="true"/>
+ <Resources className="org.apache.catalina.webresources.StandardRoot">
+        <PreResources className="org.apache.catalina.webresources.DirResourceSet"
+            base="${catalina.home}/solr-crafter/lib/extraction/"
+            internalPath="/"
+            webAppMount="/WEB-INF/lib" />
+        <PreResources className="org.apache.catalina.webresources.DirResourceSet"
+            base="${catalina.home}/solr-crafter/lib/logging/"
+            internalPath="/"
+            webAppMount="/WEB-INF/lib" />
+        <PreResources className="org.apache.catalina.webresources.FileResourceSet"
+			base="${catalina.home}/solr-crafter/lib/logging/log4j.properties"
+            internalPath="/"
+            webAppMount="/WEB-INF/classes" />
+        <PreResources className="org.apache.catalina.webresources.JarResourceSet"
+            base="${catalina.home}/solr-crafter/lib/solr-cell-4.10.4.jar"
+            internalPath="/"
+            webAppMount="/WEB-INF/lib" />
+    </Resources>
+</Context>

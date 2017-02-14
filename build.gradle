@@ -1,0 +1,309 @@
+import de.undercouch.gradle.tasks.download.Verify
+import java.io.FileInputStream;
+import java.security.MessageDigest;
+import java.util.Properties;
+import java.io.OutputStream;
+
+plugins {
+   id "de.undercouch.download" version "3.1.2"
+ }
+def isWin=System.getProperty('os.name').toLowerCase().contains('windows')
+def isOSX=System.getProperty('os.name').toLowerCase().contains('mac')
+def isNix=(System.getProperty('os.name').toLowerCase().contains('nix') || System.getProperty('os.name').toLowerCase().contains('aix') || System.getProperty('os.name').toLowerCase().contains('nux'))
+
+def commandLinePrefix = []
+if(isWin){
+    commandLinePrefix =["cmd","/c"]
+}
+ext {
+    tomcatVersion= System.getProperty("tomcatVersion")?:"8.5.6"
+    solrVersion=System.getProperty("solrVersion")?:"4.10.4"
+    downloadDir=System.getProperty("downloadDir")?:"./target/downloads"
+    devEnv=System.getProperty("devEnv")?:"./crafter-env/"
+    includeProfile=System.getProperty("includeProfile")?:false
+    includeSocial=System.getProperty("includeSocial")?:false
+    /** Social Need Profile **/
+    if(includeSocial){
+        includeProfile=true
+    }
+}
+
+task(build,dependsOn:["buildCommons","buildCore","buildSearch","buildProfile","buildDeployer","buildEngine","buildSocial","buildStudio"]){
+    description "Builds Crafter CMS stack"
+}
+task(clean,dependsOn:["cleanCommons","cleanCore","cleanSearch","cleanProfile","cleanDeployer","cleanEngine","cleanSocial","cleanStudio"]){
+        description "Clear Crafter CMS stack build output"
+}
+
+task(pack,dependsOn:["packZip","packTar"]){
+    description "Packages the Studio environment to be distribute"
+}
+task("packZip",type:Zip,dependsOn:["buildEnv","build"]){
+    description "Build a Crafter Studio Ready to Use zip"
+    from "studio-env/"
+    archiveName "crafter-studio.zip"
+    fileMode null
+    dirMode null
+    includeEmptyDirs true
+    metadataCharset "UTF-8"
+    caseSensitive false
+    destinationDir(file("installers/"))
+}
+
+task("packTar",type:Tar,dependsOn:["buildEnv","build"]){
+    description "Build a Crafter Studio Ready to Use zip"
+    from "studio-env/"
+    archiveName "crafter-studio.tar"
+    fileMode null
+    dirMode null
+    includeEmptyDirs true
+    caseSensitive false
+    destinationDir(file("installers/"))
+}
+/** Clean and Build **/
+task(buildCommons,type:Exec){
+    workingDir './src/commons'
+    description "Builds Crafter Commons"
+    commandLine commandLinePrefix + ["mvn","clean","install"]
+}
+task(buildCore,type:Exec){
+    description "Builds Crafter Core"
+    workingDir './src/core'
+    commandLine commandLinePrefix + ["mvn","clean","install"]
+}
+task(buildSearch,type:Exec){
+    description "Builds Crafter Search"
+    workingDir './src/search'
+    commandLine commandLinePrefix + ["mvn","clean","install"]
+}
+task(buildProfile,type:Exec){
+    description "Builds Crafter Profile"
+    workingDir './src/profile'
+    commandLine commandLinePrefix + ["mvn","clean","install"]
+}
+task(buildDeployer,type:Exec){
+    description "Builds Crafter Deployer"
+    workingDir './src/deployer'
+    commandLine commandLinePrefix + ["mvn","clean","install"]
+}
+task(buildEngine,type:Exec){
+    description "Builds Crafter Engine"
+    workingDir './src/engine'
+    commandLine commandLinePrefix + ["mvn","clean","install"]
+}
+task(buildSocial,type:Exec){
+    description "Builds Crafter Social"
+    workingDir './src/social'
+    commandLine commandLinePrefix + ["mvn","clean","install"]
+}
+task(buildStudio,type:Exec){
+    description "Builds Crafter Studio"
+    workingDir './src/studio'
+    commandLine commandLinePrefix + ["mvn","clean","install"]
+}
+/** Cleanup **/
+task(cleanCommons,type:Exec){
+    description "Builds Crafter Commons"
+    workingDir './src/commons'
+    commandLine commandLinePrefix + ["mvn","clean"]
+}
+task(cleanCore,type:Exec){
+    description "Builds Crafter Core"
+    workingDir './src/core'
+    commandLine commandLinePrefix + ["mvn","clean"]
+}
+task(cleanSearch,type:Exec){
+    description "Builds Crafter Search"
+    workingDir './src/search'
+    commandLine commandLinePrefix + ["mvn","clean"]
+}
+task(cleanProfile,type:Exec){
+    description "Builds Crafter Profile"
+    workingDir './src/profile'
+    commandLine commandLinePrefix + ["mvn","clean"]
+}
+task(cleanDeployer,type:Exec){
+    description "Builds Crafter Deployer"
+    workingDir './src/deployer'
+    commandLine commandLinePrefix + ["mvn","clean"]
+}
+task(cleanEngine,type:Exec){
+    description "Builds Crafter Engine"
+    workingDir './src/engine'
+    commandLine commandLinePrefix + ["mvn","clean"]
+}
+task(cleanSocial,type:Exec){
+    description "Builds Crafter Social"
+    workingDir './src/social'
+    commandLine commandLinePrefix + ["mvn","clean"]
+}
+task(cleanStudio,type:Exec){
+    description "Builds Crafter Studio"
+    workingDir './src/studio'
+    commandLine commandLinePrefix + ["mvn","clean"]
+}
+
+task downloadTomcat() {
+    description = "Downloads and checks tomcat integrity"
+    doFirst{
+        download {
+           src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
+           overwrite false
+           dest file(downloadDir)
+        }
+        download {
+            src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip.sha1"
+            dest file(downloadDir)
+            overwrite false
+        }
+    }
+    doLast{
+        assert sha1(new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip")) ==  new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
+    }
+}
+/** Dowloads any external Resources **/
+task downloadSolr() {
+    description = "Download Solr and Solr's war (from Maven central) signature"
+    doFirst{
+        download {
+           src "http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=org.apache.solr&a=solr&v=${solrVersion}&p=war"
+           overwrite false
+           dest file("${downloadDir}/solr-${solrVersion}.war")
+       }
+       download {
+           src "http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=org.apache.solr&a=solr&v=${solrVersion}&p=war.sha1"
+           dest file("${downloadDir}/solr-${solrVersion}.war.sha1")
+           overwrite false
+       }
+    }
+    doLast{
+        assert sha1(new File(downloadDir, "solr-${solrVersion}.war")) == new File(downloadDir, "solr-${solrVersion}.war.sha1").getText("UTF-8")
+    }
+}
+/**
+    Builds environment
+**/
+task(buildEnv,dependsOn:["downloadTomcat","downloadSolr"]){
+    description "Build Crafter environment"
+    doFirst{
+        def ddir=file(devEnv)
+           if(ddir.exists()){
+               ddir.deleteDir();
+           }
+           ddir.mkdir();
+           def deployerDir=file("${devEnv}/crafter-deployer")
+           deployerDir.mkdir();
+       }
+       doLast{
+            copy{
+                from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
+                into "${devEnv}"
+            }
+             file("${devEnv}/apache-tomcat-${tomcatVersion}").renameTo(file("${devEnv}/apache-tomcat"))
+             /** Remove Non util stuff **/
+             def webapps = file("${devEnv}/apache-tomcat/webapps/")
+             webapps.deleteDir()
+             webapps.mkdir()
+
+            copy{
+                from new File(downloadDir, "solr-${solrVersion}.war")
+                from "./src/search/crafter-search-server/target/crafter-search.war"
+                from "./src/engine/target/ROOT.war"
+                from "./src/studio/target/studio.war"
+                into "${devEnv}/apache-tomcat/webapps/"
+            }
+
+            file("${devEnv}/apache-tomcat/webapps/solr-${solrVersion}.war").renameTo(file("${devEnv}/apache-tomcat/webapps/solr-crafter.war"))
+
+            copy{
+                from "./resources/setenv.bat"
+                from "./resources/setenv.sh"
+                into "${devEnv}/apache-tomcat/bin/"
+            }
+            copy{
+                from "./search/crafter-search-provider/solr/"
+                into "${devEnv}/apache-tomcat/solr-crafter/"
+            }
+            copy{
+                from "./resources/solr-crafter.xml"
+                into "${devEnv}/apache-tomcat/conf/Catalina/localhost"
+            }
+            copy{
+                from "./resources/tomcat-config/"
+                into "${devEnv}/apache-tomcat/shared/classes/"
+            }
+
+            copy{
+                from "./src/deployer/target/crafter-deployer.jar"
+                into "${devEnv}/crafter-deployer"
+            }
+
+            copy{
+                from "./src/search/crafter-search-provider/solr"
+                into "${devEnv}/apache-tomcat/solr-crafter"
+            }
+
+            copy{
+                from "./resources/deployer/"
+                into "${devEnv}/crafter-deployer"
+            }
+            copy{
+                from "./resources/studio/"
+                into "${devEnv}/"
+            }
+
+            if(!isWin){
+                exec{
+                    workingDir "${devEnv}/apache-tomcat/bin/"
+                    commandLine commandLinePrefix + ["chmod","+x","catalina.sh", "configtest.sh", "daemon.sh", "digest.sh", "setclasspath.sh", "setenv.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
+                }
+                exec{
+                    workingDir "${devEnv}/crafter-deployer/"
+                    commandLine commandLinePrefix + ["chmod","+x","deployer.sh"]
+                }
+                exec{
+                    workingDir "${devEnv}"
+                    commandLine commandLinePrefix + ["chmod","+x","crafter.sh","startup.sh","debug.sh","shutdown.sh"]
+                }
+            }
+            updateCatalinaSettings();
+            if(includeProfile){
+                copy{
+                    from "./src/profile/server/target/crafter-profile.war"
+                    into "${devEnv}/apache-tomcat/webapps/"
+                }
+            }
+            if(includeSocial){
+                copy{
+                    from "./src/social/server/target/crafter-social.war"
+                    into "${devEnv}/apache-tomcat/webapps/"
+                }
+            }
+        }
+ }
+
+ def sha1(file){
+    MessageDigest md = MessageDigest.getInstance("SHA1");
+    FileInputStream fis = new FileInputStream(file.path);
+    byte[] dataBytes = new byte[1024];
+    int nread = 0;
+    while ((nread = fis.read(dataBytes)) != -1) {
+      md.update(dataBytes, 0, nread);
+    };
+    byte[] mdbytes = md.digest();
+    //convert the byte to hex format
+    StringBuffer sb = new StringBuffer("");
+    for (int i = 0; i < mdbytes.length; i++) {
+    	sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+    }
+    return sb.toString();
+  }
+
+  def updateCatalinaSettings(){
+      Properties catalinaProperties = new Properties()
+      catalinaProperties.load(new FileInputStream("${devEnv}/apache-tomcat/conf/catalina.properties"))
+      catalinaProperties.setProperty("shared.loader",
+      '${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar')
+      def output = new FileOutputStream("${devEnv}/apache-tomcat/conf/catalina.properties");
+      catalinaProperties.store(output,"");
+  }

@@ -1,0 +1,32 @@
+[submodule "Commons"]
+	path = src/commons
+	url = https://github.com/craftercms/commons.git
+	branch = master
+[submodule "Core"]
+	path = src/core
+	url = https://github.com/craftercms/core.git
+	branch = master
+[submodule "Search"]
+	path = src/search
+	url = https://github.com/craftercms/search.git
+	branch = master
+[submodule "Deployer"]
+	path = src/deployer
+	url = https://github.com/craftercms/deployer.git
+	branch = master
+[submodule "Profile"]
+	path = src/profile
+	url = https://github.com/craftercms/profile.git
+	branch = master
+[submodule "Engine"]
+	path = src/engine
+	url = https://github.com/craftercms/engine.git
+	branch = master
+[submodule "Social"]
+	path = src/social
+	url = https://github.com/craftercms/social.git
+	branch = master
+[submodule "Studio"]
+	path = src/studio
+	url = https://github.com/craftercms/studio.git
+	branch = master
