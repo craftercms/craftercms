@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-./studio.sh --stop
+./crafter.sh --stop

@@ -76,83 +76,83 @@ task("packTar",type:Tar,/*dependsOn:["buildEnv","build"]*/){
 task(buildCommons,type:Exec){
     workingDir './src/commons'
     description "Builds Crafter Commons"
-    commandLine commandLinePrefix + ["mvn","clean","install"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
 }
 task(buildCore,type:Exec){
     description "Builds Crafter Core"
     workingDir './src/core'
-    commandLine commandLinePrefix + ["mvn","clean","install"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
 }
 task(buildSearch,type:Exec){
     description "Builds Crafter Search"
     workingDir './src/search'
-    commandLine commandLinePrefix + ["mvn","clean","install"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
 }
 task(buildProfile,type:Exec){
     description "Builds Crafter Profile"
     workingDir './src/profile'
-    commandLine commandLinePrefix + ["mvn","clean","install"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
 }
 task(buildDeployer,type:Exec){
     description "Builds Crafter Deployer"
     workingDir './src/deployer'
-    commandLine commandLinePrefix + ["mvn","clean","install"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
 }
 task(buildEngine,type:Exec){
     description "Builds Crafter Engine"
     workingDir './src/engine'
-    commandLine commandLinePrefix + ["mvn","clean","install"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
 }
 task(buildSocial,type:Exec){
     description "Builds Crafter Social"
     workingDir './src/social'
-    commandLine commandLinePrefix + ["mvn","clean","install"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
 }
 task(buildStudio,type:Exec){
     description "Builds Crafter Studio"
     workingDir './src/studio'
-    commandLine commandLinePrefix + ["mvn","clean","install"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
 }
 /** Cleanup **/
 task(cleanCommons,type:Exec){
     description "Builds Crafter Commons"
     workingDir './src/commons'
-    commandLine commandLinePrefix + ["mvn","clean"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean"]
 }
 task(cleanCore,type:Exec){
     description "Builds Crafter Core"
     workingDir './src/core'
-    commandLine commandLinePrefix + ["mvn","clean"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean"]
 }
 task(cleanSearch,type:Exec){
     description "Builds Crafter Search"
     workingDir './src/search'
-    commandLine commandLinePrefix + ["mvn","clean"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean"]
 }
 task(cleanProfile,type:Exec){
     description "Builds Crafter Profile"
     workingDir './src/profile'
-    commandLine commandLinePrefix + ["mvn","clean"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean"]
 }
 task(cleanDeployer,type:Exec){
     description "Builds Crafter Deployer"
     workingDir './src/deployer'
-    commandLine commandLinePrefix + ["mvn","clean"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean"]
 }
 task(cleanEngine,type:Exec){
     description "Builds Crafter Engine"
     workingDir './src/engine'
-    commandLine commandLinePrefix + ["mvn","clean"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean"]
 }
 task(cleanSocial,type:Exec){
     description "Builds Crafter Social"
     workingDir './src/social'
-    commandLine commandLinePrefix + ["mvn","clean"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean"]
 }
 task(cleanStudio,type:Exec){
     description "Builds Crafter Studio"
     workingDir './src/studio'
-    commandLine commandLinePrefix + ["mvn","clean"]
+    commandLine commandLinePrefix + ["mvn","-T8","clean"]
 }
 
 task downloadTomcat() {
