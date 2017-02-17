@@ -1,10 +1,11 @@
 # Crafter CMS
 Parent project that builds everything.
-## Pre Requisites
+## Prerequisites
 
 * Java 8
 * Git 2.0.
 * Maven 3.3.x.
+
 ## Step 0
 1. Clone this repo.
 
@@ -19,10 +20,10 @@ or
     cd crafter-installer-gem
     git submodule init
 ```
-[See more information git usage here]#Git
+*[See more information git usage here]#Git*
 
-## Gradle usage
-Linux/Osx
+## Gradle Usage
+Linux/OSX
 ```bash
 ./gradlew TASK -DProperty -DProperty2
 ```
@@ -39,12 +40,19 @@ Windows
 gradlew.bat --gui -DProperty -DProperty2
 ```
 
+### Build and Developer Environment
+```bash
+    ./gradlew buildEnv
+    cd .. crafter-env
+    ./startup.sh | startup.bat
+```
+
 ### Tasks
 #### Common task properties.
 * tomcatVersion: Sets the tomcat version to be download used by *downloadTomat* task
 * solrVersion: Sets the Solr version to be download used by *downloadSolr* task.
 * downloadDir: Path were all downloads will be save.used by *downloadTomat* and *downloadSolr*. Default value is *./target/dowloads*
-* devEnv: Path were a development environment will be generated. Default value is *./studio-env/*
+* devEnv: Path were a development environment will be generated. Default value is *./crafter-env/*
 * includeProfile: Includes profile in the generation of the development environment. Default value is false. ** If true,mongodb is require**
 * includeSocial: Includes Social in the generation of the development environment. Default value is false, ** If true, *includeProfile* will be set to true**
 
@@ -103,7 +111,7 @@ Downloads the given configure Tomcat version also verifies that the zip file is 
 ```
 
 #### buildEnv
-Builds a **Clean** development environment for Studio, uses the build results of *build*,*downloadSolr* and *downloadTomcat*
+Builds a **Clean** (Delete all the contents of *devEnv* defaults to crafter-env folder) development environment for Studio, uses the build results of *build*,*downloadSolr* and *downloadTomcat*
 uses the *devEnv* property as the output of the it.
 Note:
 This task will delete the *devEnv* folder.
@@ -113,7 +121,6 @@ gradlew.bat buildEnv
 
 #### pack
 Packages the *devEnv* in a zip and tar files to be distribute.
-
 
 ## Git
 

@@ -16,23 +16,31 @@ function debug() {
     cd crafter-deployer
      ./deployer.sh --debug;
      cd ..
+      ./solr/bin/solr start -p 8984 -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
      ./apache-tomcat/bin/catalina.sh jpda start;
 }
 function start() {
     cd crafter-deployer
      ./deployer.sh --start;
      cd ..
+     ./solr/bin/solr start -p 8984
      ./apache-tomcat/bin/startup.sh
+}
+
+function tail() {
+        tail -f crafter-deployer/crafter-deployer.log apache-tomcat/logs/catalina.out solr/server/logs/solr.log
 }
 
 function stop() {
     cd crafter-deployer
      ./deployer.sh --stop;
      cd ..
+     ./solr/bin/solr stop
      ./apache-tomcat/bin/shutdown.sh
 }
+
 function logo() {
-    echo "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
+echo "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
 echo "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
 echo "MMMMMMMMMMMMMMMMMMMMMMWX0KNWWXkkKXWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
 echo "MMMMMMMMMMMMMMMMMMMMMXkc;:dddl;;:xKNNWMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
@@ -75,16 +83,19 @@ echo "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 }
  case $1 in
      -d|--debug)
-        logo()
-        debug()
+        logo
+        debug
      ;;
      -s|--start)
-        logo()
-        start()
+        logo
+        start
      ;;
      -k|--stop)
-        logo()
-        stop()
+        logo
+        stop
+     ;;
+     -t|--tail)
+        tail
      ;;
      *)
          help

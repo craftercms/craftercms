@@ -17,11 +17,12 @@ if(isWin){
 }
 ext {
     tomcatVersion= System.getProperty("tomcatVersion")?:"8.5.6"
-    solrVersion=System.getProperty("solrVersion")?:"4.10.4"
+    solrVersion=System.getProperty("solrVersion")?:"6.4.1"
     downloadDir=System.getProperty("downloadDir")?:"./target/downloads"
     devEnv=System.getProperty("devEnv")?:"./crafter-env/"
     includeProfile=System.getProperty("includeProfile")?:false
     includeSocial=System.getProperty("includeSocial")?:false
+    updateBeforeBuild=System.getProperty("updateSource")?:false
     /** Social Need Profile **/
     if(includeSocial){
         includeProfile=true
@@ -32,15 +33,25 @@ task(build,dependsOn:["buildCommons","buildCore","buildSearch","buildProfile","b
     description "Builds Crafter CMS stack"
 }
 task(clean,dependsOn:["cleanCommons","cleanCore","cleanSearch","cleanProfile","cleanDeployer","cleanEngine","cleanSocial","cleanStudio"]){
+    doFirst{
+        if(updateBeforeBuild){
+            exec{
+                workingDir '.'
+                description "Updates Crafter CMS soruce code"
+                commandLine commandLinePrefix + ["git","submodule","update" ,"--recursive", "--force" ,"--remote"]
+            }
+        }
+    }
         description "Clear Crafter CMS stack build output"
 }
 
 task(pack,dependsOn:["packZip","packTar"]){
     description "Packages the Studio environment to be distribute"
 }
+
 task("packZip",type:Zip,dependsOn:["buildEnv","build"]){
     description "Build a Crafter Studio Ready to Use zip"
-    from "studio-env/"
+    from devEnv
     archiveName "crafter-studio.zip"
     fileMode null
     dirMode null
@@ -50,9 +61,9 @@ task("packZip",type:Zip,dependsOn:["buildEnv","build"]){
     destinationDir(file("installers/"))
 }
 
-task("packTar",type:Tar,dependsOn:["buildEnv","build"]){
+task("packTar",type:Tar,/*dependsOn:["buildEnv","build"]*/){
     description "Build a Crafter Studio Ready to Use zip"
-    from "studio-env/"
+    from devEnv
     archiveName "crafter-studio.tar"
     fileMode null
     dirMode null
@@ -60,6 +71,7 @@ task("packTar",type:Tar,dependsOn:["buildEnv","build"]){
     caseSensitive false
     destinationDir(file("installers/"))
 }
+
 /** Clean and Build **/
 task(buildCommons,type:Exec){
     workingDir './src/commons'
@@ -166,24 +178,25 @@ task downloadSolr() {
     description = "Download Solr and Solr's war (from Maven central) signature"
     doFirst{
         download {
-           src "http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=org.apache.solr&a=solr&v=${solrVersion}&p=war"
+           src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip"
            overwrite false
-           dest file("${downloadDir}/solr-${solrVersion}.war")
+           dest file("${downloadDir}/solr-${solrVersion}.zip")
        }
        download {
-           src "http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=org.apache.solr&a=solr&v=${solrVersion}&p=war.sha1"
-           dest file("${downloadDir}/solr-${solrVersion}.war.sha1")
+        //           http://archive.apache.org/dist/lucene/solr/6.4.1/solr-6.4.1.zip.sha1
+           src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip.sha1"
+           dest file("${downloadDir}/solr-${solrVersion}.zip.sha1")
            overwrite false
        }
     }
     doLast{
-        assert sha1(new File(downloadDir, "solr-${solrVersion}.war")) == new File(downloadDir, "solr-${solrVersion}.war.sha1").getText("UTF-8")
+        assert sha1(new File(downloadDir, "solr-${solrVersion}.zip")) == new File(downloadDir, "solr-${solrVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
     }
 }
 /**
     Builds environment
 **/
-task(buildEnv,dependsOn:["downloadTomcat","downloadSolr"]){
+task(buildEnv,dependsOn:["downloadTomcat","downloadSolr","build"]){
     description "Build Crafter environment"
     doFirst{
         def ddir=file(devEnv)
@@ -200,33 +213,35 @@ task(buildEnv,dependsOn:["downloadTomcat","downloadSolr"]){
                 into "${devEnv}"
             }
              file("${devEnv}/apache-tomcat-${tomcatVersion}").renameTo(file("${devEnv}/apache-tomcat"))
+
+             /** SOLR **/
+             copy{
+                 from zipTree(downloadDir + "/solr-${solrVersion}.zip")
+                 into "${devEnv}"
+             }
+             file("${devEnv}/solr-${solrVersion}").renameTo(file("${devEnv}/solr"))
+
+             copy{
+                 from "./src/search/crafter-search-provider/solr/configsets"
+                 into "${devEnv}/solr/server/solr/configsets"
+             }
+
              /** Remove Non util stuff **/
              def webapps = file("${devEnv}/apache-tomcat/webapps/")
              webapps.deleteDir()
              webapps.mkdir()
 
             copy{
-                from new File(downloadDir, "solr-${solrVersion}.war")
                 from "./src/search/crafter-search-server/target/crafter-search.war"
                 from "./src/engine/target/ROOT.war"
                 from "./src/studio/target/studio.war"
                 into "${devEnv}/apache-tomcat/webapps/"
             }
 
-            file("${devEnv}/apache-tomcat/webapps/solr-${solrVersion}.war").renameTo(file("${devEnv}/apache-tomcat/webapps/solr-crafter.war"))
-
             copy{
                 from "./resources/setenv.bat"
                 from "./resources/setenv.sh"
                 into "${devEnv}/apache-tomcat/bin/"
-            }
-            copy{
-                from "./search/crafter-search-provider/solr/"
-                into "${devEnv}/apache-tomcat/solr-crafter/"
-            }
-            copy{
-                from "./resources/solr-crafter.xml"
-                into "${devEnv}/apache-tomcat/conf/Catalina/localhost"
             }
             copy{
                 from "./resources/tomcat-config/"
@@ -237,12 +252,6 @@ task(buildEnv,dependsOn:["downloadTomcat","downloadSolr"]){
                 from "./src/deployer/target/crafter-deployer.jar"
                 into "${devEnv}/crafter-deployer"
             }
-
-            copy{
-                from "./src/search/crafter-search-provider/solr"
-                into "${devEnv}/apache-tomcat/solr-crafter"
-            }
-
             copy{
                 from "./resources/deployer/"
                 into "${devEnv}/crafter-deployer"
