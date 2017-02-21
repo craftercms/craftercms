@@ -29,3 +29,5 @@ dependency-reduced-pom.xml
 target/
 crafter-install/
 live-env/
+crafter-auth-env/
+crafter-live-env/
