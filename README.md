@@ -14,14 +14,14 @@ This repository is the parent project that builds everything and prepares a depl
 1. Clone this repo.
 
 ```bash
-        git clone --recursive  https://github.com/cortiz/crafter-installer-gem.git
+        git clone --recursive  https://github.com/craftercms/craftercms.git
 ```
 
 or
 
 ```bash
-    git clone https://github.com/cortiz/crafter-installer-gem.git
-    cd crafter-installer-gem
+    git clone https://github.com/craftercms/craftercms.git
+    cd craftercms
     git submodule init
 ```
 *[See more information git usage here]#Git*
