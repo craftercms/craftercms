@@ -17,18 +17,18 @@ This repository is the parent project that builds everything and prepares a depl
 ### 1.2 Clone this repo.
 
 ```bash
-        git clone --recursive  https://github.com/craftercms/craftercms.git
+git clone --recursive  https://github.com/craftercms/craftercms.git
 ```
 
 or
 
 ```bash
-    git clone https://github.com/craftercms/craftercms.git
-    cd craftercms
-    git submodule init
+git clone https://github.com/craftercms/craftercms.git
+cd craftercms
+git submodule init
 ```
 
-*[See more information git usage here]#Git*
+*[See more information git usage here](#Git)*
 
 ### 1.3 Gradle Usage
 Linux/OSX
@@ -47,7 +47,7 @@ Windows
 ```bat
 gradlew.bat --gui -DProperty -DProperty2
 ```
-_[See more on gradle tasks and usage]#GradleTasks
+_[See more on gradle tasks and usage](#GradleTasks)
 
 2 Create a Development Environment
 ======
