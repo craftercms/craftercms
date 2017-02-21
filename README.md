@@ -82,7 +82,7 @@ cd `crafter-auth-env`
 ./startup.sh
 ```
 
-Both of thoese options will:
+Both of those options will:
 
 * Start Apache tomcat on default ports (8080,8009,8005) [See Gradle task on how to change default ports]#GradleTasks
 * Start Solr server on port 8984
@@ -166,7 +166,8 @@ is the one will be use.*
 #### Other Scripts
 
 Please refer to [Tomcat Script documentation](https://tomcat.apache.org/tomcat-8.5-doc/RUNNING.txt) and 
-                [Solr Script documentation](https://cwiki.apache.org/confluence/display/solr/Running+Solr)
+                [Solr Script documentation](https://cwiki.apache.org/confluence/display/solr/Running+Solr) 
+                for more information about Apache Tomcat and SOLR
    
 X Git
 ========
