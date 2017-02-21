@@ -28,3 +28,4 @@ gradle-app.setting
 dependency-reduced-pom.xml
 target/
 crafter-install/
+live-env/
