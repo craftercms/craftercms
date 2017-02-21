@@ -336,6 +336,7 @@ task(authEnv,dependsOn:["downloadTomcat","downloadSolr","build"]){
             if(ddir.exists()){
                 ddir.deleteDir();
             }
+         
             ddir.mkdir();
             def deployerDir=file("${liveEnv}/crafter-deployer")
             deployerDir.mkdir();
