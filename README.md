@@ -1,5 +1,9 @@
 # Crafter CMS
-Parent project that builds everything.
+
+Crafter CMS is an open source content management system for web, mobile apps, VR and more. You can learn more about Crafter here: http://docs.craftercms.org/en/latest/index.html
+
+This repository is the parent project that builds everything and prepares a deployable bundle and a developer's environment.
+
 ## Prerequisites
 
 * Java 8
