@@ -28,7 +28,7 @@ cd craftercms
 git submodule init
 ```
 
-*[See more information git usage here](#Git)*
+*[See more information git usage here](#X-Git)*
 
 ### 1.3 Gradle Usage
 Linux/OSX
@@ -55,7 +55,8 @@ _[See more on gradle tasks and usage](#GradleTasks)
 The following steps will guide you on the creation of a authoring and live environments of Crafter CMS.
 
 ### 2.1 Building a Crafter CMS Authoring environment 
-*_An Authoring environment is where an Author can safely create and manage content without impacting the end-user's live system_*
+*_An Authoring environment is where an Author can safely create and manage content without impacting the end-user's live system_*.
+
 Once all he sources had been download you can run
 ```bash
     ./gradlew authEnv
