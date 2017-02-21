@@ -28,7 +28,7 @@ cd craftercms
 git submodule init
 ```
 
-*[See more information git usage here](#X-Git)*
+*[See more information git usage here](#x-git)*
 
 ### 1.3 Gradle Usage
 Linux/OSX
@@ -47,7 +47,7 @@ Windows
 ```bat
 gradlew.bat --gui -DProperty -DProperty2
 ```
-_[See more on gradle tasks and usage](#GradleTasks)
+[See more on gradle tasks and usage](#GradleTasks)
 
 2 Create a Development Environment
 ======
@@ -63,9 +63,9 @@ Once all he sources had been download you can run
 ```
 The Gradle task above will:
 
-1. Delete any existing _Authoring environment_in `crafter-auth-env` folder. *It will always make a clean Authoring environment*
+1. Delete any existing _Authoring environment_ in `crafter-auth-env` folder. *It will always make a clean Authoring environment*
 
-2. Download Apache Tomcat and Solr. (Check the Gradle section on how to spesifed a version of tomcat an solr)
+2. Download Apache Tomcat and Solr. (Check the Gradle section on how to specified a version of Apache Tomcat an Solr)
 
 3. Build all Crafter CMS components from the source (check the Git section on how to update the source).
 
@@ -84,13 +84,13 @@ or
 * Run it manually 
 
 ```bash
-cd `crafter-auth-env`
+cd crafter-auth-env
 ./startup.sh
 ```
 
 Both of those options will:
 
-* Start Apache tomcat on default ports (8080,8009,8005) [See Gradle task on how to change default ports]#GradleTasks
+* Start Apache tomcat on default ports (8080,8009,8005) [See Gradle task on how to change default ports](#gradle-tasks)
 
 * Start Solr server on port 8984
 
@@ -119,7 +119,7 @@ Main Script to start,and stop all needed Services to have a functional Crafter C
 
 | Variable Name            | Description                                    | Default Value  |
 | ------------------------ |:---------------------------------------------:| -----:|
-| CRAFTER_HOME             | P | empty |
+| CRAFTER_HOME             | Path in which Crafter CMS is installed | _Current Working directory_ |
 | DEPLOYER_JAVA_OPTS       | Java Options to be passed to Crafter Deployer | empty |
 | CRAFTER_DEPLOYER_HOME    | Path in which Crafter Deployer jar file is    |  _Current Working directory_/crafter-deployer   |
 | CATALINA_HOME           |  Path in which Apache Tomcat files are        |  _Current Working directory_/apache-tomcat | 
