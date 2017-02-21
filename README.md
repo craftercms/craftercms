@@ -62,10 +62,15 @@ Once all he sources had been download you can run
     ./gradlew authEnv
 ```
 The Gradle task above will:
+
 1. Delete any existing _Authoring environment_in `crafter-auth-env` folder. *It will always make a clean Authoring environment*
+
 2. Download Apache Tomcat and Solr. (Check the Gradle section on how to spesifed a version of tomcat an solr)
+
 3. Build all Crafter CMS components from the source (check the Git section on how to update the source).
+
 4. Create a folder name `crafter-auth-env` and copy all needed resources for a *clean* and functional Authoring environment.
+
 
 ### 2.1.2. Run
 To run the _Authoring environment_ you can:
@@ -86,7 +91,9 @@ cd `crafter-auth-env`
 Both of those options will:
 
 * Start Apache tomcat on default ports (8080,8009,8005) [See Gradle task on how to change default ports]#GradleTasks
+
 * Start Solr server on port 8984
+
 * Start Crafter Deployer on port 
 
 ### 2.1.3 Authoring Environment Scripts
