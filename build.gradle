@@ -1,8 +1,4 @@
-import de.undercouch.gradle.tasks.download.Verify
-import java.io.FileInputStream;
 import java.security.MessageDigest;
-import java.util.Properties;
-import java.io.OutputStream;
 
 plugins {
    id "de.undercouch.download" version "3.1.2"
@@ -19,8 +15,8 @@ ext {
     tomcatVersion= System.getProperty("tomcatVersion")?:"8.5.6"
     solrVersion=System.getProperty("solrVersion")?:"6.4.1"
     downloadDir=System.getProperty("downloadDir")?:"./target/downloads"
-    authEnv=System.getProperty("authEnv")?:"./crafter-env/"
-    liveEnv=System.getProperty("liveEnv")?:"./live-env/"
+    authEnv=System.getProperty("authEnv")?:"./crafter-auth-env/"
+    liveEnv=System.getProperty("liveEnv")?:"./crafter-live-env/"
     includeProfile=System.getProperty("includeProfile")?:false
     includeSocial=System.getProperty("includeSocial")?:false
     updateBeforeBuild=System.getProperty("updateSource")?:false
@@ -49,7 +45,7 @@ task(clean,dependsOn:["cleanCommons","cleanCore","cleanSearch","cleanProfile","c
         if(updateBeforeBuild){
             exec{
                 workingDir '.'
-                description "Updates Crafter CMS soruce code"
+                description "Updates Crafter CMS source code"
                 commandLine commandLinePrefix + ["git","submodule","update" ,"--recursive", "--force" ,"--remote"]
             }
         }
@@ -65,7 +61,7 @@ task(livePack,dependsOn:["packLiveZip","packLiveTar"]){
     description "Packages the Studio environment to be distribute"
 }
 
-task("packAuthZip",type:Zip,dependsOn:["buildEnv","build"]){
+task("packAuthZip",type:Zip,dependsOn:["authEnv"]){
     description "Build a Crafter Studio Ready to Use zip"
     from authEnv
     archiveName "crafter-studio.zip"
@@ -74,41 +70,41 @@ task("packAuthZip",type:Zip,dependsOn:["buildEnv","build"]){
     includeEmptyDirs true
     metadataCharset "UTF-8"
     caseSensitive false
-    destinationDir(file("installers/"))
+    destinationDir(file("distributables/"))
 }
 
-task("packAuthTar",type:Tar,/*dependsOn:["buildEnv","build"]*/){
+task("packAuthTar",type:Tar,dependsOn:["authEnv"]){
     description "Build a Crafter Studio Ready to Use zip"
     from authEnv
-    archiveName "crafter-studio.tar"
+    archiveName "crafter-auth-env.tar"
     fileMode null
     dirMode null
     includeEmptyDirs true
     caseSensitive false
-    destinationDir(file("installers/"))
+    destinationDir(file("distributables/"))
 }
 
-task("packLiveZip",type:Zip,dependsOn:["buildEnv","build"]){
+task("packLiveZip",type:Zip,dependsOn:["liveEnv"]){
     description "Build a Crafter Studio Ready to Use zip"
     from liveEnv
-    archiveName "crafter-studio.zip"
+    archiveName "crafter-live-env.zip"
     fileMode null
     dirMode null
     includeEmptyDirs true
     metadataCharset "UTF-8"
     caseSensitive false
-    destinationDir(file("installers/"))
+    destinationDir(file("distributables/"))
 }
 
-task("packLiveTar",type:Tar,/*dependsOn:["buildEnv","build"]*/){
+task("packLiveTar",type:Tar,dependsOn:["liveEnv"]){
     description "Build a Crafter Studio Ready to Use zip"
     from liveEnv
-    archiveName "crafter-studio.tar"
+    archiveName "crafter-live-env.tar"
     fileMode null
     dirMode null
     includeEmptyDirs true
     caseSensitive false
-    destinationDir(file("installers/"))
+    destinationDir(file("distributables/"))
 }
 
 
@@ -236,7 +232,7 @@ task downloadSolr() {
 /**
     Builds environment
 **/
-task(buildEnv,dependsOn:["downloadTomcat","downloadSolr","build"]){
+task(authEnv,dependsOn:["downloadTomcat","downloadSolr","build"]){
     description "Build Crafter environment"
     doFirst{
         def ddir=file(authEnv)
@@ -340,6 +336,7 @@ task(buildEnv,dependsOn:["downloadTomcat","downloadSolr","build"]){
             if(ddir.exists()){
                 ddir.deleteDir();
             }
+
             ddir.mkdir();
             def deployerDir=file("${liveEnv}/crafter-deployer")
             deployerDir.mkdir();
@@ -450,7 +447,7 @@ task(buildEnv,dependsOn:["downloadTomcat","downloadSolr","build"]){
     for (int i = 0; i < mdbytes.length; i++) {
     	sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
     }
-    return sb.toString();
+    return sb.toString()
   }
 
 

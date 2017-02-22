@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
  DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS "
- CD_HOME=${CRAFTER_DEPLOYER_HOME:=`pwd`}
+ CD_HOME=${CRAFTER_DEPLOYER_HOME:=`pwd`/crafter-deployer}
+ C_HOME=${CRAFTER_HOME:=`pwd`}
  CATALINA_PID=${CATALINA_HOME}/tomcat.pid
-CATALINA_HOME="./apache-tomcat"
+ CATALINA_HOME="./apache-tomcat"
  function help() {
          echo $(basename $BASH_SOURCE)
          echo "-s --start, Start crafter deployer"
@@ -13,28 +14,28 @@ CATALINA_HOME="./apache-tomcat"
  }
 
 function debug() {
-    cd crafter-deployer
+    cd $CD_HOME
      ./deployer.sh --debug;
-     cd ..
+     cd C_HOME
       ./solr/bin/solr start -p 8984 -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
      ./apache-tomcat/bin/catalina.sh jpda start;
 }
 function start() {
-    cd crafter-deployer
+    cd $CD_HOME
      ./deployer.sh --start;
-     cd ..
+     cd C_HOME
      ./solr/bin/solr start -p 8984
      ./apache-tomcat/bin/startup.sh
 }
 
 function tail() {
-        tail -f crafter-deployer/crafter-deployer.log apache-tomcat/logs/catalina.out solr/server/logs/solr.log
+        tail -f $C_HOME/crafter-deployer/crafter-deployer.log $C_HOME/apache-tomcat/logs/catalina.out $C_HOME/solr/server/logs/solr.log
 }
 
 function stop() {
-    cd crafter-deployer
+    cd $CD_HOME
      ./deployer.sh --stop;
-     cd ..
+     cd C_HOME
      ./solr/bin/solr stop
      ./apache-tomcat/bin/shutdown.sh
 }
