@@ -48,7 +48,7 @@ Crafter CMS is built along a microservices architecture, and as such, comprises 
 
 ##3.1. Build, Start and Stop All 
 ###3.1.1. Build All
-Build all Crafter CMS modules, run
+Build all Crafter CMS modules
 
 ```bash
     ./gradlew build
@@ -79,7 +79,7 @@ You might have noticed that you essentially have two environments built and runn
 
 As a developer, you can an `authoring` environment only for most tasks without the need to run a `delivery` environment. It's important to note that `delivery` essentially runs the same software that's in `authoring` except Crafter Studio (the authoring tools).
 
-By default, this project will build both environments unless instructed otherwise.
+By default, this project will build both environments unless instructed otherwise. The `authoring` environment runs at [http://localhost:8080/studio](http://localhost:8080/studio), whereas the `delivery` environment runs at [http://localhost:8080/studio](http://localhost:9080/).
 
 ###3.1.1. Build, Start, and Stop a Specific Environment
 Much like building/starting/stopping All, to perform the same for one of the two environments.
