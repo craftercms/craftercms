@@ -90,8 +90,8 @@ Much like building/starting/stopping All, to perform the same for one of the two
 #### Delivery
 ```bash
     ./gradlew build -Denv=delivery
-        ./gradlew start -Denv=delivery
-        ./gradlew stop -Denv=delivery
+    ./gradlew start -Denv=delivery
+    ./gradlew stop -Denv=delivery
 ```
 
 ##3.3. Crafter Modules
@@ -125,9 +125,13 @@ You can build, deploy, start or stop a module by:
 ```bash
     ./gradlew build -DmoduleName=studio
     ./gradlew deploy -DmoduleName=studio -Denv=authoring
+    ./gradlew start -DmoduleName=studio -Denv=authoring
+    ./gradlew stop -DmoduleName=studio -Denv=authoring
 ```
 
-Note: If you don't specify the `env` parameter, it means all environments (where applicable).
+#####Note
+* If you don't specify the `env` parameter, it means all environments (where applicable).
+* In the current version of Crafter CMS, some services run in the same Web container, and that implies the stopping/starting of one of these services will cause other services to stop/start as well. 
 
 ---
 
