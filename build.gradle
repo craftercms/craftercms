@@ -334,7 +334,6 @@ def deployModule(commandLinePrefix,module,env){
             if (module.equals("studio") && env.equals("delivery")) {
                 throw new InvalidUserDataException("Module Studio can not be deploy in Delivery")
             }
-            println("BAD M IS ${module} for ${env}")
             def deployable = file(VALID_DEPLOYABLE_MODULES[module])
             if (deployable.exists()) {
                 def path = env.equals("authoring") ? authEnv : liveEnv
