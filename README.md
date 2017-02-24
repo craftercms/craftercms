@@ -51,7 +51,7 @@ Crafter CMS is built along a microservices architecture, and as such, comprises 
 Build all Crafter CMS modules
 
 ```bash
-    ./gradlew build
+    ./gradlew build deploy
 ```
 
 ###3.1.2. Start All
@@ -86,14 +86,14 @@ Much like building/starting/stopping All, to perform the same for one of the two
 
 #### Authoring
 ```bash
-    ./gradlew build -Penv=authoring
+    ./gradlew build deploy -Penv=authoring
     ./gradlew start -Penv=authoring
     ./gradlew stop -Penv=authoring
 ```
 
 #### Delivery
 ```bash
-    ./gradlew build -Penv=delivery
+    ./gradlew build deploy -Penv=delivery
     ./gradlew start -Penv=delivery
     ./gradlew stop -Penv=delivery
 ```
