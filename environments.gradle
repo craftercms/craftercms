@@ -51,7 +51,7 @@ task("authoringEnvirment",dependsOn:["downloadTomcat","downloadSolr","build"]){
             into "${authEnv}/apache-tomcat/bin/"
         }
         copy{
-            from "./resources/tomcat-live-config/"
+            from "./resources/tomcat-config/"
             into "${authEnv}/apache-tomcat/shared/classes/"
         }
 

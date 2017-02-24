@@ -350,7 +350,7 @@ def deployModule(commandLinePrefix,module,env){
                 }
 
             } else {
-                throw new InvalidUserDataException("Please run build for ${module} before deploy it")
+               println "WARN: You haven't build ${module} module"
             }
         }
     }
