@@ -1,8 +1,7 @@
-import java.security.MessageDigest;
-
 plugins {
-   id "de.undercouch.download" version "3.1.2"
- }
+    id "de.undercouch.download" version "3.1.2"
+}
+
 def isWin=System.getProperty('os.name').toLowerCase().contains('windows')
 def isOSX=System.getProperty('os.name').toLowerCase().contains('mac')
 def isNix=(System.getProperty('os.name').toLowerCase().contains('nix') || System.getProperty('os.name').toLowerCase().contains('aix') || System.getProperty('os.name').toLowerCase().contains('nux'))
@@ -11,12 +10,40 @@ def commandLinePrefix = []
 if(isWin){
     commandLinePrefix =["cmd","/c"]
 }
+
+
+def getModule(){
+    if(project.hasProperty("moduleName")){
+        def moduleName=project.property("moduleName")
+        moduleName=moduleName.trim().toLowerCase()
+        return moduleName.trim().isEmpty()?"all":moduleName
+    }else{
+        return "all"
+    }
+}
+
+def getEnv(){
+    if(project.hasProperty("env")){
+        def enviromentName=project.property("env")
+        enviromentName=enviromentName.trim().toLowerCase()
+        return enviromentName.trim().isEmpty()?"all":enviromentName
+    }else{
+        return "all"
+    }
+}
+
+def isAllEnvs(){
+    return getEnv().equalsIgnoreCase("all")
+}
+
+
+
 ext {
     tomcatVersion= System.getProperty("tomcatVersion")?:"8.5.6"
     solrVersion=System.getProperty("solrVersion")?:"6.4.1"
-    downloadDir=System.getProperty("downloadDir")?:"./target/downloads"
+    downloadDir=System.getProperty("downloadDir")?:"./downloads/"
     authEnv=System.getProperty("authEnv")?:"./crafter-auth-env/"
-    liveEnv=System.getProperty("liveEnv")?:"./crafter-live-env/"
+    liveEnv=System.getProperty("liveEnv")?:"./crafter-delivery-env/"
     includeProfile=System.getProperty("includeProfile")?:false
     includeSocial=System.getProperty("includeSocial")?:false
     updateBeforeBuild=System.getProperty("updateSource")?:false
@@ -35,446 +62,311 @@ ext {
     if(includeSocial){
         includeProfile=true
     }
+    VALID_MODULES=["commons","core","search","profile","engine","deployer","studio","social"]
+    VALID_DEPLOYABLE_MODULES=[
+                   "search":"./src/search/crafter-search-server/target/crafter-search.war",
+                   "profile":"./src/profile/server/target/crafter-profile.war",
+                   "engine":"./src/engine/target/ROOT.war",
+                   "deployer":"./src/deployer/target/crafter-deployer.jar",
+                   "studio":"./src/studio/target/studio.war",
+                   "social":"./src/social/server/target/crafter-social.war"]
+
 }
 
-task(build,dependsOn:["buildCommons","buildCore","buildSearch","buildProfile","buildDeployer","buildEngine","buildSocial","buildStudio"]){
+
+//apply from: "common.gradle"
+//apply from:"buildt.gradle"
+apply from:"downloads.gradle"
+apply from:"environments.gradle"
+//apply from:"package.gradle"
+
+task("start"){
+    doLast{
+        def env = getEnv()
+        switch (env){
+            case "all":
+                if(!file(authEnv).exists() || !file(liveEnv).exists()){
+                    throw new InvalidUserDataException("Either of Authoring or Delivery Enviroments are not deploy. Please run deploy before start")
+                }
+                startAuth(commandLinePrefix).execute()
+                startDelivery(commandLinePrefix).execute()
+            case "authoring":
+                if(!file(authEnv).exists()){
+                    throw new InvalidUserDataException("Authoring  Enviroment is not deploy. Please run deploy -Penv=authoring before start")
+                }
+                startAuth(commandLinePrefix).execute()
+                break
+            case "delivery":
+                if(!file(liveEnv).exists()){
+                    throw new InvalidUserDataException("Authoring  Enviroment is not deploy. Please run deploy -Penv=authoring before start")
+                }
+                startDelivery(commandLinePrefix).execute()
+                break
+            default:
+                throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+        }
+    }
+}
+
+task("stop"){
+    doLast{
+        def env = getEnv()
+        switch (env){
+            case "all":
+                if(!file(authEnv).exists() || !file(liveEnv).exists()){
+                    throw new InvalidUserDataException("Either of Authoring or Delivery Enviroments are not deploy. Please run deploy before stop")
+                }
+                stopAuth(commandLinePrefix).execute()
+                stopDevlivery(commandLinePrefix).execute()
+            case "authoring":
+                if(!file(authEnv).exists()){
+                    throw new InvalidUserDataException("Authoring  Enviroment is not deploy. Please run deploy -Penv=authoring before stop")
+                }
+                stopAuth(commandLinePrefix).execute()
+                break
+            case "delivery":
+                if(!file(liveEnv).exists()){
+                    throw new InvalidUserDataException("Authoring  Enviroment is not deploy. Please run deploy -Penv=authoring before stop")
+                }
+                stopDevlivery(commandLinePrefix).execute()
+                break
+            default:
+                throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+        }
+    }
+}
+
+
+task("clean"){
+    description "Clean Crafter CMS stack"
+
+    doFirst {
+        def module=getModule();
+    }
+
+    doLast {
+        if (module.equals("all")) {
+            VALID_MODULES.each {
+                cleanModule(commandLinePrefix, it).execute()
+            }
+        } else if (VALID_MODULES.containsKey(module)) {
+            cleanModule(commandLinePrefix, module).execute()
+        } else {
+            throw new InvalidUserDataException("${module} is not a valid, use ${VALID_MODULES}")
+        }
+    }
+}
+
+task("build"){
     description "Builds Crafter CMS stack"
-}
-task(clean,dependsOn:["cleanCommons","cleanCore","cleanSearch","cleanProfile","cleanDeployer","cleanEngine","cleanSocial","cleanStudio"]){
+
     doFirst{
-        if(updateBeforeBuild){
-            exec{
-                workingDir '.'
-                description "Updates Crafter CMS source code"
-                commandLine commandLinePrefix + ["git","submodule","update" ,"--recursive", "--force" ,"--remote"]
+        def module = getModule();
+    }
+
+    doLast {
+       
+        if (module.equals("all")) {
+            VALID_MODULES.each {
+                buildModule(commandLinePrefix, it).execute()
+            }
+        } else if (VALID_MODULES.contains(module)) {
+            buildModule(commandLinePrefix, module).execute()
+        } else {
+            throw new InvalidUserDataException("${module} is not a valid, use ${VALID_MODULES}")
+        }
+    }
+}
+
+
+task("deploy") {
+    description "Clean Crafter CMS stack"
+
+    doFirst {
+        def module = getModule()
+        def env = getEnv()
+        switch (env){
+            case "all":
+                checkEnvWD(authEnv,"authoring")
+                checkEnvWD(liveEnv,"delivery")
+                break
+            case "authoring":
+                checkEnvWD(authEnv,env)
+                break
+            case "delivery":
+                checkEnvWD(liveEnv,env)
+                break
+            default:
+                throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+        }
+    }
+
+    doLast {
+        if (module.equals("all")) {
+            VALID_DEPLOYABLE_MODULES.keySet().each {
+                if(isAllEnvs()){
+                    deployModule(commandLinePrefix, it,"authoring").execute()
+                    deployModule(commandLinePrefix, it,"delivery").execute()
+                }else{
+                    deployModule(commandLinePrefix, it,env).execute()
+                }
+                file(VALID_DEPLOYABLE_MODULES[it]).delete()
+            }
+        } else if (VALID_DEPLOYABLE_MODULES.containsKey(module)) {
+            if(isAllEnvs()){
+                deployModule(commandLinePrefix, module,"authoring").execute()
+                deployModule(commandLinePrefix, module,"delivery").execute()
+            }else{
+                deployModule(commandLinePrefix, module,env).execute()
+            }
+            file(VALID_DEPLOYABLE_MODULES[module]).delete()
+        } else {
+            throw new InvalidUserDataException("${module} is not a valid module, use ${VALID_DEPLOYABLE_MODULES.keySet()}")
+        }
+    }
+}
+
+task("bundle",dependsOn: ["build"]){
+    def env=getEnv()
+    switch (env){
+        case "all":
+
+            break
+        case "authoring":
+
+            break
+        case "delivery":
+
+            break
+        default:
+            throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+    }
+}
+
+
+def cleanModule(commandLinePrefix,module){
+    def ctask=tasks.findByPath("clean${module}")
+    if (ctask!= null){
+        return ctask
+    }else {
+        return tasks.create("clean${module}", Exec) {
+            workingDir "${new File(".").absolutePath}/src/${module}"
+            commandLine commandLinePrefix + ["mvn", "clean"]
+        }
+    }
+}
+
+
+//TODO Windowsfy this
+def startAuth(commandLinePrefix){
+    def stask=tasks.findByPath("startAuth")
+    if (stask!= null){
+        return stask
+    }else {
+        return tasks.create("startAuth", Exec) {
+            workingDir authEnv
+            commandLine commandLinePrefix+["./startup.sh"]
+        }
+    }
+}
+
+//TODO Windowsfy this
+def startDelivery(commandLinePrefix){
+    def stask=tasks.findByPath("startDevlivery")
+    if (stask!= null){
+        return stask
+    }else {
+        return tasks.create("starDevlivery", Exec) {
+            workingDir liveEnv
+            commandLine commandLinePrefix+["./startup.sh"]
+        }
+    }
+}
+
+
+//TODO Windowsfy this
+def stopAuth(commandLinePrefix){
+    def stask=tasks.findByPath("stopAuth")
+    if (stask!= null){
+        return stask
+    }else {
+        return tasks.create("stopAuth", Exec) {
+            workingDir authEnv
+            commandLine commandLinePrefix+["./shutdown.sh"]
+        }
+    }
+}
+
+//TODO Windowsfy this
+def stopDevlivery(commandLinePrefix){
+    def stask=tasks.findByPath("stopDevlivery")
+    if (stask!= null){
+        return stask
+    }else {
+        return tasks.create("stopDevlivery", Exec) {
+            workingDir liveEnv
+            commandLine commandLinePrefix+["./shutdown.sh"]
+        }
+    }
+}
+
+
+def buildModule(commandLinePrefix,module){
+    def btask=tasks.findByPath("build${module}")
+    if (btask!= null){
+        return btask
+    }else {
+        return tasks.create("build${module}", Exec) {
+            workingDir "${new File(".").absolutePath}/src/${module}"
+            commandLine commandLinePrefix + ["mvn", "clean", "install"]
+        }
+    }
+}
+
+
+def deployModule(commandLinePrefix,module,env){
+    def dtask=tasks.findByPath("deploy${module}")
+    if (dtask!= null){
+        return dtask
+    }else {
+        return tasks.create("deploy${module}") {
+            println "Deploy ${module} to ${env}"
+            if (module.equals("studio") && env.equals("delivery")) {
+                throw new InvalidUserDataException("Module Studio can not be deploy in Delivery")
+            }
+            def deployable = file(VALID_DEPLOYABLE_MODULES[module])
+            if (deployable.exists()) {
+                def path = env.equals("authoring") ? authEnv : liveEnv
+                path += deployable.absolutePath.endsWith(".jar") ? "crafter-deployer/" : "apache-tomcat/webapps/"
+                path += deployable.name
+                delete {
+                    delete path
+                    delete path.take(path.lastIndexOf('.'))
+                }
+                copy {
+                    from VALID_DEPLOYABLE_MODULES[module]
+                    into path.take(path.lastIndexOf('/'))
+                }
+
+            } else {
+               println "WARN: You haven't build ${module} module"
             }
         }
     }
-        description "Clear Crafter CMS stack build output"
 }
 
-task(authPack,dependsOn:["packAuthZip","packAuthTar"]){
-    description "Packages the Studio environment to be distribute"
-}
-
-task(livePack,dependsOn:["packLiveZip","packLiveTar"]){
-    description "Packages the Studio environment to be distribute"
-}
-
-task("packAuthZip",type:Zip,dependsOn:["authEnv"]){
-    description "Build a Crafter Studio Ready to Use zip"
-    from authEnv
-    archiveName "crafter-studio.zip"
-    fileMode null
-    dirMode null
-    includeEmptyDirs true
-    metadataCharset "UTF-8"
-    caseSensitive false
-    destinationDir(file("distributables/"))
-}
-
-task("packAuthTar",type:Tar,dependsOn:["authEnv"]){
-    description "Build a Crafter Studio Ready to Use zip"
-    from authEnv
-    archiveName "crafter-auth-env.tar"
-    fileMode null
-    dirMode null
-    includeEmptyDirs true
-    caseSensitive false
-    destinationDir(file("distributables/"))
-}
-
-task("packLiveZip",type:Zip,dependsOn:["liveEnv"]){
-    description "Build a Crafter Studio Ready to Use zip"
-    from liveEnv
-    archiveName "crafter-live-env.zip"
-    fileMode null
-    dirMode null
-    includeEmptyDirs true
-    metadataCharset "UTF-8"
-    caseSensitive false
-    destinationDir(file("distributables/"))
-}
-
-task("packLiveTar",type:Tar,dependsOn:["liveEnv"]){
-    description "Build a Crafter Studio Ready to Use zip"
-    from liveEnv
-    archiveName "crafter-live-env.tar"
-    fileMode null
-    dirMode null
-    includeEmptyDirs true
-    caseSensitive false
-    destinationDir(file("distributables/"))
-}
-
-
-/** Clean and Build **/
-task(buildCommons,type:Exec){
-    workingDir './src/commons'
-    description "Builds Crafter Commons"
-    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
-}
-task(buildCore,type:Exec){
-    description "Builds Crafter Core"
-    workingDir './src/core'
-    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
-}
-task(buildSearch,type:Exec){
-    description "Builds Crafter Search"
-    workingDir './src/search'
-    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
-}
-task(buildProfile,type:Exec){
-    description "Builds Crafter Profile"
-    workingDir './src/profile'
-    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
-}
-task(buildDeployer,type:Exec){
-    description "Builds Crafter Deployer"
-    workingDir './src/deployer'
-    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
-}
-task(buildEngine,type:Exec){
-    description "Builds Crafter Engine"
-    workingDir './src/engine'
-    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
-}
-task(buildSocial,type:Exec){
-    description "Builds Crafter Social"
-    workingDir './src/social'
-    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
-}
-task(buildStudio,type:Exec){
-    description "Builds Crafter Studio"
-    workingDir './src/studio'
-    commandLine commandLinePrefix + ["mvn","-T8","clean","install"]
-}
-/** Cleanup **/
-task(cleanCommons,type:Exec){
-    description "Builds Crafter Commons"
-    workingDir './src/commons'
-    commandLine commandLinePrefix + ["mvn","-T8","clean"]
-}
-task(cleanCore,type:Exec){
-    description "Builds Crafter Core"
-    workingDir './src/core'
-    commandLine commandLinePrefix + ["mvn","-T8","clean"]
-}
-task(cleanSearch,type:Exec){
-    description "Builds Crafter Search"
-    workingDir './src/search'
-    commandLine commandLinePrefix + ["mvn","-T8","clean"]
-}
-task(cleanProfile,type:Exec){
-    description "Builds Crafter Profile"
-    workingDir './src/profile'
-    commandLine commandLinePrefix + ["mvn","-T8","clean"]
-}
-task(cleanDeployer,type:Exec){
-    description "Builds Crafter Deployer"
-    workingDir './src/deployer'
-    commandLine commandLinePrefix + ["mvn","-T8","clean"]
-}
-task(cleanEngine,type:Exec){
-    description "Builds Crafter Engine"
-    workingDir './src/engine'
-    commandLine commandLinePrefix + ["mvn","-T8","clean"]
-}
-task(cleanSocial,type:Exec){
-    description "Builds Crafter Social"
-    workingDir './src/social'
-    commandLine commandLinePrefix + ["mvn","-T8","clean"]
-}
-task(cleanStudio,type:Exec){
-    description "Builds Crafter Studio"
-    workingDir './src/studio'
-    commandLine commandLinePrefix + ["mvn","-T8","clean"]
-}
-
-task downloadTomcat() {
-    description = "Downloads and checks tomcat integrity"
-    doFirst{
-        download {
-           src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
-           overwrite false
-           dest file(downloadDir)
-        }
-        download {
-            src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip.sha1"
-            dest file(downloadDir)
-            overwrite false
+def checkEnvWD(path,env){
+    def ddir=file(path)
+    if(!ddir.exists()) {
+        ddir.mkdir()
+        def deployerDir = file("${path}/crafter-deployer")
+        deployerDir.mkdir()
+        downloadTomcat.execute()
+        downloadSolr.execute()
+        if(env.equals("authoring")){
+            authoringEnvirment.execute()
+        }else if (env.equals("delivery")){
+            deliveyEnviroment.execute()
         }
     }
-    doLast{
-        assert sha1(new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip")) ==  new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
-    }
 }
-/** Dowloads any external Resources **/
-task downloadSolr() {
-    description = "Download Solr and Solr's war (from Maven central) signature"
-    doFirst{
-        download {
-           src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip"
-           overwrite false
-           dest file("${downloadDir}/solr-${solrVersion}.zip")
-       }
-       download {
-        //           http://archive.apache.org/dist/lucene/solr/6.4.1/solr-6.4.1.zip.sha1
-           src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip.sha1"
-           dest file("${downloadDir}/solr-${solrVersion}.zip.sha1")
-           overwrite false
-       }
-    }
-    doLast{
-        assert sha1(new File(downloadDir, "solr-${solrVersion}.zip")) == new File(downloadDir, "solr-${solrVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
-    }
-}
-/**
-    Builds environment
-**/
-task(authEnv,dependsOn:["downloadTomcat","downloadSolr","build"]){
-    description "Build Crafter environment"
-    doFirst{
-        def ddir=file(authEnv)
-           if(ddir.exists()){
-               ddir.deleteDir();
-           }
-           ddir.mkdir();
-           def deployerDir=file("${authEnv}/crafter-deployer")
-           deployerDir.mkdir();
-       }
-       doLast{
-            copy{
-                from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
-                into "${authEnv}"
-            }
-             file("${authEnv}/apache-tomcat-${tomcatVersion}").renameTo(file("${authEnv}/apache-tomcat"))
-
-             /** SOLR **/
-             copy{
-                 from zipTree(downloadDir + "/solr-${solrVersion}.zip")
-                 into "${authEnv}"
-             }
-             file("${authEnv}/solr-${solrVersion}").renameTo(file("${authEnv}/solr"))
-
-             copy{
-                 from "./src/search/crafter-search-provider/solr/configsets"
-                 into "${authEnv}/solr/server/solr/configsets"
-             }
-
-             /** Remove Non util stuff **/
-             def webapps = file("${authEnv}/apache-tomcat/webapps/")
-             webapps.deleteDir()
-             webapps.mkdir()
-
-            copy{
-                from "./src/search/crafter-search-server/target/crafter-search.war"
-                from "./src/engine/target/ROOT.war"
-                from "./src/studio/target/studio.war"
-                into "${authEnv}/apache-tomcat/webapps/"
-            }
-
-            copy{
-                from "./resources/setenv.bat"
-                from "./resources/setenv.sh"
-                into "${authEnv}/apache-tomcat/bin/"
-            }
-            copy{
-                from "./resources/tomcat-live-config/"
-                into "${authEnv}/apache-tomcat/shared/classes/"
-            }
-
-            copy{
-                from "./src/deployer/target/crafter-deployer.jar"
-                into "${authEnv}/crafter-deployer"
-            }
-            copy{
-                from "./resources/deployer/"
-                into "${authEnv}/crafter-deployer"
-            }
-            copy{
-                from "./resources/studio/"
-                into "${authEnv}/"
-            }
-
-            if(!isWin){
-                exec{
-                    workingDir "${authEnv}/apache-tomcat/bin/"
-                    commandLine commandLinePrefix + ["chmod","+x","catalina.sh", "configtest.sh", "daemon.sh", "digest.sh", "setclasspath.sh", "setenv.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
-                }
-                exec{
-                    workingDir "${authEnv}/crafter-deployer/"
-                    commandLine commandLinePrefix + ["chmod","+x","deployer.sh"]
-                }
-                exec{
-                    workingDir "${authEnv}"
-                    commandLine commandLinePrefix + ["chmod","+x","crafter.sh","startup.sh","debug.sh","shutdown.sh"]
-                }
-            }
-            updateCatalinaSettings(authEnv);
-            if(includeProfile){
-                copy{
-                    from "./src/profile/server/target/crafter-profile.war"
-                    into "${authEnv}/apache-tomcat/webapps/"
-                }
-            }
-            if(includeSocial){
-                copy{
-                    from "./src/social/server/target/crafter-social.war"
-                    into "${authEnv}/apache-tomcat/webapps/"
-                }
-            }
-            updateTomcatPorts("${authEnv}/apache-tomcat/conf/server.xml",authTomcatPort,authTomcatAJPPort,
-                                                                                                                              authTomcatShutdownPort,authTomcatSSLPort)
-        }
- }
-
- task(live,dependsOn:["downloadTomcat","downloadSolr","build"]){
-     description "Build Crafter Live environment"
-     doFirst{
-         def ddir=file(liveEnv)
-            if(ddir.exists()){
-                ddir.deleteDir();
-            }
-
-            ddir.mkdir();
-            def deployerDir=file("${liveEnv}/crafter-deployer")
-            deployerDir.mkdir();
-        }
-        doLast{
-             copy{
-                 from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
-                 into "${liveEnv}"
-             }
-              file("${liveEnv}/apache-tomcat-${tomcatVersion}").renameTo(file("${liveEnv}/apache-tomcat"))
-
-              /** SOLR **/
-              copy{
-                  from zipTree(downloadDir + "/solr-${solrVersion}.zip")
-                  into "${liveEnv}"
-              }
-              file("${liveEnv}/solr-${solrVersion}").renameTo(file("${liveEnv}/solr"))
-
-              copy{
-                  from "./src/search/crafter-search-provider/solr/configsets"
-                  into "${liveEnv}/solr/server/solr/configsets"
-              }
-
-              /** Remove Non util stuff **/
-              def webapps = file("${liveEnv}/apache-tomcat/webapps/")
-              webapps.deleteDir()
-              webapps.mkdir()
-
-             copy{
-                 from "./src/search/crafter-search-server/target/crafter-search.war"
-                 from "./src/engine/target/ROOT.war"
-                 into "${liveEnv}/apache-tomcat/webapps/"
-             }
-
-             copy{
-                 from "./resources/setenv.bat"
-                 from "./resources/setenv.sh"
-                 into "${liveEnv}/apache-tomcat/bin/"
-             }
-             copy{
-                 from "./resources/tomcat-live-config/"
-                 into "${liveEnv}/apache-tomcat/shared/classes/"
-             }
-
-             copy{
-                 from "./src/deployer/target/crafter-deployer.jar"
-                 into "${liveEnv}/crafter-deployer"
-             }
-             copy{
-                 from "./resources/deployer/"
-                 into "${liveEnv}/crafter-deployer"
-             }
-             copy{
-                 from "./resources/studio/"
-                 exclude "crafter.sh"
-                 into "${liveEnv}/"
-             }
-             copy{
-                 from "./resources/studio-live/"
-                 into "${liveEnv}/"
-             }
-
-             if(!isWin){
-                 exec{
-                     workingDir "${liveEnv}/apache-tomcat/bin/"
-                     commandLine commandLinePrefix + ["chmod","+x","catalina.sh", "configtest.sh", "daemon.sh", "digest.sh", "setclasspath.sh", "setenv.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
-                 }
-                 exec{
-                     workingDir "${liveEnv}/crafter-deployer/"
-                     commandLine commandLinePrefix + ["chmod","+x","deployer.sh"]
-                 }
-                 exec{
-                     workingDir "${liveEnv}"
-                     commandLine commandLinePrefix + ["chmod","+x","crafter.sh","startup.sh","debug.sh","shutdown.sh"]
-                 }
-             }
-             updateCatalinaSettings(liveEnv);
-             if(includeProfile){
-                 copy{
-                     from "./src/profile/server/target/crafter-profile.war"
-                     into "${liveEnv}/apache-tomcat/webapps/"
-                 }
-             }
-             if(includeSocial){
-                 copy{
-                     from "./src/social/server/target/crafter-social.war"
-                     into "${liveEnv}/apache-tomcat/webapps/"
-                 }
-             }
-             updateTomcatPorts("${liveEnv}/apache-tomcat/conf/server.xml",liveTomcatPort,liveTomcatAJPPort,
-                                                                                                                               liveTomcatShutdownPort,liveTomcatSSLPort)
-         }
-  }
-
-
-
- def sha1(file){
-    MessageDigest md = MessageDigest.getInstance("SHA1");
-    FileInputStream fis = new FileInputStream(file.path);
-    byte[] dataBytes = new byte[1024];
-    int nread = 0;
-    while ((nread = fis.read(dataBytes)) != -1) {
-      md.update(dataBytes, 0, nread);
-    };
-    byte[] mdbytes = md.digest();
-    //convert the byte to hex format
-    StringBuffer sb = new StringBuffer("");
-    for (int i = 0; i < mdbytes.length; i++) {
-    	sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
-    }
-    return sb.toString()
-  }
-
-
-    def updateTomcatPorts(serverConfigFile,http,ajp,shutdown,ssl){
-        def serverConfig=new XmlParser().parse(serverConfigFile)
-        serverConfig.@port=shutdown
-        serverConfig.Service.Connector.each{
-                if(it.@protocol.equalsIgnoreCase("HTTP/1.1")){
-                    it.@port=http
-                    it.@redirectPort=ssl
-                    it.@URIEncoding="UTF-8"
-                }else if (it.@protocol.equalsIgnoreCase("AJP/1.3")){
-                    it.@port=ajp
-                    it.@redirectPort=ssl
-                    it.@URIEncoding="UTF-8"
-                }
-        }
-            def printer = new XmlNodePrinter(new PrintWriter(serverConfigFile) )
-            printer.preserveWhitespace = true
-            printer.print( serverConfig )
-    }
-
-  def updateCatalinaSettings(env){
-      Properties catalinaProperties = new Properties()
-      catalinaProperties.load(new FileInputStream("${env}/apache-tomcat/conf/catalina.properties"))
-      catalinaProperties.setProperty("shared.loader",
-      '${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar')
-      def output = new FileOutputStream("${env}/apache-tomcat/conf/catalina.properties");
-      catalinaProperties.store(output,"");
-  }

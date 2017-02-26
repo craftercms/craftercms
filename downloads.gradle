@@ -1,0 +1,60 @@
+
+import java.security.MessageDigest;
+
+task downloadTomcat() {
+    description = "Downloads and checks tomcat integrity"
+    doFirst{
+        download {
+            src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
+            overwrite false
+            dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip")
+        }
+        download {
+            src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip.sha1"
+            dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip.sha1")
+            overwrite false
+        }
+    }
+    doLast{
+        assert sha1(new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip")) ==  new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
+    }
+}
+/** Dowloads any external Resources **/
+task downloadSolr() {
+    description = "Download Solr and Solr's war (from Maven central) signature"
+    doFirst{
+        download {
+            src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip"
+            overwrite false
+            dest file("${downloadDir}/solr-${solrVersion}.zip")
+        }
+        download {
+            //           http://archive.apache.org/dist/lucene/solr/6.4.1/solr-6.4.1.zip.sha1
+            src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip.sha1"
+            dest file("${downloadDir}/solr-${solrVersion}.zip.sha1")
+            overwrite false
+        }
+    }
+    doLast{
+        assert sha1(new File(downloadDir, "solr-${solrVersion}.zip")) == new File(downloadDir, "solr-${solrVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
+    }
+}
+
+
+
+def sha1(file){
+    MessageDigest md = MessageDigest.getInstance("SHA1");
+    FileInputStream fis = new FileInputStream(file.path);
+    byte[] dataBytes = new byte[1024];
+    int nread = 0;
+    while ((nread = fis.read(dataBytes)) != -1) {
+        md.update(dataBytes, 0, nread);
+    };
+    byte[] mdbytes = md.digest();
+    //convert the byte to hex format
+    StringBuffer sb = new StringBuffer("");
+    for (int i = 0; i < mdbytes.length; i++) {
+        sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+    }
+    return sb.toString()
+}

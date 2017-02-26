@@ -16,14 +16,14 @@
 function debug() {
     cd $CD_HOME
      ./deployer.sh --debug;
-     cd C_HOME
+     cd $C_HOME
       ./solr/bin/solr start -p 8984 -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
      ./apache-tomcat/bin/catalina.sh jpda start;
 }
 function start() {
     cd $CD_HOME
      ./deployer.sh --start;
-     cd C_HOME
+     cd $C_HOME
      ./solr/bin/solr start -p 8984
      ./apache-tomcat/bin/startup.sh
 }
@@ -35,7 +35,7 @@ function tail() {
 function stop() {
     cd $CD_HOME
      ./deployer.sh --stop;
-     cd C_HOME
+     cd $C_HOME
      ./solr/bin/solr stop
      ./apache-tomcat/bin/shutdown.sh
 }
