@@ -15,10 +15,8 @@ You must have these prerequisites on your system before you begin:
 Let's begin :)
 
 ```bash
-git clone --recursive  https://github.com/craftercms/craftercms.git
+git clone https://github.com/craftercms/craftercms.git
 ```
-
-** Note the `--recursive` required to clone all the git submodules. If you missed `--recursive`, just run `git submodule init` to fix that.
 
 #2. Build a Deployable Bundle
 To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.zip` and `.tar.gz` files ready to be deployed to any system.
@@ -51,7 +49,7 @@ Crafter CMS is built along a microservices architecture, and as such, comprises 
 Build all Crafter CMS modules
 
 ```bash
-    ./gradlew build deploy
+    ./gradlew init build deploy
 ```
 
 ###3.1.2. Start All
