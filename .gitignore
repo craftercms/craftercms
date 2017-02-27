@@ -31,3 +31,5 @@ crafter-install/
 live-env/
 crafter-auth-env/
 crafter-live-env/
+!src/.gitkeep
+src/
