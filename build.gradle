@@ -46,7 +46,10 @@ ext {
     liveEnv=System.getProperty("liveEnv")?:"./crafter-delivery-env/"
     includeProfile=System.getProperty("includeProfile")?:false
     includeSocial=System.getProperty("includeSocial")?:false
-    updateBeforeBuild=System.getProperty("updateSource")?:false
+    gitURLTemplate=System.getProperty("gitUrl")?:"https://github.com/craftercms/"
+    gitRepo=System.getProperty("gitRepo")?:"origin"
+    sourceBranch=System.getProperty("gitBranch")?:"master"
+
     /** Tomcat env **/
     authTomcatPort=System.getProperty("liveTomcatPort")?:8080
     authTomcatShutdownPort=System.getProperty("liveTomcatShutdownPort")?:8005
@@ -79,6 +82,48 @@ ext {
 apply from:"downloads.gradle"
 apply from:"environments.gradle"
 //apply from:"package.gradle"
+
+task("init"){
+    description "Clones Crafter CMS stack"
+
+    doFirst{
+        def module = getModule();
+    }
+
+    doLast {
+
+        if (module.equals("all")) {
+            VALID_MODULES.each {
+                cloneModule(commandLinePrefix, it).execute()
+            }
+        } else if (VALID_MODULES.contains(module)) {
+            cloneModule(commandLinePrefix, module).execute()
+        } else {
+            throw new InvalidUserDataException("${module} is not a valid, use ${VALID_MODULES}")
+        }
+    }
+
+}
+
+task("update"){
+    description "Update Crafter CMS stack"
+    doFirst{
+        def module = getModule();
+    }
+    doLast {
+
+        if (module.equals("all")) {
+            VALID_MODULES.each {
+                updateModule(commandLinePrefix, it).execute()
+            }
+        } else if (VALID_MODULES.contains(module)) {
+            updateModule(commandLinePrefix, module).execute()
+        } else {
+            throw new InvalidUserDataException("${module} is not a valid, use ${VALID_MODULES}")
+        }
+    }
+}
+
 
 task("start"){
     doLast{
@@ -257,28 +302,78 @@ def cleanModule(commandLinePrefix,module){
 }
 
 
+def updateModule(commandLinePrefix,module){
+    def btask=tasks.findByPath("update${module}")
+    if (btask!= null){
+        return btask
+    }else {
+        return tasks.create("update${module}") {
+            if(!file("./src/${module}").exists()) {
+                throw new InvalidUserDataException("Module ${module} is not created. Please use init to create it")
+            }else {
+                def arry = commandLinePrefix + ["git", "update", gitRepo, sourceBranch]
+                ProcessBuilder pb = new ProcessBuilder(arry)
+                pb.directory(new File("src/${module}"))
+                Process proc = pb.start()
+                output(proc.inputStream)
+                proc.waitFor()
+            }
+        }
+    }
+}
+
+
+def cloneModule(commandLinePrefix,module){
+    def btask=tasks.findByPath("clone${module}")
+    if (btask!= null){
+        return btask
+    }else {
+        return tasks.create("clone${module}") {
+            def finalUrl="${gitURLTemplate}${module}.git".toString()
+            def path="src/${module}".toString()
+            def arry = commandLinePrefix + ["git","clone",finalUrl,path]
+            if(file(path).exists()) {
+                throw new InvalidUserDataException("Module ${module} was already init, use clone to update it ")
+            }else {
+                ProcessBuilder pb = new ProcessBuilder(arry)
+                pb.directory(new File("."))
+                Process proc = pb.start()
+                output(proc.inputStream)
+                proc.waitFor()
+            }
+        }
+    }
+}
+
+
 //TODO Windowsfy this
 def startAuth(commandLinePrefix){
-    def stask=tasks.findByPath("startAuth")
-    if (stask!= null){
-        return stask
+    def btask=tasks.findByPath("startAuth")
+    if (btask!= null){
+        return btask
     }else {
-        return tasks.create("startAuth", Exec) {
-            workingDir authEnv
-            commandLine commandLinePrefix+["./startup.sh"]
+        tasks.create("startAuth") {
+            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix + ["./startup.sh"])
+            pb.directory(new File(authEnv));
+            Process proc = pb.start()
+            output(proc.inputStream)
+            proc.waitFor()
         }
     }
 }
 
 //TODO Windowsfy this
 def startDelivery(commandLinePrefix){
-    def stask=tasks.findByPath("startDevlivery")
-    if (stask!= null){
-        return stask
+    def btask=tasks.findByPath("startDelivery")
+    if (btask!= null){
+        return btask
     }else {
-        return tasks.create("starDevlivery", Exec) {
-            workingDir liveEnv
-            commandLine commandLinePrefix+["./startup.sh"]
+        tasks.create("startDelivery") {
+            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix + ["./startup.sh"]);
+            pb.directory(new File(liveEnv));
+            Process proc = pb.start();
+            output(proc.inputStream)
+            proc.waitFor();
         }
     }
 }
@@ -286,29 +381,37 @@ def startDelivery(commandLinePrefix){
 
 //TODO Windowsfy this
 def stopAuth(commandLinePrefix){
-    def stask=tasks.findByPath("stopAuth")
-    if (stask!= null){
-        return stask
+    def btask=tasks.findByPath("stopAuth")
+    if (btask!= null){
+        return btask
     }else {
-        return tasks.create("stopAuth", Exec) {
-            workingDir authEnv
-            commandLine commandLinePrefix+["./shutdown.sh"]
+        tasks.create("stopAuth"){
+            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix + ["./shutdown.sh"]);
+            pb.directory(new File(authEnv));
+            Process proc = pb.start();
+            output(proc.inputStream)
+            proc.waitFor();
         }
     }
 }
 
 //TODO Windowsfy this
 def stopDevlivery(commandLinePrefix){
-    def stask=tasks.findByPath("stopDevlivery")
-    if (stask!= null){
-        return stask
+    def btask=tasks.findByPath("stopDelivery")
+    if (btask!= null){
+        return btask
     }else {
-        return tasks.create("stopDevlivery", Exec) {
-            workingDir liveEnv
-            commandLine commandLinePrefix+["./shutdown.sh"]
+        tasks.create("stopDelivery") {
+            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix + ["./shutdown.sh"]);
+            pb.directory(new File(liveEnv))
+            Process proc = pb.start();
+            output(proc.inputStream)
+            proc.waitFor();
         }
     }
 }
+
+
 
 
 def buildModule(commandLinePrefix,module){
@@ -368,5 +471,11 @@ def checkEnvWD(path,env){
         }else if (env.equals("delivery")){
             deliveyEnviroment.execute()
         }
+    }
+}
+
+def output(is){
+    new java.util.Scanner(is).withCloseable { s->
+        println s.useDelimiter("\\A").hasNext() ? s.next() : ""
     }
 }
