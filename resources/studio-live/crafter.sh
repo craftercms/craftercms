@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
  DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS "
- CD_HOME=${CRAFTER_DEPLOYER_HOME:=`pwd`/crafter-deployer}
- C_HOME=${CRAFTER_HOME:=`pwd`}
+ C_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
+ CD_HOME=${CRAFTER_DEPLOYER_HOME:=$C_HOME/crafter-deployer}
  CATALINA_PID=${CATALINA_HOME}/tomcat.pid
  CATALINA_HOME="./apache-tomcat"
  function help() {
