@@ -3,7 +3,8 @@
 Crafter CMS is an open source content management system for Web sites, mobile apps, VR and more. You can learn more about Crafter here: http://docs.craftercms.org/en/latest/index.html
 
 This repository is the parent project that builds everything and helps you build one of two things:
-1. Deployable Crafter CMS bundle, or
+
+1. Deployable Crafter CMS bundle
 
 2. Developer's environment so you can compile and contribute to Crafter CMS
 
