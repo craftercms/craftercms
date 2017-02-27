@@ -4,6 +4,7 @@ Crafter CMS is an open source content management system for Web sites, mobile ap
 
 This repository is the parent project that builds everything and helps you build one of two things:
 1. Deployable Crafter CMS bundle, or
+
 2. Developer's environment so you can compile and contribute to Crafter CMS
 
 #1. Initial Setup
@@ -117,6 +118,18 @@ The next step is to switch the origin url location to be the one just forked to 
 Last step will be add a upstream repository from the main `craftercms` repo to your own. To make this happen you can [follow this help article](https://help.github.com/articles/fork-a-repo/#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository)
 
 You can now work in on your local system, and build/deploy and ultimately push to your fork. We welcome code contributions, so please do send us pull-requests.
+
+To keep update your project you can:
+
+```bash
+    ./gradlew update
+```
+that will get the latest code from your repo.
+
+To get the latest code from `craftercms` , so you can have the latest updates and user contributions you can run 
+```bash
+    ./gradlew update -PgitRepo=upstream
+```
 
 ###3.3.2. Update, Build, Deploy, Start, and Stop a Module
 You can update, build, deploy, start or stop a module by:
