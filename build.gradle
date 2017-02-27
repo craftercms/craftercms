@@ -332,15 +332,16 @@ def cloneModule(commandLinePrefix,module){
             def finalUrl="${gitURLTemplate}${module}.git".toString()
             def path="src/${module}".toString()
             def arry = commandLinePrefix + ["git","clone",finalUrl,path]
-            if(file(path).exists()) {
-                throw new InvalidUserDataException("Module ${module} was already init, use clone to update it ")
-            }else {
+//            if(file(path).exists()) {
+//                throw new InvalidUserDataException("Module ${module} was already init, use clone to update it ")
+//            }else {
                 ProcessBuilder pb = new ProcessBuilder(arry)
                 pb.directory(new File("."))
                 Process proc = pb.start()
-                output(proc.inputStream)
                 proc.waitFor()
-            }
+                output(proc.getInputStream())
+                output(proc.getErrorStream())
+           // }
         }
     }
 }
@@ -476,6 +477,9 @@ def checkEnvWD(path,env){
 
 def output(is){
     new java.util.Scanner(is).withCloseable { s->
-        println s.useDelimiter("\\A").hasNext() ? s.next() : ""
+       def output=s.useDelimiter("\\A").hasNext() ? s.next() : ""
+        if(output.length()>1){
+            println output
+        }
     }
 }
