@@ -113,18 +113,16 @@ You'll find these projects checked out and ready for you to contribute to in the
 
 ###3.3.1. Forking a Module
 Start by forking the module you want to work on. You can follow the [GitHub instructions](https://help.github.com/articles/fork-a-repo/).
-The next step is to switch the upstream repository from the main `craftercms` repo to your own. To make this happen, edit the file `.gitmodules` and change the module's URL to point to your fork. Now, let's force an update:
-
-```bash
-    git submodule sync --recursive
-```
+The next step is to switch the origin url location to be the one just forked to do so you can use [this GitHub instructions](https://help.github.com/articles/changing-a-remote-s-url/).
+Last step will be add a upstream repository from the main `craftercms` repo to your own. To make this happen you can [follow this help article](https://help.github.com/articles/fork-a-repo/#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository)
 
 You can now work in on your local system, and build/deploy and ultimately push to your fork. We welcome code contributions, so please do send us pull-requests.
 
-###3.3.2. Build, Deploy, Start, and Stop a Module
-You can build, deploy, start or stop a module by:
+###3.3.2. Update, Build, Deploy, Start, and Stop a Module
+You can update, build, deploy, start or stop a module by:
 
 ```bash
+    ./gradlew update -PmoduleName=studio
     ./gradlew build -PmoduleName=studio
     ./gradlew deploy -PmoduleName=studio -Penv=authoring
     ./gradlew start -PmoduleName=studio -Penv=authoring
