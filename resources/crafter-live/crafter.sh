@@ -9,7 +9,7 @@
          echo $(basename $BASH_SOURCE)
          echo "-s --start, Start crafter deployer"
          echo "-k --stop, Stop crafter deployer"
-         echo "-d --debug, Implieds start, Start crafter deployer in debug mode"
+         echo "-d --debug, Implies start, Start crafter deployer in debug mode"
          exit 0;
  }
 
