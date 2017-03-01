@@ -11,7 +11,6 @@ if(isWin){
     commandLinePrefix =["cmd","/c"]
 }
 
-
 def getModule(){
     if(project.hasProperty("moduleName")){
         def moduleName=project.property("moduleName")
@@ -36,9 +35,8 @@ def isAllEnvs(){
     return getEnv().equalsIgnoreCase("all")
 }
 
-
-
 ext {
+
     tomcatVersion= System.getProperty("tomcatVersion")?:"8.5.6"
     solrVersion=System.getProperty("solrVersion")?:"6.4.1"
     downloadDir=System.getProperty("downloadDir")?:"./downloads/"
@@ -61,6 +59,7 @@ ext {
     liveTomcatShutdownPort=System.getProperty("liveTomcatShutdownPort")?:9005
     liveTomcatAJPPort=System.getProperty("liveTomcatAJPPort")?:9009
     liveTomcatSSLPort=System.getProperty("liveTomcatSSLPort")?:9443
+
     /** Social Need Profile **/
     if(includeSocial){
         includeProfile=true
@@ -76,12 +75,8 @@ ext {
 
 }
 
-
-//apply from: "common.gradle"
-//apply from:"buildt.gradle"
 apply from:"downloads.gradle"
 apply from:"environments.gradle"
-//apply from:"package.gradle"
 
 task("init"){
     description "Clones Crafter CMS stack"
@@ -123,7 +118,6 @@ task("update"){
         }
     }
 }
-
 
 task("start"){
     doLast{
@@ -181,7 +175,6 @@ task("stop"){
     }
 }
 
-
 task("clean"){
     description "Clean Crafter CMS stack"
 
@@ -222,7 +215,6 @@ task("build"){
         }
     }
 }
-
 
 task("deploy") {
     description "Clean Crafter CMS stack"
@@ -271,23 +263,25 @@ task("deploy") {
     }
 }
 
-task("bundle",dependsOn: ["build"]){
-    def env=getEnv()
-    switch (env){
-        case "all":
-
-            break
-        case "authoring":
-
-            break
-        case "delivery":
-
-            break
-        default:
-            throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+task("bundle"){
+    doLast {
+        def env = getEnv()
+        switch (env) {
+            case "all":
+                pack(authEnv, "authoring")
+                pack(liveEnv, "delivery")
+                break
+            case "authoring":
+                pack(authEnv, "authoring")
+                break
+            case "delivery":
+                pack(liveEnv, "delivery")
+                break
+            default:
+                throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+        }
     }
 }
-
 
 def cleanModule(commandLinePrefix,module){
     def ctask=tasks.findByPath("clean${module}")
@@ -300,7 +294,6 @@ def cleanModule(commandLinePrefix,module){
         }
     }
 }
-
 
 def updateModule(commandLinePrefix,module){
     def btask=tasks.findByPath("update${module}")
@@ -322,7 +315,6 @@ def updateModule(commandLinePrefix,module){
     }
 }
 
-
 def cloneModule(commandLinePrefix,module){
     def btask=tasks.findByPath("clone${module}")
     if (btask!= null){
@@ -332,20 +324,19 @@ def cloneModule(commandLinePrefix,module){
             def finalUrl="${gitURLTemplate}${module}.git".toString()
             def path="src/${module}".toString()
             def arry = commandLinePrefix + ["git","clone",finalUrl,path]
-//            if(file(path).exists()) {
-//                throw new InvalidUserDataException("Module ${module} was already init, use clone to update it ")
-//            }else {
+            if(file(path).exists()) {
+                throw new InvalidUserDataException("Module ${module} was already init, use clone to update it ")
+            }else {
                 ProcessBuilder pb = new ProcessBuilder(arry)
                 pb.directory(new File("."))
                 Process proc = pb.start()
                 proc.waitFor()
                 output(proc.getInputStream())
                 output(proc.getErrorStream())
-           // }
+            }
         }
     }
 }
-
 
 //TODO Windowsfy this
 def startAuth(commandLinePrefix){
@@ -379,7 +370,6 @@ def startDelivery(commandLinePrefix){
     }
 }
 
-
 //TODO Windowsfy this
 def stopAuth(commandLinePrefix){
     def btask=tasks.findByPath("stopAuth")
@@ -412,9 +402,6 @@ def stopDevlivery(commandLinePrefix){
     }
 }
 
-
-
-
 def buildModule(commandLinePrefix,module){
     def btask=tasks.findByPath("build${module}")
     if (btask!= null){
@@ -429,7 +416,6 @@ def buildModule(commandLinePrefix,module){
         }
     }
 }
-
 
 def deployModule(commandLinePrefix,module,env){
     def dtask=tasks.findByPath("deploy${module}")
@@ -474,6 +460,49 @@ def checkEnvWD(path,env){
             authoringEnvirment.execute()
         }else if (env.equals("delivery")){
             deliveyEnviroment.execute()
+        }
+    }
+}
+
+def pack(environmentPath,envName){
+    def dtask=tasks.findByPath("tar${envName}")
+    if (dtask!= null){
+        return dtask
+    }else {
+        def zipTask = tasks.findByPath("zip${envName}")
+        if (zipTask != null) {
+            zipTask.execute()
+        } else {
+            tasks.create("zip${envName}", Zip.class) {
+                from(environmentPath) {
+                    into("crafter")
+                }
+                archiveName "crafter-${envName}-cms.zip"
+                fileMode null
+                dirMode null
+                includeEmptyDirs true
+                metadataCharset "UTF-8"
+                caseSensitive false
+                destinationDir(file("bundles/"))
+            }.execute()
+        }
+
+        def tarTask = tasks.findByPath("tar${envName}")
+        if (tarTask != null) {
+            tarTask.execute()
+        } else {
+            tasks.create("tar${envName}", Tar.class) {
+                from(environmentPath) {
+                    into("crafter")
+                }
+                archiveName "crafter-${envName}-cms.tar.gz"
+                fileMode null
+                dirMode null
+                includeEmptyDirs true
+                caseSensitive false
+                compression = Compression.GZIP
+                destinationDir(file("bundles/"))
+            }.execute()
         }
     }
 }

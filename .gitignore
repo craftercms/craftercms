@@ -13,9 +13,6 @@ tmp/
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 target/
-studio-env/
-crafter-env/
-installers/
 gradle-app.setting
 .tags*
 .gradletasknamecache
@@ -30,6 +27,8 @@ target/
 crafter-install/
 live-env/
 crafter-auth-env/
-crafter-live-env/
 !src/.gitkeep
 src/
+bundles/
+crafter-delivery-env/
+downloads/

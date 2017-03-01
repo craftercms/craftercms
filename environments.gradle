@@ -64,7 +64,7 @@ task("authoringEnvirment",dependsOn:["downloadTomcat","downloadSolr","build"]){
             into "${authEnv}/crafter-deployer"
         }
         copy{
-            from "./resources/studio/"
+            from "./resources/crafter/"
             into "${authEnv}/"
         }
 
@@ -152,12 +152,12 @@ task("deliveyEnviroment",dependsOn:["downloadTomcat","downloadSolr","build"]){
             into "${liveEnv}/crafter-deployer"
         }
         copy{
-            from "./resources/studio/"
+            from "./resources/crafter/"
             exclude "crafter.sh"
             into "${liveEnv}/"
         }
         copy{
-            from "./resources/studio-live/"
+            from "./resources/crafter-live/"
             into "${liveEnv}/"
         }
 

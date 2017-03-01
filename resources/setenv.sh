@@ -1,2 +1,3 @@
-JAVA_OPTS="$JAVA_OPTS -server -Xss1024K -Xms1G -Xmx8G -XX:MaxPermSize=512M -XX:NewSize=512m"
+#!/usr/bin/env bash
+JAVA_OPTS="$JAVA_OPTS -server -Xss1024K -Xms1G -Xmx2G"
 export JAVA_OPTS
