@@ -26,7 +26,7 @@ To build a deployable and distributable bundle of Crafter CMS, use the Gradle ta
 Archives will named `crafter-cms.tar.gz` and `crafter-cms.zip` and can be found in the `bundles` folder.
 
 ```bash
-./grablew bundle
+./grablew init build deploy bundle
 ```
 
 To run Crafter CMS from the bundle, unzip and follow the instructions in the bundle's `README.txt`.

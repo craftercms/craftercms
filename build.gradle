@@ -187,7 +187,7 @@ task("clean"){
             VALID_MODULES.each {
                 cleanModule(commandLinePrefix, it).execute()
             }
-        } else if (VALID_MODULES.containsKey(module)) {
+        } else if (VALID_MODULES.contains(module)) {
             cleanModule(commandLinePrefix, module).execute()
         } else {
             throw new InvalidUserDataException("${module} is not a valid, use ${VALID_MODULES}")
@@ -203,7 +203,7 @@ task("build"){
     }
 
     doLast {
-       
+
         if (module.equals("all")) {
             VALID_MODULES.each {
                 buildModule(commandLinePrefix, it).execute()
@@ -288,10 +288,17 @@ def cleanModule(commandLinePrefix,module){
     if (ctask!= null){
         return ctask
     }else {
-        return tasks.create("clean${module}", Exec) {
-            workingDir "${new File(".").absolutePath}/src/${module}"
-            commandLine commandLinePrefix + ["mvn", "clean"]
-        }
+        return tasks.create("clean${module}") {
+            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix +  commandLinePrefix + ["mvn", "clean"])
+            pb.directory(new File("./src/${module}".toString()))
+            Process proc = pb.start();
+            output(proc.inputStream)
+            proc.waitFor()
+            if(proc.exitValue()!=0){
+              output(proc.getErrorStream())
+              throw new ResourceException("Unable to  clean ${module}")
+            }
+          }
     }
 }
 
@@ -304,12 +311,16 @@ def updateModule(commandLinePrefix,module){
             if(!file("./src/${module}").exists()) {
                 throw new InvalidUserDataException("Module ${module} is not created. Please use init to create it")
             }else {
-                def arry = commandLinePrefix + ["git", "update", gitRepo, sourceBranch]
+                def arry = commandLinePrefix + ["git", "pull", gitRepo, sourceBranch]
                 ProcessBuilder pb = new ProcessBuilder(arry)
                 pb.directory(new File("src/${module}"))
                 Process proc = pb.start()
                 output(proc.inputStream)
                 proc.waitFor()
+                if(proc.exitValue()!=0){
+                  output(proc.getErrorStream())
+                    throw new ResourceException("Unable to Update ${module}")
+                }
             }
         }
     }
@@ -330,9 +341,12 @@ def cloneModule(commandLinePrefix,module){
                 ProcessBuilder pb = new ProcessBuilder(arry)
                 pb.directory(new File("."))
                 Process proc = pb.start()
+                output(proc.inputStream)
                 proc.waitFor()
-                output(proc.getInputStream())
-                output(proc.getErrorStream())
+                if(proc.exitValue()!=0){
+                  output(proc.getErrorStream())
+                    throw new ResourceException("Unable to Clone ${module}")
+                }
             }
         }
     }
@@ -350,6 +364,10 @@ def startAuth(commandLinePrefix){
             Process proc = pb.start()
             output(proc.inputStream)
             proc.waitFor()
+            if(proc.exitValue()!=0){
+              output(proc.getErrorStream())
+
+            }
         }
     }
 }
@@ -365,7 +383,10 @@ def startDelivery(commandLinePrefix){
             pb.directory(new File(liveEnv));
             Process proc = pb.start();
             output(proc.inputStream)
-            proc.waitFor();
+            proc.waitFor()
+            if(proc.exitValue()!=0){
+              output(proc.getErrorStream())
+            }
         }
     }
 }
@@ -381,7 +402,10 @@ def stopAuth(commandLinePrefix){
             pb.directory(new File(authEnv));
             Process proc = pb.start();
             output(proc.inputStream)
-            proc.waitFor();
+            proc.waitFor()
+            if(proc.exitValue()!=0){
+              output(proc.getErrorStream())
+            }
         }
     }
 }
@@ -397,7 +421,10 @@ def stopDevlivery(commandLinePrefix){
             pb.directory(new File(liveEnv))
             Process proc = pb.start();
             output(proc.inputStream)
-            proc.waitFor();
+            proc.waitFor()
+            if(proc.exitValue()!=0){
+              output(proc.getErrorStream())
+            }
         }
     }
 }
@@ -413,6 +440,10 @@ def buildModule(commandLinePrefix,module){
             Process proc = pb.start();
             output(proc.inputStream)
             proc.waitFor()
+            if(proc.exitValue()!=0){
+              output(proc.getErrorStream())
+                  throw new ResourceException("Unable to build ${module}")
+            }
         }
     }
 }
