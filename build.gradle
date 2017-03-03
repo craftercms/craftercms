@@ -289,15 +289,7 @@ def cleanModule(commandLinePrefix,module){
         return ctask
     }else {
         return tasks.create("clean${module}") {
-            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix +  commandLinePrefix + ["mvn", "clean"])
-            pb.directory(new File("./src/${module}".toString()))
-            Process proc = pb.start();
-            output(proc.inputStream)
-            proc.waitFor()
-            if(proc.exitValue()!=0){
-              output(proc.getErrorStream())
-              throw new ResourceException("Unable to  clean ${module}")
-            }
+            executeProcess(commandLinePrefix +  commandLinePrefix + ["mvn", "clean"],"./src/${module}".toString())
           }
     }
 }
@@ -312,15 +304,7 @@ def updateModule(commandLinePrefix,module){
                 throw new InvalidUserDataException("Module ${module} is not created. Please use init to create it")
             }else {
                 def arry = commandLinePrefix + ["git", "pull", gitRepo, sourceBranch]
-                ProcessBuilder pb = new ProcessBuilder(arry)
-                pb.directory(new File("src/${module}"))
-                Process proc = pb.start()
-                output(proc.inputStream)
-                proc.waitFor()
-                if(proc.exitValue()!=0){
-                  output(proc.getErrorStream())
-                    throw new ResourceException("Unable to Update ${module}")
-                }
+                executeProcess(arry,"./src/${module}".toString())
             }
         }
     }
@@ -338,15 +322,7 @@ def cloneModule(commandLinePrefix,module){
             if(file(path).exists()) {
                 throw new InvalidUserDataException("Module ${module} was already init, use clone to update it ")
             }else {
-                ProcessBuilder pb = new ProcessBuilder(arry)
-                pb.directory(new File("."))
-                Process proc = pb.start()
-                output(proc.inputStream)
-                proc.waitFor()
-                if(proc.exitValue()!=0){
-                  output(proc.getErrorStream())
-                    throw new ResourceException("Unable to Clone ${module}")
-                }
+                executeProcess(arry,".")
             }
         }
     }
@@ -359,15 +335,7 @@ def startAuth(commandLinePrefix){
         return btask
     }else {
         tasks.create("startAuth") {
-            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix + ["./startup.sh"])
-            pb.directory(new File(authEnv));
-            Process proc = pb.start()
-            output(proc.inputStream)
-            proc.waitFor()
-            if(proc.exitValue()!=0){
-              output(proc.getErrorStream())
-
-            }
+            executeProcess(commandLinePrefix + ["./startup.sh"],authEnv)
         }
     }
 }
@@ -379,14 +347,7 @@ def startDelivery(commandLinePrefix){
         return btask
     }else {
         tasks.create("startDelivery") {
-            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix + ["./startup.sh"]);
-            pb.directory(new File(liveEnv));
-            Process proc = pb.start();
-            output(proc.inputStream)
-            proc.waitFor()
-            if(proc.exitValue()!=0){
-              output(proc.getErrorStream())
-            }
+            executeProcess(commandLinePrefix + ["./startup.sh"],liveEnv)
         }
     }
 }
@@ -398,14 +359,7 @@ def stopAuth(commandLinePrefix){
         return btask
     }else {
         tasks.create("stopAuth"){
-            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix + ["./shutdown.sh"]);
-            pb.directory(new File(authEnv));
-            Process proc = pb.start();
-            output(proc.inputStream)
-            proc.waitFor()
-            if(proc.exitValue()!=0){
-              output(proc.getErrorStream())
-            }
+            executeProcess(commandLinePrefix + ["./shutdown.sh"],authEnv)
         }
     }
 }
@@ -417,14 +371,7 @@ def stopDevlivery(commandLinePrefix){
         return btask
     }else {
         tasks.create("stopDelivery") {
-            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix + ["./shutdown.sh"]);
-            pb.directory(new File(liveEnv))
-            Process proc = pb.start();
-            output(proc.inputStream)
-            proc.waitFor()
-            if(proc.exitValue()!=0){
-              output(proc.getErrorStream())
-            }
+            executeProcess(commandLinePrefix + ["./shutdown.sh"],liveEnv)
         }
     }
 }
@@ -435,15 +382,12 @@ def buildModule(commandLinePrefix,module){
         return btask
     }else {
         return tasks.create("build${module}") {
-            ProcessBuilder pb = new ProcessBuilder(commandLinePrefix +  commandLinePrefix + ["mvn", "clean", "install"])
-            pb.directory(new File("./src/${module}".toString()))
-            Process proc = pb.start();
-            output(proc.inputStream)
-            proc.waitFor()
-            if(proc.exitValue()!=0){
-              output(proc.getErrorStream())
-                  throw new ResourceException("Unable to build ${module}")
+            def commandLinePost=[]
+            if(!project.hasProperty("test")){
+                commandLinePost.add("-Dmaven.test.skip=true")
             }
+            def array=commandLinePrefix +  commandLinePrefix + ["mvn", "clean", "install"] + commandLinePost
+            executeProcess(array,"./src/${module}".toString())
         }
     }
 }
@@ -538,11 +482,10 @@ def pack(environmentPath,envName){
     }
 }
 
-def output(is){
-    new java.util.Scanner(is).withCloseable { s->
-       def output=s.useDelimiter("\\A").hasNext() ? s.next() : ""
-        if(output.length()>1){
-            println output
-        }
-    }
+def executeProcess(command,workingDir){
+    ProcessBuilder pb = new ProcessBuilder(command)
+    pb.directory(new File(workingDir))
+    pb.redirectErrorStream(true)
+    Process proc = pb.start();
+    proc.inputStream.eachLine {println it}
 }

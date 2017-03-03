@@ -115,19 +115,19 @@ You'll find these projects checked out and ready for you to contribute to in the
 
 ###3.3.1. Forking a Module
 Start by forking the module you want to work on. You can follow the [GitHub instructions](https://help.github.com/articles/fork-a-repo/).
-The next step is to switch the origin url location to be the one just forked to do so you can use [these GitHub instructions](https://help.github.com/articles/changing-a-remote-s-url/).
+The next step is to switch the origin url location to be the one just forked, to do so you can use [these GitHub instructions](https://help.github.com/articles/changing-a-remote-s-url/).
 The last step will be to add an upstream repository from the main `craftercms` repo to your own. Follow [these steps](https://help.github.com/articles/fork-a-repo/#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository)
 to make it happen.
 You can now work in on your local system, and build/deploy and ultimately push to your fork. We welcome code contributions, so please do send us pull-requests.
 
-To keep update your project you can:
+To update your project with the latest from your repo:
 
 ```bash
     ./gradlew update
 ```
-that will get the latest code from your repo.
 
-To get the latest code from `craftercms` , so you can have the latest updates and user contributions you can run 
+To get the latest code from `craftercms`, in order to have the latest updates from the community:
+
 ```bash
     ./gradlew update -PgitRepo=upstream
 ```
