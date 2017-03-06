@@ -5,13 +5,13 @@ IF NOT DEFINED DEPLOYER_PID_FILE (SET DEPLOYER_PID_FILE=%CRAFTER_HOME%\crafter-d
 title=%DEPLOYER_WIN_TITLE%
 echo "Starting Crafter Deployer"
 
-IF /i "%1%"=="--start" goto init
+IF /i "%1%"=="start" goto init
 IF /i "%1%"=="-s" goto init
 
-IF /i "%1%"=="--stop" goto skill
+IF /i "%1%"=="stop" goto skill
 IF /i "%1%"=="-k" goto skill
 
-IF /i "%1%"=="--debug" goto debug
+IF /i "%1%"=="debug" goto debug
 IF /i "%1%"=="-d" goto debug
 
 goto shelp

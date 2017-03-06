@@ -1,2 +1,2 @@
 @echo off
-call crafter.bat --stop
+call crafter.bat stop

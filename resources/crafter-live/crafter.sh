@@ -24,6 +24,7 @@ function start() {
     cd $CD_HOME
      ./deployer.sh --start;
      cd $C_HOME
+     echo "Starting Solr server on port 8995"
      ./solr/bin/solr start -p 8985 &
      ./apache-tomcat/bin/startup.sh
 }
@@ -41,28 +42,29 @@ function stop() {
 }
 
 function logo() {
+echo -e "\e[38;5;196m"
 echo " ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗"
 echo "██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗    ██╔════╝ ████╗ ████║ ██╔════╝"
 echo "██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝    ██║      ██╔████╔██║ ███████╗"
 echo "██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗    ██║      ██║╚██╔╝██║ ╚════██║"
 echo "╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║    ╚██████╗ ██║ ╚═╝ ██║ ███████║"
 echo " ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝     ╚═╝ ╚══════╝"
+echo -e "\e[0m"
 }
-
  case $1 in
-     -d|--debug)
+     -d|debug)
         logo
         debug
      ;;
-     -s|--start)
+     -s|start)
         logo
         start
      ;;
-     -k|--stop)
+     -k|stop)
         logo
         stop
      ;;
-     -t|--tail)
+     -t|tail)
         tail
      ;;
      *)
