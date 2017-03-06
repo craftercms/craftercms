@@ -18,11 +18,16 @@ function start() {
     exit 0;
 }
 function stop() {
-    kill `cat $CD_HOME/$PID`
+    if [ -e "$CD_HOME/$PID" ]
+         kill `cat $CD_HOME/$PID`
     if [ $? -eq 0 ]; then
         rm $CD_HOME/$PID
     fi
     exit 0;
+then
+    "Default \e[43mCrafter Deployer already shutdown or pid $CD_HOME/$PID file not found"
+fi
+
 }
 function help() {
         echo $(basename $BASH_SOURCE)

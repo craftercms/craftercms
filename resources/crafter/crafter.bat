@@ -1,6 +1,7 @@
 @echo off
 IF NOT DEFINED DEPLOYER_JAVA_OPTS (SET DEPLOYER_JAVA_OPTS=)
-IF NOT DEFINED CRAFTER_HOME (SET CRAFTER_HOME=%cd%)
+IF NOT DEFINED CRAFTER_HOME (SET CRAFTER_HOME=%~dp0)
+IF NOT DEFINED DEPLOYER_HOME (SET DEPLOYER_STARTUP=%CRAFTER_HOME%\crafter-deployer\startup.bat)
 IF NOT DEFINED DEPLOYER_STARTUP (SET DEPLOYER_STARTUP=%CRAFTER_HOME%\crafter-deployer\startup.bat)
 IF NOT DEFINED DEPLOYER_SHUTDOWN (SET DEPLOYER_SHUTDOWN=%CRAFTER_HOME%\crafter-deployer\shutdown.bat)
 IF NOT DEFINED DEPLOYER_DEBUG (SET DEPLOYER_DEBUG=%CRAFTER_HOME%\crafter-deployer\debug.bat)
@@ -28,23 +29,35 @@ echo "-d --debug, Implieds start, Start crafter deployer in debug mode"
 exit /b 0
 
 :init
-cd crafter-deployer
+goto logo
+cd %DEPLOYER_HOME%
 start %DEPLOYER_STARTUP%
-cd ..
-call "apache-tomcat/bin/startup.bat"
+cd %CRAFTER_HOME%
+call %CRAFTER_HOME%\solr\bin\solr start -p 8984
+call %CRAFTER_HOME%\apache-tomcat\bin\startup.bat"
 exit /b 0
 
 :skill
+call %CRAFTER_HOME%\solr\bin\solr stop
 call "apache-tomcat/bin/shutdown.bat"
-cd crafter-deployer
+cd %DEPLOYER_HOME%
 call %DEPLOYER_SHUTDOWN%
-cd ..
+cd %CRAFTER_HOME%
 exit /b 0
 
 
 :debug
-cd crafter-deployer
+call %CRAFTER_HOME%\solr\bin\solr start -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
+cd %DEPLOYER_HOME%
 start %DEPLOYER_DEBUG%
-cd ..
+cd %CRAFTER_HOME%
 call "apache-tomcat/bin/catalina.bat" jpda start
 exit /b 0
+
+:logo
+echo " ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗"
+echo "██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗    ██╔════╝ ████╗ ████║ ██╔════╝"
+echo "██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝    ██║      ██╔████╔██║ ███████╗"
+echo "██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗    ██║      ██║╚██╔╝██║ ╚════██║"
+echo "╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║    ╚██████╗ ██║ ╚═╝ ██║ ███████║"
+echo " ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝     ╚═╝ ╚══════╝"
