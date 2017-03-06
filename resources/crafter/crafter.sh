@@ -3,8 +3,10 @@
  DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS "
  C_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
  CD_HOME=${CRAFTER_DEPLOYER_HOME:=$C_HOME/crafter-deployer}
+ CRAFTER_DEPLOYER_HOME=CD_HOME
  CATALINA_PID=${CATALINA_HOME}/tomcat.pid
  CATALINA_HOME="./apache-tomcat"
+
  function help() {
          echo $(basename $BASH_SOURCE)
          echo "-s --start, Start crafter deployer"
