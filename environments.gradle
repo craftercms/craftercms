@@ -97,6 +97,7 @@ task("authoringEnvirment",dependsOn:["downloadTomcat","downloadSolr","build"]){
         }
         updateTomcatPorts("${authEnv}/apache-tomcat/conf/server.xml",authTomcatPort,authTomcatAJPPort,
                 authTomcatShutdownPort,authTomcatSSLPort)
+        updateTomcatContext("${authEnv}/apache-tomcat/conf/context.xml")
     }
 }
 
@@ -190,6 +191,7 @@ task("deliveyEnviroment",dependsOn:["downloadTomcat","downloadSolr","build"]){
         }
         updateTomcatPorts("${liveEnv}/apache-tomcat/conf/server.xml",liveTomcatPort,liveTomcatAJPPort,
                 liveTomcatShutdownPort,liveTomcatSSLPort)
+        updateTomcatContext("${liveEnv}/apache-tomcat/conf/context.xml")
     }
 }
 
@@ -210,6 +212,15 @@ def updateTomcatPorts(serverConfigFile,http,ajp,shutdown,ssl){
     def printer = new XmlNodePrinter(new PrintWriter(serverConfigFile) )
     printer.preserveWhitespace = true
     printer.print( serverConfig )
+}
+
+
+def updateTomcatContext(serverConfigFile){
+    def contextConfig=new XmlParser().parse(serverConfigFile)
+        contextConfig.append(new Node(contextConfig, 'Resources', [cachingAllowed:true, cacheMaxSize:100000]))
+    def printer = new XmlNodePrinter(new PrintWriter(serverConfigFile) )
+    printer.preserveWhitespace = true
+    printer.print( contextConfig )
 }
 
 def updateCatalinaSettings(env){
