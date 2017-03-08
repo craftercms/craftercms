@@ -94,7 +94,7 @@ task("init"){
         } else if (VALID_MODULES.contains(module)) {
             cloneModule(commandLinePrefix, module).execute()
         } else {
-            throw new InvalidUserDataException("${module} is not a valid, use ${VALID_MODULES}")
+            throw new InvalidUserDataException("${module} is not a valid module, please one of ${VALID_MODULES}")
         }
     }
 
@@ -114,7 +114,7 @@ task("update"){
         } else if (VALID_MODULES.contains(module)) {
             updateModule(commandLinePrefix, module).execute()
         } else {
-            throw new InvalidUserDataException("${module} is not a valid, use ${VALID_MODULES}")
+            throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_MODULES}")
         }
     }
 }
@@ -125,24 +125,24 @@ task("start"){
         switch (env){
             case "all":
                 if(!file(authEnv).exists() || !file(liveEnv).exists()){
-                    throw new InvalidUserDataException("Either of Authoring or Delivery Enviroments are not deploy. Please run deploy before start")
+                    throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'start'.")
                 }
                 startAuth(commandLinePrefix).execute()
                 startDelivery(commandLinePrefix).execute()
             case "authoring":
                 if(!file(authEnv).exists()){
-                    throw new InvalidUserDataException("Authoring  Enviroment is not deploy. Please run deploy -Penv=authoring before start")
+                    throw new InvalidUserDataException("The 'authoring' enviroment is not deployed. Please run 'deploy -Penv=authoring' before 'start'.")
                 }
                 startAuth(commandLinePrefix).execute()
                 break
             case "delivery":
                 if(!file(liveEnv).exists()){
-                    throw new InvalidUserDataException("Authoring  Enviroment is not deploy. Please run deploy -Penv=authoring before start")
+                    throw new InvalidUserDataException("The 'delivery' enviroment is not deployed. Please run 'deploy -Penv=delivery' before 'start'.")
                 }
                 startDelivery(commandLinePrefix).execute()
                 break
             default:
-                throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+                throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
         }
     }
 }
@@ -153,24 +153,24 @@ task("stop"){
         switch (env){
             case "all":
                 if(!file(authEnv).exists() || !file(liveEnv).exists()){
-                    throw new InvalidUserDataException("Either of Authoring or Delivery Enviroments are not deploy. Please run deploy before stop")
+                    throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'stop'.")
                 }
                 stopAuth(commandLinePrefix).execute()
                 stopDevlivery(commandLinePrefix).execute()
             case "authoring":
                 if(!file(authEnv).exists()){
-                    throw new InvalidUserDataException("Authoring  Enviroment is not deploy. Please run deploy -Penv=authoring before stop")
+                    throw new InvalidUserDataException("The 'authoring' enviroment is not deployed. Please run 'deploy -Penv=authoring' before 'stop'.")
                 }
                 stopAuth(commandLinePrefix).execute()
                 break
             case "delivery":
                 if(!file(liveEnv).exists()){
-                    throw new InvalidUserDataException("Authoring  Enviroment is not deploy. Please run deploy -Penv=authoring before stop")
+                    throw new InvalidUserDataException("The 'delivery' enviroment is not deployed. Please run 'deploy -Penv=delivery' before 'stop'.")
                 }
                 stopDevlivery(commandLinePrefix).execute()
                 break
             default:
-                throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+                throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
         }
     }
 }
@@ -190,7 +190,7 @@ task("clean"){
         } else if (VALID_MODULES.contains(module)) {
             cleanModule(commandLinePrefix, module).execute()
         } else {
-            throw new InvalidUserDataException("${module} is not a valid, use ${VALID_MODULES}")
+            throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_MODULES}")
         }
     }
 }
@@ -211,7 +211,7 @@ task("build"){
         } else if (VALID_MODULES.contains(module)) {
             buildModule(commandLinePrefix, module).execute()
         } else {
-            throw new InvalidUserDataException("${module} is not a valid, use ${VALID_MODULES}")
+            throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_MODULES}")
         }
     }
 }
@@ -234,7 +234,7 @@ task("deploy") {
                 checkEnvWD(liveEnv,env)
                 break
             default:
-                throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+                throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
         }
     }
 
@@ -258,7 +258,7 @@ task("deploy") {
             }
             file(VALID_DEPLOYABLE_MODULES[module]).delete()
         } else {
-            throw new InvalidUserDataException("${module} is not a valid module, use ${VALID_DEPLOYABLE_MODULES.keySet()}")
+            throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_DEPLOYABLE_MODULES.keySet()}")
         }
     }
 }
@@ -278,7 +278,7 @@ task("bundle"){
                 pack(liveEnv, "delivery")
                 break
             default:
-                throw new InvalidUserDataException("${env} is not a valid environment, use Authoring or Delivery")
+                throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
         }
     }
 }
@@ -301,7 +301,7 @@ def updateModule(commandLinePrefix,module){
     }else {
         return tasks.create("update${module}") {
             if(!file("./src/${module}").exists()) {
-                throw new InvalidUserDataException("Module ${module} is not created. Please use init to create it")
+                throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'init' to initialize it.")
             }else {
                 def arry = commandLinePrefix + ["git", "pull", gitRepo, sourceBranch]
                 executeProcess(arry,"./src/${module}".toString())
@@ -320,7 +320,7 @@ def cloneModule(commandLinePrefix,module){
             def path="src/${module}".toString()
             def arry = commandLinePrefix + ["git","clone",finalUrl,path]
             if(file(path).exists()) {
-                throw new InvalidUserDataException("Module ${module} was already init, use clone to update it ")
+                throw new InvalidUserDataException("Module ${module} has already been initialized, please use 'clone' to update it.")
             }else {
                 executeProcess(arry,".")
             }
@@ -400,7 +400,7 @@ def deployModule(commandLinePrefix,module,env){
         return tasks.create("deploy${module}") {
             println "Deploy ${module} to ${env}"
             if (module.equals("studio") && env.equals("delivery")) {
-                throw new InvalidUserDataException("Module Studio can not be deploy in Delivery")
+                throw new InvalidUserDataException("Module 'studio' can not be deployed in environment 'delivery'")
             }
             def deployable = file(VALID_DEPLOYABLE_MODULES[module])
             if (deployable.exists()) {
