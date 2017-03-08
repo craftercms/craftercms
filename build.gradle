@@ -59,12 +59,12 @@ ext {
     liveTomcatShutdownPort=System.getProperty("liveTomcatShutdownPort")?:9005
     liveTomcatAJPPort=System.getProperty("liveTomcatAJPPort")?:9009
     liveTomcatSSLPort=System.getProperty("liveTomcatSSLPort")?:9443
-
+    studioUIFromRepo=project.hasProperty("studio.ui.repo")?project.property("studio.ui.repo"):false
     /** Social Need Profile **/
     if(includeSocial){
         includeProfile=true
     }
-    VALID_MODULES=["commons","core","search","profile","engine","deployer","studio","social"]
+    VALID_MODULES=["commons","core","search","profile","engine","deployer","studio","social","studio2-ui"]
     VALID_DEPLOYABLE_MODULES=[
                    "search":"./src/search/crafter-search-server/target/crafter-search.war",
                    "profile":"./src/profile/server/target/crafter-profile.war",
@@ -206,10 +206,14 @@ task("build"){
 
         if (module.equals("all")) {
             VALID_MODULES.each {
-                buildModule(commandLinePrefix, it).execute()
+                if(!it.equalsIgnoreCase("studio2-ui")) {
+                    buildModule(commandLinePrefix, it).execute()
+                }
             }
         } else if (VALID_MODULES.contains(module)) {
-            buildModule(commandLinePrefix, module).execute()
+            if(!module.equalsIgnoreCase("studio2-ui")) {
+                buildModule(commandLinePrefix, module).execute()
+            }
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_MODULES}")
         }
@@ -386,6 +390,10 @@ def buildModule(commandLinePrefix,module){
             if(!project.hasProperty("test")){
                 commandLinePost.add("-Dmaven.test.skip=true")
             }
+            if(module.equalsIgnoreCase("studio") && !studioUIFromRepo){
+                commandLinePost.add("-Dstudio.ui.path=../studio2-ui/".toString())
+                commandLinePost.add("-Dexec.skip=true")
+            }
             def array=commandLinePrefix +  commandLinePrefix + ["mvn", "clean", "install"] + commandLinePost
             executeProcess(array,"./src/${module}".toString())
         }
@@ -415,7 +423,6 @@ def deployModule(commandLinePrefix,module,env){
                     from VALID_DEPLOYABLE_MODULES[module]
                     into path.take(path.lastIndexOf('/'))
                 }
-
             } else {
                println "WARN: You haven't build ${module} module"
             }
@@ -425,7 +432,7 @@ def deployModule(commandLinePrefix,module,env){
 
 def checkEnvWD(path,env){
     def ddir=file(path)
-    if(!ddir.exists()) {
+    if(!ddir.exists() || project.hasProperty("forceDeploy")) {
         ddir.mkdir()
         def deployerDir = file("${path}/crafter-deployer")
         deployerDir.mkdir()

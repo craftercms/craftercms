@@ -32,6 +32,7 @@ task("authoringEnvirment",dependsOn:["downloadTomcat","downloadSolr","build"]){
             from "./src/search/crafter-search-provider/solr/configsets"
             into "${authEnv}/solr/server/solr/configsets"
         }
+        file("${authEnv}/data/indexes").mkdirs()
 
         /** Remove Non util stuff **/
         def webapps = file("${authEnv}/apache-tomcat/webapps/")
@@ -97,6 +98,8 @@ task("authoringEnvirment",dependsOn:["downloadTomcat","downloadSolr","build"]){
         }
         updateTomcatPorts("${authEnv}/apache-tomcat/conf/server.xml",authTomcatPort,authTomcatAJPPort,
                 authTomcatShutdownPort,authTomcatSSLPort)
+        updateTomcatContext("${authEnv}/apache-tomcat/conf/context.xml")
+        addSolrIndexHome("${authEnv}/solr/server/solr/solr.xml")
     }
 }
 
@@ -121,7 +124,7 @@ task("deliveyEnviroment",dependsOn:["downloadTomcat","downloadSolr","build"]){
             from "./src/search/crafter-search-provider/solr/configsets"
             into "${liveEnv}/solr/server/solr/configsets"
         }
-
+       file("${liveEnv}/data/indexes").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${liveEnv}/apache-tomcat/webapps/")
         webapps.deleteDir()
@@ -190,6 +193,8 @@ task("deliveyEnviroment",dependsOn:["downloadTomcat","downloadSolr","build"]){
         }
         updateTomcatPorts("${liveEnv}/apache-tomcat/conf/server.xml",liveTomcatPort,liveTomcatAJPPort,
                 liveTomcatShutdownPort,liveTomcatSSLPort)
+        updateTomcatContext("${liveEnv}/apache-tomcat/conf/context.xml")
+        addSolrIndexHome("${liveEnv}/solr/server/solr/solr.xml")
     }
 }
 
@@ -212,11 +217,29 @@ def updateTomcatPorts(serverConfigFile,http,ajp,shutdown,ssl){
     printer.print( serverConfig )
 }
 
+
+def updateTomcatContext(serverConfigFile){
+    def contextConfig=new XmlParser().parse(serverConfigFile)
+    new Node(contextConfig, 'Resources', [cachingAllowed:true, cacheMaxSize:100000])
+    def printer = new XmlNodePrinter(new PrintWriter(serverConfigFile) )
+    printer.preserveWhitespace = true
+    printer.print( contextConfig )
+}
+
 def updateCatalinaSettings(env){
     Properties catalinaProperties = new Properties()
     catalinaProperties.load(new FileInputStream("${env}/apache-tomcat/conf/catalina.properties"))
     catalinaProperties.setProperty("shared.loader",
             '${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar')
-    def output = new FileOutputStream("${env}/apache-tomcat/conf/catalina.properties");
-    catalinaProperties.store(output,"");
+    def output = new FileOutputStream("${env}/apache-tomcat/conf/catalina.properties")
+    catalinaProperties.store(output,"")
+}
+
+def addSolrIndexHome(solrServerConfig){
+    def contextConfig=new XmlParser().parse(solrServerConfig)
+    def node=new Node(contextConfig, 'str', [name:"coreRootDirectory"])
+    node.setValue("\${crafter.solr.index:data/indexes}")
+    def printer = new XmlNodePrinter(new PrintWriter(solrServerConfig) )
+    printer.preserveWhitespace = true
+    printer.print( contextConfig )
 }

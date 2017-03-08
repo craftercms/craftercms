@@ -1,2 +1,2 @@
 @echo off
-call crafter.bat --start
+call crafter.bat start

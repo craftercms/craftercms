@@ -1,2 +1,2 @@
 @echo off
-call crafter.bat --debug
+call crafter.bat debug

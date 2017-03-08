@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-./crafter.sh --start
+./crafter.sh start

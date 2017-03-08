@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS "
+CD_HOME=${CRAFTER_DEPLOYER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
+DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Ddeployer.main.homePath=$CD_HOME"
 PID=${DEPLOYER_PID:="crafter-deployer.pid"}
-CD_HOME=${CRAFTER_DEPLOYER_HOME:=`pwd`}
 OUTPUT=${CRAFTER_DEPLOYER_SDOUT:='crafter-deployer.log'}
-
 function start() {
     if [ -f $CD_HOME/$PID ]; then
         if pgrep -F $CD_HOME/$PID > /dev/null ; then
@@ -13,7 +12,7 @@ function start() {
             rm $CD_HOME/$PID
         fi
     fi
-    nohup java -jar $JAVA_OPTS "$CD_HOME/crafter-deployer.jar"  > "$CD_HOME/$OUTPUT" >&1&
+    nohup java -jar $DEPLOYER_JAVA_OPTS "$CD_HOME/crafter-deployer.jar"  > "$CD_HOME/$OUTPUT" >&1&
     echo $! > $CD_HOME/$PID
     exit 0;
 }
@@ -31,9 +30,9 @@ fi
 }
 function help() {
         echo $(basename $BASH_SOURCE)
-        echo "-s --start, Start crafter deployer"
-        echo "-k --stop, Stop crafter deployer"
-        echo "-d --debug, Implieds start, Start crafter deployer in debug mode"
+        echo "-s start, Start crafter deployer"
+        echo "-k stop, Stop crafter deployer"
+        echo "-d debug, Implieds start, Start crafter deployer in debug mode"
         exit 0;
 }
 case $1 in

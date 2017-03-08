@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-./crafter.sh --stop
+./crafter.sh stop
