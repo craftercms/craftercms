@@ -320,7 +320,7 @@ def cloneModule(commandLinePrefix,module){
             def path="src/${module}".toString()
             def arry = commandLinePrefix + ["git","clone",finalUrl,path]
             if(file(path).exists()) {
-                throw new InvalidUserDataException("Module ${module} has already been initialized, please use 'clone' to update it.")
+                throw new InvalidUserDataException("Module ${module} has already been initialized, please use 'init' to update it.")
             }else {
                 executeProcess(arry,".")
             }
