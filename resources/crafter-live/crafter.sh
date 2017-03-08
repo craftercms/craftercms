@@ -18,7 +18,7 @@ function debug() {
     cd $CD_HOME
      ./deployer.sh --debug;
      cd $C_HOME
-      ./solr/bin/solr start -p 8985 -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=2044" &
+      ./solr/bin/solr start -p 8985 -Dcrafter.solr.index=$C_HOME/data/indexes -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=2044" &
      ./apache-tomcat/bin/catalina.sh jpda start;
 }
 function start() {
@@ -26,7 +26,7 @@ function start() {
      ./deployer.sh --start;
      cd $C_HOME
      echo "Starting Solr server on port 8995"
-     ./solr/bin/solr start -p 8985 &
+     ./solr/bin/solr start -p 8985 -Dcrafter.solr.index=$C_HOME/data/indexes &
      ./apache-tomcat/bin/startup.sh
 }
 

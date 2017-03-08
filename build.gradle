@@ -59,9 +59,7 @@ ext {
     liveTomcatShutdownPort=System.getProperty("liveTomcatShutdownPort")?:9005
     liveTomcatAJPPort=System.getProperty("liveTomcatAJPPort")?:9009
     liveTomcatSSLPort=System.getProperty("liveTomcatSSLPort")?:9443
-
     studioUIFromRepo=project.hasProperty("studio.ui.repo")?project.property("studio.ui.repo"):false
-
     /** Social Need Profile **/
     if(includeSocial){
         includeProfile=true
@@ -425,7 +423,6 @@ def deployModule(commandLinePrefix,module,env){
                     from VALID_DEPLOYABLE_MODULES[module]
                     into path.take(path.lastIndexOf('/'))
                 }
-
             } else {
                println "WARN: You haven't build ${module} module"
             }
@@ -435,7 +432,7 @@ def deployModule(commandLinePrefix,module,env){
 
 def checkEnvWD(path,env){
     def ddir=file(path)
-    if(!ddir.exists()) {
+    if(!ddir.exists() || project.hasProperty("forceDeploy")) {
         ddir.mkdir()
         def deployerDir = file("${path}/crafter-deployer")
         deployerDir.mkdir()
