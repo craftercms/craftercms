@@ -1,4 +1,4 @@
-﻿plugins {
+plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
@@ -41,46 +41,57 @@ def isAllEnvs(){
 
 ext {
 
-    tomcatVersion= System.getProperty("tomcatVersion")?:"8.5.6"
-    solrVersion=System.getProperty("solrVersion")?:"6.4.1"
-    downloadDir=System.getProperty("downloadDir")?:"./downloads/"
-    authEnv=System.getProperty("authEnv")?:"./crafter-auth-env/"
-    liveEnv=System.getProperty("liveEnv")?:"./crafter-delivery-env/"
-    includeProfile=System.getProperty("includeProfile")?:false
-    includeSocial=System.getProperty("includeSocial")?:false
-    gitURLTemplate=System.getProperty("gitUrl")?:"https://github.com/craftercms/"
-    gitRepo=System.getProperty("gitRepo")?:"origin"
-    sourceBranch=System.getProperty("gitBranch")?:"master"
+    /** Download Properties **/
+    tomcatVersion=project.hasProperty("tomcat.version")?project.property("tomcat.version"):"8.5.6"
+    solrVersion=project.hasProperty("solr.version")?project.property("solr.version"):"6.4.1"
+    downloadDir=project.hasProperty("downloadDir")?project.property("downloadDir"):"./downloads/"
+    /** Environment Building properties **/
+    authEnv=project.hasProperty("authoring.root")?project.property("authoring.root"):"./crafter-auth-env/"
+    liveEnv=project.hasProperty("delivery.root")?project.property("delivery.root"):"./crafter-delivery-env/"
+    includeProfile=project.hasProperty("crafter.profile")?project.property("crafter.profile"):false
+    includeSocial=project.hasProperty("social.profile")?project.property("crafter.social"):false
 
-    /** Tomcat env **/
-    authTomcatPort=System.getProperty("liveTomcatPort")?:8080
-    authTomcatShutdownPort=System.getProperty("liveTomcatShutdownPort")?:8005
-    authTomcatAJPPort=System.getProperty("liveTomcatAJPPort")?:8009
-    authTomcatSSLPort=System.getProperty("liveTomcatSSLPort")?:8443
-
-    /** Tomcat Live **/
-    liveTomcatPort=System.getProperty("liveTomcatPort")?:9080
-    liveTomcatShutdownPort=System.getProperty("liveTomcatShutdownPort")?:9005
-    liveTomcatAJPPort=System.getProperty("liveTomcatAJPPort")?:9009
-    liveTomcatSSLPort=System.getProperty("liveTomcatSSLPort")?:9443
-    studioUIFromRepo=project.hasProperty("studio.ui.repo")?project.property("studio.ui.repo"):false
     /** Social Need Profile **/
     if(includeSocial){
         includeProfile=true
     }
+
+    /** Tomcat env **/
+    authTomcatPort=project.hasProperty("tomcat.port.http")?project.property("tomcat.port.http"):8080
+    authTomcatShutdownPort=project.hasProperty("tomcat.port.shutdown")?project.property("tomcat.port.shutdown"):8005
+    authTomcatAJPPort=project.hasProperty("tomcat.port.ajp")?project.property("tomcat.port.ajp"):8009
+    authTomcatSSLPort=project.hasProperty("tomcat.port.https")?project.property("tomcat.port.https"):8443
+
+    /** Tomcat Live **/
+
+    liveTomcatPort=project.hasProperty("tomcat.port.http")?project.property("tomcat.port.http"):9080
+    liveTomcatShutdownPort=project.hasProperty("tomcat.port.shutdown")?project.property("tomcat.port.shutdown"):9005
+    liveTomcatAJPPort=project.hasProperty("tomcat.port.ajp")?project.property("tomcat.port.ajp"):9009
+    liveTomcatSSLPort=project.hasProperty("tomcat.port.https")?project.property("tomcat.port.https"):9443
+
+
+    /** Git properties **/
+    gitURLTemplate=project.hasProperty("crafter.git.url")?project.property("crafter.git.url"):"https://github.com/craftercms/"
+    sourceBranch=project.hasProperty("crafter.git.branch")?project.property("crafter.ui.branch"):"master"
+    gitRepo=project.hasProperty("crafter.git.remote")?project.property("crafter.git.remote"):"origin"
+    studioUIFromRepo=project.hasProperty("crafter.ui.repo")?project.property("crafter.ui.repo"):false
+
+    /** Clonable Artifacts **/
     VALID_MODULES=["commons","core","search","profile","engine","deployer","studio","social","studio2-ui"]
+    /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES=[
-                   "search":"./src/search/crafter-search-server/target/crafter-search.war",
-                   "profile":"./src/profile/server/target/crafter-profile.war",
-                   "engine":"./src/engine/target/ROOT.war",
-                   "deployer":"./src/deployer/target/crafter-deployer.jar",
-                   "studio":"./src/studio/target/studio.war",
-                   "social":"./src/social/server/target/crafter-social.war"]
+            "search":"./src/search/crafter-search-server/target/crafter-search.war",
+            "profile":"./src/profile/server/target/crafter-profile.war",
+            "engine":"./src/engine/target/ROOT.war",
+            "deployer":"./src/deployer/target/crafter-deployer.jar",
+            "studio":"./src/studio/target/studio.war",
+            "social":"./src/social/server/target/crafter-social.war"]
 
 }
 
 apply from:"downloads.gradle"
 apply from:"environments.gradle"
+
 
 task("init"){
     description "Clones Crafter CMS stack"
@@ -120,6 +131,14 @@ task("update"){
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_MODULES}")
         }
+    }
+}
+
+task("selfupdate"){
+    description "Self update this project"
+    doLast{
+        def arry = commandLinePrefix + ["git", "pull", gitRepo, sourceBranch]
+        executeProcess(arry,".")
     }
 }
 
@@ -298,7 +317,7 @@ def cleanModule(commandLinePrefix,module){
     }else {
         return tasks.create("clean${module}") {
             executeProcess(commandLinePrefix +  commandLinePrefix + ["mvn", "clean"],"./src/${module}".toString())
-          }
+        }
     }
 }
 
@@ -424,7 +443,7 @@ def deployModule(commandLinePrefix,module,env){
                     into path.take(path.lastIndexOf('/'))
                 }
             } else {
-               println "WARN: You haven't build ${module} module"
+                println "WARN: You haven't build ${module} module"
             }
         }
     }
