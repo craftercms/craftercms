@@ -1,4 +1,4 @@
-﻿plugins {
+plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
@@ -80,12 +80,12 @@ ext {
     VALID_MODULES=["commons","core","search","profile","engine","deployer","studio","social","studio2-ui"]
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES=[
-                   "search":"./src/search/crafter-search-server/target/crafter-search.war",
-                   "profile":"./src/profile/server/target/crafter-profile.war",
-                   "engine":"./src/engine/target/ROOT.war",
-                   "deployer":"./src/deployer/target/crafter-deployer.jar",
-                   "studio":"./src/studio/target/studio.war",
-                   "social":"./src/social/server/target/crafter-social.war"]
+            "search":"./src/search/crafter-search-server/target/crafter-search.war",
+            "profile":"./src/profile/server/target/crafter-profile.war",
+            "engine":"./src/engine/target/ROOT.war",
+            "deployer":"./src/deployer/target/crafter-deployer.jar",
+            "studio":"./src/studio/target/studio.war",
+            "social":"./src/social/server/target/crafter-social.war"]
 
 }
 
@@ -317,7 +317,7 @@ def cleanModule(commandLinePrefix,module){
     }else {
         return tasks.create("clean${module}") {
             executeProcess(commandLinePrefix +  commandLinePrefix + ["mvn", "clean"],"./src/${module}".toString())
-          }
+        }
     }
 }
 
@@ -443,7 +443,7 @@ def deployModule(commandLinePrefix,module,env){
                     into path.take(path.lastIndexOf('/'))
                 }
             } else {
-               println "WARN: You haven't build ${module} module"
+                println "WARN: You haven't build ${module} module"
             }
         }
     }
