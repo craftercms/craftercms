@@ -33,7 +33,7 @@ task("authoringEnvirment",dependsOn:["downloadTomcat","downloadSolr","build"]){
             into "${authEnv}/solr/server/solr/configsets"
         }
         file("${authEnv}/data/indexes").mkdirs()
-
+        file("${liveEnv}/data/deployer").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${authEnv}/apache-tomcat/webapps/")
         webapps.deleteDir()
@@ -124,7 +124,8 @@ task("deliveyEnviroment",dependsOn:["downloadTomcat","downloadSolr","build"]){
             from "./src/search/crafter-search-provider/solr/configsets"
             into "${liveEnv}/solr/server/solr/configsets"
         }
-       file("${liveEnv}/data/indexes").mkdirs()
+        file("${liveEnv}/data/indexes").mkdirs()
+        file("${liveEnv}/data/deployer").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${liveEnv}/apache-tomcat/webapps/")
         webapps.deleteDir()

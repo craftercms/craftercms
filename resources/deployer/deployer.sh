@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 CD_HOME=${CRAFTER_DEPLOYER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
-DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Ddeployer.main.homePath=$CD_HOME"
+C_HOME=${C_HOME:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/../}
+DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Ddeployer.main.homePath=$C_HOME/data/deployer"
 PID=${DEPLOYER_PID:="crafter-deployer.pid"}
 OUTPUT=${CRAFTER_DEPLOYER_SDOUT:='crafter-deployer.log'}
+echo $C_HOME
 function start() {
     if [ -f $CD_HOME/$PID ]; then
         if pgrep -F $CD_HOME/$PID > /dev/null ; then
