@@ -1,4 +1,4 @@
-plugins {
+﻿plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
@@ -7,7 +7,11 @@ def isOSX=System.getProperty('os.name').toLowerCase().contains('mac')
 def isNix=(System.getProperty('os.name').toLowerCase().contains('nix') || System.getProperty('os.name').toLowerCase().contains('aix') || System.getProperty('os.name').toLowerCase().contains('nux'))
 
 def commandLinePrefix = []
+def startUpFile = "./startup.sh"
+def shutDownFile ="./shutdown.sh"
 if(isWin){
+    startUpFile = "startup.bat"
+    shutDownFile = "shutdown.bat"
     commandLinePrefix =["cmd","/c"]
 }
 
@@ -127,19 +131,19 @@ task("start"){
                 if(!file(authEnv).exists() || !file(liveEnv).exists()){
                     throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'start'.")
                 }
-                startAuth(commandLinePrefix).execute()
-                startDelivery(commandLinePrefix).execute()
+                startAuth(commandLinePrefix,startUpFile).execute()
+                startDelivery(commandLinePrefix,startUpFile).execute()
             case "authoring":
                 if(!file(authEnv).exists()){
                     throw new InvalidUserDataException("The 'authoring' enviroment is not deployed. Please run 'deploy -Penv=authoring' before 'start'.")
                 }
-                startAuth(commandLinePrefix).execute()
+                startAuth(commandLinePrefix,startUpFile).execute()
                 break
             case "delivery":
                 if(!file(liveEnv).exists()){
                     throw new InvalidUserDataException("The 'delivery' enviroment is not deployed. Please run 'deploy -Penv=delivery' before 'start'.")
                 }
-                startDelivery(commandLinePrefix).execute()
+                startDelivery(commandLinePrefix,startUpFile).execute()
                 break
             default:
                 throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
@@ -155,19 +159,19 @@ task("stop"){
                 if(!file(authEnv).exists() || !file(liveEnv).exists()){
                     throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'stop'.")
                 }
-                stopAuth(commandLinePrefix).execute()
-                stopDevlivery(commandLinePrefix).execute()
+                stopAuth(commandLinePrefix,shutDownFile).execute()
+                stopDevlivery(commandLinePrefix,shutDownFile).execute()
             case "authoring":
                 if(!file(authEnv).exists()){
                     throw new InvalidUserDataException("The 'authoring' enviroment is not deployed. Please run 'deploy -Penv=authoring' before 'stop'.")
                 }
-                stopAuth(commandLinePrefix).execute()
+                stopAuth(commandLinePrefix,shutDownFile).execute()
                 break
             case "delivery":
                 if(!file(liveEnv).exists()){
                     throw new InvalidUserDataException("The 'delivery' enviroment is not deployed. Please run 'deploy -Penv=delivery' before 'stop'.")
                 }
-                stopDevlivery(commandLinePrefix).execute()
+                stopDevlivery(commandLinePrefix,shutDownFile).execute()
                 break
             default:
                 throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
@@ -332,50 +336,46 @@ def cloneModule(commandLinePrefix,module){
     }
 }
 
-//TODO Windowsfy this
-def startAuth(commandLinePrefix){
+def startAuth(commandLinePrefix,startUpFile){
     def btask=tasks.findByPath("startAuth")
     if (btask!= null){
         return btask
     }else {
         tasks.create("startAuth") {
-            executeProcess(commandLinePrefix + ["./startup.sh"],authEnv)
+            executeProcess(commandLinePrefix + [startUpFile],authEnv)
         }
     }
 }
 
-//TODO Windowsfy this
-def startDelivery(commandLinePrefix){
+def startDelivery(commandLinePrefix,startUpFile){
     def btask=tasks.findByPath("startDelivery")
     if (btask!= null){
         return btask
     }else {
         tasks.create("startDelivery") {
-            executeProcess(commandLinePrefix + ["./startup.sh"],liveEnv)
+            executeProcess(commandLinePrefix + [startUpFile],liveEnv)
         }
     }
 }
 
-//TODO Windowsfy this
-def stopAuth(commandLinePrefix){
+def stopAuth(commandLinePrefix,shutDownFile){
     def btask=tasks.findByPath("stopAuth")
     if (btask!= null){
         return btask
     }else {
         tasks.create("stopAuth"){
-            executeProcess(commandLinePrefix + ["./shutdown.sh"],authEnv)
+            executeProcess(commandLinePrefix + [shutDownFile],authEnv)
         }
     }
 }
 
-//TODO Windowsfy this
-def stopDevlivery(commandLinePrefix){
+def stopDevlivery(commandLinePrefix,shutDownFile){
     def btask=tasks.findByPath("stopDelivery")
     if (btask!= null){
         return btask
     }else {
         tasks.create("stopDelivery") {
-            executeProcess(commandLinePrefix + ["./shutdown.sh"],liveEnv)
+            executeProcess(commandLinePrefix + [shutDownFile],liveEnv)
         }
     }
 }
