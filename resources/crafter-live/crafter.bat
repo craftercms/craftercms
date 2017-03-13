@@ -30,9 +30,9 @@ exit 0;
 ::Starts
 :shelp
 echo "Crafter Bat script"
-echo "-s --start, Start crafter deployer"
-echo "-k --stop, Stop crafter deployer"
-echo "-d --debug, Impli  eds start, Start crafter deployer in debug mode"
+echo "-s start, Start crafter deployer"
+echo "-k stop, Stop crafter deployer"
+echo "-d debug, Impli  eds start, Start crafter deployer in debug mode"
 exit /b 0
 
 :init
