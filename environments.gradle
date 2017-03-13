@@ -11,7 +11,7 @@ if(isWin){
 /**
  Builds environment
  **/
-task("authoringEnvirment",dependsOn:["downloadTomcat","downloadSolr","build"]){
+task("authoringEnvirment"){
     description "Build Crafter environment"
 
     doLast{
@@ -33,7 +33,7 @@ task("authoringEnvirment",dependsOn:["downloadTomcat","downloadSolr","build"]){
             into "${authEnv}/solr/server/solr/configsets"
         }
         file("${authEnv}/data/indexes").mkdirs()
-        file("${liveEnv}/data/deployer").mkdirs()
+        file("${authEnv}/data/deployer").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${authEnv}/apache-tomcat/webapps/")
         webapps.deleteDir()
@@ -103,7 +103,7 @@ task("authoringEnvirment",dependsOn:["downloadTomcat","downloadSolr","build"]){
     }
 }
 
-task("deliveyEnviroment",dependsOn:["downloadTomcat","downloadSolr","build"]){
+task("deliveyEnviroment"){
     description "Build Crafter Live environment"
 
     doLast{
