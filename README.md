@@ -129,7 +129,7 @@ To update your project with the latest from your repo:
 To get the latest code from `craftercms`, in order to have the latest updates from the community:
 
 ```bash
-    ./gradlew update -PgitRepo=upstream
+    ./gradlew update -Pcrafter.git.remote=upstream
 ```
 
 ###3.3.2. Update, Build, Deploy, Start, and Stop a Module

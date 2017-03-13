@@ -427,23 +427,24 @@ def deployModule(commandLinePrefix,module,env){
         return tasks.create("deploy${module}") {
             println "Deploy ${module} to ${env}"
             if (module.equals("studio") && env.equals("delivery")) {
-                throw new InvalidUserDataException("Module 'studio' can not be deployed in environment 'delivery'")
-            }
-            def deployable = file(VALID_DEPLOYABLE_MODULES[module])
-            if (deployable.exists()) {
-                def path = env.equals("authoring") ? authEnv : liveEnv
-                path += deployable.absolutePath.endsWith(".jar") ? "crafter-deployer/" : "apache-tomcat/webapps/"
-                path += deployable.name
-                delete {
-                    delete path
-                    delete path.take(path.lastIndexOf('.'))
+                println "Ignoring module 'studio' can not be deployed in environment 'delivery'"
+            }else {
+                def deployable = file(VALID_DEPLOYABLE_MODULES[module])
+                if (deployable.exists()) {
+                    def path = env.equals("authoring") ? authEnv : liveEnv
+                    path += deployable.absolutePath.endsWith(".jar") ? "crafter-deployer/" : "apache-tomcat/webapps/"
+                    path += deployable.name
+                    delete {
+                        delete path
+                        delete path.take(path.lastIndexOf('.'))
+                    }
+                    copy {
+                        from VALID_DEPLOYABLE_MODULES[module]
+                        into path.take(path.lastIndexOf('/'))
+                    }
+                } else {
+                    println "WARN: You haven't build ${module} module"
                 }
-                copy {
-                    from VALID_DEPLOYABLE_MODULES[module]
-                    into path.take(path.lastIndexOf('/'))
-                }
-            } else {
-                println "WARN: You haven't build ${module} module"
             }
         }
     }
