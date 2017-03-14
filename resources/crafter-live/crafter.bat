@@ -40,7 +40,7 @@ cd %DEPLOYER_HOME%
 start %DEPLOYER_STARTUP%
 cd %CRAFTER_HOME%
 call "apache-tomcat\bin\startup.bat"
-start %CRAFTER_HOME%\solr\bin\solr start -f -p 8985
+start %CRAFTER_HOME%\solr\bin\solr start -f -p 8985  -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes
 goto cleanOnExit
 
 :skill
@@ -53,7 +53,7 @@ goto cleanOnExit
 
 
 :debug
-call %CRAFTER_HOME%\solr\bin\solr start -f -p 8985 -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
+call %CRAFTER_HOME%\solr\bin\solr start  -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes -f -p 8985 -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
 cd %DEPLOYER_HOME%
 call %DEPLOYER_DEBUG%
 cd %CRAFTER_HOME%
