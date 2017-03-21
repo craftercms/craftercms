@@ -23,10 +23,10 @@ git clone https://github.com/craftercms/craftercms.git
 #2. Build a Deployable Bundle
 To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.zip` and `.tar.gz` files ready to be deployed to any system.
 
-Archives will named `crafter-cms.tar.gz` and `crafter-cms.zip` and can be found in the `bundles` folder.
+Archives will be named `crafter-cms.tar.gz` and `crafter-cms.zip` and can be found in the `bundles` folder.
 
 ```bash
-./grablew init build deploy bundle
+./gradlew init build deploy bundle
 ```
 
 To run Crafter CMS from the bundle, unzip and follow the instructions in the bundle's `README.txt`.
@@ -39,7 +39,7 @@ To build a bundle for a specific environment:
 ```bash
     ./gradlew bundle -Penv=authoring
 ```
-Archives will named `crafter-cms-authoring.tar.gz` and `crafter-cms-authoring.zip` and can be found in the `bundles` folder.
+Archives will be named `crafter-cms-authoring.tar.gz` and `crafter-cms-authoring.zip` and can be found in the `bundles` folder.
 
 For the `delivery` environment, simply substitute the `env=authoring` with `env=delivery`.
 
@@ -79,10 +79,10 @@ You might have noticed that you essentially have two environments built and runn
 
 As a developer, you can use an `authoring` environment for most tasks without the need to run a `delivery` environment. It's important to note that `delivery` essentially runs the same software that's in `authoring` except Crafter Studio (the authoring tools).
 
-By default, this project will build both environments unless instructed otherwise. The `authoring` environment runs at [http://localhost:8080/studio](http://localhost:8080/studio), whereas the `delivery` environment runs at [http://localhost:8080/studio](http://localhost:9080/).
+By default, this project will build both environments unless instructed otherwise. The `authoring` environment runs at [http://localhost:8080/studio](http://localhost:8080/studio), whereas the `delivery` environment runs at [http://localhost:9080/studio](http://localhost:9080/).
 
 ###3.1.1. Build, Start, and Stop a Specific Environment
-Much like building/starting/stopping All, to perform the same for one of the two environments.
+To build, start and stop one of the two environments is similar to building/starting/stopping All.
 
 #### Authoring
 ```bash
@@ -118,7 +118,7 @@ Start by forking the module you want to work on. You can follow the [GitHub inst
 The next step is to switch the origin url location to be the one just forked, to do so you can use [these GitHub instructions](https://help.github.com/articles/changing-a-remote-s-url/).
 The last step will be to add an upstream repository from the main `craftercms` repo to your own. Follow [these steps](https://help.github.com/articles/fork-a-repo/#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository)
 to make it happen.
-You can now work in on your local system, and build/deploy and ultimately push to your fork. We welcome code contributions, so please do send us pull-requests.
+You can now work in your local system, and build/deploy and ultimately push to your fork. We welcome code contributions, so please do send us pull-requests.
 
 To update your project with the latest from your repo:
 
