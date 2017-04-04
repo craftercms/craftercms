@@ -72,7 +72,7 @@ ext {
 
     /** Git properties **/
     gitURLTemplate=project.hasProperty("crafter.git.url")?project.property("crafter.git.url"):"https://github.com/craftercms/"
-    sourceBranch=project.hasProperty("crafter.git.branch")?project.property("crafter.ui.branch"):"master"
+    sourceBranch=project.hasProperty("crafter.git.branch")?project.property("crafter.git.branch"):"master"
     gitRepo=project.hasProperty("crafter.git.remote")?project.property("crafter.git.remote"):"origin"
     studioUIFromRepo=project.hasProperty("crafter.ui.repo")?project.property("crafter.ui.repo"):false
 
@@ -345,7 +345,8 @@ def cloneModule(commandLinePrefix,module){
         return tasks.create("clone${module}") {
             def finalUrl="${gitURLTemplate}${module}.git".toString()
             def path="src/${module}".toString()
-            def arry = commandLinePrefix + ["git","clone",finalUrl,path]
+
+            def arry = commandLinePrefix + ["git","clone","-b",sourceBranch,finalUrl,path]
             if(file(path).exists()) {
                 throw new InvalidUserDataException("Module ${module} has already been initialized, please use 'init' to update it.")
             }else {

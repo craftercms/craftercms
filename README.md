@@ -43,8 +43,21 @@ Archives will be named `crafter-cms-authoring.tar.gz` and `crafter-cms-authoring
 
 For the `delivery` environment, simply substitute the `env=authoring` with `env=delivery`.
 
+## 2.2 Init/Update,Build and Bundle from a given Tag/Branch
+
+To download,build and generate Bundle from given Tag or Branch of the source code
+
+```bash
+    ./gradlew init build deploy bundle -Pcrafter.git.branch=BRANCH/TAG NAME
+```
+
+**Notice**:
+If using a Tag a detach head (means you are no longer on a branch, you have checked out a single commit in the history )
+will be clone. 
+
 #3. Build a Developer's Environment
 Crafter CMS is built along a microservices architecture, and as such, comprises a number of head-less, RESTful, modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
+
 
 ##3.1. Build, Start and Stop All 
 ###3.1.1. Build All
