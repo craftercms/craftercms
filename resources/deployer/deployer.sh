@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 CD_HOME=${CRAFTER_DEPLOYER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 C_HOME=${C_HOME:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/../}
-DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Ddeployer.main.homePath=$C_HOME/data/deployer"
+DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dlogging.config=logback-spring.xml -Ddeployer.main.deployments.output.folderPath=logs -Ddeployer.main.logging.folderPath=logs -Ddeployer.main.homePath=$C_HOME/data/deployer"
 PID=${DEPLOYER_PID:="crafter-deployer.pid"}
 OUTPUT=${CRAFTER_DEPLOYER_SDOUT:='crafter-deployer.log'}
 echo $C_HOME
@@ -39,7 +39,7 @@ function help() {
 }
 case $1 in
     -d|--debug)
-        set DEPLOYER_JAVA_OPTS = "$DEPLOYER_JAVA_OPTS  -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+        set DEPLOYER_JAVA_OPTS = "$DEPLOYER_JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
         start
     ;;
     -s|--start)
