@@ -8,7 +8,7 @@ This repository is the parent project that builds everything and helps you build
 
 2. Developer's environment so you can compile and contribute to Crafter CMS
 
-#1. Initial Setup
+# 1. Initial Setup
 You must have these prerequisites on your system before you begin:
 * Java 8
 * Git 2.x+
@@ -20,7 +20,7 @@ Let's begin :)
 git clone https://github.com/craftercms/craftercms.git
 ```
 
-#2. Build a Deployable Bundle
+# 2. Build a Deployable Bundle
 To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.zip` and `.tar.gz` files ready to be deployed to any system.
 
 Archives will be named `crafter-cms.tar.gz` and `crafter-cms.zip` and can be found in the `bundles` folder.
@@ -31,7 +31,7 @@ Archives will be named `crafter-cms.tar.gz` and `crafter-cms.zip` and can be fou
 
 To run Crafter CMS from the bundle, unzip and follow the instructions in the bundle's `README.txt`.
 
-##2.1. Build an Environment Specific Bundle
+## 2.1. Build an Environment Specific Bundle
 Crafter CMS is a decoupled CMS, and that means you have an `authoring` environment that caters to content creators, and a different environment, `delivery`, that handles the end-users that use the experience created by the former.
 
 To build a bundle for a specific environment:
