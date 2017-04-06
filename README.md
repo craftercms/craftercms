@@ -48,12 +48,13 @@ For the `delivery` environment, simply substitute the `env=authoring` with `env=
 To download,build and generate Bundle from given Tag or Branch of the source code
 
 ```bash
-    ./gradlew init build deploy bundle -Pcrafter.git.branch=BRANCH/TAG NAME
+    ./gradlew init build deploy bundle -Pcrafter.git.branch={BRANCH}/{TAG NAME}
 ```
 
-**Notice**:
-If using a Tag a detach head (means you are no longer on a branch, you have checked out a single commit in the history )
-will be clone. 
+Replace {BRANCH} or {TAG NAME} with the branch and tag you'd like to build.
+
+**Note**:
+When using a tag-based build, you're essentially cloning a point in time to build that specific version of Crafter CMS. That implies that you won't be able to update/nor push changes back.
 
 # 3. Build a Developer's Environment
 Crafter CMS is built along a microservices architecture, and as such, comprises a number of head-less, RESTful, modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
