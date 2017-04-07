@@ -1,3 +1,4 @@
+import org.apache.tools.ant.filters.ReplaceTokens
 
 def isWin=System.getProperty('os.name').toLowerCase().contains('windows')
 def isOSX=System.getProperty('os.name').toLowerCase().contains('mac')
@@ -50,12 +51,26 @@ task("authoringEnvirment"){
             from "./resources/setenv.bat"
             from "./resources/setenv.sh"
             into "${authEnv}/apache-tomcat/bin/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrAuthPort),
+                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
+                                           MARIADB_PORT: String.valueOf(mariaDbPort)
+            ])
         }
         copy{
             from "./resources/tomcat-config/"
             into "${authEnv}/apache-tomcat/shared/classes/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrAuthPort),
+                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
+                                           MARIADB_PORT: String.valueOf(mariaDbPort),
+                                           TOMCAT_DEBUG_PORT:String.valueOf(authTomcatDebug)
+            ])
         }
-
         copy{
             from "./src/deployer/target/crafter-deployer.jar"
             into "${authEnv}/crafter-deployer"
@@ -63,10 +78,24 @@ task("authoringEnvirment"){
         copy{
             from "./resources/deployer/"
             into "${authEnv}/crafter-deployer"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrAuthPort),
+                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
+                                           MARIADB_PORT: String.valueOf(mariaDbPort)
+            ])
         }
         copy{
             from "./resources/crafter/"
             into "${authEnv}/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrAuthPort),
+                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
+                                           MARIADB_PORT: String.valueOf(mariaDbPort)
+            ])
         }
 
         if(!isWin){
@@ -143,8 +172,15 @@ task("deliveyEnviroment"){
             into "${liveEnv}/apache-tomcat/bin/"
         }
         copy{
-            from "./resources/tomcat-live-config/"
+            from "./resources/tomcat-config/"
             into "${liveEnv}/apache-tomcat/shared/classes/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrDevPort),
+                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
+                                           MARIADB_PORT: String.valueOf(mariaDbPort)
+            ])
         }
 
         copy{

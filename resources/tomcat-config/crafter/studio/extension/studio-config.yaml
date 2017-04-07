@@ -1,0 +1,34 @@
+# URL to the preview Crafter Engine
+studio.preview.engineUrl: http://localhost:@TOMCAT_HTTP_PORT@
+
+############################################################
+##                    Preview Deployer                    ##
+############################################################
+
+# Default preview deployer URL (can be overridden per site)
+studio.preview.defaultPreviewDeployerUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/deploy/preview/{siteName}
+# Default preview create target URL (can be overridden per site)
+studio.preview.createTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/create
+# Default preview create target URL (can be overridden per site)
+studio.preview.deleteTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/delete/{siteEnv}/{siteName}
+
+############################################################
+##                   Preview Search                       ##
+############################################################
+
+studio.preview.search.createUrl: http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/create
+studio.preview.search.deleteUrl: http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/delete/{siteName}
+
+##################################################
+##                   Database                   ##
+##################################################
+
+# Format:
+# jdbc:DATABASE_PLATFORM;databaseName=DATABASE_NAME;create=true;user=DATABASE_USERNAME;password=DATABASE_USER_PASSWORD
+# Note that a relative path is not suitable for a production deployment
+studio.db.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@/crafter?user=crafter&password=crafter
+
+# Connection string used to initialize database
+studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&password=
+# Port number for the embedded database (note this must match what's in the connection URLs in this config file)
+studio.db.port: @MARIADB_PORT@

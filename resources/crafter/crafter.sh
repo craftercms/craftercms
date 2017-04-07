@@ -6,6 +6,7 @@
  CRAFTER_DEPLOYER_HOME=CD_HOME
  CATALINA_PID=${CATALINA_HOME}/tomcat.pid
  CATALINA_HOME="./apache-tomcat"
+ JPDA_ADDRESS=@TOMCAT_DEBUG_PORT@
 
  function help() {
          echo $(basename $BASH_SOURCE)
@@ -19,16 +20,16 @@ function debug() {
     cd $CD_HOME
      ./deployer.sh --debug;
      cd $C_HOME
-     echo "Starting Solr server on port 8994"
-     ./solr/bin/solr start -p 8984 -Dcrafter.solr.index=$C_HOME/data/indexes -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044" &
+     echo "Starting Solr server on port @SOLR_PORT@"
+     ./solr/bin/solr start -p @SOLR_PORT@ -Dcrafter.solr.index=$C_HOME/data/indexes -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=@SOLR_PORT_D@" &
      ./apache-tomcat/bin/catalina.sh jpda start;
 }
 function start() {
     cd $CD_HOME
      ./deployer.sh --start;
      cd $C_HOME
-     echo "Starting Solr server on port 8994"
-     ./solr/bin/solr start -p 8984 -Dcrafter.solr.index=$C_HOME/data/indexes &
+     echo "Starting Solr server on port @SOLR_PORT@"
+     ./solr/bin/solr start -p @SOLR_PORT@ -Dcrafter.solr.index=$C_HOME/data/indexes &
      ./apache-tomcat/bin/startup.sh
 }
 
