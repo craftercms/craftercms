@@ -61,6 +61,7 @@ ext {
     authTomcatShutdownPort=project.hasProperty("tomcat.port.shutdown")?project.property("tomcat.port.shutdown"):8005
     authTomcatAJPPort=project.hasProperty("tomcat.port.ajp")?project.property("tomcat.port.ajp"):8009
     authTomcatSSLPort=project.hasProperty("tomcat.port.https")?project.property("tomcat.port.https"):8443
+    authTomcatDebug=project.hasProperty("tomcat.port.debug")?project.property("tomcat.port.debug"):8000
     solrAuthPort=project.hasProperty("crafter.authoring.solr.port")?project.property("crafter.authoring.solr.debugPort"):8984
     solrAuthDebugPort=project.hasProperty("crafter.authoring.solr.debugPort")?project.property("crafter.authoring.solr.port"):5006
     mariaDbPort=project.hasProperty("crafter.mariadb.port")?project.property("crafter.mariadb.port"):33306

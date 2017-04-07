@@ -6,6 +6,7 @@
  CRAFTER_DEPLOYER_HOME=CD_HOME
  CATALINA_PID=${CATALINA_HOME}/tomcat.pid
  CATALINA_HOME="./apache-tomcat"
+ JPDA_ADDRESS=@TOMCAT_DEBUG_PORT@
 
  function help() {
          echo $(basename $BASH_SOURCE)
