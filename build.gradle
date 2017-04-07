@@ -61,6 +61,19 @@ ext {
     authTomcatShutdownPort=project.hasProperty("tomcat.port.shutdown")?project.property("tomcat.port.shutdown"):8005
     authTomcatAJPPort=project.hasProperty("tomcat.port.ajp")?project.property("tomcat.port.ajp"):8009
     authTomcatSSLPort=project.hasProperty("tomcat.port.https")?project.property("tomcat.port.https"):8443
+    solrAuthPort=project.hasProperty("crafter.authoring.solr.port")?project.property("crafter.authoring.solr.debugPort"):8984
+    solrAuthDebugPort=project.hasProperty("crafter.authoring.solr.debugPort")?project.property("crafter.authoring.solr.port"):5006
+    mariaDbPort=project.hasProperty("crafter.mariadb.port")?project.property("crafter.mariadb.port"):33306
+
+    deployerAuthPort=project.hasProperty("crafter.authoring.deployer.port")?project.property("crafter.authoring.deployer.port"):9191
+    deployerAuthDebugPort=project.hasProperty("crafter.authoring.deployer.debugPort")?project.property("crafter.authoring.deployer.debugPort"):5005
+
+
+
+    solrDevPort=project.hasProperty("crafter.delivery.solr.port")?project.property("crafter.delivery.solr.debugPort"):8985
+    solrDevDebugPort=project.hasProperty("crafter.delivery.solr.debugPort")?project.property("crafter.delivery.solr.port"):5007
+    deployerDevPort=project.hasProperty("crafter.authoring.deployer.port")?project.property("crafter.authoring.deployer.port"):9192
+    deployerDevDebugPort=project.hasProperty("crafter.authoring.deployer.debugPort")?project.property("crafter.authoring.deployer.debugPort"):5007
 
     /** Tomcat Live **/
 
