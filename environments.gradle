@@ -56,7 +56,8 @@ task("authoringEnvirment"){
                                            SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerAuthPort),
-                                           MARIADB_PORT: String.valueOf(mariaDbPort)
+                                           MARIADB_PORT: String.valueOf(mariaDbPort),
+                                           TOMCAT_DEBUG_PORT:String.valueOf(authTomcatDebug)
             ])
         }
         copy{
@@ -83,7 +84,8 @@ task("authoringEnvirment"){
                                            SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerAuthPort),
-                                           MARIADB_PORT: String.valueOf(mariaDbPort)
+                                           MARIADB_PORT: String.valueOf(mariaDbPort),
+                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug)
             ])
         }
         copy{
@@ -94,7 +96,8 @@ task("authoringEnvirment"){
                                            SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerAuthPort),
-                                           MARIADB_PORT: String.valueOf(mariaDbPort)
+                                           MARIADB_PORT: String.valueOf(mariaDbPort),
+                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug)
             ])
         }
 
