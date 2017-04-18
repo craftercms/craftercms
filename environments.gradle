@@ -89,6 +89,18 @@ task("authoringEnvirment"){
             ])
         }
         copy{
+            from "./resources/deployer/config"
+            into "${authEnv}/data/deployer/config"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrAuthPort),
+                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
+                                           MARIADB_PORT: String.valueOf(mariaDbPort),
+                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug)
+            ])
+        }
+        copy{
             from "./resources/crafter/"
             into "${authEnv}/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
