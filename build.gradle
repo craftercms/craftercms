@@ -56,32 +56,36 @@ ext {
         includeProfile=true
     }
 
-    /** Tomcat env **/
-    authTomcatPort=project.hasProperty("tomcat.port.http")?project.property("tomcat.port.http"):8080
-    authTomcatShutdownPort=project.hasProperty("tomcat.port.shutdown")?project.property("tomcat.port.shutdown"):8005
-    authTomcatAJPPort=project.hasProperty("tomcat.port.ajp")?project.property("tomcat.port.ajp"):8009
-    authTomcatSSLPort=project.hasProperty("tomcat.port.https")?project.property("tomcat.port.https"):8443
-    authTomcatDebug=project.hasProperty("tomcat.port.debug")?project.property("tomcat.port.debug"):8000
-    solrAuthPort=project.hasProperty("crafter.authoring.solr.port")?project.property("crafter.authoring.solr.debugPort"):8984
-    solrAuthDebugPort=project.hasProperty("crafter.authoring.solr.debugPort")?project.property("crafter.authoring.solr.port"):5006
-    mariaDbPort=project.hasProperty("crafter.mariadb.port")?project.property("crafter.mariadb.port"):33306
+   //Authoring
+    authTomcatPort=project.hasProperty("authoring.tomcat.http.port")?project.property("authoring.tomcat.http.port"):8080
+    authTomcatShutdownPort=project.hasProperty("authoring.tomcat.shutdown.port")?project.property("authoring.tomcat.shutdown.port"):8005
+    authTomcatAJPPort=project.hasProperty("authoring.tomcat.ajp.port")?project.property("authoring.tomcat.ajp.port"):8009
+    authTomcatSSLPort=project.hasProperty("authoring.tomcat.https.port")?project.property("authoring.tomcat.https.port"):8443
+    authTomcatDebug=project.hasProperty("authoring.tomcat.debug.port")?project.property("authoring.tomcat.debug.port"):8000
 
-    deployerAuthPort=project.hasProperty("crafter.authoring.deployer.port")?project.property("crafter.authoring.deployer.port"):9191
-    deployerAuthDebugPort=project.hasProperty("crafter.authoring.deployer.debugPort")?project.property("crafter.authoring.deployer.debugPort"):5005
+    solrAuthPort=project.hasProperty("authoring.solr.port")?project.property("authoring.solr.port"):8694
+    solrAuthDebugPort=project.hasProperty("authoring.solr.debug.port")?project.property("authoring.solr.debug.port"):5005
+
+    mariaDbPort=project.hasProperty("authoring.mariadb.port")?project.property("authoring.mariadb.port"):33306
+
+    deployerAuthPort=project.hasProperty("authoring.deployer.port")?project.property("authoring.deployer.port"):9191
+    deployerAuthDebugPort=project.hasProperty("authoring.deployer.debug.port")?project.property("authoring.deployer.debug.port"):5000
 
 
 
-    solrDevPort=project.hasProperty("crafter.delivery.solr.port")?project.property("crafter.delivery.solr.debugPort"):8985
-    solrDevDebugPort=project.hasProperty("crafter.delivery.solr.debugPort")?project.property("crafter.delivery.solr.port"):5007
-    deployerDevPort=project.hasProperty("crafter.authoring.deployer.port")?project.property("crafter.authoring.deployer.port"):9192
-    deployerDevDebugPort=project.hasProperty("crafter.authoring.deployer.debugPort")?project.property("crafter.authoring.deployer.debugPort"):5007
+    // Delivery
+    solrDevPort=project.hasProperty("delivery.solr.port")?project.property("delivery.solr.port"):8695
+    solrDevDebugPort=project.hasProperty("delivery.solr.debugPort")?project.property("delivery.solr.debugPort"):5006
 
-    /** Tomcat Live **/
+    deployerDevPort=project.hasProperty("delivery.deployer.port")?project.property("delivery.deployer.port"):9192
+    deployerDevDebugPort=project.hasProperty("delivery.deployer.debugPort")?project.property("delivery.deployer.debugPort"):5001
 
-    liveTomcatPort=project.hasProperty("tomcat.port.http")?project.property("tomcat.port.http"):9080
-    liveTomcatShutdownPort=project.hasProperty("tomcat.port.shutdown")?project.property("tomcat.port.shutdown"):9005
-    liveTomcatAJPPort=project.hasProperty("tomcat.port.ajp")?project.property("tomcat.port.ajp"):9009
-    liveTomcatSSLPort=project.hasProperty("tomcat.port.https")?project.property("tomcat.port.https"):9443
+    liveTomcatPort=project.hasProperty("delivery.tomcat.http.port")?project.property("delivery.tomcat.http.port"):9080
+    liveTomcatShutdownPort=project.hasProperty("delivery.tomcat.shutdown.port")?project.property("delivery.tomcat.shutdown.port"):9005
+    liveTomcatAJPPort=project.hasProperty("delivery.tomcat.ajp.port")?project.property("delivery.tomcat.ajp.port"):9009
+    liveTomcatSSLPort=project.hasProperty("delivery.tomcat.https.port")?project.property("delivery.tomcat.https.port"):9443
+    liveTomcatDebug=project.hasProperty("delivery.tomcat.debug.port")?project.property("delivery.tomcat.debug.port"):9000
+
 
 
     /** Git properties **/
@@ -342,7 +346,7 @@ def updateModule(commandLinePrefix,module){
     }else {
         return tasks.create("update${module}") {
             if(!file("./src/${module}").exists()) {
-                throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'init' to initialize it.")
+                throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'update' to initialize it.")
             }else {
                 def arry = commandLinePrefix + ["git", "pull", gitRepo, sourceBranch]
                 executeProcess(arry,"./src/${module}".toString())

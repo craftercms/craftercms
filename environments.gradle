@@ -89,6 +89,32 @@ task("authoringEnvirment"){
             ])
         }
         copy{
+            from "./resources/deployer/config"
+            into "${authEnv}/data/deployer/config"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrAuthPort),
+                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
+                                           MARIADB_PORT: String.valueOf(mariaDbPort),
+                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug)
+            ])
+        }
+        copy {
+            from "./src/deployer/README.md"
+            into "${authEnv}/crafter-deployer/"
+        }
+        copy {
+            from "./src/studio/README.md"
+            into "${authEnv}/apache-tomcat"
+        }
+
+        copy {
+            from "./resources/LICENSE"
+            from "./resources/README.txt"
+            into "${authEnv}/"
+        }
+        copy{
             from "./resources/crafter/"
             into "${authEnv}/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
@@ -136,7 +162,7 @@ task("authoringEnvirment"){
 }
 
 task("deliveyEnviroment"){
-    description "Build Crafter Live environment"
+    description "Build Crafter environment"
 
     doLast{
         copy{
@@ -173,19 +199,25 @@ task("deliveyEnviroment"){
             from "./resources/setenv.bat"
             from "./resources/setenv.sh"
             into "${liveEnv}/apache-tomcat/bin/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrDevPort),
+                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
+                                           TOMCAT_DEBUG_PORT:String.valueOf(liveTomcatDebug)
+            ])
         }
         copy{
             from "./resources/tomcat-config/"
             into "${liveEnv}/apache-tomcat/shared/classes/"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
                                            SOLR_PORT: String.valueOf(solrDevPort),
                                            SOLR_PORT_D: String.valueOf(solrDevDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           MARIADB_PORT: String.valueOf(mariaDbPort)
+                                           TOMCAT_DEBUG_PORT:String.valueOf(liveTomcatDebug)
             ])
         }
-
         copy{
             from "./src/deployer/target/crafter-deployer.jar"
             into "${liveEnv}/crafter-deployer"
@@ -193,15 +225,49 @@ task("deliveyEnviroment"){
         copy{
             from "./resources/deployer/"
             into "${liveEnv}/crafter-deployer"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrDevPort),
+                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
+                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug)
+            ])
+        }
+        copy{
+            from "./resources/deployer/config"
+            into "${liveEnv}/data/deployer/config"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrDevPort),
+                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
+                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug)
+            ])
+        }
+        copy {
+            from "./src/deployer/README.md"
+            into "${liveEnv}/crafter-deployer/"
+        }
+        copy {
+            from "./src/studio/README.md"
+            into "${liveEnv}/apache-tomcat"
+        }
+
+        copy {
+            from "./resources/LICENSE"
+            from "./resources/README.txt"
+            into "${liveEnv}/"
         }
         copy{
             from "./resources/crafter/"
-            exclude "crafter.sh"
             into "${liveEnv}/"
-        }
-        copy{
-            from "./resources/crafter-live/"
-            into "${liveEnv}/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrDevPort),
+                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
+                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug)
+            ])
         }
 
         if(!isWin){
