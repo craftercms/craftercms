@@ -75,11 +75,11 @@ Start Crafter CMS,
     ./gradlew start
 ```
 
-You can now point your browser to [http://localhost:8080/studio](http://localhost:8080/studio) and start using Crafter CMS. To get started with your first Crafter CMS experience, you can follow this guide: [http://docs.craftercms.org/en/latest/content-authors/index.html](http://docs.craftercms.org/en/latest/content-authors/index.html).
+You can now point your browser to [http://localhost:25500/studio](http://localhost:25500/studio) and start using Crafter CMS. To get started with your first Crafter CMS experience, you can follow this guide: [http://docs.craftercms.org/en/latest/content-authors/index.html](http://docs.craftercms.org/en/latest/content-authors/index.html).
 
 ##### Note
-* The authoring environment runs on port `8080`, a great place to start, while the delivery environment runs on port 
-`9080`.
+* The authoring environment runs on port `25500`, a great place to start, while the delivery environment runs on port 
+`25710`.
 
 ### 3.1.3. Stop All
 Stop Crafter CMS,
@@ -93,7 +93,7 @@ You might have noticed that you essentially have two environments built and runn
 
 As a developer, you can use an `authoring` environment for most tasks without the need to run a `delivery` environment. It's important to note that `delivery` essentially runs the same software that's in `authoring` except Crafter Studio (the authoring tools).
 
-By default, this project will build both environments unless instructed otherwise. The `authoring` environment runs at [http://localhost:8080/studio](http://localhost:8080/studio), whereas the `delivery` environment runs at [http://localhost:9080/studio](http://localhost:9080/).
+By default, this project will build both environments unless instructed otherwise. The `authoring` environment runs at [http://localhost:25500/studio](http://localhost:25500/studio), whereas the `delivery` environment runs at [http://localhost:25710/studio](http://localhost:25710/).
 
 ### 3.2.1. Build, Start, and Stop a Specific Environment
 To build, start and stop one of the two environments is similar to building/starting/stopping All.
