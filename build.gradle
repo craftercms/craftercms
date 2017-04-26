@@ -82,7 +82,7 @@ ext {
     liveTomcatShutdownPort=project.hasProperty("tomcat.delivery.port.shutdown")?project.property("tomcat.delivery.port.shutdown"):25713
     liveTomcatAJPPort=project.hasProperty("tomcat.delivery.port.ajp")?project.property("tomcat.delivery.port.ajp"):25712
     liveTomcatSSLPort=project.hasProperty("tomcat.delivery.port.https")?project.property("tomcat.delivery.port.https"):25711
-    liveTomcatSSLPort=project.hasProperty("tomcat.delivery.port.debug")?project.property("tomcat.delivery.port.debug"):25719
+    liveTomcatDebug=project.hasProperty("tomcat.delivery.port.debug")?project.property("tomcat.delivery.port.debug"):25719
 
 
 
@@ -344,7 +344,7 @@ def updateModule(commandLinePrefix,module){
     }else {
         return tasks.create("update${module}") {
             if(!file("./src/${module}").exists()) {
-                throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'init' to initialize it.")
+                throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'update' to initialize it.")
             }else {
                 def arry = commandLinePrefix + ["git", "pull", gitRepo, sourceBranch]
                 executeProcess(arry,"./src/${module}".toString())
