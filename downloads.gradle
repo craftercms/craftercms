@@ -21,7 +21,7 @@ task downloadTomcat() {
 }
 /** Dowloads any external Resources **/
 task downloadSolr() {
-    description = "Download Solr and Solr's war (from Maven central) signature"
+    description = "Unzip Solr and Solr's war (from Maven central) signature"
     doFirst{
         download {
             src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip"

@@ -41,7 +41,7 @@ def isAllEnvs(){
 
 ext {
 
-    /** Download Properties **/
+    /** Unzip Properties **/
     tomcatVersion=project.hasProperty("tomcat.version")?project.property("tomcat.version"):"8.5.6"
     solrVersion=project.hasProperty("solr.version")?project.property("solr.version"):"6.4.1"
     downloadDir=project.hasProperty("downloadDir")?project.property("downloadDir"):"./downloads/"
@@ -62,7 +62,7 @@ ext {
     authTomcatAJPPort=project.hasProperty("authoring.tomcat.ajp.port")?project.property("authoring.tomcat.ajp.port"):8009
     authTomcatSSLPort=project.hasProperty("authoring.tomcat.https.port")?project.property("authoring.tomcat.https.port"):8443
     authTomcatDebug=project.hasProperty("authoring.tomcat.debug.port")?project.property("authoring.tomcat.debug.port"):8000
-
+    authMongoDBPort=project.hasProperty("authoring.mongo.port")?project.property("authoring.mongo.port"):27020
     solrAuthPort=project.hasProperty("authoring.solr.port")?project.property("authoring.solr.port"):8694
     solrAuthDebugPort=project.hasProperty("authoring.solr.debug.port")?project.property("authoring.solr.debug.port"):5005
 
@@ -85,7 +85,7 @@ ext {
     liveTomcatAJPPort=project.hasProperty("delivery.tomcat.ajp.port")?project.property("delivery.tomcat.ajp.port"):9009
     liveTomcatSSLPort=project.hasProperty("delivery.tomcat.https.port")?project.property("delivery.tomcat.https.port"):9443
     liveTomcatDebug=project.hasProperty("delivery.tomcat.debug.port")?project.property("delivery.tomcat.debug.port"):9000
-
+    liveMongoDBPort=project.hasProperty("delivery.mongodb.port")?project.property("delivery.mongodb.port"):28020
 
 
     /** Git properties **/
@@ -93,6 +93,7 @@ ext {
     sourceBranch=project.hasProperty("crafter.git.branch")?project.property("crafter.git.branch"):"master"
     gitRepo=project.hasProperty("crafter.git.remote")?project.property("crafter.git.remote"):"origin"
     studioUIFromRepo=project.hasProperty("crafter.ui.repo")?project.property("crafter.ui.repo"):false
+    forceDeploy=project.hasProperty("forceDeploy")?project.property("forceDeploy"):false
 
     /** Clonable Artifacts **/
     VALID_MODULES=["commons","core","search","profile","engine","deployer","studio","social","studio2-ui"]
@@ -110,6 +111,41 @@ ext {
 apply from:"downloads.gradle"
 apply from:"environments.gradle"
 
+task("utils"){
+    doLast {
+        buildModule(commandLinePrefix, "utils", "./")
+        copy {
+            from "./utils/target/craftercms-utils.jar"
+            into "${authEnv}"
+        }
+        copy {
+            from "./utils/target/craftercms-utils.jar"
+            into "${liveEnv}"
+        }
+    }
+}
+
+task("upgrade"){
+    doFirst {
+        def authEnvFolder = new File("${authEnv}")
+        if (authEnvFolder.exists()) {
+            authEnvFolder.eachFile { dir ->
+                if (!dir.getName().equalsIgnoreCase("data")) {
+                    if (!dir.isFile()) {
+                        dir.deleteDir()
+                    } else {
+                        dir.delete()
+                    }
+                }
+            }
+        }
+    }
+    doLast {
+        forceDeploy=true
+        build.execute()
+        deploy.execute()
+    }
+}
 
 task("init"){
     description "Clones Crafter CMS stack"
@@ -216,7 +252,7 @@ task("stop"){
     }
 }
 
-task("clean"){
+task("clear"){
     description "Clean Crafter CMS stack"
 
     doFirst {
@@ -305,6 +341,7 @@ task("deploy") {
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_DEPLOYABLE_MODULES.keySet()}")
         }
+        utils.execute()
     }
 }
 
@@ -418,7 +455,7 @@ def stopDevlivery(commandLinePrefix,shutDownFile){
     }
 }
 
-def buildModule(commandLinePrefix,module){
+def buildModule(commandLinePrefix,module,path="./src/"){
     def btask=tasks.findByPath("build${module}")
     if (btask!= null){
         return btask
@@ -433,7 +470,7 @@ def buildModule(commandLinePrefix,module){
                 commandLinePost.add("-Dexec.skip=true")
             }
             def array=commandLinePrefix +  commandLinePrefix + ["mvn", "clean", "install"] + commandLinePost
-            executeProcess(array,"./src/${module}".toString())
+            executeProcess(array,"${path}${module}".toString())
         }
     }
 }
@@ -471,7 +508,7 @@ def deployModule(commandLinePrefix,module,env){
 
 def checkEnvWD(path,env){
     def ddir=file(path)
-    if(!ddir.exists() || project.hasProperty("forceDeploy")) {
+    if(!ddir.exists() || forceDeploy) {
         ddir.mkdir()
         def deployerDir = file("${path}/crafter-deployer")
         deployerDir.mkdir()

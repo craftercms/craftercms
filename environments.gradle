@@ -35,6 +35,7 @@ task("authoringEnvirment"){
         }
         file("${authEnv}/data/indexes").mkdirs()
         file("${authEnv}/data/deployer").mkdirs()
+        file("${authEnv}/data/mongodb").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${authEnv}/apache-tomcat/webapps/")
         webapps.deleteDir()
@@ -57,7 +58,8 @@ task("authoringEnvirment"){
                                            DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerAuthPort),
                                            MARIADB_PORT: String.valueOf(mariaDbPort),
-                                           TOMCAT_DEBUG_PORT:String.valueOf(authTomcatDebug)
+                                           TOMCAT_DEBUG_PORT:String.valueOf(authTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(authMongoDBPort)
             ])
         }
         copy{
@@ -69,7 +71,8 @@ task("authoringEnvirment"){
                                            DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerAuthPort),
                                            MARIADB_PORT: String.valueOf(mariaDbPort),
-                                           TOMCAT_DEBUG_PORT:String.valueOf(authTomcatDebug)
+                                           TOMCAT_DEBUG_PORT:String.valueOf(authTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(authMongoDBPort)
             ])
         }
         copy{
@@ -85,7 +88,8 @@ task("authoringEnvirment"){
                                            DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerAuthPort),
                                            MARIADB_PORT: String.valueOf(mariaDbPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug)
+                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(authMongoDBPort)
             ])
         }
         copy{
@@ -97,7 +101,7 @@ task("authoringEnvirment"){
                                            DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerAuthPort),
                                            MARIADB_PORT: String.valueOf(mariaDbPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug)
+                                           MONGODB_PORT:String.valueOf(authMongoDBPort)
             ])
         }
         copy {
@@ -123,7 +127,9 @@ task("authoringEnvirment"){
                                            DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerAuthPort),
                                            MARIADB_PORT: String.valueOf(mariaDbPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug)
+                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(authMongoDBPort)
+
             ])
         }
 
@@ -184,6 +190,7 @@ task("deliveyEnviroment"){
         }
         file("${liveEnv}/data/indexes").mkdirs()
         file("${liveEnv}/data/deployer").mkdirs()
+        file("${liveEnv}/data/mongodb").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${liveEnv}/apache-tomcat/webapps/")
         webapps.deleteDir()
@@ -204,7 +211,9 @@ task("deliveyEnviroment"){
                                            SOLR_PORT_D: String.valueOf(solrDevDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           TOMCAT_DEBUG_PORT:String.valueOf(liveTomcatDebug)
+                                           TOMCAT_DEBUG_PORT:String.valueOf(liveTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
+
             ])
         }
         copy{
@@ -215,7 +224,8 @@ task("deliveyEnviroment"){
                                            SOLR_PORT_D: String.valueOf(solrDevDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           TOMCAT_DEBUG_PORT:String.valueOf(liveTomcatDebug)
+                                           TOMCAT_DEBUG_PORT:String.valueOf(liveTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
             ])
         }
         copy{
@@ -230,7 +240,8 @@ task("deliveyEnviroment"){
                                            SOLR_PORT_D: String.valueOf(solrDevDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug)
+                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
             ])
         }
         copy{
@@ -241,7 +252,8 @@ task("deliveyEnviroment"){
                                            SOLR_PORT_D: String.valueOf(solrDevDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug)
+                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
             ])
         }
         copy {
@@ -266,7 +278,8 @@ task("deliveyEnviroment"){
                                            SOLR_PORT_D: String.valueOf(solrDevDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug)
+                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
             ])
         }
 
@@ -299,8 +312,10 @@ task("deliveyEnviroment"){
         }
         updateTomcatPorts("${liveEnv}/apache-tomcat/conf/server.xml",liveTomcatPort,liveTomcatAJPPort,
                 liveTomcatShutdownPort,liveTomcatSSLPort)
+
         updateTomcatContext("${liveEnv}/apache-tomcat/conf/context.xml")
         addSolrIndexHome("${liveEnv}/solr/server/solr/solr.xml")
+        updateDeliveryConfig(liveEnv)
     }
 }
 
@@ -348,4 +363,38 @@ def addSolrIndexHome(solrServerConfig){
     def printer = new XmlNodePrinter(new PrintWriter(solrServerConfig) )
     printer.preserveWhitespace = true
     printer.print( contextConfig )
+}
+
+def updateDeliveryConfig(env){
+    def renderingContext="${env}/apache-tomcat/shared/classes/crafter/engine/extension/rendering-context.xml"
+    def servicesContext="${env}/apache-tomcat/shared/classes/crafter/engine/extension/services-context.xml"
+    def contextConfig=new XmlParser().parse(renderingContext)
+    def serviceConfig=new XmlParser().parse(servicesContext)
+
+    for(int i=0;i<contextConfig.children().size();i++){
+        contextConfig.remove(contextConfig.children().get(i))
+    }
+    for(int i=0;i<serviceConfig.children().size();i++){
+        serviceConfig.remove(serviceConfig.children().get(i))
+    }
+    def printer = new XmlNodePrinter(new PrintWriter(renderingContext) )
+    printer.preserveWhitespace = true
+    printer.print( contextConfig )
+
+    printer = new XmlNodePrinter(new PrintWriter(servicesContext))
+    printer.preserveWhitespace = true
+    printer.print( serviceConfig )
+
+
+    Properties engineServerProps = new Properties()
+    engineServerProps.load(
+            new FileInputStream(
+                    "${env}/apache-tomcat/shared/classes/crafter/engine/extension/server-config.properties"))
+
+    engineServerProps.setProperty("crafter.engine.site.default.rootFolder.path","./data/repos/sites/{siteName}/")
+    def output = new FileOutputStream(
+            "${env}/apache-tomcat/shared/classes/crafter/engine/extension/server-config.properties")
+    engineServerProps.store(output,"")
+    new File("${env}/apache-tomcat/shared/classes/crafter/studio").deleteDir()
+
 }
