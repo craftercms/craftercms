@@ -1,5 +1,8 @@
-# URL to the preview Crafter Engine
-studio.preview.engineUrl: http://localhost:@TOMCAT_HTTP_PORT@
+##################################################
+##              Content Repository              ##
+##################################################
+# Absolute or relative path to repository base (all actual repositories will be under this)
+studio.repo.basePath: ../data/repos
 
 ############################################################
 ##                    Preview Deployer                    ##
@@ -11,6 +14,10 @@ studio.preview.defaultPreviewDeployerUrl: http://localhost:@DEPLOYER_PORT@/api/1
 studio.preview.createTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/create
 # Default preview create target URL (can be overridden per site)
 studio.preview.deleteTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/delete/{siteEnv}/{siteName}
+# URL to the preview Crafter Engine
+studio.preview.engineUrl: http://localhost:@TOMCAT_HTTP_PORT@
+# URL to the preview repository (aka Sandbox) where authors save work-in-progress
+studio.preview.repoUrl: ../data/repos/sites/{siteName}/sandbox
 
 ############################################################
 ##                   Preview Search                       ##
@@ -32,3 +39,5 @@ studio.db.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@/crafter?user=crafter&pass
 studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&password=
 # Port number for the embedded database (note this must match what's in the connection URLs in this config file)
 studio.db.port: @MARIADB_PORT@
+# Data folder for the embedded database
+studio.db.dataPath: ../data/db

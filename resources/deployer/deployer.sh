@@ -1,54 +1,61 @@
 #!/usr/bin/env bash
-CD_HOME=${CRAFTER_DEPLOYER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
-C_HOME=${C_HOME:="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"/../}
-DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=@DEPLOYER_PORT@ -Dlogging.config=logback-spring.xml -Ddeployer.main.deployments.output.folderPath=logs -Ddeployer.main.logging.folderPath=logs -Ddeployer.main.homePath=$C_HOME/data/deployer"
-PID=${DEPLOYER_PID:="crafter-deployer.pid"}
-OUTPUT=${CRAFTER_DEPLOYER_SDOUT:='crafter-deployer.log'}
-echo $C_HOME
-function start() {
-    if [ -f $CD_HOME/$PID ]; then
-        if pgrep -F $CD_HOME/$PID > /dev/null ; then
-            echo "Crafter Deployer still running";
-            exit -1;
-        else
-            rm $CD_HOME/$PID
-        fi
-    fi
-    nohup java -jar $DEPLOYER_JAVA_OPTS "$CD_HOME/crafter-deployer.jar"  > "$CD_HOME/$OUTPUT" >&1&
-    echo $! > $CD_HOME/$PID
-    exit 0;
-}
-function stop() {
-    if [ -e "$CD_HOME/$PID" ]
-         kill `cat $CD_HOME/$PID`
-    if [ $? -eq 0 ]; then
-        rm $CD_HOME/$PID
-    fi
-    exit 0;
-then
-    "Default \e[43mCrafter Deployer already shutdown or pid $CD_HOME/$PID file not found"
-fi
+DEPLOYER_HOME=${DEPLOYER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
+CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$DEPLOYER_HOME/.." && pwd )}
+LOGS_DIR=${DEPLOYER_LOGS_DIR:="$DEPLOYER_HOME/logs"}
+DATA_DIR=${DEPLOYER_DATA_DIR:="$CRAFTER_HOME/data/deployer"}
+TARGETS_DIR=$DATA_DIR/targets
+PROCESSED_COMMITS=$DATA_DIR/processed-commits
+PORT=${DEPLOYER_PORT:="9191"}
+JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HOME/logback-spring.xml -Dlogs.dir=$LOGS_DIR -Dtargets.dir=$TARGETS_DIR -DprocessedCommits.dir=$PROCESSED_COMMITS"
+PID=${DEPLOYER_PID:="$DEPLOYER_HOME/crafter-deployer.pid"}
+OUTPUT=${DEPLOYER_SDOUT:="$DEPLOYER_HOME/crafter-deployer.out"}
 
-}
 function help() {
-        echo $(basename $BASH_SOURCE)
-        echo "-s start, Start crafter deployer"
-        echo "-k stop, Stop crafter deployer"
-        echo "-d debug, Implieds start, Start crafter deployer in debug mode"
-        exit 0;
+  echo $(basename $BASH_SOURCE)
+  echo "    start, Starts Deployer"
+  echo "    stop, Stops Deployer"
+  echo "    debug, Starts Deployer in debug mode"
+  exit 0;
 }
+
+function start() {
+  if [ -e "$PID" ]; then
+    if pgrep -F $PID > /dev/null ; then
+      echo "Crafter Deployer still running";
+      exit -1;
+    else
+      rm $PID
+    fi
+  fi
+  nohup java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"  > "$OUTPUT" >&1&
+  echo $! > $PID
+  exit 0;
+}
+
+function stop() {
+  if [ -e "$PID" ]; then
+    pkill -F $PID
+    if [ $? -eq 0 ]; then
+      rm $PID
+    fi
+    exit 0;
+  else
+    echo "Crafter Deployer already shutdown or pid $PID file not found";
+  fi
+}
+
 case $1 in
-    -d|--debug)
-        DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=@DEPLOYER_D_PORT@"
-        start
-    ;;
-    -s|--start)
-        start
-    ;;
-    -k|--stop)
-        stop
-    ;;
-    *)
-        help
-    ;;
+  debug)
+    JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+    start
+  ;;
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  *)
+    help
+  ;;
 esac

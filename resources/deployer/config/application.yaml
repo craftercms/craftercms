@@ -1,0 +1,12 @@
+deployer:
+  main:
+    targets:
+      config:
+        folderPath: ${targets.dir}
+    deployments:
+      output:
+        folderPath: ${logs.dir}
+      processedCommits:
+        folderPath: ${processedCommits.dir}
+    logging:
+      folderPath: ${logs.dir}

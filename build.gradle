@@ -116,11 +116,11 @@ task("utils"){
         buildModule(commandLinePrefix, "utils", "./")
         copy {
             from "./utils/target/craftercms-utils.jar"
-            into "${authEnv}"
+            into "${authEnv}/bin"
         }
         copy {
             from "./utils/target/craftercms-utils.jar"
-            into "${liveEnv}"
+            into "${liveEnv}/bin"
         }
     }
 }
@@ -488,7 +488,7 @@ def deployModule(commandLinePrefix,module,env){
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
                 if (deployable.exists()) {
                     def path = env.equals("authoring") ? authEnv : liveEnv
-                    path += deployable.absolutePath.endsWith(".jar") ? "crafter-deployer/" : "apache-tomcat/webapps/"
+                    path += deployable.absolutePath.endsWith(".jar") ? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
                     path += deployable.name
                     delete {
                         delete path
@@ -510,7 +510,7 @@ def checkEnvWD(path,env){
     def ddir=file(path)
     if(!ddir.exists() || forceDeploy) {
         ddir.mkdir()
-        def deployerDir = file("${path}/crafter-deployer")
+        def deployerDir = file("${path}/bin/crafter-deployer")
         deployerDir.mkdir()
         downloadTomcat.execute()
         downloadSolr.execute()
