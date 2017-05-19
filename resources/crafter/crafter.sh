@@ -2,6 +2,7 @@
 export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
 export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
+export MONGO_DB_HOME="$CRAFTER_HOME/mongodb"
 
 . "$CRAFTER_HOME/setenv.sh"
 
@@ -112,20 +113,52 @@ function stopTomcat() {
   ./apache-tomcat/bin/shutdown.sh -force
 }
 
+function startMongoDB(){
+    if [ -d "$MONGO_DB_HOME" ]; then
+        cd $MONGO_DB_HOME
+        echo "OK"
+        cd $CRAFTER_HOME
+     else
+       cd $CRAFTER_HOME
+       mkdir $MONGO_DB_HOME
+       cd $MONGO_DB_HOME
+       echo "MongoDB not found"
+       java -jar $CRAFTER_HOME/craftercms-utils.jar download mongodb
+       tar xvf mongodb.tgz --strip 1
+       rm mongodb.tgz
+    fi
+    echo "------------------------------------------------------------"
+    echo "Starting MongoDB"
+    echo "------------------------------------------------------------"
+    if [ ! -d $MONGO_DB_LOGS_DIR ]; then
+      mkdir -p $MONGO_DB_LOGS_DIR;
+    fi
+    $CRAFTER_HOME/$MONGO_DB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$CRAFTER_ROOT/logs/mongodb/mongod.log --port @MONGODB_PORT@
+
+}
+
+function stopMongoDB(){
+  ##TODO
+  echo "OK"
+}
+
 function start() {
   startSolr
+  startMongoDB
   startTomcat
   startDeployer
 }
 
 function debug() {
   debugSolr
+  startMongoDB
   debugTomcat
   debugDeployer
 }
 
 function stop() {
   stopDeployer
+  stopMongoDB
   stopTomcat
   stopSolr
 }
@@ -189,6 +222,14 @@ case $1 in
   stop_tomcat)
     logo
     stopTomcat
+  ;;
+  start_mongodb)
+    logo
+    startMongoDB
+  ;;
+  stop_mongodb)
+    logo
+    stopMongoDB
   ;;
   *)
     help

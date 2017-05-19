@@ -269,7 +269,7 @@ task("deliveyEnviroment"){
         copy {
             from "./resources/LICENSE"
             from "./resources/README.txt"
-            into "${liveEnv}/bin/"
+            into "${liveEnv}/"
         }
         copy{
             from "./resources/crafter/"

@@ -18,5 +18,5 @@ export DEPLOYER_LOGS_DIR=$CRAFTER_ROOT/logs/deployer
 export DEPLOYER_DEPLOYMENTS_DIR=$CRAFTER_ROOT/@DEPLOYMENT_DIR@
 export DEPLOYER_SDOUT=$DEPLOYER_LOGS_DIR/crafter-deployer.out
 export DEPLOYER_JAVA_OPTS="-server -Xss1024K -Xmx1G"
-
-
+# MongoDB variables
+export MONGO_DB_LOGS_DIR=$CRAFTER_ROOT/logs/mongodb
