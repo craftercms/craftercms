@@ -133,7 +133,7 @@ function startMongoDB(){
     if [ ! -d $MONGO_DB_LOGS_DIR ]; then
       mkdir -p $MONGO_DB_LOGS_DIR;
     fi
-    $CRAFTER_HOME/$MONGO_DB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$CRAFTER_ROOT/logs/mongodb/mongod.log --port @MONGODB_PORT@
+    $MONGO_DB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$CRAFTER_ROOT/logs/mongodb/mongod.log --port @MONGODB_PORT@
 
 }
 
