@@ -4,6 +4,7 @@ deployer:
       config:
         folderPath: ${targets.dir}
     deployments:
+      folderPath: ${deployments.dir}
       output:
         folderPath: ${logs.dir}
       processedCommits:

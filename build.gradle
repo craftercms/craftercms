@@ -70,7 +70,7 @@ ext {
 
     deployerAuthPort=project.hasProperty("authoring.deployer.port")?project.property("authoring.deployer.port"):9191
     deployerAuthDebugPort=project.hasProperty("authoring.deployer.debug.port")?project.property("authoring.deployer.debug.port"):5000
-
+    deploymentAuthDir=project.hasProperty("authoring.deployment.dir")?project.property("authoring.deployment.dir"):"data/sites"
 
 
     // Delivery
@@ -79,6 +79,7 @@ ext {
 
     deployerDevPort=project.hasProperty("delivery.deployer.port")?project.property("delivery.deployer.port"):9192
     deployerDevDebugPort=project.hasProperty("delivery.deployer.debugPort")?project.property("delivery.deployer.debugPort"):5001
+    deploymentDevDir=project.hasProperty("delivery.deployment.dir")?project.property("delivery.deployment.dir"):"data/sites"
 
     liveTomcatPort=project.hasProperty("delivery.tomcat.http.port")?project.property("delivery.tomcat.http.port"):9080
     liveTomcatShutdownPort=project.hasProperty("delivery.tomcat.shutdown.port")?project.property("delivery.tomcat.shutdown.port"):9005

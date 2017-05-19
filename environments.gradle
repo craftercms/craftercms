@@ -126,6 +126,7 @@ task("authoringEnvirment"){
                                            SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerAuthPort),
+                                           DEPLOYMENT_DIR: String.valueOf(deploymentAuthDir),
                                            MARIADB_PORT: String.valueOf(mariaDbPort),
                                            TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
                                            MONGODB_PORT:String.valueOf(authMongoDBPort)
@@ -173,7 +174,7 @@ task("deliveyEnviroment"){
     doLast{
         copy{
             from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
-            into "${liveEnv}"
+            into "${liveEnv}/bin"
         }
         file("${liveEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${liveEnv}/bin/apache-tomcat"))
 
@@ -278,6 +279,7 @@ task("deliveyEnviroment"){
                                            SOLR_PORT_D: String.valueOf(solrDevDebugPort),
                                            DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deployerDevPort),
+                                           DEPLOYMENT_DIR: String.valueOf(deploymentDevDir),
                                            TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug),
                                            MONGODB_PORT:String.valueOf(liveMongoDBPort)
             ])
