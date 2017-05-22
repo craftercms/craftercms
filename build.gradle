@@ -572,5 +572,6 @@ def executeProcess(command,workingDir){
     pb.directory(new File(workingDir))
     pb.redirectErrorStream(true)
     Process proc = pb.start();
+    proc.waitFor()
     proc.inputStream.eachLine {println it}
 }
