@@ -70,7 +70,7 @@ ext {
 
     deployerAuthPort=project.hasProperty("authoring.deployer.port")?project.property("authoring.deployer.port"):9191
     deployerAuthDebugPort=project.hasProperty("authoring.deployer.debug.port")?project.property("authoring.deployer.debug.port"):5000
-
+    deploymentAuthDir=project.hasProperty("authoring.deployment.dir")?project.property("authoring.deployment.dir"):"data/sites"
 
 
     // Delivery
@@ -79,6 +79,7 @@ ext {
 
     deployerDevPort=project.hasProperty("delivery.deployer.port")?project.property("delivery.deployer.port"):9192
     deployerDevDebugPort=project.hasProperty("delivery.deployer.debugPort")?project.property("delivery.deployer.debugPort"):5001
+    deploymentDevDir=project.hasProperty("delivery.deployment.dir")?project.property("delivery.deployment.dir"):"data/sites"
 
     liveTomcatPort=project.hasProperty("delivery.tomcat.http.port")?project.property("delivery.tomcat.http.port"):9080
     liveTomcatShutdownPort=project.hasProperty("delivery.tomcat.shutdown.port")?project.property("delivery.tomcat.shutdown.port"):9005
@@ -116,11 +117,11 @@ task("utils"){
         buildModule(commandLinePrefix, "utils", "./")
         copy {
             from "./utils/target/craftercms-utils.jar"
-            into "${authEnv}"
+            into "${authEnv}/bin"
         }
         copy {
             from "./utils/target/craftercms-utils.jar"
-            into "${liveEnv}"
+            into "${liveEnv}/bin"
         }
     }
 }
@@ -206,6 +207,7 @@ task("start"){
                 }
                 startAuth(commandLinePrefix,startUpFile).execute()
                 startDelivery(commandLinePrefix,startUpFile).execute()
+                break
             case "authoring":
                 if(!file(authEnv).exists()){
                     throw new InvalidUserDataException("The 'authoring' enviroment is not deployed. Please run 'deploy -Penv=authoring' before 'start'.")
@@ -417,7 +419,7 @@ def startAuth(commandLinePrefix,startUpFile){
         return btask
     }else {
         tasks.create("startAuth") {
-            executeProcess(commandLinePrefix + [startUpFile],authEnv)
+            executeProcess(commandLinePrefix + [startUpFile],"$authEnv/bin")
         }
     }
 }
@@ -428,7 +430,7 @@ def startDelivery(commandLinePrefix,startUpFile){
         return btask
     }else {
         tasks.create("startDelivery") {
-            executeProcess(commandLinePrefix + [startUpFile],liveEnv)
+            executeProcess(commandLinePrefix + [startUpFile],"$liveEnv/bin")
         }
     }
 }
@@ -439,7 +441,7 @@ def stopAuth(commandLinePrefix,shutDownFile){
         return btask
     }else {
         tasks.create("stopAuth"){
-            executeProcess(commandLinePrefix + [shutDownFile],authEnv)
+            executeProcess(commandLinePrefix + [shutDownFile],"$authEnv/bin")
         }
     }
 }
@@ -450,7 +452,7 @@ def stopDevlivery(commandLinePrefix,shutDownFile){
         return btask
     }else {
         tasks.create("stopDelivery") {
-            executeProcess(commandLinePrefix + [shutDownFile],liveEnv)
+            executeProcess(commandLinePrefix + [shutDownFile],"$liveEnv/bin")
         }
     }
 }
@@ -488,7 +490,7 @@ def deployModule(commandLinePrefix,module,env){
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
                 if (deployable.exists()) {
                     def path = env.equals("authoring") ? authEnv : liveEnv
-                    path += deployable.absolutePath.endsWith(".jar") ? "crafter-deployer/" : "apache-tomcat/webapps/"
+                    path += deployable.absolutePath.endsWith(".jar") ? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
                     path += deployable.name
                     delete {
                         delete path
@@ -510,7 +512,7 @@ def checkEnvWD(path,env){
     def ddir=file(path)
     if(!ddir.exists() || forceDeploy) {
         ddir.mkdir()
-        def deployerDir = file("${path}/crafter-deployer")
+        def deployerDir = file("${path}/bin/crafter-deployer")
         deployerDir.mkdir()
         downloadTomcat.execute()
         downloadSolr.execute()
@@ -570,5 +572,6 @@ def executeProcess(command,workingDir){
     pb.directory(new File(workingDir))
     pb.redirectErrorStream(true)
     Process proc = pb.start();
+    proc.waitFor()
     proc.inputStream.eachLine {println it}
 }
