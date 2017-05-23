@@ -419,7 +419,7 @@ def startAuth(commandLinePrefix,startUpFile){
         return btask
     }else {
         tasks.create("startAuth") {
-            executeProcess(commandLinePrefix + [startUpFile],"$authEnv/bin")
+            executeProcess(commandLinePrefix + [startUpFile],"$authEnv/bin",true)
         }
     }
 }
@@ -430,7 +430,7 @@ def startDelivery(commandLinePrefix,startUpFile){
         return btask
     }else {
         tasks.create("startDelivery") {
-            executeProcess(commandLinePrefix + [startUpFile],"$liveEnv/bin")
+            executeProcess(commandLinePrefix + [startUpFile],"$liveEnv/bin",true)
         }
     }
 }
@@ -441,7 +441,7 @@ def stopAuth(commandLinePrefix,shutDownFile){
         return btask
     }else {
         tasks.create("stopAuth"){
-            executeProcess(commandLinePrefix + [shutDownFile],"$authEnv/bin")
+            executeProcess(commandLinePrefix + [shutDownFile],"$authEnv/bin",true)
         }
     }
 }
@@ -452,7 +452,7 @@ def stopDevlivery(commandLinePrefix,shutDownFile){
         return btask
     }else {
         tasks.create("stopDelivery") {
-            executeProcess(commandLinePrefix + [shutDownFile],"$liveEnv/bin")
+            executeProcess(commandLinePrefix + [shutDownFile],"$liveEnv/bin",true)
         }
     }
 }
@@ -567,11 +567,13 @@ def pack(environmentPath,envName){
     }
 }
 
-def executeProcess(command,workingDir){
+def executeProcess(command,workingDir,printOutputUntilFinish=false){
     ProcessBuilder pb = new ProcessBuilder(command)
     pb.directory(new File(workingDir))
     pb.redirectErrorStream(true)
     Process proc = pb.start();
-    proc.waitFor()
+   if(printOutputUntilFinish){
+        proc.waitFor()
+    }
     proc.inputStream.eachLine {println it}
 }

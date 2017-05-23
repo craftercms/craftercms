@@ -3,6 +3,7 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && 
 export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
 export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
 export MONGO_DB_HOME="$CRAFTER_HOME/mongodb"
+export MONGOPID="$CRAFTER_ROOT/data/mongodb/mongod.lock"
 
 . "$CRAFTER_HOME/setenv.sh"
 
@@ -22,6 +23,9 @@ function help() {
   echo "    debug_tomcat, Starts Tomcat in debug mode"
   exit 0;
 }
+
+
+
 
 function startDeployer() {
   cd $DEPLOYER_HOME
@@ -138,8 +142,15 @@ function startMongoDB(){
 }
 
 function stopMongoDB(){
-  ##TODO
-  echo "OK"
+    if [ -e "$MONGOPID" ]; then
+      pkill -F $MONGOPID
+      if [ $? -eq 0 ]; then
+        rm $MONGOPID
+      fi
+      exit 0;
+    else
+      echo "MongoDB already shutdown or pid $PID file not found";
+    fi
 }
 
 function start() {
