@@ -23,10 +23,6 @@ function help() {
   echo "    debug_tomcat, Starts Tomcat in debug mode"
   exit 0;
 }
-
-
-
-
 function startDeployer() {
   cd $DEPLOYER_HOME
   echo "------------------------------------------------------------"
@@ -118,27 +114,30 @@ function stopTomcat() {
 }
 
 function startMongoDB(){
-    if [ -d "$MONGO_DB_HOME" ]; then
-        cd $MONGO_DB_HOME
-        echo "OK"
-        cd $CRAFTER_HOME
-     else
-       cd $CRAFTER_HOME
-       mkdir $MONGO_DB_HOME
-       cd $MONGO_DB_HOME
-       echo "MongoDB not found"
-       java -jar $CRAFTER_HOME/craftercms-utils.jar download mongodb
-       tar xvf mongodb.tgz --strip 1
-       rm mongodb.tgz
+    if [ ! -e "$MONGOPID" ]; then
+        if [ -d "$MONGO_DB_HOME" ]; then
+            cd $MONGO_DB_HOME
+            echo "OK"
+            cd $CRAFTER_HOME
+         else
+           cd $CRAFTER_HOME
+           mkdir $MONGO_DB_HOME
+           cd $MONGO_DB_HOME
+           echo "MongoDB not found"
+           java -jar $CRAFTER_HOME/craftercms-utils.jar download mongodb
+           tar xvf mongodb.tgz --strip 1
+           rm mongodb.tgz
+        fi
+        echo "------------------------------------------------------------"
+        echo "Starting MongoDB"
+        echo "------------------------------------------------------------"
+        if [ ! -d $MONGO_DB_LOGS_DIR ]; then
+          mkdir -p $MONGO_DB_LOGS_DIR;
+        fi
+        $MONGO_DB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGO_DB_LOGS_DIR/mongod.log --port @MONGODB_PORT@
+    else
+        echo "MongoDB already started"
     fi
-    echo "------------------------------------------------------------"
-    echo "Starting MongoDB"
-    echo "------------------------------------------------------------"
-    if [ ! -d $MONGO_DB_LOGS_DIR ]; then
-      mkdir -p $MONGO_DB_LOGS_DIR;
-    fi
-    $MONGO_DB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$CRAFTER_ROOT/logs/mongodb/mongod.log --port @MONGODB_PORT@
-
 }
 
 function stopMongoDB(){
@@ -154,10 +153,10 @@ function stopMongoDB(){
 }
 
 function start() {
+    startDeployer
   startSolr
   startMongoDB
   startTomcat
-  startDeployer
 }
 
 function debug() {

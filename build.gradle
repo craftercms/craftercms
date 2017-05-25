@@ -419,7 +419,7 @@ def startAuth(commandLinePrefix,startUpFile){
         return btask
     }else {
         tasks.create("startAuth") {
-            executeProcess(commandLinePrefix + [startUpFile],"$authEnv/bin",true)
+            executeProcess(commandLinePrefix + [startUpFile],"$authEnv/bin", false)
         }
     }
 }
@@ -430,7 +430,7 @@ def startDelivery(commandLinePrefix,startUpFile){
         return btask
     }else {
         tasks.create("startDelivery") {
-            executeProcess(commandLinePrefix + [startUpFile],"$liveEnv/bin",true)
+            executeProcess(commandLinePrefix + [startUpFile],"$liveEnv/bin", true)
         }
     }
 }
@@ -441,7 +441,7 @@ def stopAuth(commandLinePrefix,shutDownFile){
         return btask
     }else {
         tasks.create("stopAuth"){
-            executeProcess(commandLinePrefix + [shutDownFile],"$authEnv/bin",true)
+            executeProcess(commandLinePrefix + [shutDownFile],"$authEnv/bin", true)
         }
     }
 }
@@ -567,13 +567,18 @@ def pack(environmentPath,envName){
     }
 }
 
-def executeProcess(command,workingDir,printOutputUntilFinish=false){
-    ProcessBuilder pb = new ProcessBuilder(command)
-    pb.directory(new File(workingDir))
-    pb.redirectErrorStream(true)
-    Process proc = pb.start();
-   if(printOutputUntilFinish){
-        proc.waitFor()
-    }
-    proc.inputStream.eachLine {println it}
+def executeProcess(command,wdir,printOutputUntilFinish=false){
+    if(printOutputUntilFinish){
+        exec{
+            workingDir wdir
+            commandLine command
+            ignoreExitValue true
+        }S
+    }else{
+        ProcessBuilder pb = new ProcessBuilder(command)
+        pb.directory(new File(wdir))
+        pb.redirectErrorStream(true)
+        Process proc = pb.start();
+        proc.inputStream.eachLine {println it}
+        }
 }
