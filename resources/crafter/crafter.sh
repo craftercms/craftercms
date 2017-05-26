@@ -21,8 +21,17 @@ function help() {
   echo "    start_tomcat, Starts Tomcat"
   echo "    stop_tomcat, Stops Tomcat"
   echo "    debug_tomcat, Starts Tomcat in debug mode"
+  echo "    tail,  Tails all Crafter CMS logs"
   exit 0;
 }
+
+
+function printTailInfo(){
+    echo -e "\e[34;5;196m"
+    echo "To follow the logs, please tail this log files in: $CRAFTER_ROOT/logs/"
+    echo -e "\e[0m"
+}
+
 function startDeployer() {
   cd $DEPLOYER_HOME
   echo "------------------------------------------------------------"
@@ -154,9 +163,10 @@ function stopMongoDB(){
 
 function start() {
     startDeployer
-  startSolr
-  startMongoDB
-  startTomcat
+    startSolr
+    startMongoDB
+    startTomcat
+    printTailInfo
 }
 
 function debug() {
@@ -164,6 +174,7 @@ function debug() {
   startMongoDB
   debugTomcat
   debugDeployer
+  printTailInfo
 }
 
 function stop() {
@@ -240,6 +251,9 @@ case $1 in
   stop_mongodb)
     logo
     stopMongoDB
+  ;;
+  tail)
+    tail $2
   ;;
   *)
     help
