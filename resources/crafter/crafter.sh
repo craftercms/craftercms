@@ -2,8 +2,6 @@
 export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
 export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
-export MONGO_DB_HOME="$CRAFTER_HOME/mongodb"
-export MONGOPID="$CRAFTER_ROOT/data/mongodb/mongod.lock"
 
 . "$CRAFTER_HOME/setenv.sh"
 
@@ -21,15 +19,17 @@ function help() {
   echo "    start_tomcat, Starts Tomcat"
   echo "    stop_tomcat, Stops Tomcat"
   echo "    debug_tomcat, Starts Tomcat in debug mode"
+  echo "    start_mongodb, Starts Mongo DB"
+  echo "    stop_mongodb, Stops Mongo DB"  
   echo "    tail,  Tails all Crafter CMS logs"
   exit 0;
 }
 
 
 function printTailInfo(){
-    echo -e "\e[34;5;196m"
-    echo "To follow the logs, please tail this log files in: $CRAFTER_ROOT/logs/"
-    echo -e "\e[0m"
+  echo -e "\e[34;5;196m"
+  echo "To follow the logs, please tail this log files in: $CRAFTER_ROOT/logs/"
+  echo -e "\e[0m"
 }
 
 function startDeployer() {
@@ -123,65 +123,68 @@ function stopTomcat() {
 }
 
 function startMongoDB(){
-    if [ ! -e "$MONGOPID" ]; then
-        if [ -d "$MONGO_DB_HOME" ]; then
-            cd $MONGO_DB_HOME
-            echo "OK"
-            cd $CRAFTER_HOME
-         else
-           cd $CRAFTER_HOME
-           mkdir $MONGO_DB_HOME
-           cd $MONGO_DB_HOME
-           echo "MongoDB not found"
-           java -jar $CRAFTER_HOME/craftercms-utils.jar download mongodb
-           tar xvf mongodb.tgz --strip 1
-           rm mongodb.tgz
-        fi
-        echo "------------------------------------------------------------"
-        echo "Starting MongoDB"
-        echo "------------------------------------------------------------"
-        if [ ! -d $MONGO_DB_LOGS_DIR ]; then
-          mkdir -p $MONGO_DB_LOGS_DIR;
-        fi
-        $MONGO_DB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGO_DB_LOGS_DIR/mongod.log --port @MONGODB_PORT@
+  echo "------------------------------------------------------------"
+  echo "Starting MongoDB"
+  echo "------------------------------------------------------------"
+  if [ ! -e "$MONGO_PID" ]; then
+    if [ -d "$MONGO_DB_HOME" ]; then
+      cd $MONGO_DB_HOME
+      echo "OK"
+      cd $CRAFTER_HOME
     else
-        echo "MongoDB already started"
+      cd $CRAFTER_HOME
+      mkdir $MONGO_DB_HOME
+      cd $MONGO_DB_HOME
+      echo "MongoDB not found"
+      java -jar $CRAFTER_HOME/craftercms-utils.jar download mongodb
+      tar xvf mongodb.tgz --strip 1
+      rm mongodb.tgz
     fi
+    if [ ! -d $MONGO_DB_LOGS_DIR ]; then
+      mkdir -p $MONGO_DB_LOGS_DIR;
+    fi
+    $MONGO_DB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGO_DB_LOGS_DIR/mongod.log --port 27020
+  else
+    echo "MongoDB already started"
+  fi
 }
 
 function stopMongoDB(){
-    if [ -e "$MONGOPID" ]; then
-      pkill -F $MONGOPID
-      if [ $? -eq 0 ]; then
-        rm $MONGOPID
-      fi
-      exit 0;
-    else
-      echo "MongoDB already shutdown or pid $PID file not found";
+  echo "------------------------------------------------------------"
+  echo "Stopping MongoDB"
+  echo "------------------------------------------------------------"
+  if [ -e "$MONGO_PID" ]; then
+    pkill -F $MONGO_PID
+    if [ $? -eq 0 ]; then
+      rm $MONGO_PID
     fi
+    exit 0;
+  else
+    echo "MongoDB already shutdown or pid $MONGO_PID file not found";
+  fi
 }
 
 function start() {
-    startDeployer
-    startSolr
-    startMongoDB
-    startTomcat
-    printTailInfo
+  startDeployer
+  startSolr
+  startMongoDB
+  startTomcat
+  printTailInfo
 }
 
 function debug() {
+  debugDeployer
   debugSolr
   startMongoDB
   debugTomcat
-  debugDeployer
   printTailInfo
 }
 
 function stop() {
-  stopDeployer
-  stopMongoDB
   stopTomcat
+  stopMongoDB
   stopSolr
+  stopDeployer
 }
 
 function logo() {
