@@ -78,18 +78,6 @@ task("authoringEnvirment"){
                                            MONGODB_PORT:String.valueOf(authMongoDBPort)
             ])
         }
-        copy{
-            from "./resources/deployer/config"
-            into "${authEnv}/data/deployer/config"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
-                                           SOLR_PORT: String.valueOf(solrAuthPort),
-                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
-                                           MARIADB_PORT: String.valueOf(mariaDbPort),
-                                           MONGODB_PORT:String.valueOf(authMongoDBPort)
-            ])
-        }
         copy {
             from "./src/deployer/README.md"
             into "${authEnv}/bin/crafter-deployer/"
@@ -209,18 +197,6 @@ task("deliveyEnviroment"){
         copy{
             from "./resources/deployer/"
             into "${liveEnv}/bin/crafter-deployer"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
-                                           SOLR_PORT: String.valueOf(solrDevPort),
-                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug),
-                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
-            ])
-        }
-        copy{
-            from "./resources/deployer/config"
-            into "${liveEnv}/data/deployer/config"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
                                            SOLR_PORT: String.valueOf(solrDevPort),
                                            SOLR_PORT_D: String.valueOf(solrDevDebugPort),
