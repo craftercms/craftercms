@@ -170,7 +170,7 @@ function solrStatus(){
    echo "------------------------------------------------------------"
    echo "SOLR status                                                 "
    echo "------------------------------------------------------------"
-   solrStatusOut=$(curl --silent  -f --fail-early "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
+   solrStatusOut=$(curl --silent  -f -y "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
    if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$CRAFTER_ROOT/bin/solr/bin/solr-$SOLR_PORT.pid"`
@@ -189,7 +189,7 @@ function deployerStatus(){
    echo "------------------------------------------------------------"
    echo "Crafter Deployer status                                                 "
    echo "------------------------------------------------------------"
-   deployerStatusOut=$(curl --silent  -f --fail-early "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
+   deployerStatusOut=$(curl --silent  -f -y "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
    if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$CRAFTER_ROOT/bin/crafter-deployer/crafter-deployer.pid"`
@@ -209,7 +209,7 @@ function studioStatus(){
    echo "------------------------------------------------------------"
    echo "Crafter Studio status                                       "
    echo "------------------------------------------------------------"
-   studioStatusOut=$(curl --silent  -f --fail-early\
+   studioStatusOut=$(curl --silent  -f -y\
    "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/status.json")
    if [ $? -eq 0 ]; then
     echo -e "PID\t"
