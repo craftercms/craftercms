@@ -27,9 +27,9 @@ function help() {
 
 
 function printTailInfo(){
-  echo -e "\e[34;5;196m"
+  echo -e "\033[34;5;196m"
   echo "To follow the logs, please tail this log files in: $CRAFTER_ROOT/logs/"
-  echo -e "\e[0m"
+  echo -e "\033[0m"
 }
 
 function startDeployer() {
@@ -40,7 +40,7 @@ function startDeployer() {
   if [ ! -d $DEPLOYER_LOGS_DIR ]; then
     mkdir -p $DEPLOYER_LOGS_DIR;
   fi
-  ./deployer.sh start;
+  $DEPLOYER_HOME/deployer.sh start;
 }
 
 function debugDeployer() {
@@ -51,7 +51,7 @@ function debugDeployer() {
   if [ ! -d $DEPLOYER_LOGS_DIR ]; then
     mkdir -p $DEPLOYER_LOGS_DIR;
   fi
-  ./deployer.sh debug;
+  $DEPLOYER_HOME/deployer.sh debug;
 }
 
 function stopDeployer() {
@@ -59,7 +59,7 @@ function stopDeployer() {
   echo "------------------------------------------------------------"
   echo "Stopping Deployer"
   echo "------------------------------------------------------------"
-  ./deployer.sh stop;
+  $DEPLOYER_HOME/deployer.sh stop;
 }
 
 function startSolr() {
@@ -70,7 +70,7 @@ function startSolr() {
   if [ ! -d $SOLR_LOGS_DIR ]; then
     mkdir -p $SOLR_LOGS_DIR;
   fi
-  ./solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS"
+  $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS"
 }
 
 function debugSolr() {
@@ -81,7 +81,8 @@ function debugSolr() {
   if [ ! -d $SOLR_LOGS_DIR ]; then
     mkdir -p $SOLR_LOGS_DIR;
   fi
-  ./solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
+  $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS -Xdebug
+  -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
 }
 
 function stopSolr() {
@@ -89,7 +90,7 @@ function stopSolr() {
   echo "------------------------------------------------------------"
   echo "Stopping Solr"
   echo "------------------------------------------------------------"
-  ./solr/bin/solr stop
+  $CRAFTER_HOME/solr/bin/solr stop
 }
 
 function startTomcat() {
@@ -100,7 +101,7 @@ function startTomcat() {
   if [ ! -d $CATALINA_LOGS_DIR ]; then
     mkdir -p $CATALINA_LOGS_DIR;
   fi
-  ./apache-tomcat/bin/startup.sh
+  $CRAFTER_HOME/apache-tomcat/bin/startup.sh
 }
 
 function debugTomcat() {
@@ -111,7 +112,7 @@ function debugTomcat() {
   if [ ! -d $CATALINA_LOGS_DIR ]; then
     mkdir -p $CATALINA_LOGS_DIR;
   fi
-  ./apache-tomcat/bin/catalina.sh jpda start;
+  $CRAFTER_HOME/apache-tomcat/bin/catalina.sh jpda start;
 }
 
 function stopTomcat() {
@@ -119,14 +120,14 @@ function stopTomcat() {
   echo "------------------------------------------------------------"
   echo "Stopping Tomcat"
   echo "------------------------------------------------------------"
-  ./apache-tomcat/bin/shutdown.sh -force
+  $CRAFTER_HOME/apache-tomcat/bin/shutdown.sh -force
 }
 
 function startMongoDB(){
   echo "------------------------------------------------------------"
   echo "Starting MongoDB"
   echo "------------------------------------------------------------"
-  if [ ! -e "$MONGO_PID" ]; then
+  if [ ! -s "$MONGO_PID" ]; then
     if [ -d "$MONGO_DB_HOME" ]; then
       cd $MONGO_DB_HOME
       echo "OK"
@@ -153,16 +154,91 @@ function stopMongoDB(){
   echo "------------------------------------------------------------"
   echo "Stopping MongoDB"
   echo "------------------------------------------------------------"
-  if [ -e "$MONGO_PID" ]; then
-    pkill -F $MONGO_PID
+  if [ -e "$MONGO_PID" ] && [! -s "$MONGO_PID" ]; then
+    $MONGO_DB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_ROOT/data/mongodb
+    --logpath=$MONGO_DB_LOGS_DIR/mongod.log --port 27020
     if [ $? -eq 0 ]; then
       rm $MONGO_PID
     fi
-    exit 0;
   else
     echo "MongoDB already shutdown or pid $MONGO_PID file not found";
   fi
 }
+
+
+function solrStatus(){
+   echo "------------------------------------------------------------"
+   echo "SOLR status                                                 "
+   echo "------------------------------------------------------------"
+   solrStatusOut=$(curl --silent  -f --fail-early "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
+   if [ $? -eq 0 ]; then
+    echo -e "PID\t"
+    echo `cat "$CRAFTER_ROOT/bin/solr/bin/solr-$SOLR_PORT.pid"`
+    echo -e  "uptime (in minutes):\t"
+    echo "$solrStatusOut" | grep -Po '(?<=upTimeMS":)[^}]+' | awk '{print ($1/1000)/60}'| bc
+    echo -e  "Solr Version:\t"
+    echo "$solrStatusOut" | grep -Po '(?<=solr-spec-version":")[^"]+'
+   else
+      echo -e "\033[38;5;196m"
+      echo "Solr is not running or is unreachable on port $SOLR_PORT"
+      echo -e "\033[0m"
+    fi
+}
+
+function deployerStatus(){
+   echo "------------------------------------------------------------"
+   echo "Crafter Deployer status                                                 "
+   echo "------------------------------------------------------------"
+   deployerStatusOut=$(curl --silent  -f --fail-early "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
+   if [ $? -eq 0 ]; then
+    echo -e "PID\t"
+    echo `cat "$CRAFTER_ROOT/bin/crafter-deployer/crafter-deployer.pid"`
+    echo -e  "uptime:\t"
+    echo "$deployerStatusOut" | grep -Po '(?<=uptime":")[^"]+'
+    echo -e  "Status:\t"
+    echo "$deployerStatusOut" | grep -Po '(?<=status":")[^"]+'
+   else
+      echo -e "\033[38;5;196m"
+      echo "Crafter Deployer is not running or is unreachable on port $DEPLOYER_PORT"
+      echo -e "\033[0m"
+    fi
+}
+
+
+function studioStatus(){
+   echo "------------------------------------------------------------"
+   echo "Crafter Studio status                                       "
+   echo "------------------------------------------------------------"
+   studioStatusOut=$(curl --silent  -f --fail-early\
+   "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/status.json")
+   if [ $? -eq 0 ]; then
+    echo -e "PID\t"
+    echo `cat "$CATALINA_PID"`
+    echo -e  "uptime:\t"
+    echo "$studioStatusOut" | grep -Po '(?<=uptime":")[^"]+'
+    echo -e  "Status:\t"
+    echo "$studioStatusOut" | grep -Po '(?<=status":")[^"]+'
+    echo -e "Mysql sub-process:\t"
+    echo -e "PID \t"
+    echo ` cat "$MYSQL_DATA/$HOSTNAME.pid"`
+   else
+      echo -e "\033[38;5;196m"
+      echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTTP_PORT"
+      echo -e "\033[0m"
+    fi
+}
+
+function mongoDbStatus(){
+    if [ -e "$MONGO_PID" ]; then
+        echo -e "MongoDb PID"
+        echo `cat $MONGO_PID`
+    else
+        echo -e "\033[38;5;196m"
+        echo " MongoDB is not running"
+        echo -e "\033[0m"
+    fi
+}
+
 
 function start() {
   startDeployer
@@ -187,15 +263,22 @@ function stop() {
   stopDeployer
 }
 
+function status(){
+  solrStatus
+  deployerStatus
+  studioStatus
+  mongoDbStatus
+}
+
 function logo() {
-  echo -e "\e[38;5;196m"
+  echo -e "\033[38;5;196m"
   echo " ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗"
   echo "██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗    ██╔════╝ ████╗ ████║ ██╔════╝"
   echo "██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝    ██║      ██╔████╔██║ ███████╗"
   echo "██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗    ██║      ██║╚██╔╝██║ ╚════██║"
   echo "╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║    ╚██████╗ ██║ ╚═╝ ██║ ███████║"
   echo " ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝     ╚═╝ ╚══════╝"
-  echo -e "\e[0m"
+  echo -e "\033[0m"
 }
 
 case $1 in
@@ -257,6 +340,9 @@ case $1 in
   ;;
   tail)
     tail $2
+  ;;
+  status)
+     status
   ;;
   *)
     help

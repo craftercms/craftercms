@@ -30,7 +30,6 @@ function start() {
   fi
   nohup java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"  > "$OUTPUT" >&1&
   echo $! > $PID
-  exit 0;
 }
 
 function stop() {
@@ -39,7 +38,6 @@ function stop() {
     if [ $? -eq 0 ]; then
       rm $PID
     fi
-    exit 0;
   else
     echo "Crafter Deployer already shutdown or pid $PID file not found";
   fi
