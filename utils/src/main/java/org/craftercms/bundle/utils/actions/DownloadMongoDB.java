@@ -50,11 +50,10 @@ public class DownloadMongoDB implements Action {
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int n;
                 long total = 0;
+                System.out.println("Downloading Mongodb please wait.")
                 while ((n = input.read(buffer)) != -1) {
                     out.write(buffer, 0, n);
                     total += n;
-                    System.out.printf("Downloading ... %.1f mb\n", (double)((total / BUFFER_SIZE) / BUFFER_SIZE));
-
                 }
                 out.flush();
                 out.close();
