@@ -22,3 +22,5 @@ export DEPLOYER_JAVA_OPTS="-server -Xss1024K -Xmx1G"
 export MONGO_DB_HOME="$CRAFTER_HOME/mongodb"
 export MONGO_PID="$CRAFTER_ROOT/data/mongodb/mongod.lock"
 export MONGO_DB_LOGS_DIR=$CRAFTER_ROOT/logs/mongodb
+export TOMCAT_HTTP_PORT=@TOMCAT_HTTP_PORT@
+export MYSQL_DATA="$CRAFTER_ROOT/data/db"

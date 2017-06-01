@@ -572,8 +572,5 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     pb.directory(new File(workingDir))
     pb.redirectErrorStream(true)
     Process proc = pb.start();
-   if (printOutputUntilFinish) {
-        proc.waitFor()
-    }
     proc.inputStream.eachLine {println it}
 }

@@ -1,68 +1,78 @@
 package org.craftercms.bundle.utils.actions;
 
-import org.craftercms.bundle.utils.Action;
-
-import java.io.*;
-import java.nio.file.Path;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.craftercms.bundle.utils.Action;
 
 /**
  * Created by cortiz on 4/27/17.
  */
 public class Unzip implements Action{
+
     private static PrintStream out = System.out;
-    private static final int BUFFER=1024;
+
+    private static final int BUFFER = 1024;
+
     @Override
-    public void execute(String[] args) {
-        if(args.length<=0){
+    public void execute(final String[] args) {
+        if (args.length <= 0){
             help();
-        }else{
-            String file=args[0];
-            String location=".";
-            boolean stripRootFolder=false;
-            if(args.length>=2) {
+        } else{
+            String file = args[0];
+            String location = ".";
+            boolean stripRootFolder = false;
+            if (args.length >=2 ) {
                 location = args[1];
                 new File(location).mkdirs();
             }
-            if(args.length>=3){
-                stripRootFolder=Boolean.parseBoolean(args[2].toLowerCase());
+            if (args.length >= 3){
+                stripRootFolder = Boolean.parseBoolean(args[2].toLowerCase());
             }
 
-            try( ZipInputStream zipFile = new ZipInputStream(new BufferedInputStream(new FileInputStream(new File(file))))) {
+            try (ZipInputStream zipFile = new ZipInputStream(
+                new BufferedInputStream(
+                    new FileInputStream(new File(file))))) {
                 ZipEntry entry = zipFile.getNextEntry();
-                byte[] readBuffer=new byte[BUFFER];
+                byte[] readBuffer = new byte[BUFFER];
                 out.println("Extracting Files");
-                while (entry!=null){
-                     File entryFile = Paths.get(location, stripRootFolder?new File(entry.getName()).getName():entry.getName()).toFile();
-                    if(entry.isDirectory()) {
+                while (entry != null){
+                    File entryFile = Paths.get(location, stripRootFolder? new File(entry.getName()).getName(): entry.getName())
+                        .toFile();
+                    if (entry.isDirectory()) {
                         if (!entryFile.exists()) {
                             entryFile.mkdir();
                         }
-                    }else {
-                        if(!entryFile.getParentFile().exists()){
+                    } else{
+                        if (!entryFile.getParentFile().exists()){
                             entryFile.getParentFile().mkdir();
                         }
-                        int n=0;
                         try (BufferedOutputStream entryOut = new BufferedOutputStream(new FileOutputStream(entryFile))) {
+                            int n = 0;
                             while ((n = zipFile.read(readBuffer)) != -1) {
                                 entryOut.write(readBuffer);
                             }
-                        }catch (IOException e){
+                        } catch (IOException e){
                             e.printStackTrace();
                         }
                     }
                     out.println(entryFile.getAbsolutePath());
-                    entry=zipFile.getNextEntry();
+                    entry = zipFile.getNextEntry();
                 }
             } catch (FileNotFoundException e) {
-                out.printf("File %n not found",file);
+                out.printf("File %n not found", file);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 
