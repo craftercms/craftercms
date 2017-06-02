@@ -227,8 +227,8 @@ function studioStatus(){
 
 function mongoDbStatus(){
     if [ -e "$MONGODB_PID" ]; then
-        echo -e "MongoDb PID"
-        echo `cat $MONGODB_PID`
+        echo -e "MongoDB PID"
+        echo $(cat $MONGODB_PID)
     else
         echo -e "\033[38;5;196m"
         echo " MongoDB is not running"
