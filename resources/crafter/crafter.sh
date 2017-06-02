@@ -154,7 +154,7 @@ function stopMongoDB(){
   echo "------------------------------------------------------------"
   echo "Stopping MongoDB"
   echo "------------------------------------------------------------"
-  if [ -e "$MONGO_PID" ] && [! -s "$MONGO_PID" ]; then
+  if [ -e "$MONGO_PID" ] && [ ! -s "$MONGO_PID" ]; then
     $MONGO_DB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_ROOT/data/mongodb
     --logpath=$MONGO_DB_LOGS_DIR/mongod.log --port 27020
     if [ $? -eq 0 ]; then
