@@ -1,3 +1,4 @@
 target:
+  localRepoPath: ${deployer.main.deployments.folderPath}/${target.siteName}
   search:
     serverUrl: http://localhost:@TOMCAT_HTTP_PORT@/crafter-search

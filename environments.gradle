@@ -191,6 +191,18 @@ task("deliveyEnviroment"){
             ])
         }
         copy{
+            from "./resources/tomcat-config-delivery/"
+            into "${liveEnv}/bin/apache-tomcat/shared/classes/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
+                                           SOLR_PORT: String.valueOf(solrDevPort),
+                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
+                                           TOMCAT_DEBUG_PORT:String.valueOf(liveTomcatDebug),
+                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
+            ])
+        }
+        copy{
             from "./src/deployer/target/crafter-deployer.jar"
             into "${liveEnv}/bin/crafter-deployer"
         }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <import resource="classpath*:crafter/engine/mode/multi-tenant/services-context.xml" />
+
+  <bean id="crafter.siteListResolver" class="org.craftercms.engine.service.context.FolderScanningSiteListResolver">
+      <property name="siteRootFolderPath" value="${crafter.engine.site.default.rootFolder.path}"/>
+      <property name="macroResolver" ref="crafter.macroResolver"/>
+  </bean>
+
+  <bean id="crafter.siteResolver" class="org.craftercms.engine.service.context.CookieSiteResolver">
+      <property name="paramOrCookieName" value="${crafter.engine.request.param.siteName}"/>
+  </bean>
+
+  <bean id="crafter.siteContextsBootstrap" class="org.craftercms.engine.service.context.SiteContextsBootstrap">
+      <property name="createContextsOnStartup" value="${crafter.engine.site.context.createOnStartup}"/>
+      <property name="siteContextManager" ref="crafter.siteContextManager"/>
+      <property name="siteListResolver" ref="crafter.siteListResolver"/>
+  </bean>
+
+</beans>

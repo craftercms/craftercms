@@ -20,7 +20,7 @@ function help() {
   echo "    stop_tomcat, Stops Tomcat"
   echo "    debug_tomcat, Starts Tomcat in debug mode"
   echo "    start_mongodb, Starts Mongo DB"
-  echo "    stop_mongodb, Stops Mongo DB"  
+  echo "    stop_mongodb, Stops Mongo DB"
   echo "    tail,  Tails all Crafter CMS logs"
   exit 0;
 }
@@ -127,24 +127,24 @@ function startMongoDB(){
   echo "------------------------------------------------------------"
   echo "Starting MongoDB"
   echo "------------------------------------------------------------"
-  if [ ! -s "$MONGO_PID" ]; then
-    if [ -d "$MONGO_DB_HOME" ]; then
-      cd $MONGO_DB_HOME
+  if [ ! -s "$MONGODB_PID" ]; then
+    if [ -d "$MONGODB_HOME" ]; then
+      cd $MONGODB_HOME
       echo "OK"
       cd $CRAFTER_HOME
     else
       cd $CRAFTER_HOME
-      mkdir $MONGO_DB_HOME
-      cd $MONGO_DB_HOME
+      mkdir $MONGODB_HOME
+      cd $MONGODB_HOME
       echo "MongoDB not found"
       java -jar $CRAFTER_HOME/craftercms-utils.jar download mongodb
       tar xvf mongodb.tgz --strip 1
       rm mongodb.tgz
     fi
-    if [ ! -d $MONGO_DB_LOGS_DIR ]; then
-      mkdir -p $MONGO_DB_LOGS_DIR;
+    if [ ! -d $MONGODB_LOGS_DIR ]; then
+      mkdir -p $MONGODB_LOGS_DIR;
     fi
-    $MONGO_DB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGO_DB_LOGS_DIR/mongod.log --port 27020
+    $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
   else
     echo "MongoDB already started"
   fi
@@ -154,17 +154,15 @@ function stopMongoDB(){
   echo "------------------------------------------------------------"
   echo "Stopping MongoDB"
   echo "------------------------------------------------------------"
-  if [ -e "$MONGO_PID" ] && [! -s "$MONGO_PID" ]; then
-    $MONGO_DB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_ROOT/data/mongodb
-    --logpath=$MONGO_DB_LOGS_DIR/mongod.log --port 27020
+  if [ -s "$MONGODB_PID" ]; then
+    $MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_ROOT/data/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
     if [ $? -eq 0 ]; then
-      rm $MONGO_PID
+      rm $MONGODB_PID
     fi
   else
-    echo "MongoDB already shutdown or pid $MONGO_PID file not found";
+    echo "MongoDB already shutdown or pid $MONGODB_PID file not found";
   fi
 }
-
 
 function solrStatus(){
    echo "------------------------------------------------------------"
@@ -204,7 +202,6 @@ function deployerStatus(){
     fi
 }
 
-
 function studioStatus(){
    echo "------------------------------------------------------------"
    echo "Crafter Studio status                                       "
@@ -218,7 +215,7 @@ function studioStatus(){
     echo "$studioStatusOut" | grep -Po '(?<=uptime":")[^"]+'
     echo -e  "Status:\t"
     echo "$studioStatusOut" | grep -Po '(?<=status":")[^"]+'
-    echo -e "Mysql sub-process:\t"
+    echo -e "MySQL sub-process:\t"
     echo -e "PID \t"
     echo ` cat "$MYSQL_DATA/$HOSTNAME.pid"`
    else
@@ -229,16 +226,15 @@ function studioStatus(){
 }
 
 function mongoDbStatus(){
-    if [ -e "$MONGO_PID" ]; then
+    if [ -e "$MONGODB_PID" ]; then
         echo -e "MongoDb PID"
-        echo `cat $MONGO_PID`
+        echo `cat $MONGODB_PID`
     else
         echo -e "\033[38;5;196m"
         echo " MongoDB is not running"
         echo -e "\033[0m"
     fi
 }
-
 
 function start() {
   startDeployer

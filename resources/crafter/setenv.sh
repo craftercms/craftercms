@@ -19,8 +19,9 @@ export DEPLOYER_DEPLOYMENTS_DIR=$CRAFTER_ROOT/@DEPLOYMENT_DIR@
 export DEPLOYER_SDOUT=$DEPLOYER_LOGS_DIR/crafter-deployer.out
 export DEPLOYER_JAVA_OPTS="-server -Xss1024K -Xmx1G"
 # MongoDB variables
-export MONGO_DB_HOME="$CRAFTER_HOME/mongodb"
-export MONGO_PID="$CRAFTER_ROOT/data/mongodb/mongod.lock"
-export MONGO_DB_LOGS_DIR=$CRAFTER_ROOT/logs/mongodb
+export MONGODB_PORT=@MONGODB_PORT@
+export MONGODB_HOME="$CRAFTER_HOME/mongodb"
+export MONGODB_PID="$CRAFTER_ROOT/data/mongodb/mongod.lock"
+export MONGODB_LOGS_DIR=$CRAFTER_ROOT/logs/mongodb
 export TOMCAT_HTTP_PORT=@TOMCAT_HTTP_PORT@
 export MYSQL_DATA="$CRAFTER_ROOT/data/db"
