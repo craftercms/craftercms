@@ -260,7 +260,6 @@ task("deliveyEnviroment"){
                 commandLine commandLinePrefix + ["chmod","+x","crafter.sh","startup.sh","debug.sh","shutdown.sh", "setenv.sh"]
             }
         }
-        updateCatalinaSettings(liveEnv);
         if(includeProfile){
             copy{
                 from "./src/profile/server/target/crafter-profile.war"
@@ -279,7 +278,7 @@ task("deliveyEnviroment"){
         updateTomcatContext("${liveEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${liveEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${liveEnv}/bin/solr/server/solr/solr.xml")
-        updateDeliveryConfig(liveEnv)
+
     }
 }
 
@@ -338,38 +337,4 @@ def addSolrIndexHome(solrServerConfig){
     def printer = new XmlNodePrinter(new PrintWriter(solrServerConfig) )
     printer.preserveWhitespace = true
     printer.print( contextConfig )
-}
-
-def updateDeliveryConfig(env){
-    def renderingContext="${env}/bin/apache-tomcat/shared/classes/crafter/engine/extension/rendering-context.xml"
-    def servicesContext="${env}/bin/apache-tomcat/shared/classes/crafter/engine/extension/services-context.xml"
-    def contextConfig=new XmlParser().parse(renderingContext)
-    def serviceConfig=new XmlParser().parse(servicesContext)
-
-    for(int i=0;i<contextConfig.children().size();i++){
-        contextConfig.remove(contextConfig.children().get(i))
-    }
-    for(int i=0;i<serviceConfig.children().size();i++){
-        serviceConfig.remove(serviceConfig.children().get(i))
-    }
-    def printer = new XmlNodePrinter(new PrintWriter(renderingContext) )
-    printer.preserveWhitespace = true
-    printer.print( contextConfig )
-
-    printer = new XmlNodePrinter(new PrintWriter(servicesContext))
-    printer.preserveWhitespace = true
-    printer.print( serviceConfig )
-
-
-    Properties engineServerProps = new Properties()
-    engineServerProps.load(
-            new FileInputStream(
-                    "${env}/bin/apache-tomcat/shared/classes/crafter/engine/extension/server-config.properties"))
-
-    engineServerProps.setProperty("crafter.engine.site.default.rootFolder.path","./data/repos/sites/{siteName}/")
-    def output = new FileOutputStream(
-            "${env}/bin/apache-tomcat/shared/classes/crafter/engine/extension/server-config.properties")
-    engineServerProps.store(output,"")
-    new File("${env}/bin/apache-tomcat/shared/classes/crafter/studio").deleteDir()
-
 }

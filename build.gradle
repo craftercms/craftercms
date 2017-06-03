@@ -571,6 +571,9 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     ProcessBuilder pb = new ProcessBuilder(command)
     pb.directory(new File(workingDir))
     pb.redirectErrorStream(true)
+   // pb.inheritIO()
     Process proc = pb.start();
     proc.inputStream.eachLine {println it}
+    proc.waitFor(30, java.util.concurrent.TimeUnit.SECONDS)
+
 }
