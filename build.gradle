@@ -406,11 +406,11 @@ def cloneModule(commandLinePrefix, module){
         return tasks.create("clone${module}") {
             def finalUrl = "${gitURLTemplate}${module}.git".toString()
             def path = "src/${module}".toString()
-
             def arry = commandLinePrefix + ["git","clone","-b",sourceBranch,finalUrl,path]
             if (file(path).exists()) {
                 throw new InvalidUserDataException("Module ${module} has already been initialized, please use 'init' to update it.")
             } else {
+                println "Cloning ${module} branch ${} from ${finalUrl}"
                 executeProcess(arry,".")
             }
         }
@@ -574,7 +574,6 @@ def pack(environmentPath,envName){
 def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     ProcessBuilder pb = new ProcessBuilder(command)
     def processOutput = new File("./processOutput.out")
-    processOutput.deleteOnExit() //clean
     pb.directory(new File(workingDir))
     pb.redirectOutput(processOutput)
     Process proc = pb.start();
@@ -585,11 +584,15 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
 // Poor's man tail (but get's the job done
 def watchProcessOutput(process, processOutputFile){
     Thread.start {
+        // Just "wait" until file exists.
+        while(!processOutputFile.exists()){
+        }
+
         def reader=Files.newBufferedReader(Paths.get(processOutputFile.path))
         while(process.alive){
            // Thread.sleep(100)
-            def line=reader.readLine();
-            if(line) {
+            def line=null
+            while((line=reader.readLine())!=null){
                 println line
             }
         }
