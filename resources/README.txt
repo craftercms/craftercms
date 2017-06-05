@@ -12,18 +12,18 @@ To run this bundle you must have Java 1.8 installed.
 
 Starting Crafter CMS Server
 ---------------------------
-From the command line, navigate to the INSTALL_PATH/crafter directory, and execute the startup script:
+From the command line, navigate to the INSTALL_PATH/ directory, and execute the startup script:
 
     On Linux/Unix:
 
-        $ ./startup.sh
+        $ ./bin/startup.sh
 
     On Windows:
 
-        $ startup.bat
+        $ \bin\startup.bat
 
 
-You can find detailed log information from the server in: INSTALL_FOLDER/apache-tomcat/logs/catalina.out.
+You can find detailed log information from the server in: INSTALL_FOLDER/logs/catalina.out.
 
 
 Logging In
@@ -51,15 +51,15 @@ Studio will create your new site and redirect you to a preview where you can pre
 
 Stopping Crafter CMS Server
 ---------------------------
-From the command line, navigate to the INSTALL_PATH/crafter directory, and execute the startup script:
+From the command line, navigate to the INSTALL_PATH/ directory, and execute the startup script:
 
     On Linux/Unix:
 
-        $ ./shutdown.sh
+        $ ./bin/shutdown.sh
 
     On Windows:
 
-        $ shutdown.bat
+        $ bin\shutdown.bat
 
 
 Going Further
