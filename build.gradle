@@ -1,3 +1,7 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardWatchEventKinds
+
 plugins {
     id "de.undercouch.download" version "3.1.2"
 }
@@ -402,11 +406,12 @@ def cloneModule(commandLinePrefix, module){
         return tasks.create("clone${module}") {
             def finalUrl = "${gitURLTemplate}${module}.git".toString()
             def path = "src/${module}".toString()
-
             def arry = commandLinePrefix + ["git","clone","-b",sourceBranch,finalUrl,path]
             if (file(path).exists()) {
-                throw new InvalidUserDataException("Module ${module} has already been initialized, please use 'init' to update it.")
+                println ("Module ${module} has already been initialized, please use " +
+                        "'update' to update it.")
             } else {
+                println "Cloning: ${module}, branch: ${sourceBranch}, url: ${finalUrl}"
                 executeProcess(arry,".")
             }
         }
@@ -569,11 +574,29 @@ def pack(environmentPath,envName){
 
 def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     ProcessBuilder pb = new ProcessBuilder(command)
+    def processOutput = new File("./processOutput.out")
     pb.directory(new File(workingDir))
-    pb.redirectErrorStream(true)
-   // pb.inheritIO()
+    pb.redirectOutput(processOutput)
     Process proc = pb.start();
-    proc.inputStream.eachLine {println it}
-    proc.waitFor(30, java.util.concurrent.TimeUnit.SECONDS)
+    watchProcessOutput(proc,processOutput)
+    proc.waitFor()
+}
 
+// Poor's man tail (but get's the job done
+def watchProcessOutput(process, processOutputFile){
+    Thread.start {
+        // Just "wait" until file exists.
+        while(!processOutputFile.exists()){
+        }
+
+        def reader=Files.newBufferedReader(Paths.get(processOutputFile.path))
+        while(process.alive){
+           // Thread.sleep(100)
+            def line=null
+            while((line=reader.readLine())!=null){
+                println line
+            }
+        }
+        processOutputFile.delete()
+    }
 }
