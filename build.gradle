@@ -1,3 +1,7 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardWatchEventKinds
+
 plugins {
     id "de.undercouch.download" version "3.1.2"
 }
@@ -569,11 +573,26 @@ def pack(environmentPath,envName){
 
 def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     ProcessBuilder pb = new ProcessBuilder(command)
+    def processOutput = new File("./processOutput.out")
+    processOutput.deleteOnExit() //clean
     pb.directory(new File(workingDir))
-    pb.redirectErrorStream(true)
-   // pb.inheritIO()
+    pb.redirectOutput(processOutput)
     Process proc = pb.start();
-    proc.inputStream.eachLine {println it}
-    proc.waitFor(30, java.util.concurrent.TimeUnit.SECONDS)
+    watchProcessOutput(proc,processOutput)
+    proc.waitFor()
+}
 
+// Poor's man tail (but get's the job done
+def watchProcessOutput(process, processOutputFile){
+    Thread.start {
+        def reader=Files.newBufferedReader(Paths.get(processOutputFile.path))
+        while(process.alive){
+           // Thread.sleep(100)
+            def line=reader.readLine();
+            if(line) {
+                println line
+            }
+        }
+        processOutputFile.delete()
+    }
 }
