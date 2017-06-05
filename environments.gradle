@@ -274,7 +274,7 @@ task("deliveyEnviroment"){
         }
         updateTomcatPorts("${liveEnv}/bin/apache-tomcat/conf/server.xml",liveTomcatPort,liveTomcatAJPPort,
                 liveTomcatShutdownPort,liveTomcatSSLPort)
-
+        updateCatalinaSettings(liveEnv)
         updateTomcatContext("${liveEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${liveEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${liveEnv}/bin/solr/server/solr/solr.xml")

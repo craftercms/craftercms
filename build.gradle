@@ -411,7 +411,7 @@ def cloneModule(commandLinePrefix, module){
                 println ("Module ${module} has already been initialized, please use " +
                         "'update' to update it.")
             } else {
-                println "Cloning:${module}, branch:${sourceBranch}, url: ${finalUrl}"
+                println "Cloning: ${module}, branch: ${sourceBranch}, url: ${finalUrl}"
                 executeProcess(arry,".")
             }
         }
