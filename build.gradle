@@ -408,9 +408,10 @@ def cloneModule(commandLinePrefix, module){
             def path = "src/${module}".toString()
             def arry = commandLinePrefix + ["git","clone","-b",sourceBranch,finalUrl,path]
             if (file(path).exists()) {
-                throw new InvalidUserDataException("Module ${module} has already been initialized, please use 'init' to update it.")
+                println ("Module ${module} has already been initialized, please use " +
+                        "'update' to update it.")
             } else {
-                println "Cloning ${module} branch ${sourceBranch} from ${finalUrl}"
+                println "Cloning:${module}, branch:${sourceBranch}, url: ${finalUrl}"
                 executeProcess(arry,".")
             }
         }
