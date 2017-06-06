@@ -28,7 +28,8 @@ function help() {
 
 function printTailInfo(){
   echo -e "\033[34;5;196m"
-  echo "To follow the logs, please tail this log files in: $CRAFTER_ROOT/logs/"
+  echo "Log files live here: \"$CRAFTER_ROOT/logs/\". "
+  echo "To follow the main tomcat log, you can \"tail -f $CRAFTER_ROOT/logs/tomcat/catalina.out\""
   echo -e "\033[0m"
 }
 
@@ -128,11 +129,18 @@ function startMongoDB(){
   echo "Starting MongoDB"
   echo "------------------------------------------------------------"
   if [ ! -s "$MONGODB_PID" ]; then
-    if [ -d "$MONGODB_HOME" ]; then
-      cd $MONGODB_HOME
-      echo "OK"
-      cd $CRAFTER_HOME
-    else
+
+    if [ ! -d "$MONGODB_DATA_DIR" ]; then
+        echo "Creating : ${MONGODB_DATA_DIR}"
+        mkdir -p "$MONGODB_DATA_DIR"
+    fi
+
+    if [ ! -d $MONGODB_LOGS_DIR ]; then
+         echo "Creating : ${MONGODB_LOGS_DIR}"
+      mkdir -p $MONGODB_LOGS_DIR;
+    fi
+
+    if [ ! -d "$MONGODB_HOME" ]; then
       cd $CRAFTER_HOME
       mkdir $MONGODB_HOME
       cd $MONGODB_HOME
@@ -141,9 +149,7 @@ function startMongoDB(){
       tar xvf mongodb.tgz --strip 1
       rm mongodb.tgz
     fi
-    if [ ! -d $MONGODB_LOGS_DIR ]; then
-      mkdir -p $MONGODB_LOGS_DIR;
-    fi
+
     $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
   else
     echo "MongoDB already started"
