@@ -14,6 +14,14 @@ You must have these prerequisites on your system before you begin:
 * Git 2.x+
 * Maven 3.3.x+
 
+**OSX extra prerequisite.** 
+
+* Using  [`brew`](http://brew.sh) install the latest `openssl` formula:
+
+```bash
+brew install openssl
+```
+
 Let's begin :)
 
 ```bash
