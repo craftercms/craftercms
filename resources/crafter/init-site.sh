@@ -12,8 +12,10 @@ REPO=$2
 
 echo "Creating Solr Core"
 curl -s -X POST -H "Content-Type: application/json" -d '{"id":"'"$SITE"'"}' "http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/create"
+echo ""
 
 echo "Creating Deployer Target"
 curl -s -X POST -H "Content-Type: application/json" -d '{"env":"default", "site_name":"'"$SITE"'", "template_name":"remote", "repo_url":"'"$REPO"'", "repo_branch":"live", "engine_url":"http://localhost:@TOMCAT_HTTP_PORT@" }' "http://localhost:@DEPLOYER_PORT@/api/1/target/create"
+echo ""
 
 echo "Done"
