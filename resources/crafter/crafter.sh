@@ -28,7 +28,8 @@ function help() {
 
 function printTailInfo(){
   echo -e "\033[34;5;196m"
-  echo "To follow the logs, please tail this log files in: $CRAFTER_ROOT/logs/"
+  echo "Log files live here: \"$CRAFTER_ROOT/logs/\". "
+  echo "To follow the main tomcat log, you can \"tail -f $CRAFTER_ROOT/logs/tomcat/catalina.out\""
   echo -e "\033[0m"
 }
 
