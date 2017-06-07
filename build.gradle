@@ -53,7 +53,7 @@ ext {
     authEnv=project.hasProperty("authoring.root")? project.property("authoring.root") : "./crafter-auth-env/"
     liveEnv=project.hasProperty("delivery.root")? project.property("delivery.root") : "./crafter-delivery-env/"
     includeProfile=project.hasProperty("crafter.profile")? project.property("crafter.profile") : false
-    includeSocial=project.hasProperty("social.profile")? project.property("crafter.social") : false
+    includeSocial=project.hasProperty("crafter.social")? project.property("crafter.social") : false
 
     /** Social Need Profile **/
     if (includeSocial) {

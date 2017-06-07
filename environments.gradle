@@ -126,12 +126,14 @@ task("authoringEnvirment"){
         if(includeProfile){
             copy{
                 from "./src/profile/server/target/crafter-profile.war"
+                from "./src/profile/admin-console/target/crafter-profile-admin-console.war"
                 into "${authEnv}/bin/apache-tomcat/webapps/"
             }
         }
         if(includeSocial){
             copy{
                 from "./src/social/server/target/crafter-social.war"
+                from "./src/social/admin/target/crafter-social-admin.war"
                 into "${authEnv}/bin/apache-tomcat/webapps/"
             }
         }
@@ -263,12 +265,14 @@ task("deliveyEnviroment"){
         if(includeProfile){
             copy{
                 from "./src/profile/server/target/crafter-profile.war"
+                from "./src/profile/admin-console/target/crafter-profile-admin-console.war"
                 into "${liveEnv}/bin/apache-tomcat/webapps/"
             }
         }
         if(includeSocial){
             copy{
                 from "./src/social/server/target/crafter-social.war"
+                from "./src/social/admin/target/crafter-social-admin.war"
                 into "${liveEnv}/bin/apache-tomcat/webapps/"
             }
         }
