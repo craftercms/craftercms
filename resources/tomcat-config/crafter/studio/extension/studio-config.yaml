@@ -41,3 +41,26 @@ studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&pas
 studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
 studio.db.dataPath: ../data/db
+
+##################################################
+##        SMTP Configuration (Email)            ##
+##################################################
+
+# Default value for from header when sending emails.
+# studio.mail.from.default: admin@example.com
+# SMTP server name to send emails.
+# studio.mail.host: localhost
+# SMTP port number to send emails.
+# studio.mail.port: 25
+# SMTP username for authenticated access when sending emails.
+# studio.mail.username:
+# SMTP password for authenticated access when sending emails.
+# studio.mail.password:
+# Turn on/off (value true/false) SMTP authenaticated access protocol.
+# studio.mail.smtp.auth: false
+# Enable/disable (value true/false) SMTP TLS protocol when sending emails.
+# studio.mail.smtp.starttls.enable: false
+# Enable/disable (value true/false) SMTP EHLO protocol when sending emails.
+# studio.mail.smtp.ehlo: true
+# Enable/disable (value true/false) debug mode for email service. Enabling debug mode allows tracking/debugging communication between email service and SMTP server.
+# studio.mail.debug: false
