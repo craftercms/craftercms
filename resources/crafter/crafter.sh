@@ -198,7 +198,7 @@ function deployerStatus(){
     echo -e "PID\t"
     echo `cat "$CRAFTER_ROOT/bin/crafter-deployer/crafter-deployer.pid"`
     echo -e  "uptime:\t"
-    echo "$deployerStatusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|\"]" '{print $2}'
+    echo "$deployerStatusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
     echo -e  "Status:\t"
     echo "$deployerStatusOut"  | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
    else
