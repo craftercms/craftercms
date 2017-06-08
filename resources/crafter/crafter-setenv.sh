@@ -26,3 +26,12 @@ export MONGODB_DATA_DIR="$CRAFTER_ROOT/data/mongodb"
 export MONGODB_LOGS_DIR="$CRAFTER_ROOT/logs/mongodb"
 export TOMCAT_HTTP_PORT=@TOMCAT_HTTP_PORT@
 export MYSQL_DATA="$CRAFTER_ROOT/data/db"
+
+case "$(uname -s)" in
+   Darwin)
+    export MYSQL_PID_FILE_NAME="$(echo "$HOSTNAME" | awk -F'.' '{print $1}' ).pid"
+     ;;
+    *)
+    export MYSQL_PID_FILE_NAME="$HOSTNAME.pid"
+    ;;
+esac

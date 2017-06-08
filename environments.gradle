@@ -42,6 +42,12 @@ task("authoringEnvirment"){
         webapps.mkdir()
 
         copy{
+            from "./resources/tomcat-config/crafter/setenv.sh"
+            from "./resources/tomcat-config/crafter/setenv.bat"
+            into "${authEnv}/bin/apache-tomcat/bin"
+        }
+
+        copy{
             from "./src/search/crafter-search-server/target/crafter-search.war"
             from "./src/engine/target/ROOT.war"
             from "./src/studio/target/studio.war"
@@ -111,15 +117,16 @@ task("authoringEnvirment"){
         if(!isWin){
             exec{
                 workingDir "${authEnv}/bin/apache-tomcat/bin/"
-                commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "configtest.sh", "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
+                commandLine commandLinePrefix + ["chmod","+x","catalina.sh", "setenv.sh" , "configtest.sh", "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
             }
             exec{
                 workingDir "${authEnv}/bin/crafter-deployer/"
-                commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh"]
+                commandLine commandLinePrefix + ["chmod","+x","deployer.sh"]
             }
             exec{
                 workingDir "${authEnv}/bin"
-                commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh","shutdown.sh", "setenv.sh", "init-site.sh"]
+                commandLine commandLinePrefix + ["chmod","+x","crafter.sh","startup.sh","debug.sh","shutdown.sh",
+                                                 "crafter-setenv.sh"]
             }
         }
         updateCatalinaSettings(authEnv);
@@ -173,6 +180,12 @@ task("deliveyEnviroment"){
         def webapps = file("${liveEnv}/bin/apache-tomcat/webapps/")
         webapps.deleteDir()
         webapps.mkdir()
+
+        copy{
+            from "./resources/tomcat-config/crafter/setenv.sh"
+            from "./resources/tomcat-config/crafter/setenv.bat"
+            into "${liveEnv}/bin/apache-tomcat/bin"
+        }
 
         copy{
             from "./src/search/crafter-search-server/target/crafter-search.war"
@@ -251,15 +264,18 @@ task("deliveyEnviroment"){
         if(!isWin){
             exec{
                 workingDir "${liveEnv}/bin/apache-tomcat/bin/"
-                commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "configtest.sh", "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
+                commandLine commandLinePrefix + ["chmod","+x","catalina.sh", "setenv.sh" ,"configtest.sh", "daemon.sh",
+                                                 "digest" +
+                        ".sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
             }
             exec{
                 workingDir "${liveEnv}/bin/crafter-deployer/"
-                commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh"]
+                commandLine commandLinePrefix + ["chmod","+x","deployer.sh"]
             }
             exec{
                 workingDir "${liveEnv}/bin"
-                commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh","startup.sh","debug.sh","shutdown.sh", "setenv.sh", "init-site.sh"]
+                commandLine commandLinePrefix + ["chmod","+x","crafter.sh","startup.sh","debug.sh","shutdown.sh",
+                                                 "crafter-setenv.sh"]
             }
         }
         if(includeProfile){

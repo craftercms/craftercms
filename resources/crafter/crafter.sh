@@ -3,7 +3,7 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && 
 export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
 export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
 
-. "$CRAFTER_HOME/setenv.sh"
+. "$CRAFTER_HOME/crafter-setenv.sh"
 
 function help() {
   echo $(basename $BASH_SOURCE)
@@ -174,14 +174,14 @@ function solrStatus(){
    echo "------------------------------------------------------------"
    echo "SOLR status                                                 "
    echo "------------------------------------------------------------"
-   solrStatusOut=$(curl --silent  -f -y "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
+   solrStatusOut=$(curl --silent  -f "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
    if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$CRAFTER_ROOT/bin/solr/bin/solr-$SOLR_PORT.pid"`
     echo -e  "uptime (in minutes):\t"
-    echo "$solrStatusOut" | grep -Po '(?<=upTimeMS":)[^}]+' | awk '{print ($1/1000)/60}'| bc
+    echo "$solrStatusOut"  | python -m json.tool | grep upTimeMS | awk -F"[,|:]" '{print $2}'| awk '{print ($1/1000)/60}'| bc
     echo -e  "Solr Version:\t"
-    echo "$solrStatusOut" | grep -Po '(?<=solr-spec-version":")[^"]+'
+    echo "$solrStatusOut"  | python -m json.tool | grep solr-spec-version | awk -F"[,|:]" '{print $2}'
    else
       echo -e "\033[38;5;196m"
       echo "Solr is not running or is unreachable on port $SOLR_PORT"
@@ -193,14 +193,14 @@ function deployerStatus(){
    echo "------------------------------------------------------------"
    echo "Crafter Deployer status                                                 "
    echo "------------------------------------------------------------"
-   deployerStatusOut=$(curl --silent  -f -y "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
+   deployerStatusOut=$(curl --silent  -f  "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
    if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$CRAFTER_ROOT/bin/crafter-deployer/crafter-deployer.pid"`
     echo -e  "uptime:\t"
-    echo "$deployerStatusOut" | grep -Po '(?<=uptime":")[^"]+'
+    echo "$deployerStatusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
     echo -e  "Status:\t"
-    echo "$deployerStatusOut" | grep -Po '(?<=status":")[^"]+'
+    echo "$deployerStatusOut"  | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
    else
       echo -e "\033[38;5;196m"
       echo "Crafter Deployer is not running or is unreachable on port $DEPLOYER_PORT"
@@ -212,18 +212,18 @@ function studioStatus(){
    echo "------------------------------------------------------------"
    echo "Crafter Studio status                                       "
    echo "------------------------------------------------------------"
-   studioStatusOut=$(curl --silent  -f -y\
+   studioStatusOut=$(curl --silent  -f \
    "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/status.json")
    if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$CATALINA_PID"`
     echo -e  "uptime:\t"
-    echo "$studioStatusOut" | grep -Po '(?<=uptime":")[^"]+'
+    echo "$studioStatusOut" | python -m json.tool | grep uptime | awk -F"[,|:]" '{print $2}'
     echo -e  "Status:\t"
-    echo "$studioStatusOut" | grep -Po '(?<=status":")[^"]+'
+    echo "$studioStatusOut" | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
     echo -e "MySQL sub-process:\t"
     echo -e "PID \t"
-    echo ` cat "$MYSQL_DATA/$HOSTNAME.pid"`
+    echo ` cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
    else
       echo -e "\033[38;5;196m"
       echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTTP_PORT"
