@@ -3,7 +3,7 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && 
 export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
 export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
 
-. "$CRAFTER_HOME/setenv.sh"
+. "$CRAFTER_HOME/crafter-setenv.sh"
 
 function help() {
   echo $(basename $BASH_SOURCE)
@@ -223,7 +223,7 @@ function studioStatus(){
     echo "$studioStatusOut" | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
     echo -e "MySQL sub-process:\t"
     echo -e "PID \t"
-    echo ` cat "$MYSQL_DATA/$HOSTNAME.pid"`
+    echo ` cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
    else
       echo -e "\033[38;5;196m"
       echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTTP_PORT"
