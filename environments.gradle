@@ -42,8 +42,8 @@ task("authoringEnvirment"){
         webapps.mkdir()
 
         copy{
-            from "resources/setenv.sh"
-            from "resources/setenv.bat"
+            from "./resources/crafter/setenv.sh"
+            from "./resources/crafter/setenv.bat"
             into "${authEnv}/bin/apache-tomcat/bin"
         }
 
@@ -182,8 +182,8 @@ task("deliveyEnviroment"){
         webapps.mkdir()
 
         copy{
-            from "resources/setenv.sh"
-            from "resources/setenv.bat"
+            from "./resources/crafter/setenv.sh"
+            from "./resources/crafter/setenv.bat"
             into "${liveEnv}/bin/apache-tomcat/bin"
         }
 
