@@ -29,7 +29,7 @@ export MYSQL_DATA="$CRAFTER_ROOT/data/db"
 
 case "$(uname -s)" in
    Darwin)
-    export MYSQL_PID_FILE_NAME="$USER.pid"
+    export MYSQL_PID_FILE_NAME="$(echo "$HOSTNAME" | awk -F'.' '{print $1}' ).pid"
      ;;
     *)
     export MYSQL_PID_FILE_NAME="$HOSTNAME.pid"
