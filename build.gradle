@@ -204,7 +204,7 @@ task("selfupdate"){
 task("start") {
     doLast{
         def env = getEnv()
-        println "Running for the first time might take longer while fetching OS dependant requirements."
+        println "Running for the first time might take longer while fetching OS dependent requirements."
         switch (env) {
             case "all":
                 if(!file(authEnv).exists() || !file(liveEnv).exists()){

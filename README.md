@@ -14,13 +14,9 @@ You must have these prerequisites on your system before you begin:
 * Git 2.x+
 * Maven 3.3.x+
 
-**OSX extra prerequisite.** 
+**OS X extra prerequisite**
 
-* Using  [`brew`](http://brew.sh) install the latest `openssl` formula:
-
-```bash
-brew install openssl
-```
+* If you're on OS X, then using  [`brew`](http://brew.sh) install the latest `openssl` formula, like this: `brew install openssl`
 
 Let's begin :)
 
@@ -169,4 +165,4 @@ You can update, build, deploy, start or stop a module by:
 * In the current version of Crafter CMS, some services run in the same Web container, and that implies the stopping/starting of one of these services will cause other services to stop/start as well.
 
 # 4. Advanced Topics
-For more detailed information and advanced topic, please visit the [detailed documentation](http://docs.craftercms.org/en/latest/developers/projects/craftercms).
+For more detailed information and advanced topic, please visit the [detailed documentation](http://docs.craftercms.org/en/3.0/developers/projects/craftercms).
