@@ -1,4 +1,4 @@
 @echo off
 SET DEPLOYER_WIN_TITLE=Crafter Deployer
-start deployer.bat start
+start %~dp0deployer.bat start
 exit
