@@ -10,10 +10,10 @@ if(isWin){
 }
 
 /**
- Builds environment
+ Setup environment
  **/
-task("authoringEnvirment"){
-    description "Build Crafter environment"
+task("authoringEnvironment"){
+    description "Setup the Crafter authoring environment"
 
     doLast{
         copy{
@@ -58,11 +58,11 @@ task("authoringEnvirment"){
             from "./resources/tomcat-config/"
             into "${authEnv}/bin/apache-tomcat/shared/classes/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
-                                           SOLR_PORT: String.valueOf(solrAuthPort),
-                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
-                                           MARIADB_PORT: String.valueOf(mariaDbPort),
+                                           SOLR_PORT: String.valueOf(authSolrPort),
+                                           SOLR_PORT_D: String.valueOf(authSolrDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(authDeployerDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(authDeployerPort),
+                                           MARIADB_PORT: String.valueOf(authMariaDbPort),
                                            TOMCAT_DEBUG_PORT:String.valueOf(authTomcatDebug),
                                            MONGODB_PORT:String.valueOf(authMongoDBPort)
             ])
@@ -75,11 +75,11 @@ task("authoringEnvirment"){
             from "./resources/deployer/"
             into "${authEnv}/bin/crafter-deployer"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
-                                           SOLR_PORT: String.valueOf(solrAuthPort),
-                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
-                                           MARIADB_PORT: String.valueOf(mariaDbPort),
+                                           SOLR_PORT: String.valueOf(authSolrPort),
+                                           SOLR_PORT_D: String.valueOf(authSolrDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(authDeployerDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(authDeployerPort),
+                                           MARIADB_PORT: String.valueOf(authMariaDbPort),
                                            TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
                                            MONGODB_PORT:String.valueOf(authMongoDBPort)
             ])
@@ -102,12 +102,12 @@ task("authoringEnvirment"){
             from "./resources/crafter/"
             into "${authEnv}/bin/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
-                                           SOLR_PORT: String.valueOf(solrAuthPort),
-                                           SOLR_PORT_D: String.valueOf(solrAuthDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerAuthDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deployerAuthPort),
-                                           DEPLOYMENT_DIR: String.valueOf(deploymentAuthDir),
-                                           MARIADB_PORT: String.valueOf(mariaDbPort),
+                                           SOLR_PORT: String.valueOf(authSolrPort),
+                                           SOLR_PORT_D: String.valueOf(authSolrDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(authDeployerDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(authDeployerPort),
+                                           DEPLOYMENT_DIR: String.valueOf(authDeploymentDir),
+                                           MARIADB_PORT: String.valueOf(authMariaDbPort),
                                            TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
                                            MONGODB_PORT:String.valueOf(authMongoDBPort)
 
@@ -152,128 +152,128 @@ task("authoringEnvirment"){
     }
 }
 
-task("deliveyEnviroment"){
-    description "Build Crafter environment"
+task("deliveryEnvironment"){
+    description "Setup the Crafter CMS delivery environment"
 
     doLast{
         copy{
             from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
-            into "${liveEnv}/bin"
+            into "${deliveryEnv}/bin"
         }
-        file("${liveEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${liveEnv}/bin/apache-tomcat"))
+        file("${deliveryEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${deliveryEnv}/bin/apache-tomcat"))
 
         /** SOLR **/
         copy{
             from zipTree(downloadDir + "/solr-${solrVersion}.zip")
-            into "${liveEnv}/bin"
+            into "${deliveryEnv}/bin"
         }
-        file("${liveEnv}/bin/solr-${solrVersion}").renameTo(file("${liveEnv}/bin/solr"))
+        file("${deliveryEnv}/bin/solr-${solrVersion}").renameTo(file("${deliveryEnv}/bin/solr"))
 
         copy{
             from "./src/search/crafter-search-provider/solr/configsets"
-            into "${liveEnv}/bin/solr/server/solr/configsets"
+            into "${deliveryEnv}/bin/solr/server/solr/configsets"
         }
-        file("${liveEnv}/data/indexes").mkdirs()
-        file("${liveEnv}/data/deployer").mkdirs()
-        file("${liveEnv}/data/mongodb").mkdirs()
+        file("${deliveryEnv}/data/indexes").mkdirs()
+        file("${deliveryEnv}/data/deployer").mkdirs()
+        file("${deliveryEnv}/data/mongodb").mkdirs()
         /** Remove Non util stuff **/
-        def webapps = file("${liveEnv}/bin/apache-tomcat/webapps/")
+        def webapps = file("${deliveryEnv}/bin/apache-tomcat/webapps/")
         webapps.deleteDir()
         webapps.mkdir()
 
         copy{
             from "./resources/tomcat-config/crafter/setenv.sh"
             from "./resources/tomcat-config/crafter/setenv.bat"
-            into "${liveEnv}/bin/apache-tomcat/bin"
+            into "${deliveryEnv}/bin/apache-tomcat/bin"
         }
 
         copy{
             from "./src/search/crafter-search-server/target/crafter-search.war"
             from "./src/engine/target/ROOT.war"
-            into "${liveEnv}/bin/apache-tomcat/webapps/"
+            into "${deliveryEnv}/bin/apache-tomcat/webapps/"
         }
 
         copy{
             from "./resources/tomcat-config/"
-            into "${liveEnv}/bin/apache-tomcat/shared/classes/"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
-                                           SOLR_PORT: String.valueOf(solrDevPort),
-                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           TOMCAT_DEBUG_PORT:String.valueOf(liveTomcatDebug),
-                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
+            into "${deliveryEnv}/bin/apache-tomcat/shared/classes/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(deliveryTomcatPort),
+                                           SOLR_PORT: String.valueOf(deliverySolrPort),
+                                           SOLR_PORT_D: String.valueOf(deliverySolrDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deliveryDeployerDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deliveryDeployerPort),
+                                           TOMCAT_DEBUG_PORT:String.valueOf(deliveryTomcatDebugPort),
+                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
             ])
         }
         copy{
             from "./resources/tomcat-config-delivery/"
-            into "${liveEnv}/bin/apache-tomcat/shared/classes/"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
-                                           SOLR_PORT: String.valueOf(solrDevPort),
-                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           TOMCAT_DEBUG_PORT:String.valueOf(liveTomcatDebug),
-                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
+            into "${deliveryEnv}/bin/apache-tomcat/shared/classes/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(deliveryTomcatPort),
+                                           SOLR_PORT: String.valueOf(deliverySolrPort),
+                                           SOLR_PORT_D: String.valueOf(deliverySolrDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deliveryDeployerDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deliveryDeployerPort),
+                                           TOMCAT_DEBUG_PORT:String.valueOf(deliveryTomcatDebugPort),
+                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
             ])
         }
         copy{
             from "./src/deployer/target/crafter-deployer.jar"
-            into "${liveEnv}/bin/crafter-deployer"
+            into "${deliveryEnv}/bin/crafter-deployer"
         }
         copy{
             from "./resources/deployer/"
-            into "${liveEnv}/bin/crafter-deployer"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
-                                           SOLR_PORT: String.valueOf(solrDevPort),
-                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug),
-                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
+            into "${deliveryEnv}/bin/crafter-deployer"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(deliveryTomcatPort),
+                                           SOLR_PORT: String.valueOf(deliverySolrPort),
+                                           SOLR_PORT_D: String.valueOf(deliverySolrDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deliveryDeployerDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deliveryDeployerPort),
+                                           TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
+                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
             ])
         }
         copy {
             from "./src/deployer/README.md"
-            into "${liveEnv}/bin/crafter-deployer/"
+            into "${deliveryEnv}/bin/crafter-deployer/"
         }
         copy {
             from "./src/studio/README.md"
-            into "${liveEnv}/bin/apache-tomcat"
+            into "${deliveryEnv}/bin/apache-tomcat"
         }
 
         copy {
             from "./resources/LICENSE"
             from "./resources/README.txt"
-            into "${liveEnv}/"
+            into "${deliveryEnv}/"
         }
         copy{
             from "./resources/crafter/"
-            into "${liveEnv}/bin/"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(liveTomcatPort),
-                                           SOLR_PORT: String.valueOf(solrDevPort),
-                                           SOLR_PORT_D: String.valueOf(solrDevDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deployerDevDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deployerDevPort),
-                                           DEPLOYMENT_DIR: String.valueOf(deploymentDevDir),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(liveTomcatDebug),
-                                           MONGODB_PORT:String.valueOf(liveMongoDBPort)
+            into "${deliveryEnv}/bin/"
+            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(deliveryTomcatPort),
+                                           SOLR_PORT: String.valueOf(deliverySolrPort),
+                                           SOLR_PORT_D: String.valueOf(deliverySolrDebugPort),
+                                           DEPLOYER_D_PORT: String.valueOf(deliveryDeployerDebugPort),
+                                           DEPLOYER_PORT: String.valueOf(deliveryDeployerPort),
+                                           DEPLOYMENT_DIR: String.valueOf(deliveryDeploymentDir),
+                                           TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
+                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
             ])
         }
 
         if(!isWin){
             exec{
-                workingDir "${liveEnv}/bin/apache-tomcat/bin/"
+                workingDir "${deliveryEnv}/bin/apache-tomcat/bin/"
                 commandLine commandLinePrefix + ["chmod","+x","catalina.sh", "setenv.sh" ,"configtest.sh", "daemon.sh",
                                                  "digest" +
                         ".sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
             }
             exec{
-                workingDir "${liveEnv}/bin/crafter-deployer/"
+                workingDir "${deliveryEnv}/bin/crafter-deployer/"
                 commandLine commandLinePrefix + ["chmod","+x","deployer.sh"]
             }
             exec{
-                workingDir "${liveEnv}/bin"
+                workingDir "${deliveryEnv}/bin"
                 commandLine commandLinePrefix + ["chmod","+x","crafter.sh","startup.sh","debug.sh","shutdown.sh",
                                                  "crafter-setenv.sh"]
             }
@@ -282,22 +282,22 @@ task("deliveyEnviroment"){
             copy{
                 from "./src/profile/server/target/crafter-profile.war"
                 from "./src/profile/admin-console/target/crafter-profile-admin-console.war"
-                into "${liveEnv}/bin/apache-tomcat/webapps/"
+                into "${deliveryEnv}/bin/apache-tomcat/webapps/"
             }
         }
         if(includeSocial){
             copy{
                 from "./src/social/server/target/crafter-social.war"
                 from "./src/social/admin/target/crafter-social-admin.war"
-                into "${liveEnv}/bin/apache-tomcat/webapps/"
+                into "${deliveryEnv}/bin/apache-tomcat/webapps/"
             }
         }
-        updateTomcatPorts("${liveEnv}/bin/apache-tomcat/conf/server.xml",liveTomcatPort,liveTomcatAJPPort,
-                liveTomcatShutdownPort,liveTomcatSSLPort)
-        updateCatalinaSettings(liveEnv)
-        updateTomcatContext("${liveEnv}/bin/apache-tomcat/conf/context.xml")
-        updateCatalinaLogging("${liveEnv}/bin/apache-tomcat/conf/logging.properties")
-        addSolrIndexHome("${liveEnv}/bin/solr/server/solr/solr.xml")
+        updateTomcatPorts("${deliveryEnv}/bin/apache-tomcat/conf/server.xml",deliveryTomcatPort,deliveryTomcatAJPPort,
+                deliveryTomcatShutdownPort,deliveryTomcatSSLPort)
+        updateCatalinaSettings(deliveryEnv)
+        updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
+        updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
+        addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
 
     }
 }
