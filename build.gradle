@@ -51,7 +51,7 @@ ext {
     downloadDir=project.hasProperty("downloadDir")? project.property("downloadDir") : "./downloads/"
     /** Environment Building properties **/
     authEnv=project.hasProperty("authoring.root")? project.property("authoring.root") : "./crafter-auth-env/"
-    liveEnv=project.hasProperty("delivery.root")? project.property("delivery.root") : "./crafter-delivery-env/"
+    deliveryEnv=project.hasProperty("delivery.root")? project.property("delivery.root") : "./crafter-delivery-env/"
     includeProfile=project.hasProperty("crafter.profile")? project.property("crafter.profile") : false
     includeSocial=project.hasProperty("crafter.social")? project.property("crafter.social") : false
 
@@ -67,35 +67,35 @@ ext {
     authTomcatSSLPort=project.hasProperty("authoring.tomcat.https.port")? project.property("authoring.tomcat.https.port") : 8443
     authTomcatDebug=project.hasProperty("authoring.tomcat.debug.port")? project.property("authoring.tomcat.debug.port") : 8000
     authMongoDBPort=project.hasProperty("authoring.mongo.port")? project.property("authoring.mongo.port") : 27020
-    solrAuthPort=project.hasProperty("authoring.solr.port")? project.property("authoring.solr.port") : 8694
-    solrAuthDebugPort=project.hasProperty("authoring.solr.debug.port")? project.property("authoring.solr.debug.port") : 5005
+    authSolrPort=project.hasProperty("authoring.solr.port")? project.property("authoring.solr.port") : 8694
+    authSolrDebugPort=project.hasProperty("authoring.solr.debug.port")? project.property("authoring.solr.debug.port") : 5005
 
-    mariaDbPort=project.hasProperty("authoring.mariadb.port")? project.property("authoring.mariadb.port") : 33306
+    authMariaDbPort=project.hasProperty("authoring.mariadb.port")? project.property("authoring.mariadb.port") : 33306
 
-    deployerAuthPort=project.hasProperty("authoring.deployer.port")? project.property("authoring.deployer.port") : 9191
-    deployerAuthDebugPort=project.hasProperty("authoring.deployer.debug.port")? project.property("authoring.deployer.debug.port") : 5000
-    deploymentAuthDir=project.hasProperty("authoring.deployment.dir")? project.property("authoring.deployment.dir") : "data/repos/sites"
+    authDeployerPort=project.hasProperty("authoring.deployer.port")? project.property("authoring.deployer.port") : 9191
+    authDeployerDebugPort=project.hasProperty("authoring.deployer.debug.port")? project.property("authoring.deployer.debug.port") : 5000
+    authDeploymentDir=project.hasProperty("authoring.deployment.dir")? project.property("authoring.deployment.dir") : "data/repos/sites"
 
 
     // Delivery
-    solrDevPort=project.hasProperty("delivery.solr.port")? project.property("delivery.solr.port") : 8695
-    solrDevDebugPort=project.hasProperty("delivery.solr.debugPort")? project.property("delivery.solr.debugPort") : 5006
+    deliverySolrPort=project.hasProperty("delivery.solr.port")? project.property("delivery.solr.port") : 8695
+    deliverySolrDebugPort=project.hasProperty("delivery.solr.debug.port")? project.property("delivery.solr.debug.port") : 5006
 
-    deployerDevPort=project.hasProperty("delivery.deployer.port")? project.property("delivery.deployer.port") : 9192
-    deployerDevDebugPort=project.hasProperty("delivery.deployer.debugPort")? project.property("delivery.deployer.debugPort") : 5001
-    deploymentDevDir=project.hasProperty("delivery.deployment.dir")? project.property("delivery.deployment.dir") : "data/repos/sites"
+    deliveryDeployerPort=project.hasProperty("delivery.deployer.port")? project.property("delivery.deployer.port") : 9192
+    deliveryDeployerDebugPort=project.hasProperty("delivery.deployer.debug.port")? project.property("delivery.deployer.debug.port") : 5001
+    deliveryDeploymentDir=project.hasProperty("delivery.deployment.dir")? project.property("delivery.deployment.dir") : "data/repos/sites"
 
-    liveTomcatPort=project.hasProperty("delivery.tomcat.http.port")? project.property("delivery.tomcat.http.port") : 9080
-    liveTomcatShutdownPort=project.hasProperty("delivery.tomcat.shutdown.port")? project.property("delivery.tomcat.shutdown.port") : 9005
-    liveTomcatAJPPort=project.hasProperty("delivery.tomcat.ajp.port")? project.property("delivery.tomcat.ajp.port") : 9009
-    liveTomcatSSLPort=project.hasProperty("delivery.tomcat.https.port")? project.property("delivery.tomcat.https.port") : 9443
-    liveTomcatDebug=project.hasProperty("delivery.tomcat.debug.port")? project.property("delivery.tomcat.debug.port") : 9000
-    liveMongoDBPort=project.hasProperty("delivery.mongodb.port")? project.property("delivery.mongodb.port") : 28020
+    deliveryTomcatPort=project.hasProperty("delivery.tomcat.http.port")? project.property("delivery.tomcat.http.port") : 9080
+    deliveryTomcatShutdownPort=project.hasProperty("delivery.tomcat.shutdown.port")? project.property("delivery.tomcat.shutdown.port") : 9005
+    deliveryTomcatAJPPort=project.hasProperty("delivery.tomcat.ajp.port")? project.property("delivery.tomcat.ajp.port") : 9009
+    deliveryTomcatSSLPort=project.hasProperty("delivery.tomcat.https.port")? project.property("delivery.tomcat.https.port") : 9443
+    deliveryTomcatDebugPort=project.hasProperty("delivery.tomcat.debug.port")? project.property("delivery.tomcat.debug.port") : 9000
+    deliveryMongoDBPort=project.hasProperty("delivery.mongodb.port")? project.property("delivery.mongodb.port") : 28020
 
 
     /** Git properties **/
     gitURLTemplate=project.hasProperty("crafter.git.url")? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    sourceBranch=project.hasProperty("crafter.git.branch")? project.property("crafter.git.branch") : "master"
+    gitSourceBranch=project.hasProperty("crafter.git.branch")? project.property("crafter.git.branch") : "master"
     gitRepo=project.hasProperty("crafter.git.remote")? project.property("crafter.git.remote") : "origin"
     studioUIFromRepo=project.hasProperty("crafter.ui.repo")? project.property("crafter.ui.repo") : false
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
@@ -117,6 +117,8 @@ apply from:"downloads.gradle"
 apply from:"environments.gradle"
 
 task("utils"){
+    description "builds the utils project and copies the utils jar file to the environment"
+    
     doLast {
         buildModule(commandLinePrefix, "utils", "./")
         copy {
@@ -125,12 +127,14 @@ task("utils"){
         }
         copy {
             from "./utils/target/craftercms-utils.jar"
-            into "${liveEnv}/bin"
+            into "${deliveryEnv}/bin"
         }
     }
 }
 
 task("upgrade"){
+    description "Upgrades the installed tomcat version, solr scripts, etc. without deleting your data then builds and deploys"
+    
     doFirst {
         def authEnvFolder = new File("${authEnv}")
         if (authEnvFolder.exists()) {
@@ -175,7 +179,7 @@ task("init"){
 }
 
 task("update") {
-    description "Update Crafter CMS stack"
+    description "Update the various modules of Crafter CMS"
     doFirst{
         def module = getModule();
     }
@@ -194,20 +198,22 @@ task("update") {
 }
 
 task("selfupdate"){
-    description "Self update this project"
+    description "Updates the Crafter CMS project"
     doLast {
-        def arry = commandLinePrefix + ["git", "pull", gitRepo, sourceBranch]
+        def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
         executeProcess(arry,".")
     }
 }
 
 task("start") {
+    description "Start Crafter CMS"
+    
     doLast{
         def env = getEnv()
         println "Running for the first time might take longer while fetching OS dependent requirements."
         switch (env) {
             case "all":
-                if(!file(authEnv).exists() || !file(liveEnv).exists()){
+                if(!file(authEnv).exists() || !file(deliveryEnv).exists()){
                     throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'start'.")
                 }
                 startAuth(commandLinePrefix, startUpFile).execute()
@@ -220,7 +226,7 @@ task("start") {
                 startAuth(commandLinePrefix, startUpFile).execute()
                 break
             case "delivery":
-                if (!file(liveEnv).exists()) {
+                if (!file(deliveryEnv).exists()) {
                     throw new InvalidUserDataException("The 'delivery' enviroment is not deployed. Please run 'deploy -Penv=delivery' before 'start'.")
                 }
                 startDelivery(commandLinePrefix, startUpFile).execute()
@@ -232,15 +238,17 @@ task("start") {
 }
 
 task("stop") {
+    description "Stop Crafter CMS"
+    
     doLast {
         def env = getEnv()
         switch (env) {
             case "all":
-                if (!file(authEnv).exists() || !file(liveEnv).exists()) {
+                if (!file(authEnv).exists() || !file(deliveryEnv).exists()) {
                     throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'stop'.")
                 }
                 stopAuth(commandLinePrefix,shutDownFile).execute()
-                stopDevlivery(commandLinePrefix, shutDownFile).execute()
+                stopDelivery(commandLinePrefix, shutDownFile).execute()
             case "authoring":
                 if (!file(authEnv).exists()) {
                     throw new InvalidUserDataException("The 'authoring' enviroment is not deployed. Please run 'deploy -Penv=authoring' before 'stop'.")
@@ -248,10 +256,10 @@ task("stop") {
                 stopAuth(commandLinePrefix, shutDownFile).execute()
                 break
             case "delivery":
-                if (!file(liveEnv).exists()) {
+                if (!file(deliveryEnv).exists()) {
                     throw new InvalidUserDataException("The 'delivery' enviroment is not deployed. Please run 'deploy -Penv=delivery' before 'stop'.")
                 }
-                stopDevlivery(commandLinePrefix, shutDownFile).execute()
+                stopDelivery(commandLinePrefix, shutDownFile).execute()
                 break
             default:
                 throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
@@ -280,7 +288,7 @@ task("clear") {
 }
 
 task("build") {
-    description "Builds Crafter CMS stack"
+    description "Builds Crafter CMS"
 
     doFirst{
         def module = getModule();
@@ -304,7 +312,7 @@ task("build") {
 }
 
 task("deploy") {
-    description "Clean Crafter CMS stack"
+    description "Setup the Crafter CMS environment/s"
 
     doFirst {
         def module = getModule()
@@ -312,13 +320,13 @@ task("deploy") {
         switch (env){
             case "all":
                 checkEnvWD(authEnv, "authoring")
-                checkEnvWD(liveEnv, "delivery")
+                checkEnvWD(deliveryEnv, "delivery")
                 break
             case "authoring":
                 checkEnvWD(authEnv, env)
                 break
             case "delivery":
-                checkEnvWD(liveEnv, env)
+                checkEnvWD(deliveryEnv, env)
                 break
             default:
                 throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
@@ -352,18 +360,20 @@ task("deploy") {
 }
 
 task("bundle") {
+    description "Builds a deployable and distributable bundle of Crafter CMS"
+    
     doLast {
         def env = getEnv()
         switch (env) {
             case "all":
                 pack(authEnv, "authoring")
-                pack(liveEnv, "delivery")
+                pack(deliveryEnv, "delivery")
                 break
             case "authoring":
                 pack(authEnv, "authoring")
                 break
             case "delivery":
-                pack(liveEnv, "delivery")
+                pack(deliveryEnv, "delivery")
                 break
             default:
                 throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
@@ -391,7 +401,7 @@ def updateModule(commandLinePrefix, module) {
             if (!file("./src/${module}").exists()) {
                 throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'update' to initialize it.")
             } else {
-                def arry = commandLinePrefix + ["git", "pull", gitRepo, sourceBranch]
+                def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
                 executeProcess(arry,"./src/${module}".toString())
             }
         }
@@ -406,12 +416,12 @@ def cloneModule(commandLinePrefix, module){
         return tasks.create("clone${module}") {
             def finalUrl = "${gitURLTemplate}${module}.git".toString()
             def path = "src/${module}".toString()
-            def arry = commandLinePrefix + ["git","clone","-b",sourceBranch,finalUrl,path]
+            def arry = commandLinePrefix + ["git","clone","-b",gitSourceBranch,finalUrl,path]
             if (file(path).exists()) {
                 println ("Module ${module} has already been initialized, please use " +
                         "'update' to update it.")
             } else {
-                println "Cloning: ${module}, branch: ${sourceBranch}, url: ${finalUrl}"
+                println "Cloning: ${module}, branch: ${gitSourceBranch}, url: ${finalUrl}"
                 executeProcess(arry,".")
             }
         }
@@ -435,7 +445,7 @@ def startDelivery(commandLinePrefix, startUpFile){
         return btask
     } else {
         tasks.create("startDelivery") {
-            executeProcess(commandLinePrefix + [startUpFile], "$liveEnv/bin", true)
+            executeProcess(commandLinePrefix + [startUpFile], "$deliveryEnv/bin", true)
         }
     }
 }
@@ -451,13 +461,13 @@ def stopAuth(commandLinePrefix, shutDownFile) {
     }
 }
 
-def stopDevlivery(commandLinePrefix, shutDownFile) {
+def stopDelivery(commandLinePrefix, shutDownFile) {
     def btask=tasks.findByPath("stopDelivery")
     if (btask!= null) {
         return btask
     } else {
         tasks.create("stopDelivery") {
-            executeProcess(commandLinePrefix + [shutDownFile], "$liveEnv/bin", true)
+            executeProcess(commandLinePrefix + [shutDownFile], "$deliveryEnv/bin", true)
         }
     }
 }
@@ -494,7 +504,7 @@ def deployModule(commandLinePrefix, module, env) {
             } else {
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
                 if (deployable.exists()) {
-                    def path = env.equals("authoring")? authEnv : liveEnv
+                    def path = env.equals("authoring")? authEnv : deliveryEnv
                     path += deployable.absolutePath.endsWith(".jar")? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
                     path += deployable.name
                     delete {
@@ -522,9 +532,9 @@ def checkEnvWD(path, env) {
         downloadTomcat.execute()
         downloadSolr.execute()
         if (env.equals("authoring")) {
-            authoringEnvirment.execute()
+            authoringEnvironment.execute()
         } else if (env.equals("delivery")) {
-            deliveyEnviroment.execute()
+            deliveryEnvironment.execute()
         }
     }
 }
