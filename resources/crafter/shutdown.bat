@@ -1,2 +1,3 @@
 @echo off
-call crafter.bat stop
+start %~dp0crafter.bat stop
+exit
