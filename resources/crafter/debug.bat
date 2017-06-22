@@ -1,2 +1,3 @@
 @echo off
-call crafter.bat debug
+start %~dp0crafter.bat debug
+exit
