@@ -99,6 +99,7 @@ ext {
     gitRepo=project.hasProperty("crafter.git.remote")? project.property("crafter.git.remote") : "origin"
     studioUIFromRepo=project.hasProperty("crafter.ui.repo")? project.property("crafter.ui.repo") : false
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
+    keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
 
     /** Clonable Artifacts **/
     VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio2-ui"]
@@ -338,7 +339,9 @@ task("deploy") {
                 } else {
                     deployModule(commandLinePrefix, it, env).execute()
                 }
-                file(VALID_DEPLOYABLE_MODULES[it]).delete()
+                if(!keepBin) {
+                    file(VALID_DEPLOYABLE_MODULES[it]).delete()
+                }
             }
         } else if (VALID_DEPLOYABLE_MODULES.containsKey(module)) {
             if(isAllEnvs()){
@@ -347,7 +350,9 @@ task("deploy") {
             }else{
                 deployModule(commandLinePrefix, module, env).execute()
             }
-            file(VALID_DEPLOYABLE_MODULES[module]).delete()
+            if(!keepBin) {
+                file(VALID_DEPLOYABLE_MODULES[module]).delete()
+            }
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_DEPLOYABLE_MODULES.keySet()}")
         }
@@ -486,6 +491,24 @@ def buildModule(commandLinePrefix, module, path="./src/") {
     }
 }
 
+def deployBinary(deployable){
+    if (deployable.exists()) {
+        def path = env.equals("authoring")? authEnv : liveEnv
+        path += deployable.absolutePath.endsWith(".jar")? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
+        path += deployable.name
+        delete {
+            delete path
+            delete path.take(path.lastIndexOf('.'))
+        }
+        copy {
+            from deployable.absolutePath
+            into path.take(path.lastIndexOf('/'))
+        }
+    } else {
+        println "WARN: You haven't build ${module} module"
+    }
+}
+
 def deployModule(commandLinePrefix, module, env) {
     def dtask=tasks.findByPath("deploy${module}")
     if (dtask!= null) {
@@ -497,20 +520,11 @@ def deployModule(commandLinePrefix, module, env) {
                 println "Ignoring module 'studio' can not be deployed in environment 'delivery'"
             } else {
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
-                if (deployable.exists()) {
-                    def path = env.equals("authoring")? authEnv : liveEnv
-                    path += deployable.absolutePath.endsWith(".jar")? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
-                    path += deployable.name
-                    delete {
-                        delete path
-                        delete path.take(path.lastIndexOf('.'))
-                    }
-                    copy {
-                        from VALID_DEPLOYABLE_MODULES[module]
-                        into path.take(path.lastIndexOf('/'))
-                    }
-                } else {
-                    println "WARN: You haven't build ${module} module"
+                deployBinary(deployable)
+                if(module.equalsIgnoreCase("profile")){
+                    deployBinary(file("./src/profile/admin-console/target/crafter-profile-admin-console.war"))
+                }else if(module.equalsIgnoreCase("social")){
+                    deployBinary(file("./src/social/admin/target/crafter-social-admin.war"))
                 }
             }
         }
