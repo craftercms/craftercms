@@ -99,6 +99,7 @@ ext {
     gitRepo=project.hasProperty("crafter.git.remote")? project.property("crafter.git.remote") : "origin"
     studioUIFromRepo=project.hasProperty("crafter.ui.repo")? project.property("crafter.ui.repo") : false
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
+    keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
 
     /** Clonable Artifacts **/
     VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio2-ui"]
@@ -346,7 +347,9 @@ task("deploy") {
                 } else {
                     deployModule(commandLinePrefix, it, env).execute()
                 }
-                file(VALID_DEPLOYABLE_MODULES[it]).delete()
+                if(!keepBin) {
+                    file(VALID_DEPLOYABLE_MODULES[it]).delete()
+                }
             }
         } else if (VALID_DEPLOYABLE_MODULES.containsKey(module)) {
             if(isAllEnvs()){
@@ -355,7 +358,9 @@ task("deploy") {
             }else{
                 deployModule(commandLinePrefix, module, env).execute()
             }
-            file(VALID_DEPLOYABLE_MODULES[module]).delete()
+            if(!keepBin) {
+                file(VALID_DEPLOYABLE_MODULES[module]).delete()
+            }
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_DEPLOYABLE_MODULES.keySet()}")
         }
