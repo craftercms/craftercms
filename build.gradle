@@ -580,6 +580,9 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     Process proc = pb.start();
     watchProcessOutput(proc,processOutput)
     proc.waitFor()
+    if(proc.exitValue()!=0){
+        throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
+    }
 }
 
 // Poor's man tail (but get's the job done
