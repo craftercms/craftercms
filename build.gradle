@@ -277,10 +277,14 @@ task("clear") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                cleanModule(commandLinePrefix, it).execute()
+                if(!it.equalsIgnoreCase("studio2-ui")) { // Not a pom project ignore
+                    cleanModule(commandLinePrefix, it).execute()
+                }
             }
         } else if (VALID_MODULES.contains(module)) {
-            cleanModule(commandLinePrefix, module).execute()
+            if(!module.equalsIgnoreCase("studio2-ui")) { // Not a pom project ignore
+                cleanModule(commandLinePrefix, module).execute()
+            }
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_MODULES}")
         }
@@ -590,6 +594,9 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     Process proc = pb.start();
     watchProcessOutput(proc,processOutput)
     proc.waitFor()
+    if(proc.exitValue()!=0){
+        throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
+    }
 }
 
 // Poor's man tail (but get's the job done
