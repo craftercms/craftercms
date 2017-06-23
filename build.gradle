@@ -269,10 +269,14 @@ task("clear") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                cleanModule(commandLinePrefix, it).execute()
+                if(!it.equalsIgnoreCase("studio2-ui")) { // Not a pom project ignore
+                    cleanModule(commandLinePrefix, it).execute()
+                }
             }
         } else if (VALID_MODULES.contains(module)) {
-            cleanModule(commandLinePrefix, module).execute()
+            if(!module.equalsIgnoreCase("studio2-ui")) { // Not a pom project ignore
+                cleanModule(commandLinePrefix, module).execute()
+            }
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_MODULES}")
         }
