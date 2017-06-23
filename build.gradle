@@ -60,7 +60,7 @@ ext {
         includeProfile=true
     }
 
-   //Authoring
+    //Authoring
     authTomcatPort=project.hasProperty("authoring.tomcat.http.port")? project.property("authoring.tomcat.http.port") : 8080
     authTomcatShutdownPort=project.hasProperty("authoring.tomcat.shutdown.port")? project.property("authoring.tomcat.shutdown.port") : 8005
     authTomcatAJPPort=project.hasProperty("authoring.tomcat.ajp.port")? project.property("authoring.tomcat.ajp.port") : 8009
@@ -99,6 +99,7 @@ ext {
     gitRepo=project.hasProperty("crafter.git.remote")? project.property("crafter.git.remote") : "origin"
     studioUIFromRepo=project.hasProperty("crafter.ui.repo")? project.property("crafter.ui.repo") : false
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
+    keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
 
     /** Clonable Artifacts **/
     VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio2-ui"]
@@ -118,7 +119,7 @@ apply from:"environments.gradle"
 
 task("utils"){
     description "builds the utils project and copies the utils jar file to the environment"
-    
+
     doLast {
         buildModule(commandLinePrefix, "utils", "./")
         copy {
@@ -134,7 +135,7 @@ task("utils"){
 
 task("upgrade"){
     description "Upgrades the installed tomcat version, solr scripts, etc. without deleting your data then builds and deploys"
-    
+
     doFirst {
         def authEnvFolder = new File("${authEnv}")
         if (authEnvFolder.exists()) {
@@ -149,6 +150,7 @@ task("upgrade"){
             }
         }
     }
+    
     doLast {
         forceDeploy=true
         build.execute()
@@ -183,6 +185,7 @@ task("update") {
     doFirst{
         def module = getModule();
     }
+    
     doLast {
 
         if (module.equals("all")) {
@@ -197,7 +200,7 @@ task("update") {
     }
 }
 
-task("selfupdate"){
+task("selfupdate") {
     description "Updates the Crafter CMS project"
     doLast {
         def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
@@ -207,8 +210,8 @@ task("selfupdate"){
 
 task("start") {
     description "Start Crafter CMS"
-    
-    doLast{
+
+    doLast {
         def env = getEnv()
         println "Running for the first time might take longer while fetching OS dependent requirements."
         switch (env) {
@@ -239,7 +242,7 @@ task("start") {
 
 task("stop") {
     description "Stop Crafter CMS"
-    
+
     doLast {
         def env = getEnv()
         switch (env) {
@@ -294,7 +297,7 @@ task("clear") {
 task("build") {
     description "Builds Crafter CMS"
 
-    doFirst{
+    doFirst {
         def module = getModule();
     }
 
@@ -346,16 +349,20 @@ task("deploy") {
                 } else {
                     deployModule(commandLinePrefix, it, env).execute()
                 }
-                file(VALID_DEPLOYABLE_MODULES[it]).delete()
+                if(!keepBin) {
+                    file(VALID_DEPLOYABLE_MODULES[it]).delete()
+                }
             }
         } else if (VALID_DEPLOYABLE_MODULES.containsKey(module)) {
-            if(isAllEnvs()){
+            if (isAllEnvs()) {
                 deployModule(commandLinePrefix, module, "authoring").execute()
                 deployModule(commandLinePrefix, module, "delivery").execute()
-            }else{
+            } else {
                 deployModule(commandLinePrefix, module, env).execute()
             }
-            file(VALID_DEPLOYABLE_MODULES[module]).delete()
+            if (!keepBin) {
+                file(VALID_DEPLOYABLE_MODULES[module]).delete()
+            }
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_DEPLOYABLE_MODULES.keySet()}")
         }
@@ -365,7 +372,7 @@ task("deploy") {
 
 task("bundle") {
     description "Builds a deployable and distributable bundle of Crafter CMS"
-    
+
     doLast {
         def env = getEnv()
         switch (env) {
@@ -496,6 +503,24 @@ def buildModule(commandLinePrefix, module, path="./src/") {
     }
 }
 
+def deployBinary(deployable){
+    if (deployable.exists()) {
+        def path = env.equals("authoring")? authEnv : liveEnv
+        path += deployable.absolutePath.endsWith(".jar")? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
+        path += deployable.name
+        delete {
+            delete path
+            delete path.take(path.lastIndexOf('.'))
+        }
+        copy {
+            from deployable.absolutePath
+            into path.take(path.lastIndexOf('/'))
+        }
+    } else {
+        println "WARN: You haven't build ${module} module"
+    }
+}
+
 def deployModule(commandLinePrefix, module, env) {
     def dtask=tasks.findByPath("deploy${module}")
     if (dtask!= null) {
@@ -507,20 +532,11 @@ def deployModule(commandLinePrefix, module, env) {
                 println "Ignoring module 'studio' can not be deployed in environment 'delivery'"
             } else {
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
-                if (deployable.exists()) {
-                    def path = env.equals("authoring")? authEnv : deliveryEnv
-                    path += deployable.absolutePath.endsWith(".jar")? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
-                    path += deployable.name
-                    delete {
-                        delete path
-                        delete path.take(path.lastIndexOf('.'))
-                    }
-                    copy {
-                        from VALID_DEPLOYABLE_MODULES[module]
-                        into path.take(path.lastIndexOf('/'))
-                    }
-                } else {
-                    println "WARN: You haven't build ${module} module"
+                deployBinary(deployable)
+                if(module.equalsIgnoreCase("profile")){
+                    deployBinary(file("./src/profile/admin-console/target/crafter-profile-admin-console.war"))
+                } else if (module.equalsIgnoreCase("social")) {
+                    deployBinary(file("./src/social/admin/target/crafter-social-admin.war"))
                 }
             }
         }
@@ -594,7 +610,7 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     Process proc = pb.start();
     watchProcessOutput(proc,processOutput)
     proc.waitFor()
-    if(proc.exitValue()!=0){
+    if (proc.exitValue() != 0) {
         throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
     }
 }
@@ -603,13 +619,13 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
 def watchProcessOutput(process, processOutputFile){
     Thread.start {
         def reader=Files.newBufferedReader(Paths.get(processOutputFile.path))
-        while(process.alive){
-           // Thread.sleep(100)
+        while(process.alive) {
+            // Thread.sleep(100)
             def line=null
-            while((line=reader.readLine())!=null){
+            while((line=reader.readLine()) != null) {
                 println line
             }
         }
-        processOutputFile.delete() 
+        processOutputFile.delete()
     }
 }
