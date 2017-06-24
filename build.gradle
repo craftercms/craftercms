@@ -505,7 +505,7 @@ def buildModule(commandLinePrefix, module, path="./src/") {
 
 def deployBinary(deployable){
     if (deployable.exists()) {
-        def path = env.equals("authoring")? authEnv : liveEnv
+        def path = env.equals("authoring")? authEnv : deliveryEnv
         path += deployable.absolutePath.endsWith(".jar")? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
         path += deployable.name
         delete {
