@@ -275,7 +275,7 @@ task("deliveryEnvironment"){
             exec{
                 workingDir "${deliveryEnv}/bin"
                 commandLine commandLinePrefix + ["chmod","+x","crafter.sh","startup.sh","debug.sh","shutdown.sh",
-                                                 "crafter-setenv.sh"]
+                                                 "crafter-setenv.sh", "init-site.sh"]
             }
         }
         if(includeProfile){
