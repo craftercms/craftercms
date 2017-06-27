@@ -517,7 +517,7 @@ def deployBinary(deployable){
             into path.take(path.lastIndexOf('/'))
         }
     } else {
-        println "WARN: You haven't build ${module} module"
+        println "WARN: You haven't built ${module} module"
     }
 }
 
