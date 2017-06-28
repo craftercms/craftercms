@@ -15,24 +15,30 @@ if(isWin){
 task("authoringEnvironment"){
     description "Setup the Crafter authoring environment"
 
-    doLast{
-        copy{
-            from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
-            into "${authEnv}/bin"
+    doLast {
+        if (!file("${authEnv}/bin/apache-tomcat").exists()) {
+            copy {
+                from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
+                into "${authEnv}/bin"
+            }
+            file("${authEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${authEnv}/bin/apache-tomcat"))
         }
-        file("${authEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${authEnv}/bin/apache-tomcat"))
 
-        /** SOLR **/
-        copy{
-            from zipTree(downloadDir + "/solr-${solrVersion}.zip")
-            into "${authEnv}/bin"
+
+        if(!file("${authEnv}/bin/solr").exists()) {
+            /** SOLR **/
+            copy {
+                from zipTree(downloadDir + "/solr-${solrVersion}.zip")
+                into "${authEnv}/bin"
+            }
+            file("${authEnv}/bin/solr-${solrVersion}").renameTo(file("${authEnv}/bin/solr"))
+
         }
-        file("${authEnv}/bin/solr-${solrVersion}").renameTo(file("${authEnv}/bin/solr"))
-
         copy{
             from "./src/search/crafter-search-provider/solr/configsets"
             into "${authEnv}/bin/solr/server/solr/configsets"
         }
+
         file("${authEnv}/data/indexes").mkdirs()
         file("${authEnv}/data/deployer").mkdirs()
         file("${authEnv}/data/mongodb").mkdirs()
@@ -156,19 +162,21 @@ task("deliveryEnvironment"){
     description "Setup the Crafter CMS delivery environment"
 
     doLast{
-        copy{
-            from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
-            into "${deliveryEnv}/bin"
+        if(!file("${deliveryEnv}/bin/apache-tomcat").exists()) {
+            copy {
+                from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
+                into "${deliveryEnv}/bin"
+            }
+            file("${deliveryEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${deliveryEnv}/bin/apache-tomcat"))
         }
-        file("${deliveryEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${deliveryEnv}/bin/apache-tomcat"))
-
-        /** SOLR **/
-        copy{
-            from zipTree(downloadDir + "/solr-${solrVersion}.zip")
-            into "${deliveryEnv}/bin"
+        if(file("${deliveryEnv}/bin/solr")) {
+            /** SOLR **/
+            copy {
+                from zipTree(downloadDir + "/solr-${solrVersion}.zip")
+                into "${deliveryEnv}/bin"
+            }
+            file("${deliveryEnv}/bin/solr-${solrVersion}").renameTo(file("${deliveryEnv}/bin/solr"))
         }
-        file("${deliveryEnv}/bin/solr-${solrVersion}").renameTo(file("${deliveryEnv}/bin/solr"))
-
         copy{
             from "./src/search/crafter-search-provider/solr/configsets"
             into "${deliveryEnv}/bin/solr/server/solr/configsets"
