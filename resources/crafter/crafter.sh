@@ -123,7 +123,6 @@ function stopTomcat() {
   echo "------------------------------------------------------------"
   $CRAFTER_HOME/apache-tomcat/bin/shutdown.sh -force
 }
-
 function startMongoDB(){
   echo "------------------------------------------------------------"
   echo "Starting MongoDB"
@@ -152,6 +151,13 @@ function startMongoDB(){
 
     $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
   else
+  # IS it really up ?
+    if ! pgrep -u `whoami` -F "$MONGODB_PID" >/dev/null
+    then
+        echo "Mongo Pid file is not ok, forcing startup"
+         rm "$MONGODB_PID"
+         startMongoDB
+    fi
     echo "MongoDB already started"
   fi
 }
@@ -161,7 +167,19 @@ function stopMongoDB(){
   echo "Stopping MongoDB"
   echo "------------------------------------------------------------"
   if [ -s "$MONGODB_PID" ]; then
-    $MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_ROOT/data/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
+   case "$(uname -s)" in
+        Linux)
+            $MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_ROOT/data/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
+            ;;
+        *)
+          pkill -3 -F "$MONGODB_PID"
+          sleep 5 # % mississippis
+          if pgrep -F "$MONGODB_PID"
+          then
+               pkill -9 -F "$MONGODB_PID" #use Fire
+          fi
+            ;;
+   esac
     if [ $? -eq 0 ]; then
       rm $MONGODB_PID
     fi
@@ -169,6 +187,7 @@ function stopMongoDB(){
     echo "MongoDB already shutdown or pid $MONGODB_PID file not found";
   fi
 }
+
 
 function solrStatus(){
    echo "------------------------------------------------------------"
