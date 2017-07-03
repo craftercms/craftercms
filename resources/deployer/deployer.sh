@@ -85,7 +85,8 @@ function stop() {
         pId=$(pidOf $PORT)
         if ! [ -z $pId ]; then
             #No Pid file but aye to the port
-            killPID $pId
+            echo "$pId" > $PID
+            killPID $PID
         fi
          echo "Crafter Deployer already shutdown or pid $PID file not found";
     fi

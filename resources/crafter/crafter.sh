@@ -182,8 +182,9 @@ function stopSolr() {
   else
     pId=$(pidOf $SOLR_PORT)
     if ! [ -z $pId ]; then
+        echo "$pId" > $SOLR_PID
         #No Pid file but aye to the port
-        killPID $pId
+        killPID $SOLR_PID
     fi
     echo "Solr already shutdown or pid $SOLR_PID file not found";
   fi
@@ -279,7 +280,10 @@ function stopTomcat() {
     pId=$(pidOf $TOMCAT_HTTP_PORT)
     if ! [ -z $pId ]; then
         #No Pid file but aye to the port
-        killPID $pId
+        echo "$pId" > $CATALINA_PID
+        #No Pid file but aye to the port
+        killPID $CATALINA_PID
+
     fi
     echo "Tomcat already shutdown or pid $CATALINA_PID file not found";
   fi
@@ -360,8 +364,10 @@ function stopMongoDB(){
   else
     pId=$(pidOf $MONGODB_PORT)
     if ! [ -z $pId ]; then
+       #No Pid file but aye to the port
+        echo "$pId" > $MONGODB_PID
         #No Pid file but aye to the port
-        killPID $pId
+        killPID $MONGODB_PID
     else
         echo "MongoDB already shutdown or pid $MONGODB_PID file not found";
     fi
