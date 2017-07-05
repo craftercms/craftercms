@@ -127,7 +127,7 @@ task("authoringEnvironment"){
             }
             exec{
                 workingDir "${authEnv}/bin/crafter-deployer/"
-                commandLine commandLinePrefix + ["chmod","+x","deployer.sh"]
+                commandLine commandLinePrefix + ["chmod","+x","deployer.sh","startup.sh","shutdown.sh"]
             }
             exec{
                 workingDir "${authEnv}/bin"
@@ -278,7 +278,7 @@ task("deliveryEnvironment"){
             }
             exec{
                 workingDir "${deliveryEnv}/bin/crafter-deployer/"
-                commandLine commandLinePrefix + ["chmod","+x","deployer.sh"]
+                commandLine commandLinePrefix + ["chmod","+x","deployer.sh","startup.sh","shutdown.sh"]
             }
             exec{
                 workingDir "${deliveryEnv}/bin"
