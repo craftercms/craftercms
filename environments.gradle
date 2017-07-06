@@ -105,7 +105,9 @@ task("authoringEnvironment"){
             into "${authEnv}/"
         }
         copy{
-            from "./resources/crafter/"
+            from ("./resources/crafter/"){
+                exclude "**/init-site.sh"
+            }
             into "${authEnv}/bin/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
                                            SOLR_PORT: String.valueOf(authSolrPort),
