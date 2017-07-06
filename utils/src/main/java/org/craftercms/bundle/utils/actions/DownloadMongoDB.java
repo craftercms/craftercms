@@ -37,7 +37,7 @@ public class DownloadMongoDB implements Action {
         }
 
         try {
-            URL downloadUrl = new URL(builder));
+            URL downloadUrl = new URL((builder));
             try {
                 URLConnection connection = downloadUrl.openConnection();
                 InputStream input = connection.getInputStream();
