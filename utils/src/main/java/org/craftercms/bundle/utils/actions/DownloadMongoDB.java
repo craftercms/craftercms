@@ -33,10 +33,11 @@ public class DownloadMongoDB implements Action {
             default:
                 System.out.println("Current OS not supported, please check documentation for installing manually "
                     + "mongodb");
+                break;
         }
 
         try {
-            URL downloadUrl = new URL(builder.toString());
+            URL downloadUrl = new URL((builder));
             try {
                 URLConnection connection = downloadUrl.openConnection();
                 InputStream input = connection.getInputStream();
@@ -68,6 +69,6 @@ public class DownloadMongoDB implements Action {
 
     @Override
     public void help() {
-
+        //Does nothing.
     }
 }
