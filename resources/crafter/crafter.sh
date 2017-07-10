@@ -481,6 +481,67 @@ function status(){
   mongoDbStatus
 }
 
+function doBackup() {
+  export TARGET_NAME=$1
+  export CURRENT_DATE=$(date +'%Y-%m-%d')
+  export TARGET_FILE="../$TARGET_NAME.$CURRENT_DATE.zip"
+  export TEMP_FOLDER="backup"
+  
+  echo "Starting backup into $TARGET_FILE"
+  mkdir -p "$TEMP_FOLDER"
+  rm "$TARGET_FILE"
+
+  # MYSQL DUMP, pending
+  # TODO Add mongodb dump?
+
+  # ZIP git repos
+  zip -rq "$TEMP_FOLDER/repos.zip" "../data/repos"
+  # ZIP solr indexes
+  zip -rq "$TEMP_FOLDER/indexes.zip" "../data/indexes"
+  # ZIP deployer data
+  zip -rq "$TEMP_FOLDER/deployer.zip" "../data/deployer"
+  # ZIP everything (without compression)
+  zip -rq0 "$TARGET_FILE" "$TEMP_FOLDER"
+
+  rm -rf "$TEMP_FOLDER"
+  echo "Backup completed"
+}
+
+function doRestore() {
+  export SOURCE_FILE=$1
+  if [ ! -f "$SOURCE_FILE" ]; then
+    echo "The file does not exist"
+    exit 1
+  fi
+  export TEMP_FOLDER="backup"
+  
+  echo "Starting restore from $SOURCE_FILE"
+  mkdir -p "$TEMP_FOLDER"
+
+  # MYSQL DUMP, pending
+  # TODO Add mongodb dump?
+
+  # UNZIP everything
+  unzip -q "$SOURCE_FILE"
+  # UNZIP git repos
+  echo "Restoring repos"
+  if [ -d "../data/repos" ]; then
+    read -p "Folder already exist, do you want to overwrite it? (y/n)"
+    if [ "$REPLY" == "yes" ]; then
+      rm -rf "../data/repos/*"
+      unzip -q "$TEMP_FOLDER/repos.zip" -d ".."
+    fi
+  fi
+  # UNZIP solr indexes
+  #unzip -q "$TEMP_FOLDER/indexes.zip" -d ".."
+  # UNZIP deployer data
+  #unzip -q "$TEMP_FOLDER/deployer.zip" -d ".."
+
+
+  rm -r "$TEMP_FOLDER"
+  echo "Restore completed"
+}
+
 function logo() {
   echo -e "\033[38;5;196m"
   echo " ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗"
@@ -554,6 +615,12 @@ case $1 in
   ;;
   status)
      status
+  ;;
+  backup)
+    doBackup $2
+  ;;
+  restore)
+    doRestore $2
   ;;
   *)
     help
