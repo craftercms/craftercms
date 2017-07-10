@@ -12,32 +12,32 @@ PID=${DEPLOYER_PID:="$DEPLOYER_HOME/crafter-deployer.pid"}
 OUTPUT=${DEPLOYER_SDOUT:="$DEPLOYER_HOME/crafter-deployer.out"}
 
 function pidOf(){
-    pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
-    echo $pid
+  pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
+  echo $pid
 }
 
 function killPID(){
-  pkill -3 -F "$1"
+  pkill -15 -F "$1"
   sleep 5 # % mississippis
   if pgrep -F "$1"
-    then
-    pkill -9 -F "$1" #use Fire
+  then
+    pkill -9 -F "$1" # force kill
   fi
 }
 
 function checkPortForRunning(){
-    result=1
-    pidForOpenPort=$(pidOf $1)
-    if ! [ "$pidForOpenPort"=="$2" ]; then
+  result=1
+  pidForOpenPort=$(pidOf $1)
+  if ! [ "$pidForOpenPort"=="$2" ]; then
 
-        echo -e "\033[38;5;196m"
-        echo " Port $1 is taken by PID $pidForOpenPort"
-        echo " Please shutdown process with PID $pidForOpenPort"
-        echo -e "\033[0m"
-    else
-        result=0
-    fi
-    return $result
+    echo -e "\033[38;5;196m"
+    echo " Port $1 is taken by PID $pidForOpenPort"
+    echo " Please shutdown process with PID $pidForOpenPort"
+    echo -e "\033[0m"
+  else
+    result=0
+  fi
+  return $result
 }
 
 function help() {
@@ -49,64 +49,63 @@ function help() {
 }
 
 function start() {
-
-   if [ ! -s "$PID" ]; then
+  if [ ! -s "$PID" ]; then
     ## Before run check if the port is available.
     possiblePID=$(pidOf $PORT)
     if  [ -z "$possiblePID" ];  then
-          nohup java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"  > "$OUTPUT" >&1&
-          echo $! > $PID
+      nohup java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"  > "$OUTPUT" >&1&
+      echo $! > $PID
     else
-        echo $possiblePID > $PID
-        echo "Process PID $possiblePID is listening port $PORT"
-        echo "Hijacking PID and saving into $PID"
-        exit
+      echo $possiblePID > $PID
+      echo "Process PID $possiblePID is listening port $PORT"
+      echo "Hijacking PID and saving into $PID"
+      exit
     fi
   else
     # IS it really up ?
     if ! checkPortForRunning $PORT $(cat "$PID");then
-        exit 5
+      exit 5
     fi
     if ! pgrep -u `whoami` -F "$PID" >/dev/null
     then
-        echo "Solr Pid file is not ok, forcing startup"
-         rm "$PID"
-         start
+      echo "Deployer pid file is not ok, forcing startup"
+      rm "$PID"
+      start
     else
-        echo "Deployer already started"
+      echo "Deployer already started"
     fi
   fi
 }
 
 function stop() {
-    if [ -s "$PID" ]; then
-        killPID $PID
-    else
-        pId=$(pidOf $PORT)
-        if ! [ -z $pId ]; then
-            #No Pid file but aye to the port
-            echo "$pId" > $PID
-            killPID $PID
-        fi
-         echo "Crafter Deployer already shutdown or pid $PID file not found";
+  if [ -s "$PID" ]; then
+    killPID $PID
+  else
+    pid=$(pidOf $PORT)
+    if ! [ -z $pid ]; then
+      #No Pid file but aye to the port
+      echo "$pid" > $PID
+      killPID $PID
     fi
-    if [ $? -eq 0 ]; then
-        rm $PID
-    fi
+    echo "Crafter Deployer already shutdown or pid $PID file not found";
+  fi
+  if [ $? -eq 0 ] && [ -e $PID ]; then
+    rm $PID
+  fi
 }
 
 case $1 in
   debug)
-    JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-    start
+  JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+  start
   ;;
   start)
-    start
+  start
   ;;
   stop)
-    stop
+  stop
   ;;
   *)
-    help
+  help
   ;;
 esac
