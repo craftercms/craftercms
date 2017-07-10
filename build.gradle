@@ -268,7 +268,7 @@ task("stop") {
     }
 }
 
-task("clear") {
+task("clean") {
     description "Clean Crafter CMS stack"
 
     doFirst {
@@ -495,7 +495,7 @@ def buildModule(commandLinePrefix, module, path="./src/") {
                 commandLinePost.add("-Dstudio.ui.path=../studio2-ui/".toString())
                 commandLinePost.add("-Dexec.skip=true")
             }
-            def array=commandLinePrefix +  commandLinePrefix + ["mvn", "clean", "install"] + commandLinePost
+            def array=commandLinePrefix +  commandLinePrefix + ["mvn", "install"] + commandLinePost
             executeProcess(array, "${path}${module}".toString())
         }
     }
