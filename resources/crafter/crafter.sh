@@ -25,34 +25,32 @@ function help() {
   exit 0;
 }
 
-
 function pidOf(){
-    pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
-    echo $pid
+  pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
+  echo $pid
 }
 
 function killPID(){
-  pkill -3 -F "$1"
+  pkill -15 -F "$1"
   sleep 5 # % mississippis
   if pgrep -F "$1"
-    then
-    pkill -9 -F "$1" #use Fire
+  then
+    pkill -9 -F "$1" # force kill
   fi
 }
 
 function checkPortForRunning(){
-    result=1
-    pidForOpenPort=$(pidOf $1)
-    if ! [ "$pidForOpenPort"=="$2" ]; then
-
-        echo -e "\033[38;5;196m"
-        echo " Port $1 is taken by PID $pidForOpenPort"
-        echo " Please shutdown process with PID $pidForOpenPort"
-        echo -e "\033[0m"
-    else
-        result=0
-    fi
-    return $result
+  result=1
+  pidForOpenPort=$(pidOf $1)
+  if ! [ "$pidForOpenPort"=="$2" ]; then
+    echo -e "\033[38;5;196m"
+    echo " Port $1 is taken by PID $pidForOpenPort"
+    echo " Please shutdown process with PID $pidForOpenPort"
+    echo -e "\033[0m"
+  else
+    result=0
+  fi
+  return $result
 }
 
 function printTailInfo(){
@@ -105,28 +103,27 @@ function startSolr() {
     ## Before run check if the port is available.
     possiblePID=$(pidOf $SOLR_PORT)
     if  [ -z "$possiblePID" ];  then
-        $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS"
-        echo $(pidOf $SOLR_PORT) > $SOLR_PID
+      $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS"
+      echo $(pidOf $SOLR_PORT) > $SOLR_PID
     else
-        echo $possiblePID > $SOLR_PID
-        echo "Process PID $possiblePID is listening port $SOLR_PORT"
-        echo "Hijacking PID and saving into $SOLR_PID"
-        exit
+      echo $possiblePID > $SOLR_PID
+      echo "Process PID $possiblePID is listening port $SOLR_PORT"
+      echo "Hijacking PID and saving into $SOLR_PID"
+      exit
     fi
   else
     # IS it really up ?
     if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
-        exit 5
+      exit 5
     fi
     if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
     then
-        echo "Solr Pid file is not ok, forcing startup"
-         rm "$SOLR_PID"
-         startSolr
+      echo "Solr Pid file is not ok, forcing startup"
+      rm "$SOLR_PID"
+      startSolr
     fi
     echo "Solr already started"
   fi
-
 }
 
 function debugSolr() {
@@ -141,25 +138,25 @@ function debugSolr() {
     ## Before run check if the port is available.
     possiblePID=$(pidOf $SOLR_PORT)
     if  [ -z "$possiblePID" ];  then
-        $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR \
-        -a "$SOLR_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
-        echo $(pidOf $SOLR_PORT) > $SOLR_PID
+      $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR \
+      -a "$SOLR_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
+      echo $(pidOf $SOLR_PORT) > $SOLR_PID
     else
-        echo $possiblePID > $SOLR_PID
-        echo "Process PID $possiblePID is listening port $SOLR_PORT"
-        echo "Hijacking PID and saving into $SOLR_PID"
-        exit
+      echo $possiblePID > $SOLR_PID
+      echo "Process PID $possiblePID is listening port $SOLR_PORT"
+      echo "Hijacking PID and saving into $SOLR_PID"
+      exit
     fi
   else
     # IS it really up ?
     if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
-        exit 5
+      exit 5
     fi
     if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
     then
-        echo "Solr Pid file is not ok, forcing startup"
-         rm "$SOLR_PID"
-         debugSolr
+      echo "Solr Pid file is not ok, forcing startup"
+      rm "$SOLR_PID"
+      debugSolr
     fi
     echo "Solr already started"
   fi
@@ -174,17 +171,17 @@ function stopSolr() {
     $CRAFTER_HOME/solr/bin/solr stop
     if pgrep -F "$SOLR_PID"
     then
-        killPID $SOLR_PID
+      killPID $SOLR_PID
     fi
     if [ $? -eq 0 ]; then
       rm $SOLR_PID
     fi
   else
-    pId=$(pidOf $SOLR_PORT)
-    if ! [ -z $pId ]; then
-        echo "$pId" > $SOLR_PID
-        #No Pid file but aye to the port
-        killPID $SOLR_PID
+    pid=$(pidOf $SOLR_PORT)
+    if ! [ -z $pid ]; then
+      echo "$pid" > $SOLR_PID
+      # No pid file but we found the process
+      killPID $SOLR_PID
     fi
     echo "Solr already shutdown or pid $SOLR_PID file not found";
   fi
@@ -204,23 +201,23 @@ function startTomcat() {
     possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
     if  [ -z "$possiblePID" ];  then
-        $CRAFTER_HOME/apache-tomcat/bin/startup.sh
+      $CRAFTER_HOME/apache-tomcat/bin/startup.sh
     else
-        echo $possiblePID > $CATALINA_PID
-        echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
-        echo "Hijacking PID and saving into $CATALINA_PID"
-        exit
+      echo $possiblePID > $CATALINA_PID
+      echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
+      echo "Hijacking PID and saving into $CATALINA_PID"
+      exit
     fi
   else
-    # IS it really up ?
+    # Is it really up?
     if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
-        exit 5
+      exit 5
     fi
     if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
     then
-        echo "Tomcat Pid file is not ok, forcing startup"
-         rm "$CATALINA_PID"
-         startTomcat
+      echo "Tomcat Pid file is not ok, forcing startup"
+      rm "$CATALINA_PID"
+      startTomcat
     fi
     echo "Tomcat already started"
   fi
@@ -236,27 +233,27 @@ function debugTomcat() {
   fi
   # Step 1, does the CATALINA_PID exist and is valid
   if [ ! -s "$CATALINA_PID" ]; then
-    ## Before run check if the port is available.
+    # Before run check if the port is available.
     possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
     if  [ -z "$possiblePID" ];  then
       $CRAFTER_HOME/apache-tomcat/bin/catalina.sh jpda start;
     else
-        echo $possiblePID > $CATALINA_PID
-        echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
-        echo "Hijacking PID and saving into $CATALINA_PID"
-        exit
+      echo $possiblePID > $CATALINA_PID
+      echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
+      echo "Hijacking PID and saving into $CATALINA_PID"
+      exit
     fi
   else
-    # IS it really up ?
+    # Is it really up?
     if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
-        exit 5
+      exit 5
     fi
     if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
     then
-        echo "Tomcat Pid file is not ok, forcing startup"
-         rm "$CATALINA_PID"
-         debugTomcat
+      echo "Tomcat Pid file is not ok, forcing startup"
+      rm "$CATALINA_PID"
+      debugTomcat
     fi
     echo "Tomcat already started"
   fi
@@ -269,21 +266,21 @@ function stopTomcat() {
   echo "------------------------------------------------------------"
   if [ -s "$CATALINA_PID" ]; then
     $CRAFTER_HOME/apache-tomcat/bin/shutdown.sh -force
-    if pgrep -F "$CATALINA_PID"
-    then
+    if [ -e "$CATALINA_PID" ]; then
+      if pgrep -F "$CATALINA_PID"
+      then
         killPID $CATALINA_PID
-    fi
-    if [ $? -eq 0 ]; then
-      rm $CATALINA_PID
+      fi
+      if [ $? -eq 0 ]; then
+        rm $CATALINA_PID
+      fi
     fi
   else
-    pId=$(pidOf $TOMCAT_HTTP_PORT)
-    if ! [ -z $pId ]; then
-        #No Pid file but aye to the port
-        echo "$pId" > $CATALINA_PID
-        #No Pid file but aye to the port
-        killPID $CATALINA_PID
-
+    pid=$(pidOf $TOMCAT_HTTP_PORT)
+    if ! [ -z $pid ]; then
+      # No pid file but we found the process
+      echo "$pid" > $CATALINA_PID
+      killPID $CATALINA_PID
     fi
     echo "Tomcat already shutdown or pid $CATALINA_PID file not found";
   fi
@@ -296,12 +293,12 @@ function startMongoDB(){
   echo "------------------------------------------------------------"
   if [ ! -s "$MONGODB_PID" ]; then
     if [ ! -d "$MONGODB_DATA_DIR" ]; then
-        echo "Creating : ${MONGODB_DATA_DIR}"
-        mkdir -p "$MONGODB_DATA_DIR"
+      echo "Creating : ${MONGODB_DATA_DIR}"
+      mkdir -p "$MONGODB_DATA_DIR"
     fi
 
     if [ ! -d $MONGODB_LOGS_DIR ]; then
-         echo "Creating : ${MONGODB_LOGS_DIR}"
+      echo "Creating : ${MONGODB_LOGS_DIR}"
       mkdir -p $MONGODB_LOGS_DIR;
     fi
 
@@ -314,28 +311,28 @@ function startMongoDB(){
       tar xvf mongodb.tgz --strip 1
       rm mongodb.tgz
     fi
-    ## Before run check if the port is available.
+    # Before run check if the port is available.
     possiblePID=$(pidOf $MONGODB_PORT)
     if  [ -z $possiblePID ];  then
-        $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
+      $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
     else
-        echo $possiblePID > $MONGODB_PID
-        echo "Process PID $possiblePID is listening port $MONGODB_PORT"
-        echo "Hijacking PID and saving into $MONGODB_PID"
+      echo $possiblePID > $MONGODB_PID
+      echo "Process PID $possiblePID is listening port $MONGODB_PORT"
+      echo "Hijacking PID and saving into $MONGODB_PID"
     fi
   else
-  # IS it really up ?
+    # Is it really up?
     if ! checkPortForRunning $MONGODB_PORT $(cat "$MONGODB_PID");then
-        exit 5
+      exit 5
     fi
 
     if ! pgrep -u `whoami` -F "$MONGODB_PID" >/dev/null
     then
-        echo "Mongo Pid file is not ok, forcing startup"
-         rm "$MONGODB_PID"
-         startMongoDB
+      echo "Mongo Pid file is not ok, forcing startup"
+      rm "$MONGODB_PID"
+      startMongoDB
     else
-        echo "MongoDB already started"
+      echo "MongoDB already started"
     fi
   fi
 }
@@ -345,82 +342,81 @@ function stopMongoDB(){
   echo "Stopping MongoDB"
   echo "------------------------------------------------------------"
   if [ -s "$MONGODB_PID" ]; then
-   case "$(uname -s)" in
-        Linux)
-            $MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_ROOT/data/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
-            ;;
-        *)
-          pkill -3 -F "$MONGODB_PID"
-          sleep 5 # % mississippis
-          if pgrep -F "$MONGODB_PID"
-          then
-               pkill -9 -F "$MONGODB_PID" #use Fire
-          fi
-            ;;
-   esac
+    case "$(uname -s)" in
+      Linux)
+      $MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_ROOT/data/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
+      ;;
+      *)
+      pkill -3 -F "$MONGODB_PID"
+      sleep 5 # % mississippis
+      if pgrep -F "$MONGODB_PID"
+      then
+        pkill -9 -F "$MONGODB_PID" # force kill
+      fi
+      ;;
+    esac
     if [ $? -eq 0 ]; then
       rm $MONGODB_PID
     fi
   else
-    pId=$(pidOf $MONGODB_PORT)
-    if ! [ -z $pId ]; then
-       #No Pid file but aye to the port
-        echo "$pId" > $MONGODB_PID
-        #No Pid file but aye to the port
-        killPID $MONGODB_PID
+    pid=$(pidOf $MONGODB_PORT)
+    if ! [ -z $pid ]; then
+      # No pid file but we found the process
+      echo "$pid" > $MONGODB_PID
+      killPID $MONGODB_PID
     else
-        echo "MongoDB already shutdown or pid $MONGODB_PID file not found";
+      echo "MongoDB already shutdown or pid $MONGODB_PID file not found";
     fi
   fi
 }
 
 
 function solrStatus(){
-   echo "------------------------------------------------------------"
-   echo "SOLR status                                                 "
-   echo "------------------------------------------------------------"
+  echo "------------------------------------------------------------"
+  echo "SOLR status                                                 "
+  echo "------------------------------------------------------------"
 
-   solrStatusOut=$(curl --silent  -f "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
-   if [ $? -eq 0 ]; then
+  solrStatusOut=$(curl --silent  -f "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
+  if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$CRAFTER_ROOT/bin/solr/bin/solr-$SOLR_PORT.pid"`
     echo -e  "uptime (in minutes):\t"
     echo "$solrStatusOut"  | python -m json.tool | grep upTimeMS | awk -F"[,|:]" '{print $2}'| awk '{print ($1/1000)/60}'| bc
     echo -e  "Solr Version:\t"
     echo "$solrStatusOut"  | python -m json.tool | grep solr-spec-version | awk -F"[,|:]" '{print $2}'
-   else
-      echo -e "\033[38;5;196m"
-      echo "Solr is not running or is unreachable on port $SOLR_PORT"
-      echo -e "\033[0m"
-    fi
+  else
+    echo -e "\033[38;5;196m"
+    echo "Solr is not running or is unreachable on port $SOLR_PORT"
+    echo -e "\033[0m"
+  fi
 }
 
 function deployerStatus(){
-   echo "------------------------------------------------------------"
-   echo "Crafter Deployer status                                                 "
-   echo "------------------------------------------------------------"
-   deployerStatusOut=$(curl --silent  -f  "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
-   if [ $? -eq 0 ]; then
+  echo "------------------------------------------------------------"
+  echo "Crafter Deployer status                                     "
+  echo "------------------------------------------------------------"
+  deployerStatusOut=$(curl --silent  -f  "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
+  if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$DEPLOYER_PID"`
     echo -e  "uptime:\t"
     echo "$deployerStatusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
     echo -e  "Status:\t"
     echo "$deployerStatusOut"  | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
-   else
-      echo -e "\033[38;5;196m"
-      echo "Crafter Deployer is not running or is unreachable on port $DEPLOYER_PORT"
-      echo -e "\033[0m"
-    fi
+  else
+    echo -e "\033[38;5;196m"
+    echo "Crafter Deployer is not running or is unreachable on port $DEPLOYER_PORT"
+    echo -e "\033[0m"
+  fi
 }
 
 function studioStatus(){
-   echo "------------------------------------------------------------"
-   echo "Crafter Studio status                                       "
-   echo "------------------------------------------------------------"
-   studioStatusOut=$(curl --silent  -f \
-   "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/status.json")
-   if [ $? -eq 0 ]; then
+  echo "------------------------------------------------------------"
+  echo "Crafter Studio status                                       "
+  echo "------------------------------------------------------------"
+  studioStatusOut=$(curl --silent  -f \
+  "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/status.json")
+  if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$CATALINA_PID"`
     echo -e  "uptime:\t"
@@ -430,25 +426,25 @@ function studioStatus(){
     echo -e "MySQL sub-process:\t"
     echo -e "PID \t"
     echo ` cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
-   else
-      echo -e "\033[38;5;196m"
-      echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTTP_PORT"
-      echo -e "\033[0m"
-    fi
+  else
+    echo -e "\033[38;5;196m"
+    echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTTP_PORT"
+    echo -e "\033[0m"
+  fi
 }
 
 function mongoDbStatus(){
   echo "------------------------------------------------------------"
   echo "MongoDB status                                              "
   echo "------------------------------------------------------------"
-    if [ -e "$MONGODB_PID" ]; then
-        echo -e "MongoDB PID"
-        echo $(cat $MONGODB_PID)
-    else
-        echo -e "\033[38;5;196m"
-        echo " MongoDB is not running"
-        echo -e "\033[0m"
-    fi
+  if [ -e "$MONGODB_PID" ]; then
+    echo -e "MongoDB PID"
+    echo $(cat $MONGODB_PID)
+  else
+    echo -e "\033[38;5;196m"
+    echo " MongoDB is not running"
+    echo -e "\033[0m"
+  fi
 }
 
 function start() {
@@ -494,68 +490,68 @@ function logo() {
 
 case $1 in
   debug)
-    logo
-    debug
+  logo
+  debug
   ;;
   start)
-    logo
-    start
+  logo
+  start
   ;;
   stop)
-    logo
-    stop
+  logo
+  stop
   ;;
   debug_deployer)
-    logo
-    debugDeployer
+  logo
+  debugDeployer
   ;;
   start_deployer)
-    logo
-    startDeployer
+  logo
+  startDeployer
   ;;
   stop_deployer)
-    logo
-    stopDeployer
+  logo
+  stopDeployer
   ;;
   debug_solr)
-    logo
-    debugSolr
+  logo
+  debugSolr
   ;;
   start_solr)
-    logo
-    startSolr
+  logo
+  startSolr
   ;;
   stop_solr)
-    logo
-    stopSolr
+  logo
+  stopSolr
   ;;
   debug_tomcat)
-    logo
-    debugTomcat
+  logo
+  debugTomcat
   ;;
   start_tomcat)
-    logo
-    startTomcat
+  logo
+  startTomcat
   ;;
   stop_tomcat)
-    logo
-    stopTomcat
+  logo
+  stopTomcat
   ;;
   start_mongodb)
-    logo
-    startMongoDB
+  logo
+  startMongoDB
   ;;
   stop_mongodb)
-    logo
-    stopMongoDB
+  logo
+  stopMongoDB
   ;;
   tail)
-    tail $2
+  tail $2
   ;;
   status)
-     status
+  status
   ;;
   *)
-    help
+  help
   ;;
 esac
