@@ -21,6 +21,8 @@ function help() {
   echo "    debug_tomcat, Starts Tomcat in debug mode"
   echo "    start_mongodb, Starts Mongo DB"
   echo "    stop_mongodb, Stops Mongo DB"
+  echo "    backup, Perform a backup of all data"
+  echo "    restore, Perform a restore of all data"
   echo "    tail,  Tails all Crafter CMS logs"
   exit 0;
 }
@@ -488,19 +490,45 @@ function doBackup() {
   rm "$TARGET_FILE"
 
   # MYSQL DUMP, pending
-  # TODO Add mongodb dump?
+  
+  # MongoDB Dump
+  if [ -d "../data/mongodb" ]; then
+    echo "Adding mongodb dump"
+    startMongoDB
+    mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
+    cd "$TEMP_FOLDER/mongodb"
+    zip -rq "../mongodb.zip" *
+    cd ..
+    rm -r mongodb
+    cd ..
+  fi
 
   # ZIP git repos
+  echo "Adding git repos"
   zip -rq "$TEMP_FOLDER/repos.zip" "../data/repos"
   # ZIP solr indexes
+  echo "Adding solr indexes"
   zip -rq "$TEMP_FOLDER/indexes.zip" "../data/indexes"
   # ZIP deployer data
+  echo "Adding deployer data"
   zip -rq "$TEMP_FOLDER/deployer.zip" "../data/deployer"
   # ZIP everything (without compression)
   zip -rq0 "$TARGET_FILE" "$TEMP_FOLDER"
 
   rm -rf "$TEMP_FOLDER"
   echo "Backup completed"
+}
+
+function checkFolder() {
+  echo "Checking folder for $1"
+  local result=0
+  if [ -d "../data/$1" ]; then
+    read -p "Folder already exist, do you want to overwrite it? (y/n) "
+    if [ "$REPLY" != "yes" ]; then
+      result=1
+    fi
+  fi
+  return $result
 }
 
 function doRestore() {
@@ -515,23 +543,38 @@ function doRestore() {
   mkdir -p "$TEMP_FOLDER"
 
   # MYSQL DUMP, pending
-  # TODO Add mongodb dump?
 
   # UNZIP everything
   unzip -q "$SOURCE_FILE"
-  # UNZIP git repos
-  echo "Restoring repos"
-  if [ -d "../data/repos" ]; then
-    read -p "Folder already exist, do you want to overwrite it? (y/n)"
-    if [ "$REPLY" == "yes" ]; then
-      rm -rf "../data/repos/*"
-      unzip -q "$TEMP_FOLDER/repos.zip" -d ".."
+  
+  # MongoDB Dump
+  if [ -f "$TEMP_FOLDER/mongodb.zip" ]; then
+    if checkFolder "mongodb"; then
+      echo "Restoring MongoDB"
+      startMongoDB
+      unzip -q "$TEMP_FOLDER/mongodb.zip" -d "$TEMP_FOLDER/mongodb"
+      mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
     fi
   fi
+  
+  # UNZIP git repos
+  if checkFolder "repos"; then
+    echo "Restoring git repos"
+    rm -rf "../data/repos/*"
+    unzip -q "$TEMP_FOLDER/repos.zip" -d ".."
+  fi
   # UNZIP solr indexes
-  #unzip -q "$TEMP_FOLDER/indexes.zip" -d ".."
+  if checkFolder "indexes"; then
+    echo "Restoring solr indexes"
+    rm -rf "../data/indexes/*"
+    unzip -q "$TEMP_FOLDER/indexes.zip" -d ".."
+  fi
   # UNZIP deployer data
-  #unzip -q "$TEMP_FOLDER/deployer.zip" -d ".."
+  if checkFolder "deployer"; then
+    echo "Restoring deployer data"
+    rm -rf "../data/deployer/*"
+    unzip -q "$TEMP_FOLDER/deployer.zip" -d ".."
+  fi
 
 
   rm -r "$TEMP_FOLDER"
