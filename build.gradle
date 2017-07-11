@@ -520,14 +520,16 @@ def deployBinary(deployable){
 }
 
 def deployModule(commandLinePrefix, module, env) {
-    def dtask=tasks.findByPath("deploy${module}")
+    def dtask=tasks.findByPath("deploy${module}${env}")
     if (dtask!= null) {
         return dtask
     } else {
-        return tasks.create("deploy${module}") {
+        return tasks.create("deploy${module}${env}") {
             println "Deploy ${module} to ${env}"
             if (module.equals("studio") && env.equals("delivery")) {
                 println "Ignoring module 'studio' can not be deployed in environment 'delivery'"
+            } else if((module.equals("profile") && !includeProfile) || (module.equals("social") && !includeSocial)) {
+                println "Ignoring module '$module' not enabled for environment '$env'"
             } else {
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
                 deployBinary(deployable)
