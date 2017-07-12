@@ -52,14 +52,6 @@ task("authoringEnvironment"){
             from "./resources/tomcat-config/crafter/setenv.bat"
             into "${authEnv}/bin/apache-tomcat/bin"
         }
-
-        copy{
-            from "./src/search/crafter-search-server/target/crafter-search.war"
-            from "./src/engine/target/ROOT.war"
-            from "./src/studio/target/studio.war"
-            into "${authEnv}/bin/apache-tomcat/webapps/"
-        }
-
         copy{
             from "./resources/tomcat-config/"
             into "${authEnv}/bin/apache-tomcat/shared/classes/"
@@ -72,10 +64,6 @@ task("authoringEnvironment"){
                                            TOMCAT_DEBUG_PORT:String.valueOf(authTomcatDebug),
                                            MONGODB_PORT:String.valueOf(authMongoDBPort)
             ])
-        }
-        copy{
-            from "./src/deployer/target/crafter-deployer.jar"
-            into "${authEnv}/bin/crafter-deployer"
         }
         copy{
             from "./resources/deployer/"
@@ -138,20 +126,6 @@ task("authoringEnvironment"){
             }
         }
         updateCatalinaSettings(authEnv);
-        if(includeProfile){
-            copy{
-                from "./src/profile/server/target/crafter-profile.war"
-                from "./src/profile/admin-console/target/crafter-profile-admin-console.war"
-                into "${authEnv}/bin/apache-tomcat/webapps/"
-            }
-        }
-        if(includeSocial){
-            copy{
-                from "./src/social/server/target/crafter-social.war"
-                from "./src/social/admin/target/crafter-social-admin.war"
-                into "${authEnv}/bin/apache-tomcat/webapps/"
-            }
-        }
         updateTomcatPorts("${authEnv}/bin/apache-tomcat/conf/server.xml",authTomcatPort,authTomcatAJPPort,
                 authTomcatShutdownPort,authTomcatSSLPort)
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
@@ -196,13 +170,6 @@ task("deliveryEnvironment"){
             from "./resources/tomcat-config/crafter/setenv.bat"
             into "${deliveryEnv}/bin/apache-tomcat/bin"
         }
-
-        copy{
-            from "./src/search/crafter-search-server/target/crafter-search.war"
-            from "./src/engine/target/ROOT.war"
-            into "${deliveryEnv}/bin/apache-tomcat/webapps/"
-        }
-
         copy{
             from "./resources/tomcat-config/"
             into "${deliveryEnv}/bin/apache-tomcat/shared/classes/"
@@ -226,10 +193,6 @@ task("deliveryEnvironment"){
                                            TOMCAT_DEBUG_PORT:String.valueOf(deliveryTomcatDebugPort),
                                            MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
             ])
-        }
-        copy{
-            from "./src/deployer/target/crafter-deployer.jar"
-            into "${deliveryEnv}/bin/crafter-deployer"
         }
         copy{
             from "./resources/deployer/"
@@ -286,20 +249,6 @@ task("deliveryEnvironment"){
                 workingDir "${deliveryEnv}/bin"
                 commandLine commandLinePrefix + ["chmod","+x","crafter.sh","startup.sh","debug.sh","shutdown.sh",
                                                  "crafter-setenv.sh", "init-site.sh"]
-            }
-        }
-        if(includeProfile){
-            copy{
-                from "./src/profile/server/target/crafter-profile.war"
-                from "./src/profile/admin-console/target/crafter-profile-admin-console.war"
-                into "${deliveryEnv}/bin/apache-tomcat/webapps/"
-            }
-        }
-        if(includeSocial){
-            copy{
-                from "./src/social/server/target/crafter-social.war"
-                from "./src/social/admin/target/crafter-social-admin.war"
-                into "${deliveryEnv}/bin/apache-tomcat/webapps/"
             }
         }
         updateTomcatPorts("${deliveryEnv}/bin/apache-tomcat/conf/server.xml",deliveryTomcatPort,deliveryTomcatAJPPort,

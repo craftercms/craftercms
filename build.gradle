@@ -501,7 +501,7 @@ def buildModule(commandLinePrefix, module, path="./src/") {
     }
 }
 
-def deployBinary(deployable){
+def deployBinary(deployable, env){
     if (deployable.exists()) {
         def path = env.equals("authoring")? authEnv : deliveryEnv
         path += deployable.absolutePath.endsWith(".jar")? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
@@ -532,11 +532,11 @@ def deployModule(commandLinePrefix, module, env) {
                 println "Ignoring module '$module' not enabled for environment '$env'"
             } else {
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
-                deployBinary(deployable)
+                deployBinary(deployable, env)
                 if(module.equalsIgnoreCase("profile")){
-                    deployBinary(file("./src/profile/admin-console/target/crafter-profile-admin-console.war"))
+                    deployBinary(file("./src/profile/admin-console/target/crafter-profile-admin-console.war"), env)
                 } else if (module.equalsIgnoreCase("social")) {
-                    deployBinary(file("./src/social/admin/target/crafter-social-admin.war"))
+                    deployBinary(file("./src/social/admin/target/crafter-social-admin.war"), env)
                 }
             }
         }
