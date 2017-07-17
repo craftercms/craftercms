@@ -542,10 +542,10 @@ function doRestore() {
   echo "Starting restore from $SOURCE_FILE"
   mkdir -p "$TEMP_FOLDER"
 
-  # MYSQL DUMP, pending
-
   # UNZIP everything
   unzip -q "$SOURCE_FILE"
+  
+  # MYSQL DUMP, pending
   
   # MongoDB Dump
   if [ -f "$TEMP_FOLDER/mongodb.zip" ]; then
@@ -576,7 +576,16 @@ function doRestore() {
     unzip -q "$TEMP_FOLDER/deployer.zip" -d ".."
   fi
 
-
+  # If it is an authoring env then sync the repos
+  if [ -d "../data/db" ]; then
+    start
+    for SITE in `ls ../data/repos/sites/`
+    do
+      echo "Running sync for site $SITE"
+      curl -H "Content-Type: application/json" -d '{ "site_id":"$SITE" }' http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json
+    done
+  fi
+  
   rm -r "$TEMP_FOLDER"
   echo "Restore completed"
 }
