@@ -497,7 +497,7 @@ function doBackup() {
     startMongoDB
     mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
     cd "$TEMP_FOLDER/mongodb"
-    zip -rq "../mongodb.zip" *
+    java -jar craftercms-utils.jar zip . "../mongodb.zip"
     cd ..
     rm -r mongodb
     cd ..
@@ -505,15 +505,15 @@ function doBackup() {
 
   # ZIP git repos
   echo "Adding git repos"
-  zip -rq "$TEMP_FOLDER/repos.zip" "../data/repos"
+  java -jar craftercms-utils.jar zip "../data/repos" "$TEMP_FOLDER/repos.zip"
   # ZIP solr indexes
   echo "Adding solr indexes"
-  zip -rq "$TEMP_FOLDER/indexes.zip" "../data/indexes"
+  java -jar craftercms-utils.jar zip "../data/indexes" "$TEMP_FOLDER/indexes.zip"
   # ZIP deployer data
   echo "Adding deployer data"
-  zip -rq "$TEMP_FOLDER/deployer.zip" "../data/deployer"
+  java -jar craftercms-utils.jar zip "../data/deployer" "$TEMP_FOLDER/deployer.zip"
   # ZIP everything (without compression)
-  zip -rq0 "$TARGET_FILE" "$TEMP_FOLDER"
+  java -jar craftercms-utils.jar zip "$TEMP_FOLDER" "$TARGET_FILE" true
 
   rm -rf "$TEMP_FOLDER"
   echo "Backup completed"
@@ -543,7 +543,7 @@ function doRestore() {
   mkdir -p "$TEMP_FOLDER"
 
   # UNZIP everything
-  unzip -q "$SOURCE_FILE"
+  java -jar craftercms-utils.jar unzip "$SOURCE_FILE" .
   
   # MYSQL DUMP, pending
   
@@ -552,7 +552,7 @@ function doRestore() {
     if checkFolder "mongodb"; then
       echo "Restoring MongoDB"
       startMongoDB
-      unzip -q "$TEMP_FOLDER/mongodb.zip" -d "$TEMP_FOLDER/mongodb"
+      java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
       mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
     fi
   fi
@@ -561,28 +561,28 @@ function doRestore() {
   if checkFolder "repos"; then
     echo "Restoring git repos"
     rm -rf "../data/repos/*"
-    unzip -q "$TEMP_FOLDER/repos.zip" -d ".."
+    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" ".."
   fi
   # UNZIP solr indexes
   if checkFolder "indexes"; then
     echo "Restoring solr indexes"
     rm -rf "../data/indexes/*"
-    unzip -q "$TEMP_FOLDER/indexes.zip" -d ".."
+    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" ".."
   fi
   # UNZIP deployer data
   if checkFolder "deployer"; then
     echo "Restoring deployer data"
     rm -rf "../data/deployer/*"
-    unzip -q "$TEMP_FOLDER/deployer.zip" -d ".."
+    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" ".."
   fi
-
+  
   # If it is an authoring env then sync the repos
   if [ -d "../data/db" ]; then
-    start
+    startTomcat
     for SITE in `ls ../data/repos/sites/`
     do
       echo "Running sync for site $SITE"
-      curl -H "Content-Type: application/json" -d '{ "site_id":"$SITE" }' http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json
+      java -jar craftercms-utils.jar post http://localhost:@TOMCAT_HTTP_PORT@/studio/api/1/services/api/1/repo/sync-from-repo.json '{ "site_id":"$SITE" }'
     done
   fi
   
