@@ -489,15 +489,18 @@ function doBackup() {
   mkdir -p "$TEMP_FOLDER"
   rm "$TARGET_FILE"
 
-  # MYSQL DUMP, pending
+  # MySQL Dump
+  if [ -d "../data/db" ]; then
+    #Do dump
+    dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+  fi
   
   # MongoDB Dump
   if [ -d "../data/mongodb" ]; then
     echo "Adding mongodb dump"
-    startMongoDB
     mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
     cd "$TEMP_FOLDER/mongodb"
-    java -jar craftercms-utils.jar zip . "../mongodb.zip"
+    java -jar ../../craftercms-utils.jar zip . "../mongodb.zip"
     cd ..
     rm -r mongodb
     cd ..
@@ -554,6 +557,7 @@ function doRestore() {
       startMongoDB
       java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
       mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
+      stopMongoDB
     fi
   fi
   
@@ -561,28 +565,38 @@ function doRestore() {
   if checkFolder "repos"; then
     echo "Restoring git repos"
     rm -rf "../data/repos/*"
-    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" ".."
+    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" .
   fi
   # UNZIP solr indexes
   if checkFolder "indexes"; then
     echo "Restoring solr indexes"
     rm -rf "../data/indexes/*"
-    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" ".."
+    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" .
   fi
   # UNZIP deployer data
   if checkFolder "deployer"; then
     echo "Restoring deployer data"
     rm -rf "../data/deployer/*"
-    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" ".."
+    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" .
   fi
   
   # If it is an authoring env then sync the repos
-  if [ -d "../data/db" ]; then
-    startTomcat
+  if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
+    mkdir "../data/db"
+    #Start DB
+    dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir=../data/db --port=@MARIADB_PORT@ --pid=./MariaDB4j.pid --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
+    sleep 5
+    # Import
+    dbms/bin/mysql --user=root --port=@MARIADB_PORT@ < "$TEMP_FOLDER/crafter.sql"
+    # Stop DB
+    kill $(cat MariaDB4j.pid)
+    start
+    echo "Waiting for studio to start"
+    sleep 60
     for SITE in `ls ../data/repos/sites/`
     do
       echo "Running sync for site $SITE"
-      java -jar craftercms-utils.jar post http://localhost:@TOMCAT_HTTP_PORT@/studio/api/1/services/api/1/repo/sync-from-repo.json '{ "site_id":"$SITE" }'
+      java -jar craftercms-utils.jar post "http://localhost:@TOMCAT_HTTP_PORT@/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }"
     done
   fi
   

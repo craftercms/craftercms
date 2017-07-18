@@ -29,6 +29,7 @@ public class Zip implements Action {
             Path folder = Paths.get(args[0]);
             Path output = Paths.get(args[1]);
             boolean useCompression = args.length != 3;
+            System.out.println("Writing file: " + output);
             try(ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(output.toFile()))) {
                 if(!useCompression) {
                     zout.setLevel(ZipOutputStream.STORED);
