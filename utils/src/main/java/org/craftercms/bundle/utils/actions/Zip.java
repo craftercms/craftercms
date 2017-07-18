@@ -34,13 +34,16 @@ public class Zip implements Action {
                     zout.setLevel(ZipOutputStream.STORED);
                 }
                 try (Stream<Path> files = Files.walk(folder)) {
-                    files.filter(file -> !Files.isDirectory(file)).forEach(file -> {
-                        try {
-                            System.out.println("Adding " + file);
-                            zout.putNextEntry(new ZipEntry(file.toString()));
-                            copy(zout, file.toFile());
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                    files.forEach(file -> {
+                        if(!Files.isDirectory(file)) {
+                            try {
+                                System.out.println("Adding " + file);
+                                zout.putNextEntry(new ZipEntry(file.toString()));
+                                copy(zout, file.toFile());
+                                zout.closeEntry();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 } catch (IOException e) {
@@ -56,8 +59,9 @@ public class Zip implements Action {
     protected void copy(OutputStream out, File file) {
         try(BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
             byte[] buffer = new byte[1024];
-            while(bis.read(buffer) != -1) {
-                out.write(buffer);
+            int len;
+            while((len = bis.read(buffer)) > 0) {
+                out.write(buffer, 0, len);
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found: " + file);
