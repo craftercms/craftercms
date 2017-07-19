@@ -482,25 +482,25 @@ function status(){
 function doBackup() {
   export TARGET_NAME=$1
   export CURRENT_DATE=$(date +'%Y-%m-%d')
-  export TARGET_FILE="../$TARGET_NAME.$CURRENT_DATE.zip"
-  export TEMP_FOLDER="backup"
+  export TARGET_FILE="$CRAFTER_ROOT/$TARGET_NAME.$CURRENT_DATE.zip"
+  export TEMP_FOLDER="$CRAFTER_HOME/backup"
   
   echo "Starting backup into $TARGET_FILE"
   mkdir -p "$TEMP_FOLDER"
   rm "$TARGET_FILE"
 
   # MySQL Dump
-  if [ -d "../data/db" ]; then
+  if [ -d "$MYSQL_DATA" ]; then
     #Do dump
-    dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
   fi
   
   # MongoDB Dump
-  if [ -d "../data/mongodb" ]; then
+  if [ -d "$MONGODB_DATA_DIR" ]; then
     echo "Adding mongodb dump"
-    mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
+    $CRAFTER_HOME/mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
     cd "$TEMP_FOLDER/mongodb"
-    java -jar ../../craftercms-utils.jar zip . "../mongodb.zip"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
     cd ..
     rm -r mongodb
     cd ..
@@ -508,15 +508,19 @@ function doBackup() {
 
   # ZIP git repos
   echo "Adding git repos"
-  java -jar craftercms-utils.jar zip "../data/repos" "$TEMP_FOLDER/repos.zip"
+  cd "$CRAFTER_ROOT/data/repos"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/repos.zip"
   # ZIP solr indexes
   echo "Adding solr indexes"
-  java -jar craftercms-utils.jar zip "../data/indexes" "$TEMP_FOLDER/indexes.zip"
+  cd "$SOLR_INDEXES_DIR"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
   # ZIP deployer data
   echo "Adding deployer data"
-  java -jar craftercms-utils.jar zip "../data/deployer" "$TEMP_FOLDER/deployer.zip"
+  cd "$DEPLOYER_DATA_DIR"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/deployer.zip"
   # ZIP everything (without compression)
-  java -jar craftercms-utils.jar zip "$TEMP_FOLDER" "$TARGET_FILE" true
+  cd "$TEMP_FOLDER"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TARGET_FILE" true
 
   rm -rf "$TEMP_FOLDER"
   echo "Backup completed"
@@ -525,7 +529,7 @@ function doBackup() {
 function checkFolder() {
   echo "Checking folder for $1"
   local result=0
-  if [ -d "../data/$1" ]; then
+  if [ -d "$CRAFTER_HOME/data/$1" ]; then
     read -p "Folder already exist, do you want to overwrite it? (y/n) "
     if [ "$REPLY" != "yes" ]; then
       result=1
@@ -540,13 +544,13 @@ function doRestore() {
     echo "The file does not exist"
     exit 1
   fi
-  export TEMP_FOLDER="backup"
+  export TEMP_FOLDER="$CRAFTER_HOME/backup"
   
   echo "Starting restore from $SOURCE_FILE"
   mkdir -p "$TEMP_FOLDER"
 
   # UNZIP everything
-  java -jar craftercms-utils.jar unzip "$SOURCE_FILE" .
+  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$SOURCE_FILE" "$TEMP_FOLDER"
   
   # MYSQL DUMP, pending
   
@@ -555,48 +559,47 @@ function doRestore() {
     if checkFolder "mongodb"; then
       echo "Restoring MongoDB"
       startMongoDB
-      java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
-      mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
-      stopMongoDB
+      java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
+      $CRAFTER_HOME/mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
     fi
   fi
   
   # UNZIP git repos
   if checkFolder "repos"; then
     echo "Restoring git repos"
-    rm -rf "../data/repos/*"
-    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" .
+    rm -rf "$CRAFTER_ROOT/data/repos/*"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_ROOT/data/repos"
   fi
   # UNZIP solr indexes
   if checkFolder "indexes"; then
     echo "Restoring solr indexes"
-    rm -rf "../data/indexes/*"
-    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" .
+    rm -rf "$SOLR_INDEXES_DIR/*"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
   fi
   # UNZIP deployer data
   if checkFolder "deployer"; then
     echo "Restoring deployer data"
-    rm -rf "../data/deployer/*"
-    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" .
+    rm -rf "$DEPLOYER_DATA_DIR/*"
+    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
   fi
   
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
-    mkdir "../data/db"
+    mkdir "$MYSQL_DATA"
     #Start DB
-    dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir=../data/db --port=@MARIADB_PORT@ --pid=./MariaDB4j.pid --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
+    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="$MYSQL_DATA" --port=@MARIADB_PORT@ --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
     sleep 5
     # Import
-    dbms/bin/mysql --user=root --port=@MARIADB_PORT@ < "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=@MARIADB_PORT@ < "$TEMP_FOLDER/crafter.sql"
     # Stop DB
-    kill $(cat MariaDB4j.pid)
+    kill $(cat $CRAFTER_HOME/MariaDB4j.pid)
     start
     echo "Waiting for studio to start"
     sleep 60
-    for SITE in `ls ../data/repos/sites/`
+    for SITE in `ls $DEPLOYER_DEPLOYMENTS_DIR`
     do
       echo "Running sync for site $SITE"
-      java -jar craftercms-utils.jar post "http://localhost:@TOMCAT_HTTP_PORT@/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }"
+      java -jar $CRAFTER_HOME/craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }"
     done
   fi
   
