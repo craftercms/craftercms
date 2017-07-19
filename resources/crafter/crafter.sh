@@ -530,7 +530,7 @@ function checkFolder() {
   echo "Checking folder for $1"
   local result=0
   if [ -d "$CRAFTER_HOME/data/$1" ]; then
-    read -p "Folder already exist, do you want to overwrite it? (y/n) "
+    read -p "Folder already exist, do you want to overwrite it? (yes/no) "
     if [ "$REPLY" != "yes" ]; then
       result=1
     fi
@@ -551,8 +551,6 @@ function doRestore() {
 
   # UNZIP everything
   java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$SOURCE_FILE" "$TEMP_FOLDER"
-  
-  # MYSQL DUMP, pending
   
   # MongoDB Dump
   if [ -f "$TEMP_FOLDER/mongodb.zip" ]; then
