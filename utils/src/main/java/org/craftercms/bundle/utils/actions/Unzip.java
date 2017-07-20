@@ -46,7 +46,8 @@ public class Unzip implements Action{
                 byte[] readBuffer = new byte[BUFFER];
                 out.println("Extracting Files");
                 while (entry != null){
-                    File entryFile = Paths.get(location, stripRootFolder? new File(entry.getName()).getName(): entry.getName())
+                    String entryName = entry.getName().replace('/', File.separatorChar);
+                    File entryFile = Paths.get(location, stripRootFolder? new File(entryName).getName(): entryName)
                         .toFile();
                     if (entry.isDirectory()) {
                         if (!entryFile.exists()) {

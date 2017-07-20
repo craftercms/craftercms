@@ -39,7 +39,7 @@ public class Zip implements Action {
                         if(!Files.isDirectory(file)) {
                             try {
                                 System.out.println("Adding " + file);
-                                zout.putNextEntry(new ZipEntry(file.toString()));
+                                zout.putNextEntry(new ZipEntry(file.toString().replace(File.separatorChar, '/')));
                                 copy(zout, file.toFile());
                                 zout.closeEntry();
                             } catch (IOException e) {
