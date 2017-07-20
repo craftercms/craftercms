@@ -66,7 +66,6 @@ exit /b 0
 goto :init
 
 :init
-cd ..
 set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
 IF NOT EXIST "%mongoDir%" goto installMongo
 IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
@@ -105,7 +104,7 @@ del /Q %TARGET_FILE%
 REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
 	echo "Adding MySQL dump"
-	start %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump --databases crafter --port=@MYSQL_PORT@ --protocol=tcp --user=root > "%TEMP_FOLDER%\crafter.sql"
+	start cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql 
 )
 
 REM MongoDB Dump
@@ -151,25 +150,28 @@ md "%TEMP_FOLDER%"
 
 REM UNZIP everything
 java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip "%SOURCE_FILE%" "%TEMP_FOLDER%"
-  
+
 REM MongoDB Dump
 IF NOT EXIST "%TEMP_FOLDER%\mongodb.zip" ( goto skipMongo )
 echo "Checking folder %MONGODB_DATA_DIR%"
 IF EXIST "%MONGODB_DATA_DIR%" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? (yes/no)
+  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no 
   IF /i NOT "%DO_IT%"=="yes" ( goto skipMongo )
 )
 echo "Restoring MongoDB"
-REM Start Mongo!
+IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
+IF NOT EXIST "%MONGODB_LOGS_DIR%" mkdir %MONGODB_LOGS_DIR%
+start "MongoDB" %CRAFTER_BIN_FOLDER%mongodb\bin\mongod --dbpath=%MONGODB_DATA_DIR% --directoryperdb --journal --logpath=%MONGODB_LOGS_DIR%\mongod.log --port %MONGODB_PORT%
 java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip "%TEMP_FOLDER%\mongodb.zip" "%TEMP_FOLDER%\mongodb"
-%CRAFTER_BIN_FOLDER%mongodb\bin\mongorestore --port %MONGODB_PORT% "%TEMP_FOLDER%\mongodb" --quiet
+start "MongoDB Restore" /W %CRAFTER_BIN_FOLDER%mongodb\bin\mongorestore --port %MONGODB_PORT% "%TEMP_FOLDER%\mongodb"
+taskkill /IM mongod.exe
 :skipMongo
 
 REM UNZIP git repos
 IF NOT EXIST "%TEMP_FOLDER%\repos.zip" ( goto skipRepos )
 echo "Checking folder %CRAFTER_HOME%data\repos"
 IF EXIST "%CRAFTER_HOME%data\repos" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
+  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no 
   IF /i NOT "%DO_IT%"=="yes" ( goto skipRepos )
 )
 echo "Restoring git repos"
@@ -181,7 +183,7 @@ REM UNZIP solr indexes
 IF NOT EXIST "%TEMP_FOLDER%\indexes.zip" ( goto skipIndexes )
 echo "Checking folder %SOLR_INDEXES_DIR%"
 IF EXIST "%SOLR_INDEXES_DIR%" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
+  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no 
   IF /i NOT "%DO_IT%"=="yes" ( goto skipIndexes )
 )
 echo "Restoring solr indexes"
@@ -193,7 +195,7 @@ REM UNZIP deployer data
 IF NOT EXIST "%TEMP_FOLDER%\deployer.zip" ( goto skipDeployer )
 echo "Checking folder %DEPLOYER_DATA_DIR%"
 IF EXIST "%DEPLOYER_DATA_DIR%" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
+  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no 
   IF /i NOT "%DO_IT%"=="yes" ( goto skipDeployer )
 )
 echo "Restoring deployer data"
@@ -203,21 +205,23 @@ java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip "%TEMP_FOLDER%\deployer
 
 REM If it is an authoring env then sync the repos
 IF NOT EXIST "%TEMP_FOLDER%\crafter.sql" ( goto skipAuth )
+echo "Restoring Authoring Data"
 md "%MYSQL_DATA%"
 REM Start DB
-start %CRAFTER_BIN_FOLDER%\dbms\bin\mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="%MYSQL_DATA%" --port=@MYSQL_PORT@ --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE
+start "MySQL Server" %CRAFTER_BIN_FOLDER%\dbms\bin\mysqld.exe --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="%MYSQL_DATA%" --port=@MARIADB_PORT@ --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE
 timeout /nobreak 5
 REM Import
-start %CRAFTER_BIN_FOLDER%\dbms\bin\mysql --user=root --port=@MYSQL_PORT@ < "%TEMP_FOLDER%\crafter.sql"
+start "MySQL Import" /W %CRAFTER_BIN_FOLDER%\dbms\bin\mysql.exe --user=root --port=@MARIADB_PORT@ -e "source %TEMP_FOLDER%\crafter.sql"
 REM Stop DB
 taskkill /IM mysqld.exe
 REM start tomcat
-call init
+call :init
 echo "Waiting for studio to start"
-timeout /nobreak 60
-FOR /D %%S in (%DEPLOYER_DEPLOYMENTS_DIR%/*) do (
-  echo "Running sync for site %%S"
-  java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }"
+timeout /nobreak 120
+cd %CRAFTER_HOME%data\repos\sites
+FOR /D %%S in (*) do (
+  echo "Running sync for site '%%S'"
+  start java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }"
 )
 :skipAuth
   
