@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
-export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
+export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/deployer}
 
 . "$CRAFTER_HOME/crafter-setenv.sh"
 
