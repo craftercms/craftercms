@@ -594,7 +594,7 @@ function doRestore() {
     start
     echo "Waiting for studio to start"
     sleep 60
-    for SITE in `ls $DEPLOYER_DEPLOYMENTS_DIR`
+    for SITE in $(ls $DEPLOYER_DEPLOYMENTS_DIR)
     do
       echo "Running sync for site $SITE"
       java -jar $CRAFTER_HOME/craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }"
