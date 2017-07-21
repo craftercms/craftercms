@@ -46,20 +46,21 @@ public class Unzip implements Action{
                 byte[] readBuffer = new byte[BUFFER];
                 out.println("Extracting Files");
                 while (entry != null){
-                    File entryFile = Paths.get(location, stripRootFolder? new File(entry.getName()).getName(): entry.getName())
+                    String entryName = entry.getName().replace('/', File.separatorChar);
+                    File entryFile = Paths.get(location, stripRootFolder? new File(entryName).getName(): entryName)
                         .toFile();
                     if (entry.isDirectory()) {
                         if (!entryFile.exists()) {
-                            entryFile.mkdir();
+                            entryFile.mkdirs();
                         }
                     } else{
                         if (!entryFile.getParentFile().exists()){
-                            entryFile.getParentFile().mkdir();
+                            entryFile.getParentFile().mkdirs();
                         }
                         try (BufferedOutputStream entryOut = new BufferedOutputStream(new FileOutputStream(entryFile))) {
-                            int n = 0;
-                            while ((n = zipFile.read(readBuffer)) != -1) {
-                                entryOut.write(readBuffer);
+                            int n;
+                            while ((n = zipFile.read(readBuffer)) > 0) {
+                                entryOut.write(readBuffer, 0, n);
                             }
                         } catch (IOException e){
                             e.printStackTrace();

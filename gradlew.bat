@@ -17,7 +17,7 @@ set APP_HOME=%DIRNAME%
 set DEFAULT_JVM_OPTS=
 
 @rem Disable Gradle daemon since it causes issues while working with two envs (authoring, delivery)
-set GRADLE_OPTS="%GRADLE_OPTS% -Dorg.gradle.daemon=false"
+set GRADLE_OPTS="-Dorg.gradle.daemon=false"
 
 @rem Find java.exe
 if defined JAVA_HOME goto findJavaFromJavaHome
