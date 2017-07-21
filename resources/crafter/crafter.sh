@@ -21,6 +21,8 @@ function help() {
   echo "    debug_tomcat, Starts Tomcat in debug mode"
   echo "    start_mongodb, Starts Mongo DB"
   echo "    stop_mongodb, Stops Mongo DB"
+  echo "    backup, Perform a backup of all data"
+  echo "    restore, Perform a restore of all data"
   echo "    tail,  Tails all Crafter CMS logs"
   exit 0;
 }
@@ -477,6 +479,132 @@ function status(){
   mongoDbStatus
 }
 
+function doBackup() {
+  export TARGET_NAME=$1
+  export CURRENT_DATE=$(date +'%Y-%m-%d')
+  export TARGET_FILE="$CRAFTER_ROOT/$TARGET_NAME.$CURRENT_DATE.zip"
+  export TEMP_FOLDER="$CRAFTER_HOME/backup"
+  
+  echo "Starting backup into $TARGET_FILE"
+  mkdir -p "$TEMP_FOLDER"
+  rm "$TARGET_FILE"
+
+  # MySQL Dump
+  if [ -d "$MYSQL_DATA" ]; then
+    #Do dump
+    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+  fi
+  
+  # MongoDB Dump
+  if [ -d "$MONGODB_DATA_DIR" ]; then
+    echo "Adding mongodb dump"
+    $CRAFTER_HOME/mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
+    cd "$TEMP_FOLDER/mongodb"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
+    cd ..
+    rm -r mongodb
+    cd ..
+  fi
+
+  # ZIP git repos
+  echo "Adding git repos"
+  cd "$CRAFTER_ROOT/data/repos"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/repos.zip"
+  # ZIP solr indexes
+  echo "Adding solr indexes"
+  cd "$SOLR_INDEXES_DIR"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
+  # ZIP deployer data
+  echo "Adding deployer data"
+  cd "$DEPLOYER_DATA_DIR"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/deployer.zip"
+  # ZIP everything (without compression)
+  cd "$TEMP_FOLDER"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TARGET_FILE" true
+
+  rm -rf "$TEMP_FOLDER"
+  echo "Backup completed"
+}
+
+function checkFolder() {
+  echo "Checking folder for $1"
+  local result=0
+  if [ -d "$CRAFTER_HOME/data/$1" ]; then
+    read -p "Folder already exist, do you want to overwrite it? (yes/no) "
+    if [ "$REPLY" != "yes" ]; then
+      result=1
+    fi
+  fi
+  return $result
+}
+
+function doRestore() {
+  export SOURCE_FILE=$1
+  if [ ! -f "$SOURCE_FILE" ]; then
+    echo "The file does not exist"
+    exit 1
+  fi
+  export TEMP_FOLDER="$CRAFTER_HOME/backup"
+  
+  echo "Starting restore from $SOURCE_FILE"
+  mkdir -p "$TEMP_FOLDER"
+
+  # UNZIP everything
+  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$SOURCE_FILE" "$TEMP_FOLDER"
+  
+  # MongoDB Dump
+  if [ -f "$TEMP_FOLDER/mongodb.zip" ]; then
+    if checkFolder "mongodb"; then
+      echo "Restoring MongoDB"
+      startMongoDB
+      java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
+      $CRAFTER_HOME/mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
+    fi
+  fi
+  
+  # UNZIP git repos
+  if checkFolder "repos"; then
+    echo "Restoring git repos"
+    rm -rf "$CRAFTER_ROOT/data/repos/*"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_ROOT/data/repos"
+  fi
+  # UNZIP solr indexes
+  if checkFolder "indexes"; then
+    echo "Restoring solr indexes"
+    rm -rf "$SOLR_INDEXES_DIR/*"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
+  fi
+  # UNZIP deployer data
+  if checkFolder "deployer"; then
+    echo "Restoring deployer data"
+    rm -rf "$DEPLOYER_DATA_DIR/*"
+    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
+  fi
+  
+  # If it is an authoring env then sync the repos
+  if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
+    mkdir "$MYSQL_DATA"
+    #Start DB
+    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="$MYSQL_DATA" --port=@MARIADB_PORT@ --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
+    sleep 5
+    # Import
+    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=@MARIADB_PORT@ < "$TEMP_FOLDER/crafter.sql"
+    # Stop DB
+    kill $(cat $CRAFTER_HOME/MariaDB4j.pid)
+    start
+    echo "Waiting for studio to start"
+    sleep 60
+    for SITE in $(ls $DEPLOYER_DEPLOYMENTS_DIR)
+    do
+      echo "Running sync for site $SITE"
+      java -jar $CRAFTER_HOME/craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }"
+    done
+  fi
+  
+  rm -r "$TEMP_FOLDER"
+  echo "Restore completed"
+}
+
 function logo() {
   echo -e "\033[38;5;196m"
   echo " ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗"
@@ -550,6 +678,12 @@ case $1 in
   ;;
   status)
   status
+  ;;
+  backup)
+    doBackup $2
+  ;;
+  restore)
+    doRestore $2
   ;;
   *)
   help
