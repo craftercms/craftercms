@@ -495,7 +495,8 @@ def buildModule(commandLinePrefix, module, path="./src/") {
                 commandLinePost.add("-Dstudio.ui.path=../studio2-ui/".toString())
                 commandLinePost.add("-Dexec.skip=true")
             }
-            def array=commandLinePrefix +  commandLinePrefix + ["mvn", "install"] + commandLinePost
+            // Always do a Clean build, never trust caches or FS.
+            def array=commandLinePrefix +  commandLinePrefix + ["mvn", "clean", "install"] + commandLinePost
             executeProcess(array, "${path}${module}".toString())
         }
     }
