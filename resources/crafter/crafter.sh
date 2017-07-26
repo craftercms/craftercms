@@ -21,8 +21,8 @@ function help() {
   echo "    debug_tomcat, Starts Tomcat in debug mode"
   echo "    start_mongodb, Starts Mongo DB"
   echo "    stop_mongodb, Stops Mongo DB"
-  echo "    backup, Perform a backup of all data"
-  echo "    restore, Perform a restore of all data"
+  echo "    backup <name>, Perform a backup of all data"
+  echo "    restore <file>, Perform a restore of all data"
   echo "    tail,  Tails all Crafter CMS logs"
   exit 0;
 }
@@ -480,8 +480,8 @@ function status(){
 }
 
 function doBackup() {
-  export TARGET_NAME=$1
-  export CURRENT_DATE=$(date +'%Y-%m-%d')
+  export TARGET_NAME=${1:-crafter-backup}
+  export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
   export TARGET_FILE="$CRAFTER_ROOT/$TARGET_NAME.$CURRENT_DATE.zip"
   export TEMP_FOLDER="$CRAFTER_HOME/backup"
   
@@ -542,6 +542,7 @@ function doRestore() {
   export SOURCE_FILE=$1
   if [ ! -f "$SOURCE_FILE" ]; then
     echo "The file does not exist"
+    help
     exit 1
   fi
   export TEMP_FOLDER="$CRAFTER_HOME/backup"
