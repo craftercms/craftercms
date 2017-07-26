@@ -571,7 +571,7 @@ def pack(environmentPath,envName){
                 from(environmentPath) {
                     into("crafter")
                 }
-                archiveName "crafter-${envName}-cms.zip"
+                archiveName "crafter-cms-${envName}.zip"
                 fileMode null
                 dirMode null
                 includeEmptyDirs true
@@ -589,7 +589,7 @@ def pack(environmentPath,envName){
                 from(environmentPath) {
                     into("crafter")
                 }
-                archiveName "crafter-${envName}-cms.tar.gz"
+                archiveName "crafter-cms-${envName}.tar.gz"
                 fileMode null
                 dirMode null
                 includeEmptyDirs true
