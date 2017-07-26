@@ -94,7 +94,10 @@ goto cleanOnExit
 
 :backup
 SET TARGET_NAME=%2
-SET TARGET_FILE=%CRAFTER_HOME%%TARGET_NAME%.zip
+IF NOT DEFINED TARGET_NAME (SET TARGET_NAME=crafter-backup)
+FOR /F "tokens=2-4 delims=/ " %%a IN ("%DATE%") DO (SET CDATE=%%c-%%a-%%b)
+FOR /F "tokens=1-3 delims=:. " %%a IN ("%TIME%") DO (SET CTIME=%%a-%%b-%%c)
+SET TARGET_FILE="%CRAFTER_HOME%%TARGET_NAME%-%CDATE%-%CTIME%.zip"
 SET TEMP_FOLDER=%CRAFTER_HOME%backup
 
 echo "Starting backup into %TARGET_FILE%"
