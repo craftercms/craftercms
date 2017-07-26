@@ -302,7 +302,7 @@ task("build") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                if (!it.equalsIgnoreCase("./")) {
+                if (!it.equalsIgnoreCase("studio2-ui")) {
                     buildModule(commandLinePrefix, it).execute()
                 }
             }
