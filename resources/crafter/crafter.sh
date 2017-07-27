@@ -480,7 +480,14 @@ function status(){
 }
 
 function doBackup() {
-  export TARGET_NAME=${1:-crafter-backup}
+  export TARGET_NAME=$1
+  if [ -z "$TARGET_NAME" ]; then
+    if [ -d "$MYSQL_DATA" ]; then
+      export TARGET_NAME="crafter-authoring-backup"
+    else
+      export TARGET_NAME="crafter-delivery-backup"
+    fi
+  fi
   export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
   export TARGET_FILE="$CRAFTER_ROOT/$TARGET_NAME.$CURRENT_DATE.zip"
   export TEMP_FOLDER="$CRAFTER_HOME/backup"
