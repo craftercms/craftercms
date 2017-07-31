@@ -25,9 +25,12 @@ git clone https://github.com/craftercms/craftercms.git
 ```
 
 # 2. Build a Deployable Bundle
+
 To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.zip` and `.tar.gz` files ready to be deployed to any system.
 
-Archives will be named `crafter-cms.tar.gz` and `crafter-cms.zip` and can be found in the `bundles` folder.
+Before using `bundle` task make sure that the enviroment have been created and deployed gradle tasks `build` and `deploy`
+
+Archives will be named `crafter-cms-${environment}.tar.gz` and `crafter-cms-${environment}.zip` and can be found in the `bundles` folder.
 
 ```bash
 ./gradlew init build deploy bundle
