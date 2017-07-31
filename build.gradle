@@ -183,7 +183,7 @@ task("update") {
     doFirst{
         def module = getModule();
     }
-    
+
     doLast {
 
         if (module.equals("all")) {
