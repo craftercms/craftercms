@@ -95,7 +95,7 @@ ext {
 
     /** Git properties **/
     gitURLTemplate=project.hasProperty("crafter.git.url")? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    gitSourceBranch=project.hasProperty("crafter.git.branch")? project.property("crafter.git.branch") : "master"
+    gitSourceBranch=project.hasProperty("crafter.git.branch")? project.property("crafter.git.branch") : "v3.0.0"
     gitRepo=project.hasProperty("crafter.git.remote")? project.property("crafter.git.remote") : "origin"
     studioUIFromRepo=project.hasProperty("crafter.ui.repo")? project.property("crafter.ui.repo") : false
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
