@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 
-# Script to create the solr core & deployer target for a delivery environment.
+# Script to create the Solr core & Deployer target for a delivery environment.
 
-if [ $# -lt 2 ]; then
-	echo "Usage: init-site.sh [site name] [git repo path]"
-	exit 1
-fi
+export DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+export DELIVERY_ROOT=$( cd "$DELIVERY_HOME/.." && pwd )
+export AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-auth-env" && pwd )
+export AUTHORING_SITE_REPOS=$AUTHORING_ROOT/data/repos/sites
 
-SITE=$1
-REPO=$2
+if [ $# -eq 1 ]; then
+	SITE=$1
+	REPO=$AUTHORING_SITE_REPOS/$SITE/published
+elif [ $# -eq 2 ]; then
+	SITE=$1
+	REPO=$2
+else
+	echo "Usage: init-site.sh <site name> [site's published repo git url]"
+	exit 1			
+fi	
 
 echo "Creating Solr Core"
 curl -s -X POST -H "Content-Type: application/json" -d '{"id":"'"$SITE"'"}' "http://localhost:@TOMCAT_HTTP_PORT@/search/api/2/admin/index/create"
