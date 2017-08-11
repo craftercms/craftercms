@@ -8,8 +8,8 @@ TARGETS_DIR=$DATA_DIR/targets
 PROCESSED_COMMITS=$DATA_DIR/processed-commits
 PORT=${DEPLOYER_PORT:="9191"}
 JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HOME/logback-spring.xml -Dlogs.dir=$LOGS_DIR -Ddeployments.dir=$DEPLOYMENTS_DIR -Dtargets.dir=$TARGETS_DIR -DprocessedCommits.dir=$PROCESSED_COMMITS"
-PID=${DEPLOYER_PID:="$DEPLOYER_HOME/deployer.pid"}
-OUTPUT=${DEPLOYER_SDOUT:="$DEPLOYER_HOME/deployer.out"}
+PID=${DEPLOYER_PID:="$DEPLOYER_HOME/crafter-deployer.pid"}
+OUTPUT=${DEPLOYER_SDOUT:="$DEPLOYER_HOME/crafter-deployer.out"}
 
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
@@ -49,64 +49,63 @@ function help() {
 }
 
 function start() {
-
-   if [ ! -s "$PID" ]; then
+  if [ ! -s "$PID" ]; then
     ## Before run check if the port is available.
     possiblePID=$(pidOf $PORT)
     if  [ -z "$possiblePID" ];  then
-          nohup java -jar $JAVA_OPTS "$DEPLOYER_HOME/deployer.jar"  > "$OUTPUT" >&1&
-          echo $! > $PID
+      nohup java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"  > "$OUTPUT" >&1&
+      echo $! > $PID
     else
-        echo $possiblePID > $PID
-        echo "Process PID $possiblePID is listening port $PORT"
-        echo "Hijacking PID and saving into $PID"
-        exit
+      echo $possiblePID > $PID
+      echo "Process PID $possiblePID is listening port $PORT"
+      echo "Hijacking PID and saving into $PID"
+      exit
     fi
   else
     # IS it really up ?
     if ! checkPortForRunning $PORT $(cat "$PID");then
-        exit 5
+      exit 5
     fi
     if ! pgrep -u `whoami` -F "$PID" >/dev/null
     then
-        echo "Solr Pid file is not ok, forcing startup"
-         rm "$PID"
-         start
+      echo "Deployer pid file is not ok, forcing startup"
+      rm "$PID"
+      start
     else
-        echo "Deployer already started"
+      echo "Deployer already started"
     fi
   fi
 }
 
 function stop() {
-    if [ -s "$PID" ]; then
-        killPID $PID
-    else
-        pId=$(pidOf $PORT)
-        if ! [ -z $pId ]; then
-            #No Pid file but aye to the port
-            echo "$pId" > $PID
-            killPID $PID
-        fi
-         echo "Crafter Deployer already shutdown or pid $PID file not found";
+  if [ -s "$PID" ]; then
+    killPID $PID
+  else
+    pid=$(pidOf $PORT)
+    if ! [ -z $pid ]; then
+      #No Pid file but aye to the port
+      echo "$pid" > $PID
+      killPID $PID
     fi
-    if [ $? -eq 0 ]; then
-        rm $PID
-    fi
+    echo "Crafter Deployer already shutdown or pid $PID file not found";
+  fi
+  if [ $? -eq 0 ] && [ -e $PID ]; then
+    rm $PID
+  fi
 }
 
 case $1 in
   debug)
-    JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-    start
+  JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+  start
   ;;
   start)
-    start
+  start
   ;;
   stop)
-    stop
+  stop
   ;;
   *)
-    help
+  help
   ;;
 esac

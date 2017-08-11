@@ -54,7 +54,7 @@ task("authoringEnvironment"){
         }
 
         copy{
-            from "./src/search/crafter-search-server/target/search.war"
+            from "./src/search/crafter-search-server/target/crafter-search.war"
             from "./src/engine/target/ROOT.war"
             from "./src/studio/target/studio.war"
             into "${authEnv}/bin/apache-tomcat/webapps/"
@@ -73,13 +73,10 @@ task("authoringEnvironment"){
                                            MONGODB_PORT:String.valueOf(authMongoDBPort)
             ])
         }
-        copy{
-            from "./src/deployer/target/deployer.jar"
-            into "${authEnv}/bin/deployer"
-        }
+
         copy{
             from "./resources/deployer/"
-            into "${authEnv}/bin/deployer"
+            into "${authEnv}/bin/crafter-deployer"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
                                            SOLR_PORT: String.valueOf(authSolrPort),
                                            SOLR_PORT_D: String.valueOf(authSolrDebugPort),
@@ -92,7 +89,7 @@ task("authoringEnvironment"){
         }
         copy {
             from "./src/deployer/README.md"
-            into "${authEnv}/bin/deployer/"
+            into "${authEnv}/bin/crafter-deployer/"
         }
         copy {
             from "./src/studio/README.md"
@@ -128,7 +125,7 @@ task("authoringEnvironment"){
                 commandLine commandLinePrefix + ["chmod","+x","catalina.sh", "setenv.sh" , "configtest.sh", "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
             }
             exec{
-                workingDir "${authEnv}/bin/deployer/"
+                workingDir "${authEnv}/bin/crafter-deployer/"
                 commandLine commandLinePrefix + ["chmod","+x","deployer.sh","startup.sh","shutdown.sh"]
             }
             exec{
@@ -140,15 +137,15 @@ task("authoringEnvironment"){
         updateCatalinaSettings(authEnv);
         if(includeProfile){
             copy{
-                from "./src/profile/server/target/profile.war"
-                from "./src/profile/admin-console/target/profile-admin.war"
+                from "./src/profile/server/target/crafter-profile.war"
+                from "./src/profile/admin-console/target/crafter-profile-admin.war"
                 into "${authEnv}/bin/apache-tomcat/webapps/"
             }
         }
         if(includeSocial){
             copy{
-                from "./src/social/server/target/social.war"
-                from "./src/social/admin/target/social-admin.war"
+                from "./src/social/server/target/crafter-social.war"
+                from "./src/social/admin/target/crafter-social-admin.war"
                 into "${authEnv}/bin/apache-tomcat/webapps/"
             }
         }
@@ -198,7 +195,7 @@ task("deliveryEnvironment"){
         }
 
         copy{
-            from "./src/search/crafter-search-server/target/search.war"
+            from "./src/search/crafter-search-server/target/crafter-search.war"
             from "./src/engine/target/ROOT.war"
             into "${deliveryEnv}/bin/apache-tomcat/webapps/"
         }
@@ -227,13 +224,10 @@ task("deliveryEnvironment"){
                                            MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
             ])
         }
-        copy{
-            from "./src/deployer/target/deployer.jar"
-            into "${deliveryEnv}/bin/deployer"
-        }
+
         copy{
             from "./resources/deployer/"
-            into "${deliveryEnv}/bin/deployer"
+            into "${deliveryEnv}/bin/crafter-deployer"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(deliveryTomcatPort),
                                            SOLR_PORT: String.valueOf(deliverySolrPort),
                                            SOLR_PORT_D: String.valueOf(deliverySolrDebugPort),
@@ -245,7 +239,7 @@ task("deliveryEnvironment"){
         }
         copy {
             from "./src/deployer/README.md"
-            into "${deliveryEnv}/bin/deployer/"
+            into "${deliveryEnv}/bin/crafter-deployer/"
         }
         copy {
             from "./src/studio/README.md"
@@ -279,7 +273,7 @@ task("deliveryEnvironment"){
                         ".sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
             }
             exec{
-                workingDir "${deliveryEnv}/bin/deployer/"
+                workingDir "${deliveryEnv}/bin/crafter-deployer/"
                 commandLine commandLinePrefix + ["chmod","+x","deployer.sh","startup.sh","shutdown.sh"]
             }
             exec{
@@ -290,15 +284,15 @@ task("deliveryEnvironment"){
         }
         if(includeProfile){
             copy{
-                from "./src/profile/server/target/profile.war"
-                from "./src/profile/admin-console/target/profile-admin.war"
+                from "./src/profile/server/target/crafter-profile.war"
+                from "./src/profile/admin-console/target/crafter-profile-admin.war"
                 into "${deliveryEnv}/bin/apache-tomcat/webapps/"
             }
         }
         if(includeSocial){
             copy{
-                from "./src/social/server/target/social.war"
-                from "./src/social/admin/target/social-admin.war"
+                from "./src/social/server/target/crafter-social.war"
+                from "./src/social/admin/target/crafter-social-admin.war"
                 into "${deliveryEnv}/bin/apache-tomcat/webapps/"
             }
         }

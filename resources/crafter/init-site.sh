@@ -19,7 +19,7 @@ else
 fi	
 
 echo "Creating Solr Core"
-curl -s -X POST -H "Content-Type: application/json" -d '{"id":"'"$SITE"'"}' "http://localhost:@TOMCAT_HTTP_PORT@/search/api/2/admin/index/create"
+curl -s -X POST -H "Content-Type: application/json" -d '{"id":"'"$SITE"'"}' "http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/create"
 echo ""
 
 echo "Creating Deployer Target"
