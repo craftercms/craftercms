@@ -105,12 +105,12 @@ ext {
     VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio2-ui"]
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES=[
-            "search":"./src/search/crafter-search-server/target/search.war",
-            "profile":"./src/profile/server/target/profile.war",
+            "search":"./src/search/crafter-search-server/target/crafter-search.war",
+            "profile":"./src/profile/server/target/crafter-profile.war",
             "engine":"./src/engine/target/ROOT.war",
-            "deployer":"./src/deployer/target/deployer.jar",
+            "deployer":"./src/deployer/target/crafter-deployer.jar",
             "studio":"./src/studio/target/studio.war",
-            "social":"./src/social/server/target/social.war"]
+            "social":"./src/social/server/target/crafter-social.war"]
 
 }
 
@@ -505,7 +505,7 @@ def buildModule(commandLinePrefix, module, path="./src/") {
 def deployBinary(deployable, env){
     if (deployable.exists()) {
         def path = env.equals("authoring")? authEnv : deliveryEnv
-        path += deployable.absolutePath.endsWith(".jar")? "bin/deployer/" : "bin/apache-tomcat/webapps/"
+        path += deployable.absolutePath.endsWith(".jar")? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
         path += deployable.name
         delete {
             delete path
@@ -529,13 +529,15 @@ def deployModule(commandLinePrefix, module, env) {
             println "Deploy ${module} to ${env}"
             if (module.equals("studio") && env.equals("delivery")) {
                 println "Ignoring module 'studio' can not be deployed in environment 'delivery'"
+            } else if((module.equals("profile") && !includeProfile) || (module.equals("social") && !includeSocial)) {
+                println "Ignoring module '$module' not enabled for environment '$env'"
             } else {
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
                 deployBinary(deployable, env)
                 if(module.equalsIgnoreCase("profile")){
-                    deployBinary(file("./src/profile/admin-console/target/profile-admin.war"), env)
+                    deployBinary(file("./src/profile/admin-console/target/crafter-profile-admin-console.war"), env)
                 } else if (module.equalsIgnoreCase("social")) {
-                    deployBinary(file("./src/social/admin/target/social-admin.war"), env)
+                    deployBinary(file("./src/social/admin/target/crafter-social-admin.war"), env)
                 }
             }
         }
@@ -546,7 +548,7 @@ def checkEnvWD(path, env) {
     def ddir = file(path)
     if (!ddir.exists() || forceDeploy) {
         ddir.mkdir()
-        def deployerDir = file("${path}/bin/deployer")
+        def deployerDir = file("${path}/bin/crafter-deployer")
         deployerDir.mkdir()
         downloadTomcat.execute()
         downloadSolr.execute()
