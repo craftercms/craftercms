@@ -5,7 +5,8 @@ export CATALINA_HOME="$CRAFTER_HOME/apache-tomcat"
 export CATALINA_PID=$CATALINA_HOME/tomcat.pid
 export CATALINA_LOGS_DIR=$CRAFTER_ROOT/logs/tomcat
 export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
-export CATALINA_OPTS="-Dcatalina.logs=$CATALINA_LOGS_DIR -server -Xss1024K -Xms1G -Xmx4G"
+export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
+export CATALINA_OPTS="-Dcatalina.logs=$CATALINA_LOGS_DIR -server -Xss1024K -Xms1G -Xmx4G -Dapplication.logs=$CRAFTER_APPLICATION_LOGS"
 export TOMCAT_HTTP_PORT=@TOMCAT_HTTP_PORT@
 # Solr variables
 export SOLR_PORT=@SOLR_PORT@
