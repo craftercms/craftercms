@@ -535,7 +535,7 @@ def deployModule(commandLinePrefix, module, env) {
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
                 deployBinary(deployable, env)
                 if(module.equalsIgnoreCase("profile")){
-                    deployBinary(file("./src/profile/admin-console/target/crafter-profile-admin-console.war"), env)
+                    deployBinary(file("./src/profile/admin-console/target/crafter-profile-admin.war"), env)
                 } else if (module.equalsIgnoreCase("social")) {
                     deployBinary(file("./src/social/admin/target/crafter-social-admin.war"), env)
                 }
