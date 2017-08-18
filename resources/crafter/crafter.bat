@@ -1,4 +1,9 @@
 @echo off
+
+rem Make sure this variable is clean.
+SET CRAFTER_BIN_FOLDER=
+SET CATALINA_OPTS=
+rem Reinit variables
 SET CRAFTER_BIN_FOLDER=%~dp0
 for %%i in ("%~dp0..") do set CRAFTER_HOME=%%~fi\
 SET DEPLOYER_HOME=%CRAFTER_BIN_FOLDER%\crafter-deployer
@@ -62,9 +67,10 @@ exit /b 0
  mkdir %CRAFTER_BIN_FOLDER%mongodb
  cd %CRAFTER_BIN_FOLDER%mongodb
  java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar download mongodb
- msiexec.exe /norestart /passive /i  mongodb.msi INSTALLLOCATION="%CRAFTER_BIN_FOLDER%\mongodb" ADDLOCAL="all"
+ msiexec.exe /i mongodb.msi /passive INSTALLLOCATION="%CRAFTER_BIN_FOLDER%mongodb\" /l*v "%CRAFTER_BIN_FOLDER%mongodb\mongodb.log" /norestart
  cd %CRAFTER_BIN_FOLDER%
 goto :init
+
 
 :init
 set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
