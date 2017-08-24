@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.apache.commons.text.StringEscapeUtils;
 
 import org.craftercms.bundle.utils.Action;
 
@@ -18,14 +19,16 @@ public class ApiPost implements Action {
             help();
         } else {
             try {
-                System.out.println("Calling '" + args[0] + "' with body: " + args[1]);
+                String body = StringEscapeUtils.escapeJava(args[1]).replace("\\\"","\"");//All but quotes
+                System.out.println("Calling '" + args[0] + "' with body: " + body);
                 URL url = new URL(args[0]);
                 HttpURLConnection conn = (HttpURLConnection)url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
 
-                String body = args[1];
+
+
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                 try (OutputStream out = conn.getOutputStream()) {
                     out.write(body.getBytes());
@@ -49,4 +52,5 @@ public class ApiPost implements Action {
         System.out.println("\t url: full HTTP url");
         System.out.println("\t body: JSON string to include as body of the request");
     }
+
 }
