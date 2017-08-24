@@ -8,8 +8,7 @@ set SITE=
 set REPO=
 for %%i in ("%~dp0..") do set DELIVERY_ROOT=%%~fi\
 for %%i in ("%~dp0..\..") do set AUTHORING_ROOT=%%~fi\
-SET AUTHORING_SITE_REPOS=%AUTHORING_ROOT%crafter\data\repos\site
-rem SET AUTHORING_SITE_REPOS=%AUTHORING_ROOT%crafter-auth-env\data\repos\site
+SET AUTHORING_SITE_REPOS=%AUTHORING_ROOT%crafter-auth-env\data\repos\site
 echo %DELIVERY_HOME%
 echo %DELIVERY_ROOT%
 echo %AUTHORING_ROOT%
