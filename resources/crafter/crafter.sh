@@ -546,6 +546,11 @@ function checkFolder() {
 }
 
 function doRestore() {
+  pid=$(pidOf $TOMCAT_HTTP_PORT)
+  if ! [ -z $pid ]; then
+    echo "Please stop the system before starting the restore process."
+    exit 1
+  fi
   export SOURCE_FILE=$1
   if [ ! -f "$SOURCE_FILE" ]; then
     echo "The file does not exist"

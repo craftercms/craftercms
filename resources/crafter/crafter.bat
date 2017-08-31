@@ -154,6 +154,11 @@ echo "Backup completed"
 goto cleanOnExit
 
 :restore
+netstat -o -n -a | findstr "%TOMCAT_HTTP_PORT%"
+IF %ERRORLEVEL% equ 0 (
+  echo "Please stop the system before starting the restore process."
+  goto cleanOnExit
+)
 SET SOURCE_FILE=%2
 IF NOT EXIST "%SOURCE_FILE%" (
   echo "The file does not exist"

@@ -106,7 +106,7 @@ ext {
     browserToTest=project.hasProperty("crafter.testing.browser")? project.property("crafter.testing.browser") : "chrome"
 
     /** Clonable Artifacts **/
-    VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio2-ui", "craftercms-test-suite"]
+    VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui"]
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES=[
             "search":"./src/search/crafter-search-server/target/crafter-search.war",
@@ -282,12 +282,12 @@ task("clean") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                if(!it.equalsIgnoreCase("studio2-ui") || !it.equalsIgnoreCase("craftercms-test-suite")) { // Not a pom project ignore
+                if(!it.equalsIgnoreCase("studio-ui")) { // Not a pom project ignore
                     cleanModule(commandLinePrefix, it).execute()
                 }
             }
         } else if (VALID_MODULES.contains(module)) {
-            if(!module.equalsIgnoreCase("studio2-ui") || !it.equalsIgnoreCase("craftercms-test-suite")) { // Not a pom project ignore
+            if(!module.equalsIgnoreCase("studio-ui")) { // Not a pom project ignore
                 cleanModule(commandLinePrefix, module).execute()
             }
         } else {
@@ -306,12 +306,12 @@ task("build") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                if (!it.equalsIgnoreCase("studio2-ui") || !it.equalsIgnoreCase("craftercms-test-suite")) {
+                if (!it.equalsIgnoreCase("studio-ui")) {
                     buildModule(commandLinePrefix, it).execute()
                 }
             }
         } else if (VALID_MODULES.contains(module)) {
-            if (!module.equalsIgnoreCase("studio2-ui") || !it.equalsIgnoreCase("craftercms-test-suite")) {
+            if (!module.equalsIgnoreCase("studio-ui")) {
                 buildModule(commandLinePrefix, module).execute()
             }
         } else {
@@ -532,7 +532,7 @@ def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[]) {
                 commandLinePost.add("-Dmaven.test.skip=true")
             }
             if(module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
-                commandLinePost.add("-Dstudio.ui.path=../studio2-ui/".toString())
+                commandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
                 commandLinePost.add("-Dexec.skip=true")
             }
             // Always do a Clean build, never trust caches or FS.
