@@ -101,12 +101,12 @@ ext {
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
     keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
 
-    testingPlataform=project.hasProperty("crafter.testing.plataform")? project.property("crafter.testing.plataform") : System.properties['os.name'].toString().toLowerCase()
+    testingPlatform=project.hasProperty("crafter.testing.platform")? project.property("crafter.testing.plataform") : System.properties['os.name'].toString().toLowerCase()
     chromeDriverVersion=project.hasProperty("crafter.testing.chrome")? project.property("crafter.testing.chrome") : 2.31
     browserToTest=project.hasProperty("crafter.testing.browser")? project.property("crafter.testing.browser") : "chrome"
 
     /** Clonable Artifacts **/
-    VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui"]
+    VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite"]
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES=[
             "search":"./src/search/crafter-search-server/target/crafter-search.war",
@@ -282,12 +282,12 @@ task("clean") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                if(!it.equalsIgnoreCase("studio-ui")) { // Not a pom project ignore
+                if(!(it.equalsIgnoreCase("studio-ui")||(it.equalsIgnoreCase("test-suite")))) { // Not a pom project ignore
                     cleanModule(commandLinePrefix, it).execute()
                 }
             }
         } else if (VALID_MODULES.contains(module)) {
-            if(!module.equalsIgnoreCase("studio-ui")) { // Not a pom project ignore
+            if(!(module.equalsIgnoreCase("studio-ui")||(module.equalsIgnoreCase("test-suite")))) { // Not a pom project ignore
                 cleanModule(commandLinePrefix, module).execute()
             }
         } else {
@@ -306,12 +306,12 @@ task("build") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                if (!it.equalsIgnoreCase("studio-ui")) {
+                if (!(it.equalsIgnoreCase("studio-ui")||(it.equalsIgnoreCase("test-suite")))) {
                     buildModule(commandLinePrefix, it).execute()
                 }
             }
         } else if (VALID_MODULES.contains(module)) {
-            if (!module.equalsIgnoreCase("studio-ui")) {
+            if (!(module.equalsIgnoreCase("studio-ui")||(module.equalsIgnoreCase("test-suite")))) {
                 buildModule(commandLinePrefix, module).execute()
             }
         } else {
@@ -327,21 +327,21 @@ task test(dependsOn: ["build", "deploy"]) {
         switch (browserToTest.toString().toLowerCase()){
             case "chrome":
                 downloadChromeDriver.execute()
-                driverPath=file("./src/craftercms-test-suite/bin/${browserToTest}-${testingPlataform}/chromedriver")
+                driverPath=file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver")
                 break;
             case "edge":
                 downloadEdgeDriver.execute();
-                driverPath=file("./src/craftercms-test-suite/bin/${browserToTest}/MicrosoftWebDriver.exe")
+                driverPath=file("./src/test-suite/bin/${browserToTest}/MicrosoftWebDriver.exe")
                 break
             default:
                 driverPath=askForPath();
         }
-        if(!file("./src/craftercms-test-suite/test-properties.properties").exists()){
+        if(!file("./src/test-suite/test-properties.properties").exists()){
             Properties properties = new Properties();
             properties.setProperty("webBrowser", browserToTest)
             properties.setProperty("baseUrl", "http://localhost:8080/studio/#/login")
             properties.setProperty("${browserToTest}.driver.path", file(driverPath).absoluteFile.absolutePath)
-            properties.store(new FileOutputStream("./src/craftercms-test-suite/test-properties.properties"),
+            properties.store(new FileOutputStream("./src/test-suite/test-properties.properties"),
                     "Saved by gradle")
         }
     }
@@ -350,8 +350,8 @@ task test(dependsOn: ["build", "deploy"]) {
         startAuth(commandLinePrefix, startUpFile)
         try {
             buildModule(commandLinePrefix,
-                    "craftercms-test-suite", "./src/", ["-Dfile=src/test/resources/testngcomplexscenarios.xml"])
-        }finally {
+                    "test-suite", "./src/", ["-Dfile=src/test/resources/testngcomplexscenarios.xml"])
+        } finally {
             stopAuth(commandLinePrefix, shutDownFile)
         }
     }
