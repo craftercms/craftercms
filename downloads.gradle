@@ -43,37 +43,37 @@ task downloadSolr() {
 
 task downloadEdgeDriver(){
     doFirst{
-        file("./src/craftercms-test-suite/bin/edge/").mkdir()
+        file("./src/test-suite/bin/edge/").mkdir()
         download{
             src "https://download.microsoft.com/download/3/4/2/342316D7-EBE0-4F10-ABA2-AE8E0CDF36DD/MicrosoftWebDriver.exe"
             overwrite false
-            dest ("./src/craftercms-test-suite/bin/edge/MicrosoftWebDriver.exe")
+            dest ("./src/test-suite/bin/edge/MicrosoftWebDriver.exe")
         }
     }
 }
 
 task downloadChromeDriver(){
     doFirst{
-        def plataform=""
-        switch (testingPlataform){
+        def platform=""
+        switch (testingPlatform){
             case "windows":
-                plataform="win32"
+                platform="win32"
                 break;
             case "linux":
-                plataform="linux64"
+                platform="linux64"
                 break;
             default:
-                plataform="mac64"
+                platform="mac64"
 
         }
         download{
-            src "https://chromedriver.storage.googleapis.com/${chromeDriverVersion}/chromedriver_${plataform}.zip"
+            src "https://chromedriver.storage.googleapis.com/${chromeDriverVersion}/chromedriver_${platform}.zip"
             overwrite false
-            dest ("./src/craftercms-test-suite/bin/chromedriver-${testingPlataform}.zip")
+            dest ("./src/test-suite/bin/chromedriver-${testingPlatform}.zip")
         }
         copy {
-            from zipTree("./src/craftercms-test-suite/bin/chromedriver-${plataform}.zip")
-            into "./src/craftercms-test-suite/bin/chrome-${testingPlataform}/"
+            from zipTree("./src/test-suite/bin/chromedriver-${testingPlatform}.zip")
+            into "./src/test-suite/bin/${browserToTest}-${testingPlatform}/"
         }
     }
 }
