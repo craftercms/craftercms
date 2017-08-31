@@ -72,8 +72,8 @@ task downloadChromeDriver(){
             dest ("./src/craftercms-test-suite/bin/chromedriver-${testingPlataform}.zip")
         }
         copy {
-            from zipTree("./src/craftercms-test-suite/bin/chromedriver-${plataform}.zip")
-            into "./src/craftercms-test-suite/bin/chrome-${testingPlataform}/"
+            from zipTree("./src/craftercms-test-suite/bin/chromedriver-${testingPlataform}.zip")
+            into "./src/craftercms-test-suite/bin/${browserToTest}-${testingPlataform}/"
         }
     }
 }
