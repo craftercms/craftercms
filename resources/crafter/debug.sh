@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-CRAFTER_DEBUG_HOME=${CRAFTER_DEBUG_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
+CRAFTER_START_HOME=${CRAFTER_START_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 
-if [[ -s  "$CRAFTER_DEBUG_HOME/crafter.sh" ]]; then
-      $CRAFTER_DEBUG_HOME/crafter.sh stop
+if [[ -s  "$CRAFTER_START_HOME/crafter.sh" ]]; then
+      $CRAFTER_START_HOME/crafter.sh debug
+      echo "Happy Crafting"
       exit 0
 else
       echo -e "\033[38;5;196m"
-      echo "crafter.sh was not found in $CRAFTER_DEBUG_HOME"
+      echo "crafter.sh was not found in $CRAFTER_START_HOME"
       echo -e "\033[0m"
       exit -1
 fi

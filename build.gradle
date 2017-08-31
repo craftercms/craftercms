@@ -1,3 +1,4 @@
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
@@ -320,7 +321,7 @@ task("build") {
     }
 }
 
-task test(dependsOn: ["build", "deploy"]) {
+task("test") {
     description "Builds and run tests"
     doFirst {
         def driverPath=""
@@ -350,7 +351,8 @@ task test(dependsOn: ["build", "deploy"]) {
         startAuth(commandLinePrefix, startUpFile)
         try {
             buildModule(commandLinePrefix,
-                    "test-suite", "./src/", ["-Dfile=src/test/resources/testngcomplexscenarios.xml"])
+                    "test-suite", "./src/",
+                    ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"])
         } finally {
             stopAuth(commandLinePrefix, shutDownFile)
         }
@@ -524,19 +526,21 @@ def stopDelivery(commandLinePrefix, shutDownFile) {
 
 def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[]) {
     def btask=tasks.findByPath("build${module}")
+    def actualCommandLinePost = [];
+    actualCommandLinePost.addAll(commandLinePost)
     if (btask!= null) {
         return btask
     } else {
         return tasks.create("build${module}") {
-            if (!project.hasProperty("test")) {
-                commandLinePost.add("-Dmaven.test.skip=true")
+            if (!project.hasProperty("crafter.unittest")) {
+                actualCommandLinePost.add("-Dmaven.test.skip=true")
             }
             if(module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
-                commandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
-                commandLinePost.add("-Dexec.skip=true")
+                actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
+                actualCommandLinePost.add("-Dexec.skip=true")
             }
             // Always do a Clean build, never trust caches or FS.
-            def array=commandLinePrefix +  commandLinePrefix + ["mvn", "clean", "install"] + commandLinePost
+            def array=commandLinePrefix +  commandLinePrefix + ["mvn", "clean", "install"] + actualCommandLinePost
             executeProcess(array, "${path}${module}".toString())
         }
     }
@@ -659,7 +663,13 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
 // Poor's man tail (but get's the job done
 def watchProcessOutput(process, processOutputFile){
     Thread.start {
-        def reader=Files.newBufferedReader(Paths.get(processOutputFile.path))
+
+        def reader=null
+        if(System.getProperty('os.name').toLowerCase().contains('windows')){
+            reader = Files.newBufferedReader(Paths.get(processOutputFile.path), Charset.forName("ISO-8859-1"))
+        }else{
+            reader = Files.newBufferedReader(Paths.get(processOutputFile.path), Charset.forName("UTF-8"))
+        }
         while(process.alive) {
             // Thread.sleep(100)
             def line=null
