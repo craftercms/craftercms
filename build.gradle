@@ -101,6 +101,10 @@ ext {
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
     keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
 
+    testingPlataform=project.hasProperty("crafter.testing.plataform")? project.property("crafter.testing.plataform") : System.properties['os.name'].toString().toLowerCase()
+    chromeDriverVersion=project.hasProperty("crafter.testing.chrome")? project.property("crafter.testing.chrome") : 2.31
+    browserToTest=project.hasProperty("crafter.testing.browser")? project.property("crafter.testing.browser") : "chrome"
+
     /** Clonable Artifacts **/
     VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui"]
     /** Deployable Artifacts **/
@@ -316,6 +320,43 @@ task("build") {
     }
 }
 
+task("test") {
+    description "Builds and run tests"
+    doFirst {
+        def driverPath=""
+        switch (browserToTest.toString().toLowerCase()){
+            case "chrome":
+                downloadChromeDriver.execute()
+                driverPath=file("./src/craftercms-test-suite/bin/${browserToTest}-${testingPlataform}/chromedriver")
+                break;
+            case "edge":
+                downloadEdgeDriver.execute();
+                driverPath=file("./src/craftercms-test-suite/bin/${browserToTest}/MicrosoftWebDriver.exe")
+                break
+            default:
+                driverPath=askForPath();
+        }
+        if(!file("./src/craftercms-test-suite/test-properties.properties").exists()){
+            Properties properties = new Properties();
+            properties.setProperty("webBrowser", browserToTest)
+            properties.setProperty("baseUrl", "http://localhost:8080/studio/#/login")
+            properties.setProperty("${browserToTest}.driver.path", file(driverPath).absoluteFile.absolutePath)
+            properties.store(new FileOutputStream("./src/craftercms-test-suite/test-properties.properties"),
+                    "Saved by gradle")
+        }
+    }
+    doLast{
+
+        startAuth(commandLinePrefix, startUpFile)
+        try {
+            buildModule(commandLinePrefix,
+                    "craftercms-test-suite", "./src/", ["-Dfile=src/test/resources/testngcomplexscenarios.xml"])
+        }finally {
+            stopAuth(commandLinePrefix, shutDownFile)
+        }
+    }
+}
+
 task("deploy") {
     description "Setup the Crafter CMS environment/s"
 
@@ -481,13 +522,12 @@ def stopDelivery(commandLinePrefix, shutDownFile) {
     }
 }
 
-def buildModule(commandLinePrefix, module, path="./src/") {
+def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[]) {
     def btask=tasks.findByPath("build${module}")
     if (btask!= null) {
         return btask
     } else {
         return tasks.create("build${module}") {
-            def commandLinePost=[]
             if (!project.hasProperty("test")) {
                 commandLinePost.add("-Dmaven.test.skip=true")
             }
@@ -629,4 +669,14 @@ def watchProcessOutput(process, processOutputFile){
         }
         processOutputFile.delete()
     }
+}
+
+def askForPath(){
+    def console = System.console();
+    def inputPath = console.readLine("> Please enter path for selemiun driver of ${browserToTest} ")
+    if(!file(inputPath).exists()){
+        console.println("${inputPath} does not exist, please enter a new valid path");
+        askForPath();
+    }
+    return inputPath
 }
