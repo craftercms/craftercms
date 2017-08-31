@@ -320,7 +320,7 @@ task("build") {
     }
 }
 
-task("test") {
+task test(dependsOn: ["build", "deploy"]) {
     description "Builds and run tests"
     doFirst {
         def driverPath=""

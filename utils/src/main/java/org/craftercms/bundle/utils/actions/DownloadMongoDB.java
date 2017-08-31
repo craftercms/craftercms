@@ -22,7 +22,7 @@ public class DownloadMongoDB implements Action {
         switch (os) {
             case Windows:
                 builder = builder.replaceAll("@OS", "win32").replaceAll("@VERSION",
-                    "2008plus-ssl-v3.4-latest-signed").replaceAll("@EXT", "msi");
+                    "2008plus-ssl-v3.4-latest").replaceAll("@EXT", "zip");
                 break;
             case MacOS:
                 builder = builder.replaceAll("@OS", "osx").replaceAll("@VERSION", "3.4.4").replaceAll("@EXT", "tgz");
@@ -43,7 +43,7 @@ public class DownloadMongoDB implements Action {
                 InputStream input = connection.getInputStream();
                 File output = null;
                 if (OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows) {
-                    output = Paths.get(".", "mongodb.msi").toFile();
+                    output = Paths.get(".", "mongodb.zip").toFile();
                 } else {
                     output = Paths.get(".", "mongodb.tgz").toFile();
                 }
@@ -51,7 +51,7 @@ public class DownloadMongoDB implements Action {
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int n;
                 long total = 0;
-                System.out.println("Downloading Mongodb please wait.");
+                System.out.println("Downloading Mongodb "+builder.toString()+"please wait.");
                 while ((n = input.read(buffer)) != -1) {
                     out.write(buffer, 0, n);
                     total += n;

@@ -67,7 +67,8 @@ exit /b 0
  mkdir %CRAFTER_BIN_FOLDER%mongodb
  cd %CRAFTER_BIN_FOLDER%mongodb
  java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar download mongodb
- msiexec.exe /i mongodb.msi /passive INSTALLLOCATION="%CRAFTER_BIN_FOLDER%mongodb\" /l*v "%CRAFTER_BIN_FOLDER%mongodb\mongodb.log" /norestart
+ java -jar  %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip mongodb.zip %CRAFTER_BIN_FOLDER%mongodb\bin true
+ rem msiexec.exe /i mongodb.msi /passive INSTALLLOCATION="%CRAFTER_BIN_FOLDER%mongodb\" /l*v "%CRAFTER_BIN_FOLDER%mongodb\mongodb.log" /norestart
  cd %CRAFTER_BIN_FOLDER%
 goto :init
 
