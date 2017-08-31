@@ -282,12 +282,12 @@ task("clean") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                if(!it.equalsIgnoreCase("studio-ui")) { // Not a pom project ignore
+                if(!(it.equalsIgnoreCase("studio-ui")||(it.equalsIgnoreCase("test-suite")))) { // Not a pom project ignore
                     cleanModule(commandLinePrefix, it).execute()
                 }
             }
         } else if (VALID_MODULES.contains(module)) {
-            if(!module.equalsIgnoreCase("studio-ui")) { // Not a pom project ignore
+            if(!(module.equalsIgnoreCase("studio-ui")||(module.equalsIgnoreCase("test-suite")))) { // Not a pom project ignore
                 cleanModule(commandLinePrefix, module).execute()
             }
         } else {
@@ -306,12 +306,12 @@ task("build") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                if (!it.equalsIgnoreCase("studio-ui")) {
+                if (!(it.equalsIgnoreCase("studio-ui")||(it.equalsIgnoreCase("test-suite")))) {
                     buildModule(commandLinePrefix, it).execute()
                 }
             }
         } else if (VALID_MODULES.contains(module)) {
-            if (!module.equalsIgnoreCase("studio-ui")) {
+            if (!(module.equalsIgnoreCase("studio-ui")||(module.equalsIgnoreCase("test-suite")))) {
                 buildModule(commandLinePrefix, module).execute()
             }
         } else {
