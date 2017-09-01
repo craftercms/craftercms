@@ -154,7 +154,7 @@ task("upgrade"){
                 }
             }
         }
-
+        update.execute();
         forceDeploy=true
         build.execute()
         deploy.execute()
