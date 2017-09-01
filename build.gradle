@@ -350,7 +350,7 @@ task("test") {
         startAuth(commandLinePrefix, startUpFile)
         try {
             buildModule(commandLinePrefix,
-                    "test-suite", "./src/", ["-Dfile=src/test/resources/testngcomplexscenarios.xml"])
+                    "test-suite", "./src/", ["-Dfile=src/test/resources/testngcomplexscenarios.xml,src/test/resources/testng.xml,src/test/resources/testngAPI.xml"])
         } finally {
             stopAuth(commandLinePrefix, shutDownFile)
         }
