@@ -1,5 +1,17 @@
 
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.apache.commons', name: 'commons-text', version: '1.1'
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+
+    }
+}
+
 import java.security.MessageDigest;
+import org.apache.commons.lang3.SystemUtils;
 
 task downloadTomcat() {
     description = "Downloads and checks tomcat integrity"
@@ -43,31 +55,43 @@ task downloadSolr() {
 
 task downloadEdgeDriver(){
     doFirst{
-        file("./src/test-suite/bin/edge/").mkdir()
-        download{
-            src "https://download.microsoft.com/download/3/4/2/342316D7-EBE0-4F10-ABA2-AE8E0CDF36DD/MicrosoftWebDriver.exe"
-            overwrite false
-            dest ("./src/test-suite/bin/edge/MicrosoftWebDriver.exe")
+        file("./src/test-suite/bin/").mkdir()
+       def winBuildNumber =getWindowsBuildNumber();
+        def url=""
+        if(WINDOWS_EDGE_DRIVER_URL.containsKey(winBuildNumber)){
+            url=WINDOWS_EDGE_DRIVER_URL[winBuildNumber]
+        }
+        if(url.endsWith(".msi")){
+            println ("Your current Selenium Driver is an MSI installer, please \n install it in this path `./src/test-suite/bin` and make sure that you configure properly the `./src/test-suite/test-properties.properties`")
+        }
+        if(!url.isEmpty()){
+            println url
+            download{
+                src url
+                overwrite false
+                dest ("./src/test-suite/bin/edge/MicrosoftWebDriver.exe")
+                acceptAnyCertificate true
+            }
+        }else{
+            println "We could not found a suitable selenium driver for your windows build  ${winBuildNumber}"
+            println "Please go to https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/ and download"
+            println "the proper driver version and then configure its location in the `./src/test-suite/test-properties.properties` file " 
         }
     }
 }
 
 task downloadChromeDriver(){
     doFirst{
-        def platform=""
-        switch (testingPlatform){
-            case "windows":
-                platform="win32"
-                break;
-            case "linux":
-                platform="linux64"
-                break;
-            default:
-                platform="mac64"
-
+        def plataform=""
+        if(SystemUtils.IS_OS_WINDOWS){
+            plataform = "win32"
+        }else if(SystemUtils.IS_OS_LINUX){
+            plataform = "linux64"
+        }else{
+            plataform = "mac64"
         }
         download{
-            src "https://chromedriver.storage.googleapis.com/${chromeDriverVersion}/chromedriver_${platform}.zip"
+            src "https://chromedriver.storage.googleapis.com/${chromeDriverVersion}/chromedriver_${plataform}.zip"
             overwrite false
             dest ("./src/test-suite/bin/chromedriver-${testingPlatform}.zip")
         }
@@ -77,6 +101,7 @@ task downloadChromeDriver(){
         }
     }
 }
+
 
 def sha1(file){
     MessageDigest md = MessageDigest.getInstance("SHA1");
@@ -93,4 +118,18 @@ def sha1(file){
         sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
     }
     return sb.toString()
+}
+
+def getWindowsBuildNumber(){
+     try {
+            def term = "OS Version"
+            Runtime rt = Runtime.getRuntime();
+            Process pr = rt.exec("CMD /C SYSTEMINFO | FINDSTR /B /C:\"" + term + "\"");
+            BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+             def fullwinVersion = input.readLine()
+             return fullwinVersion.substring(fullwinVersion.lastIndexOf("Build")+6)
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+        return "";
 }

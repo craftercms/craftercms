@@ -66,8 +66,14 @@ exit /b 0
 :installMongo
  mkdir %CRAFTER_BIN_FOLDER%mongodb
  cd %CRAFTER_BIN_FOLDER%mongodb
- java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar download mongodb
+ java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar download mongodbmsi
  msiexec.exe /i mongodb.msi /passive INSTALLLOCATION="%CRAFTER_BIN_FOLDER%mongodb\" /l*v "%CRAFTER_BIN_FOLDER%mongodb\mongodb.log" /norestart
+ SET MONGODB_BIN_DIR= "%CRAFTER_BIN_FOLDER%mongodb\bin\mongod.exe"
+ IF NOT EXIST %MONGODB_BIN_DIR% (
+     echo "Mongodb bin path not found trying download the zip %MONGODB_BIN_DIR%"
+     java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar download mongodb
+     java -jar  %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip mongodb.zip %CRAFTER_BIN_FOLDER%mongodb\bin true
+ )
  cd %CRAFTER_BIN_FOLDER%
 goto :init
 
