@@ -2,6 +2,24 @@ import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds
+import java.io.BufferedReader;
+import java.nio.file.StandardOpenOption;
+import java.net.HttpURLConnection;
+import org.apache.commons.text.StringEscapeUtils;
+import org.apache.commons.lang3.SystemUtils;
+
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.apache.commons', name: 'commons-text', version: '1.1'
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+
+    }
+}
 
 plugins {
     id "de.undercouch.download" version "3.1.2"
@@ -102,9 +120,10 @@ ext {
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
     keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
 
-    testingPlatform=project.hasProperty("crafter.testing.platform")? project.property("crafter.testing.plataform") : System.properties['os.name'].toString().toLowerCase()
+    testingPlatform=project.hasProperty("crafter.testing.platform")? project.property("crafter.testing.plataform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ","-")
     chromeDriverVersion=project.hasProperty("crafter.testing.chrome")? project.property("crafter.testing.chrome") : 2.31
     browserToTest=project.hasProperty("crafter.testing.browser")? project.property("crafter.testing.browser") : "chrome"
+    testArtifacts=project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
 
     /** Clonable Artifacts **/
     VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite"]
@@ -116,6 +135,12 @@ ext {
             "deployer":"./src/deployer/target/crafter-deployer.jar",
             "studio":"./src/studio/target/studio.war",
             "social":"./src/social/server/target/crafter-social.war"]
+    WINDOWS_EDGE_DRIVER_URL = [
+        "15063" : "https://download.microsoft.com/download/3/4/2/342316D7-EBE0-4F10-ABA2-AE8E0CDF36DD/MicrosoftWebDriver.exe",
+        "14393" : "https://download.microsoft.com/download/3/2/D/32D3E464-F2EF-490F-841B-05D53C848D15/MicrosoftWebDriver.exe",
+        "10586" :  "https://download.microsoft.com/download/C/0/7/C07EBF21-5305-4EC8-83B1-A6FCC8F93F45/MicrosoftWebDriver.msi",
+        "10240" : "https://download.microsoft.com/download/8/D/0/8D0D08CF-790D-4586-B726-C6469A9ED49C/MicrosoftWebDriver.msi"
+    ]
 
 }
 
@@ -323,12 +348,17 @@ task("build") {
 
 task("test") {
     description "Builds and run tests"
+    testArtifacts= true
     doFirst {
         def driverPath=""
         switch (browserToTest.toString().toLowerCase()){
             case "chrome":
                 downloadChromeDriver.execute()
-                driverPath=file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver")
+                if(SystemUtils.IS_OS_WINDOWS){
+                    driverPath=file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver.exe")
+                }else{
+                    driverPath=file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver")
+                }
                 break;
             case "edge":
                 downloadEdgeDriver.execute();
@@ -338,23 +368,28 @@ task("test") {
                 driverPath=askForPath();
         }
         if(!file("./src/test-suite/test-properties.properties").exists()){
-            Properties properties = new Properties();
-            properties.setProperty("webBrowser", browserToTest)
-            properties.setProperty("baseUrl", "http://localhost:8080/studio/#/login")
-            properties.setProperty("${browserToTest}.driver.path", file(driverPath).absoluteFile.absolutePath)
-            properties.store(new FileOutputStream("./src/test-suite/test-properties.properties"),
-                    "Saved by gradle")
+            def properties = []
+            properties.add("webBrowser=${browserToTest}")
+            properties.add("baseUrl=http://localhost:8080/studio/#/login")
+            properties.add("${browserToTest}.driver.path=${StringEscapeUtils.escapeJava(file(driverPath).absolutePath)}")
+            Files.write(Paths.get("./src/test-suite/test-properties.properties"), properties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
         }
     }
+    
     doLast{
-
-        startAuth(commandLinePrefix, startUpFile)
-        try {
-            buildModule(commandLinePrefix,
-                    "test-suite", "./src/", ["-Dfile=src/test/resources/testngcomplexscenarios.xml,src/test/resources/testng.xml,src/test/resources/testngAPI.xml"])
+       startAuth(commandLinePrefix, startUpFile)
+       try {
+            if (waitUntilAuthIsUp(10)){ // 10 times of 15 sec each upto 2.5 min
+                buildModule(commandLinePrefix,
+                        "test-suite", "./src/",
+                        ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"])
+            }else{
+                println "After ${(10*15)/60} min we where unable to check if studio is up"
+            }
+        }catch (GradleException ex){ // no nothing
         } finally {
             stopAuth(commandLinePrefix, shutDownFile)
-        }
+        }        
     }
 }
 
@@ -431,6 +466,7 @@ task("bundle") {
         }
     }
 }
+
 
 def cleanModule(commandLinePrefix, module) {
     def ctask=tasks.findByPath("clean${module}")
@@ -531,7 +567,7 @@ def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[]) {
         return btask
     } else {
         return tasks.create("build${module}") {
-            if (!project.hasProperty("crafter.unittest")) {
+            if (!testArtifacts) {
                 actualCommandLinePost.add("-Dmaven.test.skip=true")
             }
             if(module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
@@ -688,4 +724,24 @@ def askForPath(){
         askForPath();
     }
     return inputPath
+}
+
+def waitUntilAuthIsUp(tryThinsManyTimes){
+    if(tryThinsManyTimes<=0){
+        return false
+    }else{
+        try{
+            URL url = new URL("http://localhost:${authTomcatPort}/studio");
+            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+            HttpURLConnection.setFollowRedirects(false);
+            huc.setConnectTimeout(15 * 1000);
+            huc.setRequestMethod("GET");
+            huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
+            huc.connect();
+            return true
+        }catch(java.net.SocketTimeoutException | java.net.ConnectException ex){
+            println "Studio is not Ready yet trying again"
+            waitUntilAuthIsUp(tryThinsManyTimes-1)
+        }
+    }
 }
