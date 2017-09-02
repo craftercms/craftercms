@@ -379,13 +379,11 @@ task("test") {
     doLast{
        startAuth(commandLinePrefix, startUpFile)
        try {
-            if (waitUntilAuthIsUp(10)){ // 10 times of 15 sec each upto 2.5 min
+
                 buildModule(commandLinePrefix,
                         "test-suite", "./src/",
                         ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"])
-            }else{
-                println "After ${(10*15)/60} min we where unable to check if studio is up"
-            }
+
         }catch (GradleException ex){ // no nothing
         } finally {
             stopAuth(commandLinePrefix, shutDownFile)
