@@ -39,6 +39,7 @@ public class Download implements Action{
                     } catch (MalformedURLException e) {
                         System.out.println(args[0]+ " is not a valid url");
                     }
+                    break;
             }
         }
     }

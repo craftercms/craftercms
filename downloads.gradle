@@ -82,16 +82,16 @@ task downloadEdgeDriver(){
 
 task downloadChromeDriver(){
     doFirst{
-        def plataform=""
+        def platform=""
         if(SystemUtils.IS_OS_WINDOWS){
-            plataform = "win32"
+            platform = "win32"
         }else if(SystemUtils.IS_OS_LINUX){
-            plataform = "linux64"
+            platform = "linux64"
         }else{
-            plataform = "mac64"
+            platform = "mac64"
         }
         download{
-            src "https://chromedriver.storage.googleapis.com/${chromeDriverVersion}/chromedriver_${plataform}.zip"
+            src "https://chromedriver.storage.googleapis.com/${chromeDriverVersion}/chromedriver_${platform}.zip"
             overwrite false
             dest ("./src/test-suite/bin/chromedriver-${testingPlatform}.zip")
         }

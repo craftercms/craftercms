@@ -120,7 +120,7 @@ ext {
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
     keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
 
-    testingPlatform=project.hasProperty("crafter.testing.platform")? project.property("crafter.testing.plataform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ","-")
+    testingPlatform=project.hasProperty("crafter.testing.platform")? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ","-")
     chromeDriverVersion=project.hasProperty("crafter.testing.chrome")? project.property("crafter.testing.chrome") : 2.31
     browserToTest=project.hasProperty("crafter.testing.browser")? project.property("crafter.testing.browser") : "chrome"
     testArtifacts=project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false

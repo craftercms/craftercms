@@ -19,7 +19,6 @@ public class DownloadMongoMSIDB implements Action {
 
     @Override
     public void execute(String[] args) {
-        OsCheck.OSType os = OsCheck.getOperatingSystemType();
         String builder = "http://downloads.mongodb.org/@OS/mongodb-@OS-x86_64-@VERSION.@EXT";
         builder = builder.replaceAll("@OS", "win32").replaceAll("@VERSION",
                     "2008plus-ssl-v3.4-latest-signed").replaceAll("@EXT", "msi");
@@ -35,7 +34,7 @@ public class DownloadMongoMSIDB implements Action {
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int n;
                 long total = 0;
-                System.out.println("Downloading Mongodb "+builder.toString()+" please wait.");
+                System.out.println("Downloading Mongodb " + builder + " please wait.");
                 while ((n = input.read(buffer)) != -1) {
                     out.write(buffer, 0, n);
                     total += n;
