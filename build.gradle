@@ -389,7 +389,6 @@ task("test") {
         }        
     }
 }
-
 task("deploy") {
     description "Setup the Crafter CMS environment/s"
 
