@@ -70,7 +70,8 @@ task("authoringEnvironment"){
                                            DEPLOYER_PORT: String.valueOf(authDeployerPort),
                                            MARIADB_PORT: String.valueOf(authMariaDbPort),
                                            TOMCAT_DEBUG_PORT:String.valueOf(authTomcatDebug),
-                                           MONGODB_PORT:String.valueOf(authMongoDBPort)
+                                           MONGODB_PORT:String.valueOf(authMongoDBPort),
+                                           ENV:"authoring"
             ])
         }
 
@@ -84,7 +85,8 @@ task("authoringEnvironment"){
                                            DEPLOYER_PORT: String.valueOf(authDeployerPort),
                                            MARIADB_PORT: String.valueOf(authMariaDbPort),
                                            TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
-                                           MONGODB_PORT:String.valueOf(authMongoDBPort)
+                                           MONGODB_PORT:String.valueOf(authMongoDBPort),
+                                           ENV:"authoring"
             ])
         }
         copy {
@@ -103,7 +105,7 @@ task("authoringEnvironment"){
         }
         copy{
             from ("./resources/crafter/"){
-                exclude "**/init-site.sh"
+                exclude "**/init-site.*"
             }
             into "${authEnv}/bin/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
@@ -114,7 +116,8 @@ task("authoringEnvironment"){
                                            DEPLOYMENT_DIR: String.valueOf(authDeploymentDir),
                                            MARIADB_PORT: String.valueOf(authMariaDbPort),
                                            TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
-                                           MONGODB_PORT:String.valueOf(authMongoDBPort)
+                                           MONGODB_PORT:String.valueOf(authMongoDBPort),
+                                           ENV:"authoring"
 
             ])
         }
@@ -209,7 +212,8 @@ task("deliveryEnvironment"){
                                            DEPLOYER_D_PORT: String.valueOf(deliveryDeployerDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deliveryDeployerPort),
                                            TOMCAT_DEBUG_PORT:String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
+                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
+                                           ENV:"delivery"
             ])
         }
         copy{
@@ -221,7 +225,8 @@ task("deliveryEnvironment"){
                                            DEPLOYER_D_PORT: String.valueOf(deliveryDeployerDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deliveryDeployerPort),
                                            TOMCAT_DEBUG_PORT:String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
+                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
+                                           ENV:"delivery"
             ])
         }
 
@@ -234,7 +239,8 @@ task("deliveryEnvironment"){
                                            DEPLOYER_D_PORT: String.valueOf(deliveryDeployerDebugPort),
                                            DEPLOYER_PORT: String.valueOf(deliveryDeployerPort),
                                            TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
+                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
+                                           ENV:"delivery"
             ])
         }
         copy {
@@ -261,7 +267,8 @@ task("deliveryEnvironment"){
                                            DEPLOYER_PORT: String.valueOf(deliveryDeployerPort),
                                            DEPLOYMENT_DIR: String.valueOf(deliveryDeploymentDir),
                                            TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort)
+                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
+                                           ENV:"delivery"
             ])
         }
 
