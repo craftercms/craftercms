@@ -116,6 +116,7 @@ ext {
     gitURLTemplate=project.hasProperty("crafter.git.url")? project.property("crafter.git.url") : "https://github.com/craftercms/"
     gitSourceBranch=project.hasProperty("crafter.git.branch")? project.property("crafter.git.branch") : "master"
     gitRepo=project.hasProperty("crafter.git.remote")? project.property("crafter.git.remote") : "origin"
+    shallowClone=project.hasProperty("crafter.git.shallowClone")? project.property("crafter.git.shallowClone") : false
     studioUIFromRepo=project.hasProperty("crafter.ui.repo")? project.property("crafter.ui.repo") : false
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
     keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
@@ -192,9 +193,7 @@ task("init"){
     doFirst{
         def module = getModule();
     }
-
     doLast {
-
         if (module.equals("all")) {
             VALID_MODULES.each {
                 cloneModule(commandLinePrefix, it).execute()
@@ -501,7 +500,12 @@ def cloneModule(commandLinePrefix, module){
         return tasks.create("clone${module}") {
             def finalUrl = "${gitURLTemplate}${module}.git".toString()
             def path = "src/${module}".toString()
-            def arry = commandLinePrefix + ["git","clone","-b",gitSourceBranch,finalUrl,path]
+            def gitCloneCmd = ["git","clone"]
+            if(shallowClone){
+                gitCloneCmd.add("--depth")
+                gitCloneCmd.add("1")
+            }
+            def arry = commandLinePrefix + gitCloneCmd+["-b",gitSourceBranch,finalUrl,path]
             if (file(path).exists()) {
                 println ("Module ${module} has already been initialized, please use " +
                         "'update' to update it.")
@@ -561,10 +565,16 @@ def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[], fo
     def btask=tasks.findByPath("build${module}")
     def actualCommandLinePost = [];
     actualCommandLinePost.addAll(commandLinePost)
-    if(!testArtifacts && !forceTest){
+    if(!testArtifacts && !forceTest){ //ForceTest is needed to make test-suite run since, well they are tests
         actualCommandLinePost.add("-Dmaven.test.skip=true")
-        println(actualCommandLinePost)
+        // Ignore integration test to avoid starting mongo and jetty for nothing
+        if(module.equalsIgnoreCase("search")){
+            actualCommandLinePost.add("-pl '!crafter-search-itest'")
+        }else if(module.equalsIgnoreCase("profile")){
+            actualCommandLinePost.add("-pl '!integration-tests'")
+        }
     }
+
     if (btask!= null) {
         return btask
     } else {
