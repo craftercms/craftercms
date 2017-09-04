@@ -348,7 +348,6 @@ task("build") {
 
 task("test") {
     description "Builds and run tests"
-    testArtifacts= true
     doFirst {
         def driverPath=""
         switch (browserToTest.toString().toLowerCase()){
@@ -382,7 +381,8 @@ task("test") {
 
                 buildModule(commandLinePrefix,
                         "test-suite", "./src/",
-                        ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"])
+                        ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"],
+                        true)
 
         }catch (GradleException ex){ // no nothing
         } finally {
@@ -557,15 +557,18 @@ def stopDelivery(commandLinePrefix, shutDownFile) {
     }
 }
 
-def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[]) {
+def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[], forceTest=false) {
     def btask=tasks.findByPath("build${module}")
     def actualCommandLinePost = [];
     actualCommandLinePost.addAll(commandLinePost)
+    if(!testArtifacts && !forceTest){
+        actualCommandLinePost.add("-Dmaven.test.skip=true")
+        println(actualCommandLinePost)
+    }
     if (btask!= null) {
         return btask
     } else {
         return tasks.create("build${module}") {
-                actualCommandLinePost.add("-Dmaven.test.skip=true")
             if(module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
                 actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
                 actualCommandLinePost.add("-Dexec.skip=true")
