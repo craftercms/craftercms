@@ -116,6 +116,7 @@ ext {
     gitURLTemplate=project.hasProperty("crafter.git.url")? project.property("crafter.git.url") : "https://github.com/craftercms/"
     gitSourceBranch=project.hasProperty("crafter.git.branch")? project.property("crafter.git.branch") : "master"
     gitRepo=project.hasProperty("crafter.git.remote")? project.property("crafter.git.remote") : "origin"
+    shallowClone=project.hasProperty("crafter.git.shallowClone")? project.property("crafter.git.shallowClone") : false
     studioUIFromRepo=project.hasProperty("crafter.ui.repo")? project.property("crafter.ui.repo") : false
     forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
     keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
@@ -192,9 +193,7 @@ task("init"){
     doFirst{
         def module = getModule();
     }
-
     doLast {
-
         if (module.equals("all")) {
             VALID_MODULES.each {
                 cloneModule(commandLinePrefix, it).execute()
@@ -348,7 +347,6 @@ task("build") {
 
 task("test") {
     description "Builds and run tests"
-    testArtifacts= true
     doFirst {
         def driverPath=""
         switch (browserToTest.toString().toLowerCase()){
@@ -379,10 +377,11 @@ task("test") {
     doLast{
        startAuth(commandLinePrefix, startUpFile)
        try {
-
+              //  waitUntilAuthIsUp(10)//10*30sec
                 buildModule(commandLinePrefix,
                         "test-suite", "./src/",
-                        ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"])
+                        ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"],
+                        true)
 
         }catch (GradleException ex){ // no nothing
         } finally {
@@ -501,7 +500,12 @@ def cloneModule(commandLinePrefix, module){
         return tasks.create("clone${module}") {
             def finalUrl = "${gitURLTemplate}${module}.git".toString()
             def path = "src/${module}".toString()
-            def arry = commandLinePrefix + ["git","clone","-b",gitSourceBranch,finalUrl,path]
+            def gitCloneCmd = ["git","clone"]
+            if(shallowClone){
+                gitCloneCmd.add("--depth")
+                gitCloneCmd.add("1")
+            }
+            def arry = commandLinePrefix + gitCloneCmd+["-b",gitSourceBranch,finalUrl,path]
             if (file(path).exists()) {
                 println ("Module ${module} has already been initialized, please use " +
                         "'update' to update it.")
@@ -557,15 +561,26 @@ def stopDelivery(commandLinePrefix, shutDownFile) {
     }
 }
 
-def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[]) {
+def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[], forceTest=false) {
     def btask=tasks.findByPath("build${module}")
     def actualCommandLinePost = [];
     actualCommandLinePost.addAll(commandLinePost)
+    if(!testArtifacts && !forceTest){ //ForceTest is needed to make test-suite run since, well they are tests
+        actualCommandLinePost.add("-Dmaven.test.skip=true")
+        // Ignore integration test to avoid starting mongo and jetty for nothing
+        if(module.equalsIgnoreCase("search")){
+            actualCommandLinePost.add("-pl")
+            actualCommandLinePost.add("!crafter-search-itest")
+        }else if(module.equalsIgnoreCase("profile")){
+            actualCommandLinePost.add("-pl")
+            actualCommandLinePost.add("!integration-tests")
+        }
+    }
+
     if (btask!= null) {
         return btask
     } else {
         return tasks.create("build${module}") {
-                actualCommandLinePost.add("-Dmaven.test.skip=true")
             if(module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
                 actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
                 actualCommandLinePost.add("-Dexec.skip=true")
@@ -730,7 +745,7 @@ def waitUntilAuthIsUp(tryThinsManyTimes){
             URL url = new URL("http://localhost:${authTomcatPort}/studio");
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
             HttpURLConnection.setFollowRedirects(false);
-            huc.setConnectTimeout(15 * 1000);
+            huc.setConnectTimeout(30000);
             huc.setRequestMethod("GET");
             huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
             huc.connect();
