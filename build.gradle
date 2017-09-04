@@ -377,7 +377,7 @@ task("test") {
     doLast{
        startAuth(commandLinePrefix, startUpFile)
        try {
-
+                waitUntilAuthIsUp(10)//10*30sec
                 buildModule(commandLinePrefix,
                         "test-suite", "./src/",
                         ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"],
@@ -569,9 +569,11 @@ def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[], fo
         actualCommandLinePost.add("-Dmaven.test.skip=true")
         // Ignore integration test to avoid starting mongo and jetty for nothing
         if(module.equalsIgnoreCase("search")){
-            actualCommandLinePost.add("-pl '!crafter-search-itest'")
+            actualCommandLinePost.add("-pl")
+            actualCommandLinePost.add("!crafter-search-itest")
         }else if(module.equalsIgnoreCase("profile")){
-            actualCommandLinePost.add("-pl '!integration-tests'")
+            actualCommandLinePost.add("-pl")
+            actualCommandLinePost.add("!integration-tests")
         }
     }
 
@@ -743,7 +745,7 @@ def waitUntilAuthIsUp(tryThinsManyTimes){
             URL url = new URL("http://localhost:${authTomcatPort}/studio");
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
             HttpURLConnection.setFollowRedirects(false);
-            huc.setConnectTimeout(15 * 1000);
+            huc.setConnectTimeout(30000);
             huc.setRequestMethod("GET");
             huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
             huc.connect();
