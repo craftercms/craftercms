@@ -565,9 +565,7 @@ def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[]) {
         return btask
     } else {
         return tasks.create("build${module}") {
-            if (!testArtifacts) {
                 actualCommandLinePost.add("-Dmaven.test.skip=true")
-            }
             if(module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
                 actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
                 actualCommandLinePost.add("-Dexec.skip=true")
