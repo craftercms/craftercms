@@ -377,7 +377,7 @@ task("test") {
     doLast{
        startAuth(commandLinePrefix, startUpFile)
        try {
-                waitUntilAuthIsUp(10)//10*30sec
+              //  waitUntilAuthIsUp(10)//10*30sec
                 buildModule(commandLinePrefix,
                         "test-suite", "./src/",
                         ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"],
