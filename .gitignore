@@ -31,6 +31,8 @@ crafter-auth-env/
 src/
 bundles/
 crafter-delivery-env/
+crafter-authoring
+crafter-delivery
 downloads/
 !utils/src/main/java/org/craftercms/bundle/utils/
 utils/target

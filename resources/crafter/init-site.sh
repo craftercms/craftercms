@@ -4,7 +4,7 @@
 
 export DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export DELIVERY_ROOT=$( cd "$DELIVERY_HOME/.." && pwd )
-export AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-auth-env" && pwd )
+export AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-authoring" && pwd )
 export AUTHORING_SITE_REPOS=$AUTHORING_ROOT/data/repos/sites
 
 if [ $# -eq 1 ]; then
