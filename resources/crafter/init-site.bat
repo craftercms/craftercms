@@ -9,10 +9,6 @@ set REPO=
 for %%i in ("%~dp0..") do set DELIVERY_ROOT=%%~fi\
 for %%i in ("%~dp0..\..") do set AUTHORING_ROOT=%%~fi\
 SET AUTHORING_SITE_REPOS=%AUTHORING_ROOT%crafter-authoring\data\repos\sites
-echo %DELIVERY_HOME%
-echo %DELIVERY_ROOT%
-echo %AUTHORING_ROOT%
-echo %AUTHORING_SITE_REPOS%
 
 IF /i "%1%"=="" goto shelp
 
