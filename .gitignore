@@ -36,3 +36,5 @@ crafter-delivery
 downloads/
 !utils/src/main/java/org/craftercms/bundle/utils/
 utils/target
+.project
+.settings/
