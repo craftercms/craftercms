@@ -83,8 +83,8 @@ IF NOT DEFINED TARGET_NAME (
 )
 FOR /F "tokens=2-4 delims=/ " %%a IN ("%DATE%") DO (SET CDATE=%%c-%%a-%%b)
 FOR /F "tokens=1-3 delims=:. " %%a IN ("%TIME%") DO (SET CTIME=%%a-%%b-%%c)
-SET TARGET_FILE="%CRAFTER_HOME%%TARGET_NAME%-%CDATE%-%CTIME%.zip"
-SET TEMP_FOLDER=%CRAFTER_HOME%backup
+SET TARGET_FILE="%CRAFTER_HOME%backups\%TARGET_NAME%-%CDATE%-%CTIME%.zip"
+SET TEMP_FOLDER=%CRAFTER_HOME%temp
 
 echo "Starting backup into %TARGET_FILE%"
 md %TEMP_FOLDER%
@@ -138,7 +138,7 @@ IF NOT EXIST "%SOURCE_FILE%" (
   exit /b 1
 )
 
-SET TEMP_FOLDER="%CRAFTER_HOME%backup"
+SET TEMP_FOLDER="%CRAFTER_HOME%temp"
 echo "Starting restore from %SOURCE_FILE%"
 md "%TEMP_FOLDER%"
 
