@@ -52,13 +52,18 @@ For the `delivery` environment, simply substitute the `env=authoring` with `env=
 
 ## 2.2 Init/Update,Build and Bundle from a given Tag/Branch
 
-To download,build and generate Bundle from given Tag or Branch of the source code
+To download, build and generate a Bundle from a given Tag or Branch of the source code,
 
+1. Clone the branch/tag of craftercms that you want to work with
+```bash
+    git clone -b<branch> https://github.com/craftercms/craftercms/
+```
+2. Download, build and bundle the branch that you want to work with
 ```bash
     ./gradlew init build deploy bundle -Pcrafter.git.branch={BRANCH}/{TAG NAME}
 ```
 
-Replace {BRANCH} or {TAG NAME} with the branch and tag you'd like to build.
+Replace {BRANCH} or {TAG NAME} or \<branch\> with the branch and tag you'd like to build.
 
 **Note**:
 When using a tag-based build, you're essentially cloning a point in time to build that specific version of Crafter CMS. That implies that you won't be able to update/nor push changes back.
