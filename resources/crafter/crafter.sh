@@ -489,11 +489,12 @@ function doBackup() {
     fi
   fi
   export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
-  export TARGET_FILE="$CRAFTER_ROOT/$TARGET_NAME.$CURRENT_DATE.zip"
-  export TEMP_FOLDER="$CRAFTER_HOME/backup"
+  export TARGET_FILE="$CRAFTER_ROOT/backups/$TARGET_NAME.$CURRENT_DATE.zip"
+  export TEMP_FOLDER="$CRAFTER_HOME/temp"
   
   echo "Starting backup into $TARGET_FILE"
   mkdir -p "$TEMP_FOLDER"
+  mkdir -p "$TARGET_FILE"
   rm "$TARGET_FILE"
 
   # MySQL Dump
@@ -557,7 +558,7 @@ function doRestore() {
     help
     exit 1
   fi
-  export TEMP_FOLDER="$CRAFTER_HOME/backup"
+  export TEMP_FOLDER="$CRAFTER_HOME/temp"
   
   echo "Starting restore from $SOURCE_FILE"
   mkdir -p "$TEMP_FOLDER"
