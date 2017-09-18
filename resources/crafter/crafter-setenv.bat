@@ -31,3 +31,5 @@ SET DEPLOYER_WIN_TITLE="Crafter Deployer @ENV@"
 SET DEPLOYER_STARTUP=startup.bat
 SET DEPLOYER_SHUTDOWN=shutdown.bat
 SET DEPLOYER_DEBUG=debug.bat
+SET PROFILE_DEPLOY_WAR_PATH=%CATALINA_HOME%/webapps/crafter-profile
+SET PROFILE_WAR_PATH=%CATALINA_HOME%/webapps/crafter-profile.war
