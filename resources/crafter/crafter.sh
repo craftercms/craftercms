@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+
+OSARCH=$(getconf LONG_BIT)
+if [[ $OSARCH -eq "32" ]]; then
+  echo -e "\033[38;5;196m"
+  echo "CrafterCMS is not supported in a 32bit os"
+  echo -e "\033[0m"
+  read -r
+fi
+
 export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
 export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
@@ -339,6 +348,11 @@ function startMongoDB(){
   fi
 }
 
+
+function isMongoNeeded() {
+  test -s $PROFILE_WAR_PATH || test -d $PROFILE_DEPLOY_WAR_PATH
+}
+
 function stopMongoDB(){
   echo "------------------------------------------------------------"
   echo "Stopping MongoDB"
@@ -452,7 +466,9 @@ function mongoDbStatus(){
 function start() {
   startDeployer
   startSolr
-  startMongoDB
+ if isMongoNeeded ; then
+    startMongoDB
+ fi
   startTomcat
   printTailInfo
 }
@@ -460,14 +476,18 @@ function start() {
 function debug() {
   debugDeployer
   debugSolr
-  startMongoDB
+  if isMongoNeeded ; then
+    startMongoDB
+  fi
   debugTomcat
   printTailInfo
 }
 
 function stop() {
   stopTomcat
-  stopMongoDB
+  if isMongoNeeded ; then
+     stopMongoDB
+  fi
   stopSolr
   stopDeployer
 }
@@ -476,7 +496,9 @@ function status(){
   solrStatus
   deployerStatus
   studioStatus
-  mongoDbStatus
+  if isMongoNeeded ; then
+    mongoDbStatus
+  fi
 }
 
 function doBackup() {
@@ -489,10 +511,9 @@ function doBackup() {
     fi
   fi
   export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
-  export TARGET_FOLDER="$CRAFTER_ROOT/backups"
-  export TARGET_FILE="$TARGET_FOLDER/$TARGET_NAME.$CURRENT_DATE.zip"
-  export TEMP_FOLDER="$CRAFTER_HOME/temp"
-  
+  export TARGET_FILE="$CRAFTER_ROOT/$TARGET_NAME.$CURRENT_DATE.zip"
+  export TEMP_FOLDER="$CRAFTER_HOME/backup"
+
   echo "Starting backup into $TARGET_FILE"
   mkdir -p "$TEMP_FOLDER"
   mkdir -p "$TARGET_FOLDER"
@@ -501,9 +522,9 @@ function doBackup() {
   # MySQL Dump
   if [ -d "$MYSQL_DATA" ]; then
     #Do dump
-    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=33306 --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
   fi
-  
+
   # MongoDB Dump
   if [ -d "$MONGODB_DATA_DIR" ]; then
     echo "Adding mongodb dump"
@@ -559,14 +580,14 @@ function doRestore() {
     help
     exit 1
   fi
-  export TEMP_FOLDER="$CRAFTER_HOME/temp"
-  
+  export TEMP_FOLDER="$CRAFTER_HOME/backup"
+
   echo "Starting restore from $SOURCE_FILE"
   mkdir -p "$TEMP_FOLDER"
 
   # UNZIP everything
   java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$SOURCE_FILE" "$TEMP_FOLDER"
-  
+
   # MongoDB Dump
   if [ -f "$TEMP_FOLDER/mongodb.zip" ]; then
     if checkFolder "mongodb"; then
@@ -576,7 +597,7 @@ function doRestore() {
       $CRAFTER_HOME/mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
     fi
   fi
-  
+
   # UNZIP git repos
   if checkFolder "repos"; then
     echo "Restoring git repos"
@@ -595,15 +616,15 @@ function doRestore() {
     rm -rf "$DEPLOYER_DATA_DIR/*"
     java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
   fi
-  
+
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
     mkdir "$MYSQL_DATA"
     #Start DB
-    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="$MYSQL_DATA" --port=@MARIADB_PORT@ --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
+    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="$MYSQL_DATA" --port=33306 --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
     sleep 5
     # Import
-    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=@MARIADB_PORT@ < "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=33306 < "$TEMP_FOLDER/crafter.sql"
     # Stop DB
     kill $(cat $CRAFTER_HOME/MariaDB4j.pid)
     start
@@ -615,7 +636,7 @@ function doRestore() {
       java -jar $CRAFTER_HOME/craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }"
     done
   fi
-  
+
   rm -r "$TEMP_FOLDER"
   echo "Restore completed"
 }
@@ -630,6 +651,8 @@ function logo() {
   echo " ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝     ╚═╝ ╚══════╝"
   echo -e "\033[0m"
 }
+
+
 
 case $1 in
   debug)

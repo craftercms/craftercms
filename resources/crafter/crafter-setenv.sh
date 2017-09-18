@@ -8,6 +8,10 @@ export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
 export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
 export CATALINA_OPTS="-Dcatalina.logs=$CATALINA_LOGS_DIR -server -Xss1024K -Xms1G -Xmx4G -Dapplication.logs=$CRAFTER_APPLICATION_LOGS"
 export TOMCAT_HTTP_PORT=@TOMCAT_HTTP_PORT@
+
+export PROFILE_DEPLOY_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile"
+export PROFILE_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile.war"
+
 # Solr variables
 export SOLR_PORT=@SOLR_PORT@
 export SOLR_INDEXES_DIR=$CRAFTER_ROOT/data/indexes

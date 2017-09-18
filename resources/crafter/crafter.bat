@@ -1,4 +1,13 @@
 @echo off
+
+Rem Dont bother do anything if OS is not 64
+reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && set OS=32BIT || set OS=64BIT
+if %OS%==32BIT (
+  echo "CrafterCMS is not support 32bit OS"
+  pause
+  exit 4
+)
+
 rem Make sure this variable is clean.
 SET CRAFTER_BIN_FOLDER=
 SET CATALINA_OPTS=
@@ -46,27 +55,30 @@ goto :init
 
 
 :init
-set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
-IF NOT EXIST "%mongoDir%" goto installMongo
-IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
-
+IF EXIST %PROFILE_WAR_PATH% (
+  set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
+  IF NOT EXIST "%mongoDir%" goto installMongo
+  IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
+  IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
+  IF NOT EXIST "%MONGODB_LOGS_DIR%" mkdir %MONGODB_LOGS_DIR%
+  start %mongoDir%\bin\mongod --dbpath=%MONGODB_DATA_DIR% --directoryperdb --journal --logpath=%MONGODB_LOGS_DIR%\mongod.log --port %MONGODB_PORT%
+)
 start %DEPLOYER_HOME%\%DEPLOYER_STARTUP%
-IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
-IF NOT EXIST "%MONGODB_LOGS_DIR%" mkdir %MONGODB_LOGS_DIR%
-start %mongoDir%\bin\mongod --dbpath=%MONGODB_DATA_DIR% --directoryperdb --journal --logpath=%MONGODB_LOGS_DIR%\mongod.log --port %MONGODB_PORT%
 IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir %CRAFTER_HOME%\data\indexes
 start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes
 call %CATALINA_HOME%\bin\startup.bat
 goto cleanOnExitKeepTermAlive
 
 :debug
-set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
-IF NOT EXIST "%mongoDir%" goto installMongo
-IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
+IF EXIST %PROFILE_WAR_PATH% (
+  set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
+  IF NOT EXIST "%mongoDir%" goto installMongo
+  IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
+  IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
+  IF NOT EXIST "%MONGODB_LOGS_DIR%" mkdir %MONGODB_LOGS_DIR%
+  start %mongoDir%\bin\mongod --dbpath=%MONGODB_DATA_DIR% --directoryperdb --journal --logpath=%MONGODB_LOGS_DIR%\mongod.log --port %MONGODB_PORT%
+)
 start %DEPLOYER_HOME%\%DEPLOYER_DEBUG%
-IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
-IF NOT EXIST "%MONGODB_LOGS_DIR%" mkdir %MONGODB_LOGS_DIR%
-start %mongoDir%\bin\mongod --dbpath=%MONGODB_DATA_DIR% --directoryperdb --journal --logpath=%MONGODB_LOGS_DIR%\mongod.log --port %MONGODB_PORT%
 IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir %CRAFTER_HOME%\data\indexes
 start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%SOLR_DEBUG_PORT%
 call %CATALINA_HOME%\bin\catalina.bat jpda start
@@ -93,7 +105,7 @@ del /Q %TARGET_FILE%
 REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
 	echo "Adding MySQL dump"
-	start cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql 
+	start cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql
 )
 
 REM MongoDB Dump
@@ -149,7 +161,7 @@ REM MongoDB Dump
 IF NOT EXIST "%TEMP_FOLDER%\mongodb.zip" ( goto skipMongo )
 echo "Checking folder %MONGODB_DATA_DIR%"
 IF EXIST "%MONGODB_DATA_DIR%" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no 
+  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
   IF /i NOT "%DO_IT%"=="yes" ( goto skipMongo )
 )
 echo "Restoring MongoDB"
@@ -165,7 +177,7 @@ REM UNZIP git repos
 IF NOT EXIST "%TEMP_FOLDER%\repos.zip" ( goto skipRepos )
 echo "Checking folder %CRAFTER_HOME%data\repos"
 IF EXIST "%CRAFTER_HOME%data\repos" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no 
+  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
   IF /i NOT "%DO_IT%"=="yes" ( goto skipRepos )
 )
 echo "Restoring git repos"
@@ -177,19 +189,19 @@ REM UNZIP solr indexes
 IF NOT EXIST "%TEMP_FOLDER%\indexes.zip" ( goto skipIndexes )
 echo "Checking folder %SOLR_INDEXES_DIR%"
 IF EXIST "%SOLR_INDEXES_DIR%" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no 
+  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
   IF /i NOT "%DO_IT%"=="yes" ( goto skipIndexes )
 )
 echo "Restoring solr indexes"
 rd /Q /S "%SOLR_INDEXES_DIR%"
 java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip "%TEMP_FOLDER%\indexes.zip" "%SOLR_INDEXES_DIR%"
 :skipIndexes
-    
+
 REM UNZIP deployer data
 IF NOT EXIST "%TEMP_FOLDER%\deployer.zip" ( goto skipDeployer )
 echo "Checking folder %DEPLOYER_DATA_DIR%"
 IF EXIST "%DEPLOYER_DATA_DIR%" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no 
+  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
   IF /i NOT "%DO_IT%"=="yes" ( goto skipDeployer )
 )
 echo "Restoring deployer data"
@@ -218,15 +230,18 @@ FOR /D %%S in (*) do (
   start java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }"
 )
 :skipAuth
-  
+
 rd /S /Q "%TEMP_FOLDER%"
 echo "Restore completed"
 goto cleanOnExit
 
 
 :skill
-call %CRAFTER_BIN_FOLDER%solr\bin\solr stop -f -p %SOLR_PORT%
-taskkill /IM mongod.exe
+call %CRAFTER_BIN_FOLDER%solr\bin\solr stop -p %SOLR_PORT%
+IF EXIST %PROFILE_WAR_PATH% (
+  taskkill /IM mongod.exe
+)
+
 call %CATALINA_HOME%\bin\shutdown.bat
 call %DEPLOYER_HOME%\%DEPLOYER_SHUTDOWN%
 taskkill /FI "WINDOWTITLE eq \"Solr-%SOLR_PORT%\"

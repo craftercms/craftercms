@@ -65,7 +65,7 @@ def isAllEnvs() {
 ext {
 
     /** Unzip Properties **/
-    tomcatVersion=project.hasProperty("tomcat.version")? project.property("tomcat.version") : "8.5.6"
+    tomcatVersion=project.hasProperty("tomcat.version")? project.property("tomcat.version") : "8.5.20"
     solrVersion=project.hasProperty("solr.version")? project.property("solr.version") : "6.4.1"
     downloadDir=project.hasProperty("downloadDir")? project.property("downloadDir") : "./downloads/"
     /** Environment Building properties **/
@@ -329,16 +329,19 @@ task("build") {
     }
 
     doLast {
+       def toBuildModules = VALID_MODULES
+        toBuildModules.remove("studio-ui")
+        toBuildModules.remove("test-suite")
+        if(!includeSocial){
+            toBuildModules.remove("social")
+        }
         if (module.equals("all")) {
-            VALID_MODULES.each {
-                if (!(it.equalsIgnoreCase("studio-ui")||(it.equalsIgnoreCase("test-suite")))) {
+            toBuildModules.each {
                     buildModule(commandLinePrefix, it).execute()
-                }
             }
-        } else if (VALID_MODULES.contains(module)) {
-            if (!(module.equalsIgnoreCase("studio-ui")||(module.equalsIgnoreCase("test-suite")))) {
+        } else if (toBuildModules.contains(module)) {
                 buildModule(commandLinePrefix, module).execute()
-            }
+
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_MODULES}")
         }
@@ -572,7 +575,11 @@ def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[], fo
             actualCommandLinePost.add("!crafter-search-itest")
         }else if(module.equalsIgnoreCase("profile")){
             actualCommandLinePost.add("-pl")
-            actualCommandLinePost.add("!integration-tests")
+            if(!includeProfile){
+                actualCommandLinePost.add("!admin-console,!integration-tests,!server")
+            }else{
+                actualCommandLinePost.add("!integration-tests")
+            }
         }
     }
 
@@ -735,6 +742,7 @@ def askForPath(){
     }
     return inputPath
 }
+
 
 def waitUntilAuthIsUp(tryThinsManyTimes){
     if(tryThinsManyTimes<=0){
