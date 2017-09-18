@@ -6,6 +6,7 @@ if [[ $OSARCH -eq "32" ]]; then
   echo "CrafterCMS is not supported in a 32bit os"
   echo -e "\033[0m"
   read -r
+  exit 5
 fi
 
 export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
