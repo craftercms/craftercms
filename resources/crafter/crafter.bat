@@ -1,8 +1,8 @@
 @echo off
 
 Rem Dont bother do anything if OS is not 64
-reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && set OS=32BIT || set OS=64BIT
-if %OS%==32BIT (
+reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /i "x86" > NUL && set OSARCH=32BIT || set OSARCH=64BIT
+if %OSARCH%==32BIT (
   echo "CrafterCMS is not support 32bit OS"
   pause
   exit 4
@@ -65,7 +65,7 @@ IF EXIST %PROFILE_WAR_PATH% (
 )
 start %DEPLOYER_HOME%\%DEPLOYER_STARTUP%
 IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir %CRAFTER_HOME%\data\indexes
-start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes
+call %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes
 call %CATALINA_HOME%\bin\startup.bat
 goto cleanOnExitKeepTermAlive
 
