@@ -17,10 +17,9 @@ set REPO=%2
 IF NOT DEFINED REPO SET REPO=%AUTHORING_SITE_REPOS%\%SITE%\published
 
 echo "Creating Solr Core"
-java -jar %DELIVERY_HOME%craftercms-utils.jar post "http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/create" "{""id"":""%SITE%""}"
-echo ""
+java -jar %DELIVERY_HOME%craftercms-utils.jar post "http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/create" "{""id"":""%SITE%""}" > nul
 echo "Creating Deployer Target"
-java -jar %DELIVERY_HOME%craftercms-utils.jar post "http://localhost:@DEPLOYER_PORT@/api/1/target/create"  "{""env"":""default"", ""site_name"":""%SITE%"", ""template_name"":""remote"", ""repo_url"":""%REPO%"", ""repo_branch"":""live"", ""engine_url"":""http://localhost:@TOMCAT_HTTP_PORT@""}"
+java -jar %DELIVERY_HOME%craftercms-utils.jar post "http://localhost:@DEPLOYER_PORT@/api/1/target/create"  "{""env"":""default"", ""site_name"":""%SITE%"", ""template_name"":""remote"", ""repo_url"":""%REPO%"", ""repo_branch"":""live"", ""engine_url"":""http://localhost:@TOMCAT_HTTP_PORT@""}" > nul
 exit /b 0
 :shelp
 echo "Usage: init-site.sh <site name> [site's published repo git url]"
