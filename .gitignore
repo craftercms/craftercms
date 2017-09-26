@@ -38,3 +38,4 @@ downloads/
 utils/target
 .project
 .settings/
+.vscode/
