@@ -31,8 +31,10 @@ git flow feature start {TICKET}
 ... work work work ...
 git add {FILES}
 git commit -m "{Descriptive comment on what it is you're committing}"
+git checkout develop
+git pull
+git checkout feature/{TICKET}
 git flow feature rebase
-git flow feature finish {TICKET}
 git flow feature publish {TICKET}
 ```
 
@@ -40,9 +42,14 @@ Where {TICKET} is the ticket number for this feature, if there is no ticket for 
 
 Note the command `git flow feature rebase` before finishing the feature. This ensures that your code is merged with the latest from `develop` before finishing the feature and pushing the code upstream.
 
-Once the feature is published, send a pull-request (PR) to the central repository and make sure to provide enough detail in the PR to help with review and final acceptance of your code.
+With the feature published to your remote git repo, you can send pull-requests (PRs) to `develop` or other branches as required.
 
-In case of conflict with `develop`, please resolve conflicts, add the files to the index and commit. After committing, remember to `git flow feature finish {TICKET}` to complete the feature and then publish and PR it.
+With the PR in, you now wait for the codereview process to complete and your PR to be accepted. Once accepted, youcan now finish the feature using git flow which which deletes the local branch after merging to `develop` and then push upstream.
+
+```
+git flow feature finish {TICKET}
+git push
+```
 
 #### Fixing a bug
 Fixing a bug is identical to working on a feature except it uses a different git flow commands `git flow bugfix start {TICKET}` and `git flow bugfix finish {TICKET}`.
