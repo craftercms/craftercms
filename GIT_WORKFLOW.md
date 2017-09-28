@@ -16,7 +16,7 @@ A good video illustrating the flow is here: https://vimeo.com/16018419
 ## Tooling
 This workflow is documented for `git-flow` CLI (https://github.com/nvie/gitflow) and plain `git` CLI. You can also use any other tool that supports Git Flow.
 
-Consider using:
+In addition, consider using:
 * Zsh http://www.zsh.org/
 * `oh-my-zsh` https://github.com/robbyrussell/oh-my-zsh
 * `git-flow-completion` https://github.com/bobthecow/git-flow-completion
