@@ -14,8 +14,9 @@ When contributing to Crafter CMS, please first discuss the change you wish to ma
 \#craftercms), Slack, GitHub issue, email, or any other method with the owners of this repository before making a 
 change.
 
-## Pull Request Process
+Please review GIT_WORKFLOW.md thoroughly to understand the workflow used to develop Crafter CMS. Contributions not following this workflow may not be accepted.
 
+## Pull Request Process
 1. Please resolve any conflicts before sending your PR.
 2. Please include enough information with your PR to describe the work you're contributing.
 3. If the work you're contributing requires documentation, please make sure you you send an accompanying PR to the [documentation project.](https://github.com/craftercms/docs)

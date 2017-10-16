@@ -61,7 +61,10 @@ goto stopByTitleName
 exit /b 0
 
 :stopByTitleName
-for /f "tokens=2 USEBACKQ" %%f IN (`tasklist /NH /FI "WINDOWTITLE eq %DEPLOYER_WIN_TITLE%"`) Do taskkill /PID %%f
+for /f "tokens=2 delims=," %%a in ('
+    tasklist /fi "imagename eq cmd.exe" /v /fo:csv /nh
+    ^| findstr /r /c:".*%DEPLOYER_WIN_TITLE%[^,]*$"
+    ') do taskkill /pid %%a
 exit /b 0
 
 :stopById

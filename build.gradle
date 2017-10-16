@@ -79,6 +79,14 @@ ext {
         includeProfile=true
     }
 
+
+    if(project.hasProperty("debug")){
+        startUpFile = "./debug.sh"
+        if (isWin) {
+            startUpFile = "debug.bat"
+        }
+    }
+
     //Authoring
     authTomcatPort=project.hasProperty("authoring.tomcat.http.port")? project.property("authoring.tomcat.http.port") : 8080
     authTomcatShutdownPort=project.hasProperty("authoring.tomcat.shutdown.port")? project.property("authoring.tomcat.shutdown.port") : 8005
