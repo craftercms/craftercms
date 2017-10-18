@@ -391,7 +391,7 @@ task("test") {
               //  waitUntilAuthIsUp(10)//10*30sec
                 buildModule(commandLinePrefix,
                         "test-suite", "./src/",
-                        ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml"],
+                        ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml,src/test/resources/testngSanityTest.xml"],
                         true)
 
         }catch (GradleException ex){ // no nothing
