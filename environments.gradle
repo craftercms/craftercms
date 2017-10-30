@@ -37,6 +37,11 @@ task("authoringEnvironment"){
         copy{
             from "./src/search/crafter-search-provider/solr/configsets"
             into "${authEnv}/bin/solr/server/solr/configsets"
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/solr/server/solr/configsets")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
 
         file("${authEnv}/data/indexes").mkdirs()
@@ -51,14 +56,19 @@ task("authoringEnvironment"){
             from "./resources/tomcat-config/crafter/setenv.sh"
             from "./resources/tomcat-config/crafter/setenv.bat"
             into "${authEnv}/bin/apache-tomcat/bin"
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
 
         copy{
-            from "./src/search/crafter-search-server/target/crafter-search.war"
-            from "./src/engine/target/ROOT.war"
-            from "./src/studio/target/studio.war"
-            into "${authEnv}/bin/apache-tomcat/webapps/"
+            from "./resources/tomcat-config/crafter/catalina.policy"
+            into "${authEnv}/bin/apache-tomcat/conf/"
         }
+
+
 
         copy{
             from "./resources/tomcat-config/"
@@ -73,6 +83,11 @@ task("authoringEnvironment"){
                                            MONGODB_PORT:String.valueOf(authMongoDBPort),
                                            ENV:"authoring"
             ])
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/shared/classes/")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
 
         copy{
@@ -88,24 +103,49 @@ task("authoringEnvironment"){
                                            MONGODB_PORT:String.valueOf(authMongoDBPort),
                                            ENV:"authoring"
             ])
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/crafter-deployer")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
         copy {
             from "./src/deployer/README.md"
             into "${authEnv}/bin/crafter-deployer/"
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/crafter-deployer/")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
         copy {
             from "./src/studio/README.md"
             into "${authEnv}/bin/apache-tomcat"
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
 
         copy {
             from "./resources/LICENSE"
             from "./resources/README.txt"
             into "${authEnv}/"
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
         copy{
             from ("./resources/crafter/"){
                 exclude "**/init-site.*"
+                eachFile {
+                    if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
+                        it.exclude()
+                    }
+                }
             }
             into "${authEnv}/bin/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
@@ -138,20 +178,6 @@ task("authoringEnvironment"){
             }
         }
         updateCatalinaSettings(authEnv);
-        if(includeProfile){
-            copy{
-                from "./src/profile/server/target/crafter-profile.war"
-                from "./src/profile/admin-console/target/crafter-profile-admin.war"
-                into "${authEnv}/bin/apache-tomcat/webapps/"
-            }
-        }
-        if(includeSocial){
-            copy{
-                from "./src/social/server/target/crafter-social.war"
-                from "./src/social/admin/target/crafter-social-admin.war"
-                into "${authEnv}/bin/apache-tomcat/webapps/"
-            }
-        }
         updateTomcatPorts("${authEnv}/bin/apache-tomcat/conf/server.xml",authTomcatPort,authTomcatAJPPort,
                 authTomcatShutdownPort,authTomcatSSLPort)
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
@@ -179,10 +205,17 @@ task("deliveryEnvironment"){
             }
             file("${deliveryEnv}/bin/solr-${solrVersion}").renameTo(file("${deliveryEnv}/bin/solr"))
         }
+
         copy{
             from "./src/search/crafter-search-provider/solr/configsets"
             into "${deliveryEnv}/bin/solr/server/solr/configsets"
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/solr/server/solr/configsets")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
+
         file("${deliveryEnv}/data/indexes").mkdirs()
         file("${deliveryEnv}/data/deployer").mkdirs()
         file("${deliveryEnv}/data/mongodb").mkdirs()
@@ -195,12 +228,16 @@ task("deliveryEnvironment"){
             from "./resources/tomcat-config/crafter/setenv.sh"
             from "./resources/tomcat-config/crafter/setenv.bat"
             into "${deliveryEnv}/bin/apache-tomcat/bin"
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
 
         copy{
-            from "./src/search/crafter-search-server/target/crafter-search.war"
-            from "./src/engine/target/ROOT.war"
-            into "${deliveryEnv}/bin/apache-tomcat/webapps/"
+            from "./resources/tomcat-config/crafter/catalina.policy"
+            into "${authEnv}/bin/apache-tomcat/conf/"
         }
 
         copy{
@@ -215,6 +252,11 @@ task("deliveryEnvironment"){
                                            MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
                                            ENV:"delivery"
             ])
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/shared/classes/")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
         copy{
             from "./resources/tomcat-config-delivery/"
@@ -228,6 +270,11 @@ task("deliveryEnvironment"){
                                            MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
                                            ENV:"delivery"
             ])
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/shared/classes/")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
 
         copy{
@@ -242,20 +289,40 @@ task("deliveryEnvironment"){
                                            MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
                                            ENV:"delivery"
             ])
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/crafter-deployer")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
         copy {
             from "./src/deployer/README.md"
             into "${deliveryEnv}/bin/crafter-deployer/"
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/crafter-deployer/")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
         copy {
             from "./src/studio/README.md"
             into "${deliveryEnv}/bin/apache-tomcat"
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
 
         copy {
             from "./resources/LICENSE"
             from "./resources/README.txt"
             into "${deliveryEnv}/"
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
         copy{
             from "./resources/crafter/"
@@ -270,6 +337,11 @@ task("deliveryEnvironment"){
                                            MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
                                            ENV:"delivery"
             ])
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
         }
 
         if(!isWin){
@@ -289,20 +361,7 @@ task("deliveryEnvironment"){
                                                  "crafter-setenv.sh", "init-site.sh"]
             }
         }
-        if(includeProfile){
-            copy{
-                from "./src/profile/server/target/crafter-profile.war"
-                from "./src/profile/admin-console/target/crafter-profile-admin.war"
-                into "${deliveryEnv}/bin/apache-tomcat/webapps/"
-            }
-        }
-        if(includeSocial){
-            copy{
-                from "./src/social/server/target/crafter-social.war"
-                from "./src/social/admin/target/crafter-social-admin.war"
-                into "${deliveryEnv}/bin/apache-tomcat/webapps/"
-            }
-        }
+
         updateTomcatPorts("${deliveryEnv}/bin/apache-tomcat/conf/server.xml",deliveryTomcatPort,deliveryTomcatAJPPort,
                 deliveryTomcatShutdownPort,deliveryTomcatSSLPort)
         updateCatalinaSettings(deliveryEnv)
@@ -312,6 +371,7 @@ task("deliveryEnvironment"){
 
     }
 }
+
 
 def updateTomcatPorts(serverConfigFile,http,ajp,shutdown,ssl){
     def serverConfig=new XmlParser().parse(serverConfigFile)
