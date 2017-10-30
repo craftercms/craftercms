@@ -2,6 +2,14 @@
 
 # Script to create the Solr core & Deployer target for a delivery environment.
 
+if [ "$(whoami)" == "root" ]; then
+	echo -e "\033[38;5;196m"
+	echo -e "Crafter CMS cowardly refuses to run as root."
+    echo -e "Running as root is dangerous and is not supported."
+    echo -e "\033[0m"
+	exit 1
+fi
+
 export DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export DELIVERY_ROOT=$( cd "$DELIVERY_HOME/.." && pwd )
 export AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-authoring" && pwd )

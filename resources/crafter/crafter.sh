@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+if [ "$(whoami)" == "root" ]; then
+	echo -e "\033[38;5;196m"
+	echo -e "Crafter CMS cowardly refuses to run as root."
+    echo -e "Running as root is dangerous and is not supported."
+    echo -e "\033[0m"
+	exit 1
+fi
+
 OSARCH=$(getconf LONG_BIT)
 if [[ $OSARCH -eq "32" ]]; then
   echo -e "\033[38;5;196m"
@@ -213,7 +221,8 @@ function startTomcat() {
     possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
     if  [ -z "$possiblePID" ];  then
-      $CRAFTER_HOME/apache-tomcat/bin/startup.sh
+      export CATALINA_OPTS="$CATALINA_OPTS -Dcrafter.home=$CRAFTER_ROOT"
+      $CRAFTER_HOME/apache-tomcat/bin/catalina.sh start -secure
     else
       echo $possiblePID > $CATALINA_PID
       echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
