@@ -46,7 +46,6 @@ task("authoringEnvironment"){
 
         file("${authEnv}/data/indexes").mkdirs()
         file("${authEnv}/data/deployer").mkdirs()
-        file("${authEnv}/data/mongodb").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${authEnv}/bin/apache-tomcat/webapps/")
         webapps.deleteDir()
@@ -218,7 +217,6 @@ task("deliveryEnvironment"){
 
         file("${deliveryEnv}/data/indexes").mkdirs()
         file("${deliveryEnv}/data/deployer").mkdirs()
-        file("${deliveryEnv}/data/mongodb").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${deliveryEnv}/bin/apache-tomcat/webapps/")
         webapps.deleteDir()
