@@ -521,8 +521,9 @@ function doBackup() {
     fi
   fi
   export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
-  export TARGET_FILE="$CRAFTER_ROOT/$TARGET_NAME.$CURRENT_DATE.zip"
-  export TEMP_FOLDER="$CRAFTER_HOME/backup"
+  export TARGET_FOLDER="$CRAFTER_ROOT/backups"
+  export TARGET_FILE="$TARGET_FOLDER/$TARGET_NAME.$CURRENT_DATE.zip"
+  export TEMP_FOLDER="$CRAFTER_HOME/temp"
 
   echo "Starting backup into $TARGET_FILE"
   mkdir -p "$TEMP_FOLDER"
@@ -532,7 +533,7 @@ function doBackup() {
   # MySQL Dump
   if [ -d "$MYSQL_DATA" ]; then
     #Do dump
-    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=33306 --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
   fi
 
   # MongoDB Dump
@@ -590,7 +591,7 @@ function doRestore() {
     help
     exit 1
   fi
-  export TEMP_FOLDER="$CRAFTER_HOME/backup"
+  export TEMP_FOLDER="$CRAFTER_HOME/temp"
 
   echo "Starting restore from $SOURCE_FILE"
   mkdir -p "$TEMP_FOLDER"
@@ -631,10 +632,10 @@ function doRestore() {
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
     mkdir "$MYSQL_DATA"
     #Start DB
-    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="$MYSQL_DATA" --port=33306 --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
+    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="$MYSQL_DATA" --port=@MARIADB_PORT@ --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
     sleep 5
     # Import
-    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=33306 < "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=@MARIADB_PORT@ < "$TEMP_FOLDER/crafter.sql"
     # Stop DB
     kill $(cat $CRAFTER_HOME/MariaDB4j.pid)
     start
