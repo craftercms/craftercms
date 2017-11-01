@@ -235,11 +235,11 @@ task("deliveryEnvironment"){
 
         copy{
             from "./resources/tomcat-config/crafter/catalina.policy"
-            into "${authEnv}/bin/apache-tomcat/conf/"
+            into "${deliveryEnv}/bin/apache-tomcat/conf/"
         }
 
         copy{
-            from "./resources/tomcat-config/"
+            from "./resources/tomcat-config-delivery/"
             into "${deliveryEnv}/bin/apache-tomcat/shared/classes/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(deliveryTomcatPort),
                                            SOLR_PORT: String.valueOf(deliverySolrPort),
@@ -256,8 +256,10 @@ task("deliveryEnvironment"){
                 }
             }
         }
+
+
         copy{
-            from "./resources/tomcat-config-delivery/"
+            from "./resources/tomcat-config/"
             into "${deliveryEnv}/bin/apache-tomcat/shared/classes/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(deliveryTomcatPort),
                                            SOLR_PORT: String.valueOf(deliverySolrPort),
