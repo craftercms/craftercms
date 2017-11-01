@@ -1,14 +1,10 @@
+import org.apache.commons.lang3.SystemUtils
+import org.apache.commons.text.StringEscapeUtils
+
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.nio.file.StandardWatchEventKinds
-import java.io.BufferedReader;
-import java.nio.file.StandardOpenOption;
-import java.net.HttpURLConnection;
-import org.apache.commons.text.StringEscapeUtils;
-import org.apache.commons.lang3.SystemUtils;
-
-
+import java.nio.file.StandardOpenOption
 
 buildscript {
     repositories {
@@ -25,34 +21,34 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-def isWin=System.getProperty('os.name').toLowerCase().contains('windows')
-def isOSX=System.getProperty('os.name').toLowerCase().contains('mac')
-def isNix=(System.getProperty('os.name').toLowerCase().contains('nix') || System.getProperty('os.name').toLowerCase().contains('aix') || System.getProperty('os.name').toLowerCase().contains('nux'))
+def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
+def isOSX = System.getProperty('os.name').toLowerCase().contains('mac')
+def isNix = (System.getProperty('os.name').toLowerCase().contains('nix') || System.getProperty('os.name').toLowerCase().contains('aix') || System.getProperty('os.name').toLowerCase().contains('nux'))
 
 def commandLinePrefix = []
 def startUpFile = "./startup.sh"
-def shutDownFile ="./shutdown.sh"
+def shutDownFile = "./shutdown.sh"
 if (isWin) {
     startUpFile = "startup.bat"
     shutDownFile = "shutdown.bat"
-    commandLinePrefix =["cmd","/c"]
+    commandLinePrefix = ["cmd", "/c"]
 }
 
 def getModule() {
     if (project.hasProperty("moduleName")) {
-        def moduleName=project.property("moduleName")
-        moduleName=moduleName.trim().toLowerCase()
-        return moduleName.trim().isEmpty()? "all" : moduleName
+        def moduleName = project.property("moduleName")
+        moduleName = moduleName.trim().toLowerCase()
+        return moduleName.trim().isEmpty() ? "all" : moduleName
     } else {
         return "all"
     }
 }
 
-def getEnv(){
+def getEnv() {
     if (project.hasProperty("env")) {
-        def enviromentName=project.property("env")
-        enviromentName=enviromentName.trim().toLowerCase()
-        return enviromentName.trim().isEmpty()? "all" : enviromentName
+        def environmentName = project.property("env")
+        environmentName = environmentName.trim().toLowerCase()
+        return environmentName.trim().isEmpty() ? "all" : environmentName
     } else {
         return "all"
     }
@@ -65,22 +61,22 @@ def isAllEnvs() {
 ext {
 
     /** Unzip Properties **/
-    tomcatVersion=project.hasProperty("tomcat.version")? project.property("tomcat.version") : "8.5.20"
-    solrVersion=project.hasProperty("solr.version")? project.property("solr.version") : "6.4.1"
-    downloadDir=project.hasProperty("downloadDir")? project.property("downloadDir") : "./downloads/"
+    tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.20"
+    solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "6.4.1"
+    downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     /** Environment Building properties **/
-    authEnv=project.hasProperty("authoring.root")? project.property("authoring.root") : "./crafter-authoring/"
-    deliveryEnv=project.hasProperty("delivery.root")? project.property("delivery.root") : "./crafter-delivery/"
-    includeProfile=project.hasProperty("crafter.profile")? project.property("crafter.profile") : false
-    includeSocial=project.hasProperty("crafter.social")? project.property("crafter.social") : false
+    authEnv = project.hasProperty("authoring.root") ? project.property("authoring.root") : "./crafter-authoring/"
+    deliveryEnv = project.hasProperty("delivery.root") ? project.property("delivery.root") : "./crafter-delivery/"
+    includeProfile = project.hasProperty("crafter.profile") ? project.property("crafter.profile") : false
+    includeSocial = project.hasProperty("crafter.social") ? project.property("crafter.social") : false
 
     /** Social Need Profile **/
     if (includeSocial) {
-        includeProfile=true
+        includeProfile = true
     }
 
 
-    if(project.hasProperty("debug")){
+    if (project.hasProperty("debug")) {
         startUpFile = "./debug.sh"
         if (isWin) {
             startUpFile = "debug.bat"
@@ -88,75 +84,77 @@ ext {
     }
 
     //Authoring
-    authTomcatPort=project.hasProperty("authoring.tomcat.http.port")? project.property("authoring.tomcat.http.port") : 8080
-    authTomcatShutdownPort=project.hasProperty("authoring.tomcat.shutdown.port")? project.property("authoring.tomcat.shutdown.port") : 8005
-    authTomcatAJPPort=project.hasProperty("authoring.tomcat.ajp.port")? project.property("authoring.tomcat.ajp.port") : 8009
-    authTomcatSSLPort=project.hasProperty("authoring.tomcat.https.port")? project.property("authoring.tomcat.https.port") : 8443
-    authTomcatDebug=project.hasProperty("authoring.tomcat.debug.port")? project.property("authoring.tomcat.debug.port") : 8000
-    authMongoDBPort=project.hasProperty("authoring.mongo.port")? project.property("authoring.mongo.port") : 27020
-    authSolrPort=project.hasProperty("authoring.solr.port")? project.property("authoring.solr.port") : 8694
-    authSolrDebugPort=project.hasProperty("authoring.solr.debug.port")? project.property("authoring.solr.debug.port") : 5005
+    authTomcatPort = project.hasProperty("authoring.tomcat.http.port") ? project.property("authoring.tomcat.http.port") : 8080
+    authTomcatShutdownPort = project.hasProperty("authoring.tomcat.shutdown.port") ? project.property("authoring.tomcat.shutdown.port") : 8005
+    authTomcatAJPPort = project.hasProperty("authoring.tomcat.ajp.port") ? project.property("authoring.tomcat.ajp.port") : 8009
+    authTomcatSSLPort = project.hasProperty("authoring.tomcat.https.port") ? project.property("authoring.tomcat.https.port") : 8443
+    authTomcatDebug = project.hasProperty("authoring.tomcat.debug.port") ? project.property("authoring.tomcat.debug.port") : 8000
+    authMongoDBPort = project.hasProperty("authoring.mongo.port") ? project.property("authoring.mongo.port") : 27020
+    authSolrPort = project.hasProperty("authoring.solr.port") ? project.property("authoring.solr.port") : 8694
+    authSolrDebugPort = project.hasProperty("authoring.solr.debug.port") ? project.property("authoring.solr.debug.port") : 5005
 
-    authMariaDbPort=project.hasProperty("authoring.mariadb.port")? project.property("authoring.mariadb.port") : 33306
+    authMariaDbPort = project.hasProperty("authoring.mariadb.port") ? project.property("authoring.mariadb.port") : 33306
 
-    authDeployerPort=project.hasProperty("authoring.deployer.port")? project.property("authoring.deployer.port") : 9191
-    authDeployerDebugPort=project.hasProperty("authoring.deployer.debug.port")? project.property("authoring.deployer.debug.port") : 5000
-    authDeploymentDir=project.hasProperty("authoring.deployment.dir")? project.property("authoring.deployment.dir") : "data/repos/sites"
-
+    authDeployerPort = project.hasProperty("authoring.deployer.port") ? project.property("authoring.deployer.port") : 9191
+    authDeployerDebugPort = project.hasProperty("authoring.deployer.debug.port") ? project.property("authoring.deployer.debug.port") : 5000
+    authDeploymentDir = project.hasProperty("authoring.deployment.dir") ? project.property("authoring.deployment.dir") : "data/repos/sites"
 
     // Delivery
-    deliverySolrPort=project.hasProperty("delivery.solr.port")? project.property("delivery.solr.port") : 8695
-    deliverySolrDebugPort=project.hasProperty("delivery.solr.debug.port")? project.property("delivery.solr.debug.port") : 5006
+    deliverySolrPort = project.hasProperty("delivery.solr.port") ? project.property("delivery.solr.port") : 8695
+    deliverySolrDebugPort = project.hasProperty("delivery.solr.debug.port") ? project.property("delivery.solr.debug.port") : 5006
 
-    deliveryDeployerPort=project.hasProperty("delivery.deployer.port")? project.property("delivery.deployer.port") : 9192
-    deliveryDeployerDebugPort=project.hasProperty("delivery.deployer.debug.port")? project.property("delivery.deployer.debug.port") : 5001
-    deliveryDeploymentDir=project.hasProperty("delivery.deployment.dir")? project.property("delivery.deployment.dir") : "data/repos/sites"
+    deliveryDeployerPort = project.hasProperty("delivery.deployer.port") ? project.property("delivery.deployer.port") : 9192
+    deliveryDeployerDebugPort = project.hasProperty("delivery.deployer.debug.port") ? project.property("delivery.deployer.debug.port") : 5001
+    deliveryDeploymentDir = project.hasProperty("delivery.deployment.dir") ? project.property("delivery.deployment.dir") : "data/repos/sites"
 
-    deliveryTomcatPort=project.hasProperty("delivery.tomcat.http.port")? project.property("delivery.tomcat.http.port") : 9080
-    deliveryTomcatShutdownPort=project.hasProperty("delivery.tomcat.shutdown.port")? project.property("delivery.tomcat.shutdown.port") : 9005
-    deliveryTomcatAJPPort=project.hasProperty("delivery.tomcat.ajp.port")? project.property("delivery.tomcat.ajp.port") : 9009
-    deliveryTomcatSSLPort=project.hasProperty("delivery.tomcat.https.port")? project.property("delivery.tomcat.https.port") : 9443
-    deliveryTomcatDebugPort=project.hasProperty("delivery.tomcat.debug.port")? project.property("delivery.tomcat.debug.port") : 9000
-    deliveryMongoDBPort=project.hasProperty("delivery.mongodb.port")? project.property("delivery.mongodb.port") : 28020
-
+    deliveryTomcatPort = project.hasProperty("delivery.tomcat.http.port") ? project.property("delivery.tomcat.http.port") : 9080
+    deliveryTomcatShutdownPort = project.hasProperty("delivery.tomcat.shutdown.port") ? project.property("delivery.tomcat.shutdown.port") : 9005
+    deliveryTomcatAJPPort = project.hasProperty("delivery.tomcat.ajp.port") ? project.property("delivery.tomcat.ajp.port") : 9009
+    deliveryTomcatSSLPort = project.hasProperty("delivery.tomcat.https.port") ? project.property("delivery.tomcat.https.port") : 9443
+    deliveryTomcatDebugPort = project.hasProperty("delivery.tomcat.debug.port") ? project.property("delivery.tomcat.debug.port") : 9000
+    deliveryMongoDBPort = project.hasProperty("delivery.mongodb.port") ? project.property("delivery.mongodb.port") : 28020
 
     /** Git properties **/
-    gitURLTemplate=project.hasProperty("crafter.git.url")? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    gitSourceBranch=project.hasProperty("crafter.git.branch")? project.property("crafter.git.branch") : "master"
-    gitRepo=project.hasProperty("crafter.git.remote")? project.property("crafter.git.remote") : "origin"
-    shallowClone=project.hasProperty("crafter.git.shallowClone")? project.property("crafter.git.shallowClone") : false
-    studioUIFromRepo=project.hasProperty("crafter.ui.repo")? project.property("crafter.ui.repo") : false
-    forceDeploy=project.hasProperty("forceDeploy")? project.property("forceDeploy") : false
-    keepBin=project.hasProperty("keepBin")? project.property("keepBin") : false
+    gitURLTemplate = project.hasProperty("crafter.git.url") ? project.property("crafter.git.url") : "https://github.com/craftercms/"
+    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "master"
+    gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
+    shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone") : false
+    studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo") : false
+    forceDeploy = project.hasProperty("forceDeploy") ? project.property("forceDeploy") : false
+    keepBin = project.hasProperty("keepBin") ? project.property("keepBin") : false
 
-    testingPlatform=project.hasProperty("crafter.testing.platform")? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ","-")
-    chromeDriverVersion=project.hasProperty("crafter.testing.chrome")? project.property("crafter.testing.chrome") : 2.33
-    browserToTest=project.hasProperty("crafter.testing.browser")? project.property("crafter.testing.browser") : "chrome"
-    testArtifacts=project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
+    testingPlatform = project.hasProperty("crafter.testing.platform") ? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ", "-")
+    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : 2.33
+    browserToTest = project.hasProperty("crafter.testing.browser") ? project.property("crafter.testing.browser") : "chrome"
+    testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
 
-    /** Clonable Artifacts **/
-    VALID_MODULES=["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite"]
+    testingSuites = project.hasProperty("crafter.testing.suites") ? project.property("crafter.testing.suites") :
+            "src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml" +
+                    ",src/test/resources/testngSanityTest.xml"
+
+    /** Cloneable Artifacts **/
+    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite"]
     /** Deployable Artifacts **/
-    VALID_DEPLOYABLE_MODULES=[
-            "search":"./src/search/crafter-search-server/target/crafter-search.war",
-            "profile":"./src/profile/server/target/crafter-profile.war",
-            "engine":"./src/engine/target/ROOT.war",
-            "deployer":"./src/deployer/target/crafter-deployer.jar",
-            "studio":"./src/studio/target/studio.war",
-            "social":"./src/social/server/target/crafter-social.war"]
+    VALID_DEPLOYABLE_MODULES = [
+            "search"  : "./src/search/crafter-search-server/target/crafter-search.war",
+            "profile" : "./src/profile/server/target/crafter-profile.war",
+            "engine"  : "./src/engine/target/ROOT.war",
+            "deployer": "./src/deployer/target/crafter-deployer.jar",
+            "studio"  : "./src/studio/target/studio.war",
+            "social"  : "./src/social/server/target/crafter-social.war"]
     WINDOWS_EDGE_DRIVER_URL = [
-        "15063" : "https://download.microsoft.com/download/3/4/2/342316D7-EBE0-4F10-ABA2-AE8E0CDF36DD/MicrosoftWebDriver.exe",
-        "14393" : "https://download.microsoft.com/download/3/2/D/32D3E464-F2EF-490F-841B-05D53C848D15/MicrosoftWebDriver.exe",
-        "10586" :  "https://download.microsoft.com/download/C/0/7/C07EBF21-5305-4EC8-83B1-A6FCC8F93F45/MicrosoftWebDriver.msi",
-        "10240" : "https://download.microsoft.com/download/8/D/0/8D0D08CF-790D-4586-B726-C6469A9ED49C/MicrosoftWebDriver.msi"
+            "15063": "https://download.microsoft.com/download/3/4/2/342316D7-EBE0-4F10-ABA2-AE8E0CDF36DD/MicrosoftWebDriver.exe",
+            "14393": "https://download.microsoft.com/download/3/2/D/32D3E464-F2EF-490F-841B-05D53C848D15/MicrosoftWebDriver.exe",
+            "10586": "https://download.microsoft.com/download/C/0/7/C07EBF21-5305-4EC8-83B1-A6FCC8F93F45/MicrosoftWebDriver.msi",
+            "10240": "https://download.microsoft.com/download/8/D/0/8D0D08CF-790D-4586-B726-C6469A9ED49C/MicrosoftWebDriver.msi"
     ]
 
 }
 
-apply from:"downloads.gradle"
-apply from:"environments.gradle"
+apply from: "downloads.gradle"
+apply from: "environments.gradle"
 
-task("utils"){
+task("utils") {
     description "builds the utils project and copies the utils jar file to the environment"
 
     doLast {
@@ -172,7 +170,7 @@ task("utils"){
     }
 }
 
-task("upgrade"){
+task("upgrade") {
     description "Upgrades the installed tomcat version, solr scripts, etc. without deleting your data then builds and deploys"
 
     doLast {
@@ -189,16 +187,16 @@ task("upgrade"){
             }
         }
         update.execute();
-        forceDeploy=true
+        forceDeploy = true
         build.execute()
         deploy.execute()
     }
 }
 
-task("init"){
+task("init") {
     description "Clones Crafter CMS stack"
 
-    doFirst{
+    doFirst {
         def module = getModule();
     }
     doLast {
@@ -217,7 +215,7 @@ task("init"){
 
 task("update") {
     description "Update the various modules of Crafter CMS"
-    doFirst{
+    doFirst {
         def module = getModule();
     }
 
@@ -239,7 +237,7 @@ task("selfupdate") {
     description "Updates the Crafter CMS project"
     doLast {
         def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
-        executeProcess(arry,".")
+        executeProcess(arry, ".")
     }
 }
 
@@ -251,7 +249,7 @@ task("start") {
         println "Running for the first time might take longer while fetching OS dependent requirements."
         switch (env) {
             case "all":
-                if(!file(authEnv).exists() || !file(deliveryEnv).exists()){
+                if (!file(authEnv).exists() || !file(deliveryEnv).exists()) {
                     throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'start'.")
                 }
                 startAuth(commandLinePrefix, startUpFile).execute()
@@ -285,7 +283,7 @@ task("stop") {
                 if (!file(authEnv).exists() || !file(deliveryEnv).exists()) {
                     throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'stop'.")
                 }
-                stopAuth(commandLinePrefix,shutDownFile).execute()
+                stopAuth(commandLinePrefix, shutDownFile).execute()
                 stopDelivery(commandLinePrefix, shutDownFile).execute()
             case "authoring":
                 if (!file(authEnv).exists()) {
@@ -315,12 +313,14 @@ task("clean") {
     doLast {
         if (module.equals("all")) {
             VALID_MODULES.each {
-                if(!(it.equalsIgnoreCase("studio-ui")||(it.equalsIgnoreCase("test-suite")))) { // Not a pom project ignore
+                if (!(it.equalsIgnoreCase("studio-ui") || (it.equalsIgnoreCase("test-suite")))) {
+                    // Not a pom project ignore
                     cleanModule(commandLinePrefix, it).execute()
                 }
             }
         } else if (VALID_MODULES.contains(module)) {
-            if(!(module.equalsIgnoreCase("studio-ui")||(module.equalsIgnoreCase("test-suite")))) { // Not a pom project ignore
+            if (!(module.equalsIgnoreCase("studio-ui") || (module.equalsIgnoreCase("test-suite")))) {
+                // Not a pom project ignore
                 cleanModule(commandLinePrefix, module).execute()
             }
         } else {
@@ -337,18 +337,18 @@ task("build") {
     }
 
     doLast {
-       def toBuildModules = VALID_MODULES
+        def toBuildModules = VALID_MODULES
         toBuildModules.remove("studio-ui")
         toBuildModules.remove("test-suite")
-        if(!includeSocial){
+        if (!includeSocial) {
             toBuildModules.remove("social")
         }
         if (module.equals("all")) {
             toBuildModules.each {
-                    buildModule(commandLinePrefix, it).execute()
+                buildModule(commandLinePrefix, it).execute()
             }
         } else if (toBuildModules.contains(module)) {
-                buildModule(commandLinePrefix, module).execute()
+            buildModule(commandLinePrefix, module).execute()
 
         } else {
             throw new InvalidUserDataException("${module} is not a valid module, please use one of ${VALID_MODULES}")
@@ -359,24 +359,24 @@ task("build") {
 task("test") {
     description "Builds and run tests"
     doFirst {
-        def driverPath=""
-        switch (browserToTest.toString().toLowerCase()){
+        def driverPath = ""
+        switch (browserToTest.toString().toLowerCase()) {
             case "chrome":
                 downloadChromeDriver.execute()
-                if(SystemUtils.IS_OS_WINDOWS){
-                    driverPath=file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver.exe")
-                }else{
-                    driverPath=file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver")
+                if (SystemUtils.IS_OS_WINDOWS) {
+                    driverPath = file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver.exe")
+                } else {
+                    driverPath = file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver")
                 }
                 break;
             case "edge":
                 downloadEdgeDriver.execute();
-                driverPath=file("./src/test-suite/bin/${browserToTest}/MicrosoftWebDriver.exe")
+                driverPath = file("./src/test-suite/bin/${browserToTest}/MicrosoftWebDriver.exe")
                 break
             default:
-                driverPath=askForPath();
+                driverPath = askForPath();
         }
-        if(!file("./src/test-suite/test-properties.properties").exists()){
+        if (!file("./src/test-suite/test-properties.properties").exists()) {
             def properties = []
             properties.add("webBrowser=${browserToTest}")
             properties.add("baseUrl=http://localhost:8080/studio/#/login")
@@ -384,20 +384,19 @@ task("test") {
             Files.write(Paths.get("./src/test-suite/test-properties.properties"), properties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
         }
     }
-    
-    doLast{
-       startAuth(commandLinePrefix, startUpFile)
-       try {
-              //  waitUntilAuthIsUp(10)//10*30sec
-                buildModule(commandLinePrefix,
-                        "test-suite", "./src/",
-                        ["-Dfile=src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml,src/test/resources/testngSanityTest.xml"],
-                        true)
 
-        }catch (GradleException ex){ // no nothing
+    doLast {
+        startAuth(commandLinePrefix, startUpFile)
+        try {
+
+            buildModule(commandLinePrefix,
+                    "test-suite", "./src/",
+                    ["-Dfile=" + testingSuites],
+                    true)
+        } catch (GradleException ex) { // no nothing
         } finally {
             stopAuth(commandLinePrefix, shutDownFile)
-        }        
+        }
     }
 }
 task("deploy") {
@@ -406,7 +405,7 @@ task("deploy") {
     doLast {
         def module = getModule()
         def env = getEnv()
-        switch (env){
+        switch (env) {
             case "all":
                 checkEnvWD(authEnv, "authoring")
                 checkEnvWD(deliveryEnv, "delivery")
@@ -431,7 +430,7 @@ task("deploy") {
                 } else {
                     deployModule(commandLinePrefix, it, env).execute()
                 }
-                if(!keepBin) {
+                if (!keepBin) {
                     file(VALID_DEPLOYABLE_MODULES[it]).delete()
                 }
             }
@@ -476,19 +475,19 @@ task("bundle") {
 
 
 def cleanModule(commandLinePrefix, module) {
-    def ctask=tasks.findByPath("clean${module}")
-    if (ctask!= null) {
+    def ctask = tasks.findByPath("clean${module}")
+    if (ctask != null) {
         return ctask
     } else {
         return tasks.create("clean${module}") {
-            executeProcess(commandLinePrefix +  commandLinePrefix + ["mvn", "clean"], "./src/${module}".toString())
+            executeProcess(commandLinePrefix + commandLinePrefix + ["mvn", "clean"], "./src/${module}".toString())
         }
     }
 }
 
 def updateModule(commandLinePrefix, module) {
-    def btask=tasks.findByPath("update${module}")
-    if (btask!= null) {
+    def btask = tasks.findByPath("update${module}")
+    if (btask != null) {
         return btask
     } else {
         return tasks.create("update${module}") {
@@ -496,32 +495,32 @@ def updateModule(commandLinePrefix, module) {
                 throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'update' to initialize it.")
             } else {
                 def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
-                executeProcess(arry,"./src/${module}".toString())
+                executeProcess(arry, "./src/${module}".toString())
             }
         }
     }
 }
 
-def cloneModule(commandLinePrefix, module){
-    def btask=tasks.findByPath("clone${module}")
-    if (btask!= null) {
+def cloneModule(commandLinePrefix, module) {
+    def btask = tasks.findByPath("clone${module}")
+    if (btask != null) {
         return btask
     } else {
         return tasks.create("clone${module}") {
             def finalUrl = "${gitURLTemplate}${module}.git".toString()
             def path = "src/${module}".toString()
-            def gitCloneCmd = ["git","clone"]
-            if(shallowClone){
+            def gitCloneCmd = ["git", "clone"]
+            if (shallowClone) {
                 gitCloneCmd.add("--depth")
                 gitCloneCmd.add("1")
             }
-            def arry = commandLinePrefix + gitCloneCmd+["-b",gitSourceBranch,finalUrl,path]
+            def arry = commandLinePrefix + gitCloneCmd + ["-b", gitSourceBranch, finalUrl, path]
             if (file(path).exists()) {
-                println ("Module ${module} has already been initialized, please use " +
+                println("Module ${module} has already been initialized, please use " +
                         "'update' to update it.")
             } else {
                 println "Cloning: ${module}, branch: ${gitSourceBranch}, url: ${finalUrl}"
-                executeProcess(arry,".")
+                executeProcess(arry, ".")
             }
         }
     }
@@ -529,18 +528,18 @@ def cloneModule(commandLinePrefix, module){
 
 def startAuth(commandLinePrefix, startUpFile) {
     def btask = tasks.findByPath("startAuth")
-    if (btask!= null){
+    if (btask != null) {
         return btask
     } else {
         tasks.create("startAuth") {
-            executeProcess(commandLinePrefix + [startUpFile], "$authEnv/bin",true)
+            executeProcess(commandLinePrefix + [startUpFile], "$authEnv/bin", true)
         }
     }
 }
 
-def startDelivery(commandLinePrefix, startUpFile){
-    def btask=tasks.findByPath("startDelivery")
-    if (btask!= null) {
+def startDelivery(commandLinePrefix, startUpFile) {
+    def btask = tasks.findByPath("startDelivery")
+    if (btask != null) {
         return btask
     } else {
         tasks.create("startDelivery") {
@@ -551,7 +550,7 @@ def startDelivery(commandLinePrefix, startUpFile){
 
 def stopAuth(commandLinePrefix, shutDownFile) {
     def btask = tasks.findByPath("stopAuth")
-    if (btask!= null) {
+    if (btask != null) {
         return btask
     } else {
         tasks.create("stopAuth") {
@@ -561,8 +560,8 @@ def stopAuth(commandLinePrefix, shutDownFile) {
 }
 
 def stopDelivery(commandLinePrefix, shutDownFile) {
-    def btask=tasks.findByPath("stopDelivery")
-    if (btask!= null) {
+    def btask = tasks.findByPath("stopDelivery")
+    if (btask != null) {
         return btask
     } else {
         tasks.create("stopDelivery") {
@@ -571,45 +570,45 @@ def stopDelivery(commandLinePrefix, shutDownFile) {
     }
 }
 
-def buildModule(commandLinePrefix, module, path="./src/", commandLinePost=[], forceTest=false) {
-    def btask=tasks.findByPath("build${module}")
+def buildModule(commandLinePrefix, module, path = "./src/", commandLinePost = [], forceTest = false) {
+    def btask = tasks.findByPath("build${module}")
     def actualCommandLinePost = [];
     actualCommandLinePost.addAll(commandLinePost)
-    if(!testArtifacts && !forceTest){ //ForceTest is needed to make test-suite run since, well they are tests
+    if (!testArtifacts && !forceTest) { //ForceTest is needed to make test-suite run since, well they are tests
         actualCommandLinePost.add("-Dmaven.test.skip=true")
         // Ignore integration test to avoid starting mongo and jetty for nothing
-        if(module.equalsIgnoreCase("search")){
+        if (module.equalsIgnoreCase("search")) {
             actualCommandLinePost.add("-pl")
             actualCommandLinePost.add("!crafter-search-itest")
-        }else if(module.equalsIgnoreCase("profile")){
+        } else if (module.equalsIgnoreCase("profile")) {
             actualCommandLinePost.add("-pl")
-            if(!includeProfile){
+            if (!includeProfile) {
                 actualCommandLinePost.add("!admin-console,!integration-tests,!server")
-            }else{
+            } else {
                 actualCommandLinePost.add("!integration-tests")
             }
         }
     }
 
-    if (btask!= null) {
+    if (btask != null) {
         return btask
     } else {
         return tasks.create("build${module}") {
-            if(module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
+            if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
                 actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
                 actualCommandLinePost.add("-Dexec.skip=true")
             }
             // Always do a Clean build, never trust caches or FS.
-            def array=commandLinePrefix +  commandLinePrefix + ["mvn", "clean", "install"] + actualCommandLinePost
+            def array = commandLinePrefix + commandLinePrefix + ["mvn", "clean", "install"] + actualCommandLinePost
             executeProcess(array, "${path}${module}".toString())
         }
     }
 }
 
-def deployBinary(deployable, env){
+def deployBinary(deployable, env) {
     if (deployable.exists()) {
-        def path = env.equals("authoring")? authEnv : deliveryEnv
-        path += deployable.absolutePath.endsWith(".jar")? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
+        def path = env.equals("authoring") ? authEnv : deliveryEnv
+        path += deployable.absolutePath.endsWith(".jar") ? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
         path += deployable.name
         delete {
             delete path
@@ -625,20 +624,20 @@ def deployBinary(deployable, env){
 }
 
 def deployModule(commandLinePrefix, module, env) {
-    def dtask=tasks.findByPath("deploy${module}${env}")
-    if (dtask!= null) {
+    def dtask = tasks.findByPath("deploy${module}${env}")
+    if (dtask != null) {
         return dtask
     } else {
         return tasks.create("deploy${module}${env}") {
             println "Deploy ${module} to ${env}"
             if (module.equals("studio") && env.equals("delivery")) {
                 println "Ignoring module 'studio' can not be deployed in environment 'delivery'"
-            } else if((module.equals("profile") && !includeProfile) || (module.equals("social") && !includeSocial)) {
+            } else if ((module.equals("profile") && !includeProfile) || (module.equals("social") && !includeSocial)) {
                 println "Ignoring module '$module' not enabled for environment '$env'"
             } else {
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
                 deployBinary(deployable, env)
-                if(module.equalsIgnoreCase("profile")){
+                if (module.equalsIgnoreCase("profile")) {
                     deployBinary(file("./src/profile/admin-console/target/crafter-profile-admin.war"), env)
                 } else if (module.equalsIgnoreCase("social")) {
                     deployBinary(file("./src/social/admin/target/crafter-social-admin.war"), env)
@@ -664,9 +663,9 @@ def checkEnvWD(path, env) {
     }
 }
 
-def pack(environmentPath,envName){
-    def dtask=tasks.findByPath("tar${envName}")
-    if (dtask!= null) {
+def pack(environmentPath, envName) {
+    def dtask = tasks.findByPath("tar${envName}")
+    if (dtask != null) {
         return dtask
     } else {
         def zipTask = tasks.findByPath("zip${envName}")
@@ -713,7 +712,7 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     pb.directory(new File(workingDir))
     pb.redirectOutput(processOutput)
     Process proc = pb.start();
-    watchProcessOutput(proc,processOutput)
+    watchProcessOutput(proc, processOutput)
     proc.waitFor()
     if (proc.exitValue() != 0) {
         throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
@@ -721,19 +720,19 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
 }
 
 // Poor's man tail (but get's the job done
-def watchProcessOutput(process, processOutputFile){
+def watchProcessOutput(process, processOutputFile) {
     Thread.start {
 
-        def reader=null
-        if(System.getProperty('os.name').toLowerCase().contains('windows')){
+        def reader = null
+        if (System.getProperty('os.name').toLowerCase().contains('windows')) {
             reader = Files.newBufferedReader(Paths.get(processOutputFile.path), Charset.forName("ISO-8859-1"))
-        }else{
+        } else {
             reader = Files.newBufferedReader(Paths.get(processOutputFile.path), Charset.forName("UTF-8"))
         }
-        while(process.alive) {
+        while (process.alive) {
             // Thread.sleep(100)
-            def line=null
-            while((line=reader.readLine()) != null) {
+            def line = null
+            while ((line = reader.readLine()) != null) {
                 println line
             }
         }
@@ -741,10 +740,10 @@ def watchProcessOutput(process, processOutputFile){
     }
 }
 
-def askForPath(){
+def askForPath() {
     def console = System.console();
     def inputPath = console.readLine("> Please enter path for selemiun driver of ${browserToTest} ")
-    if(!file(inputPath).exists()){
+    if (!file(inputPath).exists()) {
         console.println("${inputPath} does not exist, please enter a new valid path");
         askForPath();
     }
@@ -752,11 +751,11 @@ def askForPath(){
 }
 
 
-def waitUntilAuthIsUp(tryThinsManyTimes){
-    if(tryThinsManyTimes<=0){
+def waitUntilAuthIsUp(tryThinsManyTimes) {
+    if (tryThinsManyTimes <= 0) {
         return false
-    }else{
-        try{
+    } else {
+        try {
             URL url = new URL("http://localhost:${authTomcatPort}/studio");
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
             HttpURLConnection.setFollowRedirects(false);
@@ -765,9 +764,9 @@ def waitUntilAuthIsUp(tryThinsManyTimes){
             huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
             huc.connect();
             return true
-        }catch(java.net.SocketTimeoutException | java.net.ConnectException ex){
+        } catch (java.net.SocketTimeoutException | java.net.ConnectException ex) {
             println "Studio is not Ready yet trying again"
-            waitUntilAuthIsUp(tryThinsManyTimes-1)
+            waitUntilAuthIsUp(tryThinsManyTimes - 1)
         }
     }
 }
