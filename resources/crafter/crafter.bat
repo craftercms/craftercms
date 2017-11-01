@@ -53,8 +53,7 @@ exit /b 0
  cd %CRAFTER_BIN_FOLDER%
 goto :init
 
-
-:init
+:initWithOutExit
 IF EXIST %PROFILE_WAR_PATH% (
   set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
   IF NOT EXIST "%mongoDir%" goto installMongo
@@ -67,6 +66,10 @@ start %DEPLOYER_HOME%\%DEPLOYER_STARTUP%
 IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir %CRAFTER_HOME%\data\indexes
 start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes
 call %CATALINA_HOME%\bin\startup.bat
+goto :eof
+
+:init
+call :initWithOutExit
 goto cleanOnExitKeepTermAlive
 
 :debug
@@ -100,6 +103,7 @@ SET TEMP_FOLDER=%CRAFTER_HOME%temp
 
 echo "Starting backup into %TARGET_FILE%"
 md %TEMP_FOLDER%
+md "%CRAFTER_HOME%backups"
 del /Q %TARGET_FILE%
 
 REM MySQL Dump
@@ -139,7 +143,7 @@ echo "Backup completed"
 goto cleanOnExit
 
 :restore
-netstat -o -n -a | findstr "%TOMCAT_HTTP_PORT%"
+netstat -o -n -a | findstr "0.0.0.0:%TOMCAT_HTTP_PORT%"
 IF %ERRORLEVEL% equ 0 (
   echo "Please stop the system before starting the restore process."
   goto cleanOnExit
@@ -215,15 +219,15 @@ echo "Restoring Authoring Data"
 md "%MYSQL_DATA%"
 REM Start DB
 start "MySQL Server" %CRAFTER_BIN_FOLDER%\dbms\bin\mysqld.exe --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="%MYSQL_DATA%" --port=@MARIADB_PORT@ --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE
-timeout /nobreak 5
+timeout /nobreak /t 5
 REM Import
 start "MySQL Import" /W %CRAFTER_BIN_FOLDER%\dbms\bin\mysql.exe --user=root --port=@MARIADB_PORT@ -e "source %TEMP_FOLDER%\crafter.sql"
 REM Stop DB
 taskkill /IM mysqld.exe
 REM start tomcat
-call :init
+call :initWithOutExit
 echo "Waiting for studio to start"
-timeout /nobreak 120
+timeout /nobreak /t 120
 cd %CRAFTER_HOME%data\repos\sites
 FOR /D %%S in (*) do (
   echo "Running sync for site '%%S'"
