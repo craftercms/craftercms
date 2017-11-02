@@ -592,7 +592,19 @@ function doRestore() {
     exit 1
   fi
   export TEMP_FOLDER="$CRAFTER_HOME/temp"
-
+  
+  read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the \
+existing sites and associated database and replace everything with the restored data. If you \
+care about the existing state of the system then stop this process, backup the system, and then \
+attempt the restore. Are you sure you want to proceed? (yes/no) "
+  if [ "$REPLY" != "yes" ]; then
+    echo "Canceling restore"
+    exit 0
+  fi
+  
+  echo "Clearing all existing data"
+  rm -rf $CRAFTER_ROOT/data/*
+  
   echo "Starting restore from $SOURCE_FILE"
   mkdir -p "$TEMP_FOLDER"
 

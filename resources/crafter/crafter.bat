@@ -140,7 +140,7 @@ java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar zip . "%TARGET_FILE%" true
 
 rd /Q /S "%TEMP_FOLDER%"
 echo "Backup completed"
-goto cleanOnExit
+goto cleanOnExitKeepTermAlive
 
 :restore
 netstat -o -n -a | findstr "0.0.0.0:%TOMCAT_HTTP_PORT%"
@@ -153,6 +153,19 @@ IF NOT EXIST "%SOURCE_FILE%" (
   echo "The file does not exist"
   exit /b 1
 )
+
+SET /P DO_IT= Warning, you're about to restore CrafterCMS from a backup, which will wipe the ^
+
+existing sites and associated database and replace everything with the restored data. If you ^
+
+care about the existing state of the system then stop this process, backup the system, and then ^
+
+attempt the restore. Are you sure you want to proceed? (yes/no) 
+
+IF /i NOT "%DO_IT%"=="yes" ( exit /b 0 )
+
+echo "Clearing all existing data"
+rd /q /s %CRAFTER_HOME%\data
 
 SET TEMP_FOLDER="%CRAFTER_HOME%temp"
 echo "Starting restore from %SOURCE_FILE%"
@@ -237,7 +250,7 @@ FOR /D %%S in (*) do (
 
 rd /S /Q "%TEMP_FOLDER%"
 echo "Restore completed"
-goto cleanOnExit
+goto cleanOnExitKeepTermAlive
 
 
 :skill
