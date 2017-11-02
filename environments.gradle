@@ -52,8 +52,8 @@ task("authoringEnvironment"){
         webapps.mkdir()
 
         copy{
-            from "./resources/tomcat-config/crafter/setenv.sh"
-            from "./resources/tomcat-config/crafter/setenv.bat"
+            from "./resources/tomcat-config/setenv.sh"
+            from "./resources/tomcat-config/setenv.bat"
             into "${authEnv}/bin/apache-tomcat/bin"
             eachFile {
                 if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
@@ -63,15 +63,15 @@ task("authoringEnvironment"){
         }
 
         copy{
-            from "./resources/tomcat-config/crafter/catalina.policy"
+            from "./resources/tomcat-config/catalina.policy"
             into "${authEnv}/bin/apache-tomcat/conf/"
         }
 
 
 
         copy{
-            from "./resources/tomcat-config/"
-            into "${authEnv}/bin/apache-tomcat/shared/classes/"
+            from "./resources/tomcat-config/crafter"
+            into "${authEnv}/bin/apache-tomcat/shared/classes/crafter"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(authTomcatPort),
                                            SOLR_PORT: String.valueOf(authSolrPort),
                                            SOLR_PORT_D: String.valueOf(authSolrDebugPort),
@@ -83,7 +83,7 @@ task("authoringEnvironment"){
                                            ENV:"authoring"
             ])
             eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/shared/classes/")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -223,8 +223,8 @@ task("deliveryEnvironment"){
         webapps.mkdir()
 
         copy{
-            from "./resources/tomcat-config/crafter/setenv.sh"
-            from "./resources/tomcat-config/crafter/setenv.bat"
+            from "./resources/tomcat-config/setenv.sh"
+            from "./resources/tomcat-config/setenv.bat"
             into "${deliveryEnv}/bin/apache-tomcat/bin"
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
@@ -234,13 +234,13 @@ task("deliveryEnvironment"){
         }
 
         copy{
-            from "./resources/tomcat-config/crafter/catalina.policy"
+            from "./resources/tomcat-config/catalina.policy"
             into "${deliveryEnv}/bin/apache-tomcat/conf/"
         }
 
         copy{
-            from "./resources/tomcat-config-delivery/"
-            into "${deliveryEnv}/bin/apache-tomcat/shared/classes/"
+            from "./resources/tomcat-config-delivery/crafter"
+            into "${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(deliveryTomcatPort),
                                            SOLR_PORT: String.valueOf(deliverySolrPort),
                                            SOLR_PORT_D: String.valueOf(deliverySolrDebugPort),
@@ -251,27 +251,7 @@ task("deliveryEnvironment"){
                                            ENV:"delivery"
             ])
             eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/shared/classes/")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
-
-
-        copy{
-            from "./resources/tomcat-config/"
-            into "${deliveryEnv}/bin/apache-tomcat/shared/classes/"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT: String.valueOf(deliveryTomcatPort),
-                                           SOLR_PORT: String.valueOf(deliverySolrPort),
-                                           SOLR_PORT_D: String.valueOf(deliverySolrDebugPort),
-                                           DEPLOYER_D_PORT: String.valueOf(deliveryDeployerDebugPort),
-                                           DEPLOYER_PORT: String.valueOf(deliveryDeployerPort),
-                                           TOMCAT_DEBUG_PORT:String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
-                                           ENV:"delivery"
-            ])
-            eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/shared/classes/")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }

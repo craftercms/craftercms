@@ -172,16 +172,34 @@ task("utils") {
 
 task("upgrade") {
     description "Upgrades the installed tomcat version, solr scripts, etc. without deleting your data then builds and deploys"
+    def envs = []
+    doFirst {
+
+        switch (env) {
+            case "all":
+                envs.addAll([new File("${authEnv}"), new File("${deliveryEnv}")])
+                break
+            case "authoring":
+                envs.add(new File("${authEnv}"))
+                break
+            case "delivery":
+                envs.add(new File("${deliveryEnv}"))
+                break
+            default:
+                throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
+        }
+    }
 
     doLast {
-        def authEnvFolder = new File("${authEnv}")
-        if (authEnvFolder.exists()) {
-            authEnvFolder.eachFile { dir ->
-                if (!dir.getName().equalsIgnoreCase("data")) {
-                    if (!dir.isFile()) {
-                        dir.deleteDir()
-                    } else {
-                        dir.delete()
+        envs.each { envFolder ->
+            if (envFolder.exists()) {
+                envFolder.eachFile { dir ->
+                    if (!dir.getName().equalsIgnoreCase("data")) {
+                        if (!dir.isFile()) {
+                            dir.deleteDir()
+                        } else {
+                            dir.delete()
+                        }
                     }
                 }
             }
@@ -220,7 +238,6 @@ task("update") {
     }
 
     doLast {
-
         if (module.equals("all")) {
             VALID_MODULES.each {
                 updateModule(commandLinePrefix, it).execute()

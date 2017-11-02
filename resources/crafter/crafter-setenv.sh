@@ -18,6 +18,8 @@ export SOLR_INDEXES_DIR=$CRAFTER_ROOT/data/indexes
 export SOLR_LOGS_DIR=$CRAFTER_ROOT/logs/solr
 export SOLR_PID=$SOLR_INDEXES_DIR/solr.pid
 export SOLR_JAVA_OPTS="-server -Xss1024K -Xmx1G"
+export SOLR_HOME=$CRAFTER_HOME/solr/server/solr
+
 # Deployer variables
 export DEPLOYER_PORT=@DEPLOYER_PORT@
 export DEPLOYER_DATA_DIR=$CRAFTER_ROOT/data/deployer
