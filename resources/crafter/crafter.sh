@@ -123,7 +123,7 @@ function startSolr() {
     ## Before run check if the port is available.
     possiblePID=$(pidOf $SOLR_PORT)
     if  [ -z "$possiblePID" ];  then
-      $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS"
+      $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -s $SOLR_HOME -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS"
       echo $(pidOf $SOLR_PORT) > $SOLR_PID
     else
       echo $possiblePID > $SOLR_PID
@@ -158,7 +158,7 @@ function debugSolr() {
     ## Before run check if the port is available.
     possiblePID=$(pidOf $SOLR_PORT)
     if  [ -z "$possiblePID" ];  then
-      $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -Dcrafter.solr.index=$SOLR_INDEXES_DIR \
+      $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -s $SOLR_HOME -Dcrafter.solr.index=$SOLR_INDEXES_DIR \
       -a "$SOLR_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
       echo $(pidOf $SOLR_PORT) > $SOLR_PID
     else

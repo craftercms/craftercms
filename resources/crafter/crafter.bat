@@ -64,7 +64,7 @@ IF EXIST %PROFILE_WAR_PATH% (
 )
 start %DEPLOYER_HOME%\%DEPLOYER_STARTUP%
 IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir %CRAFTER_HOME%\data\indexes
-start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes
+start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -s %SOLR_HOME% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes
 call %CATALINA_HOME%\bin\startup.bat
 goto :eof
 
@@ -83,7 +83,7 @@ IF EXIST %PROFILE_WAR_PATH% (
 )
 start %DEPLOYER_HOME%\%DEPLOYER_DEBUG%
 IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir %CRAFTER_HOME%\data\indexes
-start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%SOLR_DEBUG_PORT%
+start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -s %SOLR_HOME% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%SOLR_DEBUG_PORT%
 call %CATALINA_HOME%\bin\catalina.bat jpda start
 goto cleanOnExit
 
