@@ -602,7 +602,7 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
     exit 0
   fi
   
-  echo "Clearing all previous data"
+  echo "Clearing all existing data"
   rm -rf $CRAFTER_ROOT/data/*
   
   echo "Starting restore from $SOURCE_FILE"
