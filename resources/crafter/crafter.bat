@@ -146,7 +146,7 @@ goto cleanOnExitKeepTermAlive
 netstat -o -n -a | findstr "0.0.0.0:%TOMCAT_HTTP_PORT%"
 IF %ERRORLEVEL% equ 0 (
   echo "Please stop the system before starting the restore process."
-  goto cleanOnExit
+  goto cleanOnExitKeepTermAlive
 )
 SET SOURCE_FILE=%2
 IF NOT EXIST "%SOURCE_FILE%" (
@@ -244,7 +244,7 @@ timeout /nobreak /t 120
 cd %CRAFTER_HOME%data\repos\sites
 FOR /D %%S in (*) do (
   echo "Running sync for site '%%S'"
-  start java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }"
+  start /b java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }"
 )
 :skipAuth
 
@@ -271,4 +271,4 @@ exit
 
 :cleanOnExitKeepTermAlive
 cd %CRAFTER_BIN_FOLDER%
-exit
+exit /b
