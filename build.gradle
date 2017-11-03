@@ -132,6 +132,8 @@ ext {
             "src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml" +
                     ",src/test/resources/testngSanityTest.xml"
 
+    startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
+
     /** Cloneable Artifacts **/
     VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite"]
     /** Deployable Artifacts **/
@@ -262,6 +264,10 @@ task("start") {
     description "Start Crafter CMS"
 
     doLast {
+        def extraStartupParams = []
+        if (startMongodb){
+            extraStartupParams.add("forceMongo")
+        }
         def env = getEnv()
         println "Running for the first time might take longer while fetching OS dependent requirements."
         switch (env) {
@@ -269,20 +275,20 @@ task("start") {
                 if (!file(authEnv).exists() || !file(deliveryEnv).exists()) {
                     throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'start'.")
                 }
-                startAuth(commandLinePrefix, startUpFile).execute()
-                startDelivery(commandLinePrefix, startUpFile).execute()
+                startAuth(commandLinePrefix, startUpFile, extraStartupParams).execute()
+                startDelivery(commandLinePrefix, startUpFile, extraStartupParams).execute()
                 break
             case "authoring":
                 if (!file(authEnv).exists()) {
                     throw new InvalidUserDataException("The 'authoring' enviroment is not deployed. Please run 'deploy -Penv=authoring' before 'start'.")
                 }
-                startAuth(commandLinePrefix, startUpFile).execute()
+                startAuth(commandLinePrefix, startUpFile, extraStartupParams).execute()
                 break
             case "delivery":
                 if (!file(deliveryEnv).exists()) {
                     throw new InvalidUserDataException("The 'delivery' enviroment is not deployed. Please run 'deploy -Penv=delivery' before 'start'.")
                 }
-                startDelivery(commandLinePrefix, startUpFile).execute()
+                startDelivery(commandLinePrefix, startUpFile, extraStartupParams).execute()
                 break
             default:
                 throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
@@ -294,25 +300,29 @@ task("stop") {
     description "Stop Crafter CMS"
 
     doLast {
+        def extraStartupParams = []
+        if (startMongodb){
+            extraStartupParams.add("forceMongo")
+        }
         def env = getEnv()
         switch (env) {
             case "all":
                 if (!file(authEnv).exists() || !file(deliveryEnv).exists()) {
                     throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'stop'.")
                 }
-                stopAuth(commandLinePrefix, shutDownFile).execute()
+                stopAuth(commandLinePrefix, shutDownFile, extraStartupParams).execute()
                 stopDelivery(commandLinePrefix, shutDownFile).execute()
             case "authoring":
                 if (!file(authEnv).exists()) {
                     throw new InvalidUserDataException("The 'authoring' enviroment is not deployed. Please run 'deploy -Penv=authoring' before 'stop'.")
                 }
-                stopAuth(commandLinePrefix, shutDownFile).execute()
+                stopAuth(commandLinePrefix, shutDownFile, extraStartupParams).execute()
                 break
             case "delivery":
                 if (!file(deliveryEnv).exists()) {
                     throw new InvalidUserDataException("The 'delivery' enviroment is not deployed. Please run 'deploy -Penv=delivery' before 'stop'.")
                 }
-                stopDelivery(commandLinePrefix, shutDownFile).execute()
+                stopDelivery(commandLinePrefix, shutDownFile, extraStartupParams).execute()
                 break
             default:
                 throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
@@ -543,46 +553,48 @@ def cloneModule(commandLinePrefix, module) {
     }
 }
 
-def startAuth(commandLinePrefix, startUpFile) {
+
+//TODO: all of this can be just on function with 4 params.
+def startAuth(commandLinePrefix, startUpFile, params=[]) {
     def btask = tasks.findByPath("startAuth")
     if (btask != null) {
         return btask
     } else {
         tasks.create("startAuth") {
-            executeProcess(commandLinePrefix + [startUpFile], "$authEnv/bin", true)
+            executeProcess(commandLinePrefix + [startUpFile] + params, "$authEnv/bin", true)
         }
     }
 }
 
-def startDelivery(commandLinePrefix, startUpFile) {
+def startDelivery(commandLinePrefix, startUpFile, params=[]) {
     def btask = tasks.findByPath("startDelivery")
     if (btask != null) {
         return btask
     } else {
         tasks.create("startDelivery") {
-            executeProcess(commandLinePrefix + [startUpFile], "$deliveryEnv/bin", true)
+            executeProcess(commandLinePrefix + [startUpFile] +params, "$deliveryEnv/bin", true)
         }
     }
 }
 
-def stopAuth(commandLinePrefix, shutDownFile) {
+def stopAuth(commandLinePrefix, shutDownFile, params=[]) {
     def btask = tasks.findByPath("stopAuth")
     if (btask != null) {
         return btask
     } else {
         tasks.create("stopAuth") {
-            executeProcess(commandLinePrefix + [shutDownFile], "$authEnv/bin", true)
+            executeProcess(commandLinePrefix + [shutDownFile] + params, "$authEnv/bin", true)
         }
     }
 }
 
-def stopDelivery(commandLinePrefix, shutDownFile) {
+def stopDelivery(commandLinePrefix, shutDownFile, params=[]) {
     def btask = tasks.findByPath("stopDelivery")
     if (btask != null) {
         return btask
     } else {
         tasks.create("stopDelivery") {
-            executeProcess(commandLinePrefix + [shutDownFile], "$deliveryEnv/bin", true)
+            executeProcess(commandLinePrefix + [shutDownFile] +params, "$deliveryEnv/bin", true)
         }
     }
 }
