@@ -231,12 +231,13 @@ IF NOT EXIST "%TEMP_FOLDER%\crafter.sql" ( goto skipAuth )
 echo "Restoring Authoring Data"
 md "%MYSQL_DATA%"
 REM Install DB
-start /b %CRAFTER_BIN_FOLDER%\dbms\bin\mysql_install_db.exe --datadir="%MYSQL_DATA%" --basedir="%CRAFTER_BIN_FOLDER%\dbms" --no-defaults --force --skip-name-resolve
+start "MySQL Installation" /W %CRAFTER_BIN_FOLDER%dbms\bin\mysql_install_db.exe --datadir="%MYSQL_DATA%"
 REM Start DB
-start "MySQL Server" %CRAFTER_BIN_FOLDER%\dbms\bin\mysqld.exe --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir="%CRAFTER_BIN_FOLDER%\dbms" --datadir="%MYSQL_DATA%" --port=@MARIADB_PORT@ --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE
+start "MySQL Server" %CRAFTER_BIN_FOLDER%dbms\bin\mysqld.exe --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir="%CRAFTER_BIN_FOLDER%dbms" --datadir="%MYSQL_DATA%" --port=@MARIADB_PORT@ --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE
 timeout /nobreak /t 5
 REM Import
-start "MySQL Import" /W %CRAFTER_BIN_FOLDER%\dbms\bin\mysql.exe --user=root --port=@MARIADB_PORT@ -e "source %TEMP_FOLDER%\crafter.sql"
+start "MySQL Import" /W %CRAFTER_BIN_FOLDER%dbms\bin\mysql.exe --user=root --port=@MARIADB_PORT@ -e "source %TEMP_FOLDER%\crafter.sql"
+timeout /nobreak /t 5
 REM Stop DB
 taskkill /IM mysqld.exe
 REM start tomcat
@@ -246,7 +247,7 @@ timeout /nobreak /t 120
 cd %CRAFTER_HOME%data\repos\sites
 FOR /D %%S in (*) do (
   echo "Running sync for site '%%S'"
-  start /b java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }"
+  start /b java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar post "http://localhost:%TOMCAT_HTTP_PORT%/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }"
 )
 :skipAuth
 
