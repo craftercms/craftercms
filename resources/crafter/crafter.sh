@@ -595,7 +595,19 @@ function doRestore() {
     exit 1
   fi
   export TEMP_FOLDER="$CRAFTER_HOME/temp"
-
+  
+  read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the \
+existing sites and associated database and replace everything with the restored data. If you \
+care about the existing state of the system then stop this process, backup the system, and then \
+attempt the restore. Are you sure you want to proceed? (yes/no) "
+  if [ "$REPLY" != "yes" ]; then
+    echo "Canceling restore"
+    exit 0
+  fi
+  
+  echo "Clearing all existing data"
+  rm -rf $CRAFTER_ROOT/data/*
+  
   echo "Starting restore from $SOURCE_FILE"
   mkdir -p "$TEMP_FOLDER"
 
@@ -634,8 +646,10 @@ function doRestore() {
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
     mkdir "$MYSQL_DATA"
+    #Install DB
+    $CRAFTER_HOME/dbms/bin/mysql_install_db --datadir="$MYSQL_DATA" --basedir="$CRAFTER_HOME/dbms" --no-defaults --force --skip-name-resolve
     #Start DB
-    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir=dbms --datadir="$MYSQL_DATA" --port=@MARIADB_PORT@ --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
+    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir="$CRAFTER_HOME/dbms" --datadir="$MYSQL_DATA" --port=@MARIADB_PORT@ --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
     sleep 5
     # Import
     $CRAFTER_HOME/dbms/bin/mysql --user=root --port=@MARIADB_PORT@ < "$TEMP_FOLDER/crafter.sql"
@@ -647,7 +661,7 @@ function doRestore() {
     for SITE in $(ls $DEPLOYER_DEPLOYMENTS_DIR)
     do
       echo "Running sync for site $SITE"
-      java -jar $CRAFTER_HOME/craftercms-utils.jar post "http://localhost:8080/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }"
+      java -jar $CRAFTER_HOME/craftercms-utils.jar post "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }"
     done
   fi
 
