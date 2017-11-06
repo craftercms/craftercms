@@ -54,7 +54,7 @@ exit /b 0
 goto :init
 
 :initWithOutExit
-IF EXIST %PROFILE_WAR_PATH% (
+IF EXIST %PROFILE_WAR_PATH% OR IF %2%="forceMongo" (
   set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
   IF NOT EXIST "%mongoDir%" goto installMongo
   IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
@@ -73,7 +73,7 @@ call :initWithOutExit
 goto cleanOnExitKeepTermAlive
 
 :debug
-IF EXIST %PROFILE_WAR_PATH% (
+IF EXIST %PROFILE_WAR_PATH% OR IF %2%="forceMongo (
   set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
   IF NOT EXIST "%mongoDir%" goto installMongo
   IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
@@ -258,7 +258,7 @@ goto cleanOnExitKeepTermAlive
 
 :skill
 call %CRAFTER_BIN_FOLDER%solr\bin\solr stop -p %SOLR_PORT%
-IF EXIST %PROFILE_WAR_PATH% (
+IF EXIST %PROFILE_WAR_PATH% OR IF %2%="forceMongo(
   taskkill /IM mongod.exe
 )
 

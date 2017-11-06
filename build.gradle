@@ -132,7 +132,7 @@ ext {
             "src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml" +
                     ",src/test/resources/testngSanityTest.xml"
 
-    startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
+    startMongodb = project.hasProperty("startMongodb") ? project.property("start") : false // Does not really.
 
     /** Cloneable Artifacts **/
     VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite"]
