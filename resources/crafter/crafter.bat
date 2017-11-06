@@ -15,7 +15,7 @@ rem Reinit variables
 SET CRAFTER_BIN_FOLDER=%~dp0
 for %%i in ("%~dp0..") do set CRAFTER_HOME=%%~fi\
 
-call %CRAFTER_BIN_FOLDER%\crafter-setenv.bat
+call %CRAFTER_BIN_FOLDER%\crafter-setenv.bat %2
 
 IF /i "%1%"=="start" goto init
 IF /i "%1%"=="-s" goto init
@@ -54,7 +54,12 @@ exit /b 0
 goto :init
 
 :initWithOutExit
-IF EXIST %PROFILE_WAR_PATH% OR IF %2%="forceMongo" (
+@rem Windows does not support Or in the If soo...
+
+IF EXIST %PROFILE_WAR_PATH% set start_mongo=true
+IF /i "%FORCE_MONGO%"=="forceMongo" set start_mongo=true
+
+IF /i "%start_mongo%"=="true" (
   set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
   IF NOT EXIST "%mongoDir%" goto installMongo
   IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
@@ -66,6 +71,8 @@ start %DEPLOYER_HOME%\%DEPLOYER_STARTUP%
 IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir %CRAFTER_HOME%\data\indexes
 start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -s %SOLR_HOME% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes
 call %CATALINA_HOME%\bin\startup.bat
+@rem Windows keep variables live until terminal dies.
+set start_mongo=false
 goto :eof
 
 :init
@@ -73,7 +80,12 @@ call :initWithOutExit
 goto cleanOnExitKeepTermAlive
 
 :debug
-IF EXIST %PROFILE_WAR_PATH% OR IF %2%="forceMongo (
+@rem Windows does not support Or in the If soo...
+
+IF EXIST %PROFILE_WAR_PATH% set start_mongo=true
+IF /i "%FORCE_MONGO%"=="forceMongo" set start_mongo=true
+
+IF /i "%start_mongo%"=="true" (
   set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
   IF NOT EXIST "%mongoDir%" goto installMongo
   IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
@@ -85,6 +97,8 @@ start %DEPLOYER_HOME%\%DEPLOYER_DEBUG%
 IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir %CRAFTER_HOME%\data\indexes
 start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -s %SOLR_HOME% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%SOLR_DEBUG_PORT%
 call %CATALINA_HOME%\bin\catalina.bat jpda start
+@rem Windows keep variables live until terminal dies.
+set start_mongo=false
 goto cleanOnExit
 
 :backup
@@ -258,10 +272,16 @@ goto cleanOnExitKeepTermAlive
 
 :skill
 call %CRAFTER_BIN_FOLDER%solr\bin\solr stop -p %SOLR_PORT%
-IF EXIST %PROFILE_WAR_PATH% OR IF %2%="forceMongo(
+@rem Windows does not support Or in the If soo...
+
+IF EXIST %PROFILE_WAR_PATH% set start_mongo=true
+IF /i "%FORCE_MONGO%"=="forceMongo" set start_mongo=true
+
+IF /i "%start_mongo%"=="true" (
   taskkill /IM mongod.exe
 )
-
+@rem Windows keeps vars live until cmd window die.
+set start_mongo=false
 call %CATALINA_HOME%\bin\shutdown.bat
 call %DEPLOYER_HOME%\%DEPLOYER_SHUTDOWN%
 taskkill /FI "WINDOWTITLE eq \"Solr-%SOLR_PORT%\"

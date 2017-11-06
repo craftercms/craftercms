@@ -403,6 +403,9 @@ def updateCatalinaLogging(loggingPropertiesFile){
 
 def addSolrIndexHome(solrServerConfig){
     def contextConfig=new XmlParser().parse(solrServerConfig)
+    // contextConfig.str[`@name`].find {t->
+    // println t
+    // }
     def node=new Node(contextConfig, 'str', [name:"coreRootDirectory"])
     node.setValue("\${crafter.solr.index:data/indexes}")
     def printer = new XmlNodePrinter(new PrintWriter(solrServerConfig) )
