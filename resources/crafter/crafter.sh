@@ -567,18 +567,6 @@ function doBackup() {
   echo "Backup completed"
 }
 
-function checkFolder() {
-  echo "Checking folder for $1"
-  local result=0
-  if [ -d "$CRAFTER_HOME/data/$1" ]; then
-    read -p "Folder already exist, do you want to overwrite it? (yes/no) "
-    if [ "$REPLY" != "yes" ]; then
-      result=1
-    fi
-  fi
-  return $result
-}
-
 function doRestore() {
   pid=$(pidOf $TOMCAT_HTTP_PORT)
   if ! [ -z $pid ]; then
@@ -613,32 +601,26 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
 
   # MongoDB Dump
   if [ -f "$TEMP_FOLDER/mongodb.zip" ]; then
-    if checkFolder "mongodb"; then
-      echo "Restoring MongoDB"
-      startMongoDB
-      java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
-      $CRAFTER_HOME/mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
-    fi
+    echo "Restoring MongoDB"
+    startMongoDB
+    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
+    $CRAFTER_HOME/mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
   fi
 
   # UNZIP git repos
-  if checkFolder "repos"; then
-    echo "Restoring git repos"
-    rm -rf "$CRAFTER_ROOT/data/repos/*"
-    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_ROOT/data/repos"
-  fi
+  echo "Restoring git repos"
+  rm -rf "$CRAFTER_ROOT/data/repos/*"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_ROOT/data/repos"
+
   # UNZIP solr indexes
-  if checkFolder "indexes"; then
-    echo "Restoring solr indexes"
-    rm -rf "$SOLR_INDEXES_DIR/*"
-    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
-  fi
+  echo "Restoring solr indexes"
+  rm -rf "$SOLR_INDEXES_DIR/*"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
+    
   # UNZIP deployer data
-  if checkFolder "deployer"; then
-    echo "Restoring deployer data"
-    rm -rf "$DEPLOYER_DATA_DIR/*"
-    java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
-  fi
+  echo "Restoring deployer data"
+  rm -rf "$DEPLOYER_DATA_DIR/*"
+  java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
 
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
