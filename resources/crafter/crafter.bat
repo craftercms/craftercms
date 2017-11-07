@@ -157,7 +157,7 @@ echo "Backup completed"
 goto cleanOnExitKeepTermAlive
 
 :restore
-netstat -o -n -a | findst startMongodbr "0.0.0.0:%TOMCAT_HTTP_PORT%"
+netstat -o -n -a | findstr "0.0.0.0:%TOMCAT_HTTP_PORT%"
 IF %ERRORLEVEL% equ 0 (
   echo "Please stop the system before starting the restore process."
   goto cleanOnExitKeepTermAlive
