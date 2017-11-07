@@ -44,7 +44,7 @@ function help() {
   exit 0;
 }
 
-function (){
+function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
   echo $pid
 }
