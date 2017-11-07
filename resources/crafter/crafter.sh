@@ -25,9 +25,9 @@ export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
 
 function help() {
   echo $(basename $BASH_SOURCE)
-  echo "    start, Starts Tomcat, Deployer and Solr"
-  echo "    stop, Stops Tomcat, Deployer and Solr"
-  echo "    debug, Starts Tomcat, Deployer and Solr in debug mode"
+  echo "    start [forceMongo], Starts Tomcat, Deployer and Solr, if forceMongo Mongodb will be run"
+  echo "    stop  [forceMongo], Stops Tomcat, Deployer and Solr if forceMongo Mongodb will be run"
+  echo "    debug [forceMongo], Starts Tomcat, Deployer and Solr in debug mode if forceMongo Mongodb will be run"
   echo "    start_deployer, Starts Deployer"
   echo "    stop_deployer, Stops Deployer"
   echo "    debug_deployer, Starts Deployer in debug mode"
@@ -41,11 +41,10 @@ function help() {
   echo "    stop_mongodb, Stops Mongo DB"
   echo "    backup <name>, Perform a backup of all data"
   echo "    restore <file>, Perform a restore of all data"
-  echo "    tail,  Tails all Crafter CMS logs"
   exit 0;
 }
 
-function pidOf(){
+function (){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
   echo $pid
 }
@@ -360,7 +359,11 @@ function startMongoDB(){
 
 
 function isMongoNeeded() {
-  test -s $PROFILE_WAR_PATH || test -d $PROFILE_DEPLOY_WAR_PATH
+   if [ -z "$1" ]; then
+    test -s $PROFILE_WAR_PATH || test -d $PROFILE_DEPLOY_WAR_PATH
+   else
+      test "$1" = "forceMongo"
+   fi
 }
 
 function stopMongoDB(){
@@ -476,7 +479,7 @@ function mongoDbStatus(){
 function start() {
   startDeployer
   startSolr
- if isMongoNeeded ; then
+ if isMongoNeeded $1; then
     startMongoDB
  fi
   startTomcat
@@ -486,7 +489,7 @@ function start() {
 function debug() {
   debugDeployer
   debugSolr
-  if isMongoNeeded ; then
+  if isMongoNeeded $1; then
     startMongoDB
   fi
   debugTomcat
@@ -495,7 +498,7 @@ function debug() {
 
 function stop() {
   stopTomcat
-  if isMongoNeeded ; then
+  if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
      stopMongoDB
   fi
   stopSolr
@@ -664,15 +667,15 @@ function logo() {
 case $1 in
   debug)
   logo
-  debug
+  debug $2
   ;;
   start)
   logo
-  start
+  start $2
   ;;
   stop)
   logo
-  stop
+  stop $2
   ;;
   debug_deployer)
   logo
@@ -692,7 +695,7 @@ case $1 in
   ;;
   start_solr)
   logo
-  startSolr
+  startSolr36
   ;;
   stop_solr)
   logo
@@ -717,9 +720,6 @@ case $1 in
   stop_mongodb)
   logo
   stopMongoDB
-  ;;
-  tail)
-  tail $2
   ;;
   status)
   status
