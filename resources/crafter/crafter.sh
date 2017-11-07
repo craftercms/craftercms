@@ -44,7 +44,7 @@ function help() {
   exit 0;
 }
 
-function pidOf(){
+function (){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
   echo $pid
 }
@@ -498,7 +498,7 @@ function debug() {
 
 function stop() {
   stopTomcat
-  if isMongoNeeded $1; then
+  if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
      stopMongoDB
   fi
   stopSolr

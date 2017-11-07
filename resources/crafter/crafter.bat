@@ -157,7 +157,7 @@ echo "Backup completed"
 goto cleanOnExitKeepTermAlive
 
 :restore
-netstat -o -n -a | findstr "0.0.0.0:%TOMCAT_HTTP_PORT%"
+netstat -o -n -a | findst startMongodbr "0.0.0.0:%TOMCAT_HTTP_PORT%"
 IF %ERRORLEVEL% equ 0 (
   echo "Please stop the system before starting the restore process."
   goto cleanOnExitKeepTermAlive
@@ -274,6 +274,8 @@ goto cleanOnExitKeepTermAlive
 call %CRAFTER_BIN_FOLDER%solr\bin\solr stop -p %SOLR_PORT%
 @rem Windows does not support Or in the If soo...
 
+netstat -o -n -a | findstr  "0.0.0.0:%MONGODB_PORT%"
+IF %ERRORLEVEL% equ 0 set start_mongo=true
 IF EXIST %PROFILE_WAR_PATH% set start_mongo=true
 IF /i "%FORCE_MONGO%"=="forceMongo" set start_mongo=true
 
