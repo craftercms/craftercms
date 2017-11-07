@@ -174,7 +174,7 @@ existing sites and associated database and replace everything with the restored 
 
 care about the existing state of the system then stop this process, backup the system, and then ^
 
-attempt the restore. Are you sure you want to proceed? (yes/no) 
+attempt the restore. Are you sure you want to proceed? (yes/no)
 
 IF /i NOT "%DO_IT%"=="yes" ( exit /b 0 )
 

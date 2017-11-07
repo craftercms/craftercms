@@ -10,6 +10,38 @@ if [ "$(whoami)" == "root" ]; then
 	exit 1
 fi
 
+SCRIPT_NAME=$(basename "$0")
+function help(){
+	echo "$SCRIPT_NAME"
+	echo "Arguments:"
+	echo -e "\t SITENAME name of the site to be created."
+	echo -e "\t REPO_PATH (optional) location of the site content."
+	echo "Examples:"
+	echo -e "\t $SCRIPT_NAME newSite"
+	echo -e "\t $SCRIPT_NAME newSite /usr/local/data/repos/sites/newSite/published"
+}
+# pre flight check.
+if [ -z "$1" ]; then
+	help
+	exit 2
+fi
+
+if [ ! -d "DELIVERY_ROOT/../crafter-authroting" ]; then
+	if [ -z "$2" ]; then
+		echo -e "\033[38;5;196m"
+		echo -e "Unable to find site $1 default repository path (../crafter-authroing/data/repos/sites/$1/published)."
+		echo -e "Location for site $1 repository location is needed."
+		echo -e "\033[0m"
+		help
+		exit 3;
+	elif [ ! -d "$2" ]; then
+	    	echo -e "\033[38;5;196m"
+	    	echo -e " $2 does not exists or unable to read"
+	    	echo -e "\033[0m"
+	    	exit 4
+	fi
+fi
+
 export DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export DELIVERY_ROOT=$( cd "$DELIVERY_HOME/.." && pwd )
 export AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-authoring" && pwd )
