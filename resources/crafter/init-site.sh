@@ -10,7 +10,7 @@ if [ "$(whoami)" == "root" ]; then
 	exit 1
 fi
 
-SCRIPT_NAME=`basename "$0"`
+SCRIPT_NAME=$(basename "$0")
 function help(){
 	echo "$SCRIPT_NAME"
 	echo "Arguments:"
