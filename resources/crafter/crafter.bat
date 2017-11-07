@@ -118,7 +118,6 @@ SET TEMP_FOLDER=%CRAFTER_HOME%temp
 echo "Starting backup into %TARGET_FILE%"
 md %TEMP_FOLDER%
 md "%CRAFTER_HOME%backups"
-del /Q %TARGET_FILE%
 
 REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
@@ -152,6 +151,7 @@ REM ZIP everything (without compression)
 cd "%TEMP_FOLDER%"
 java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar zip . "%TARGET_FILE%" true
 
+cd "%CRAFTER_HOME%"
 rd /Q /S "%TEMP_FOLDER%"
 echo "Backup completed"
 goto cleanOnExitKeepTermAlive
@@ -190,11 +190,6 @@ java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip "%SOURCE_FILE%" "%TEMP_
 
 REM MongoDB Dump
 IF NOT EXIST "%TEMP_FOLDER%\mongodb.zip" ( goto skipMongo )
-echo "Checking folder %MONGODB_DATA_DIR%"
-IF EXIST "%MONGODB_DATA_DIR%" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
-  IF /i NOT "%DO_IT%"=="yes" ( goto skipMongo )
-)
 echo "Restoring MongoDB"
 IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir %MONGODB_DATA_DIR%
 IF NOT EXIST "%MONGODB_LOGS_DIR%" mkdir %MONGODB_LOGS_DIR%
@@ -206,37 +201,19 @@ taskkill /IM mongod.exe
 
 REM UNZIP git repos
 IF NOT EXIST "%TEMP_FOLDER%\repos.zip" ( goto skipRepos )
-echo "Checking folder %CRAFTER_HOME%data\repos"
-IF EXIST "%CRAFTER_HOME%data\repos" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
-  IF /i NOT "%DO_IT%"=="yes" ( goto skipRepos )
-)
 echo "Restoring git repos"
-rd /Q /S "%CRAFTER_HOME%\data\repos"
 java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip "%TEMP_FOLDER%\repos.zip" "%CRAFTER_HOME%data/repos"
 :skipRepos
 
 REM UNZIP solr indexes
 IF NOT EXIST "%TEMP_FOLDER%\indexes.zip" ( goto skipIndexes )
-echo "Checking folder %SOLR_INDEXES_DIR%"
-IF EXIST "%SOLR_INDEXES_DIR%" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
-  IF /i NOT "%DO_IT%"=="yes" ( goto skipIndexes )
-)
 echo "Restoring solr indexes"
-rd /Q /S "%SOLR_INDEXES_DIR%"
 java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip "%TEMP_FOLDER%\indexes.zip" "%SOLR_INDEXES_DIR%"
 :skipIndexes
 
 REM UNZIP deployer data
 IF NOT EXIST "%TEMP_FOLDER%\deployer.zip" ( goto skipDeployer )
-echo "Checking folder %DEPLOYER_DATA_DIR%"
-IF EXIST "%DEPLOYER_DATA_DIR%" (
-  SET /P DO_IT= Folder already exist, do you want to overwrite it? yes/no
-  IF /i NOT "%DO_IT%"=="yes" ( goto skipDeployer )
-)
 echo "Restoring deployer data"
-rd /Q /S "%DEPLOYER_DATA_DIR%"
 java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar unzip "%TEMP_FOLDER%\deployer.zip" "%DEPLOYER_DATA_DIR%"
 :skipDeployer
 
