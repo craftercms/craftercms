@@ -22,6 +22,7 @@ task("authoringEnvironment"){
                 into "${authEnv}/bin"
             }
             file("${authEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${authEnv}/bin/apache-tomcat"))
+            file("${authEnv}/bin/apache-tomcat/shared/lib").mkdirs()
         }
 
 
@@ -195,7 +196,9 @@ task("deliveryEnvironment"){
                 into "${deliveryEnv}/bin"
             }
             file("${deliveryEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${deliveryEnv}/bin/apache-tomcat"))
+            file("${deliveryEnv}/bin/apache-tomcat/shared/lib").mkdirs()
         }
+
         if(file("${deliveryEnv}/bin/solr")) {
             /** SOLR **/
             copy {
@@ -401,14 +404,13 @@ def updateCatalinaLogging(loggingPropertiesFile){
   engineServerProps.store(output,"")
 }
 
-def addSolrIndexHome(solrServerConfig){
-    def contextConfig=new XmlParser().parse(solrServerConfig)
-    // contextConfig.str[`@name`].find {t->
-    // println t
-    // }
-    def node=new Node(contextConfig, 'str', [name:"coreRootDirectory"])
-    node.setValue("\${crafter.solr.index:data/indexes}")
-    def printer = new XmlNodePrinter(new PrintWriter(solrServerConfig) )
-    printer.preserveWhitespace = true
-    printer.print( contextConfig )
+def addSolrIndexHome(solrServerConfig) {
+    def contextConfig = new XmlParser().parse(solrServerConfig)
+    if (contextConfig.str["@name=coreRootDirectory"].isEmpty()) {
+        def node = new Node(contextConfig, 'str', [name: "coreRootDirectory"])
+        node.setValue("\${crafter.solr.index:data/indexes}")
+        def printer = new XmlNodePrinter(new PrintWriter(solrServerConfig))
+        printer.preserveWhitespace = true
+        printer.print(contextConfig)
+    }
 }
