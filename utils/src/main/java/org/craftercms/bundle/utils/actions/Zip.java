@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -20,6 +22,8 @@ import org.craftercms.bundle.utils.Action;
  * Created by joseross on 7/18/17.
  */
 public class Zip implements Action {
+
+    private static List<String> excludedExtensions = Arrays.asList("lock", "DS_Store", "pid");
 
     @Override
     public void execute(final String[] args) {
@@ -35,8 +39,25 @@ public class Zip implements Action {
                     zout.setLevel(ZipOutputStream.STORED);
                 }
                 try (Stream<Path> files = Files.walk(folder)) {
-                    files.forEach(file -> {
-                        if(!Files.isDirectory(file)) {
+                    files
+                        .filter(file -> !Files.isDirectory(file))
+                        .filter(file -> {
+                            try {
+                                String name = file.getFileName().toString();
+                                int index = name.lastIndexOf(".");
+                                if (index != -1) {
+                                    String ext = name.substring(index + 1);
+                                    if(excludedExtensions.contains(ext)) {
+                                        System.out.println("Skipping file " + file);
+                                        return false;
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            return true;
+                        })
+                        .forEach(file -> {
                             try {
                                 System.out.println("Adding " + file);
                                 zout.putNextEntry(new ZipEntry(file.toString().replace(File.separatorChar, '/')));
@@ -45,8 +66,7 @@ public class Zip implements Action {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                        }
-                    });
+                        });
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
