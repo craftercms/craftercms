@@ -415,7 +415,7 @@ task("test") {
 
         // Exists, is a folder and has sites
         if (repoFolder.exists() && repoFolder.isDirectory() && (repoFolder.listFiles().length > 0)) {
-            def dataFolderSuffix = "-${new Date().format("YYYYmmDD")}-${UUID.randomUUID().toString()}"
+            def dataFolderSuffix = "-${new Date().format("YYYYMMdd")}-${UUID.randomUUID().toString()}"
 
             logger.lifecycle("About to begin automatic testing suite")
             logger.lifecycle("Current Data folder will be move to data_${dataFolderSuffix}")
