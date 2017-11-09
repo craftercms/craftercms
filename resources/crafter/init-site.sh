@@ -26,10 +26,10 @@ if [ -z "$1" ]; then
 	exit 2
 fi
 
-if [ ! -d "DELIVERY_ROOT/../crafter-authroting" ]; then
+if [ ! -d "DELIVERY_ROOT/../crafter-authoring" ]; then
 	if [ -z "$2" ]; then
 		echo -e "\033[38;5;196m"
-		echo -e "Unable to find site $1 default repository path (../crafter-authroing/data/repos/sites/$1/published)."
+		echo -e "Unable to find site $1 default repository path (../crafter-authoring/data/repos/sites/$1/published)."
 		echo -e "Location for site $1 repository location is needed."
 		echo -e "\033[0m"
 		help
