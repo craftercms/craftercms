@@ -5,6 +5,7 @@ import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
+import java.util.UUID
 
 buildscript {
     repositories {
@@ -265,11 +266,11 @@ task("start") {
 
     doLast {
         def extraStartupParams = []
-        if (startMongodb){
+        if (startMongodb) {
             extraStartupParams.add("forceMongo")
         }
         def env = getEnv()
-        println "Running for the first time might take longer while fetching OS dependent requirements."
+        logger.lifecycle "Running for the first time might take longer while fetching OS dependent requirements."
         switch (env) {
             case "all":
                 if (!file(authEnv).exists() || !file(deliveryEnv).exists()) {
@@ -301,7 +302,7 @@ task("stop") {
 
     doLast {
         def extraStartupParams = []
-        if (startMongodb){
+        if (startMongodb) {
             extraStartupParams.add("forceMongo")
         }
         def env = getEnv()
@@ -385,6 +386,7 @@ task("build") {
 
 task("test") {
     description "Builds and run tests"
+    def repoFolder = file("${authEnv}/data/repos/sites")
     doFirst {
         def driverPath = ""
         switch (browserToTest.toString().toLowerCase()) {
@@ -410,12 +412,27 @@ task("test") {
             properties.add("${browserToTest}.driver.path=${StringEscapeUtils.escapeJava(file(driverPath).absolutePath)}")
             Files.write(Paths.get("./src/test-suite/test-properties.properties"), properties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
         }
+
+        // Exists, is a folder and has sites
+        if (repoFolder.exists() && repoFolder.isDirectory() && (repoFolder.listFiles().length > 0)) {
+            def dataFolderSuffix = "-${new Date().format("YYYYMMdd")}-${UUID.randomUUID().toString()}"
+
+            logger.lifecycle("About to begin automatic testing suite")
+            logger.lifecycle("Current Data folder will be move to data_${dataFolderSuffix}")
+            logger.lifecycle("It will move it back when done ")
+            sleep(5 * 1000)
+            repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath + dataFolderSuffix)
+            repoFolder.parentFile.parentFile.mkdir()
+            Files.write(Paths.get(repoFolder.parentFile.parentFile.absolutePath, "_btbk.txt"), [dataFolderSuffix], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
+        }
+
     }
 
     doLast {
         startAuth(commandLinePrefix, startUpFile)
         try {
-
+            logger.lifecycle("Wating for Authoring to finish startup.")
+            sleep(30 * 1000)
             buildModule(commandLinePrefix,
                     "test-suite", "./src/",
                     ["-Dfile=" + testingSuites],
@@ -423,9 +440,23 @@ task("test") {
         } catch (GradleException ex) { // no nothing
         } finally {
             stopAuth(commandLinePrefix, shutDownFile)
+            def folderSuffixCacheFile = Paths.get(repoFolder.parentFile.parentFile.absolutePath, "_btbk.txt").toFile()
+            if (folderSuffixCacheFile.exists()) {
+                logger.lifecycle("Moving back pre-test data")
+                logger.lifecycle("Test data was backup in the folder ${folderSuffixCacheFile.toString()}")
+                logger.lifecycle("This folder can be safely remove if needed.")
+                def dataFolderSufix = Files.readAllLines(folderSuffixCacheFile.toPath(), Charset.forName("UTF-8")).get(0)
+                def backupedFolder = file(repoFolder.parentFile.parentFile.absolutePath + dataFolderSufix)
+                if (backupedFolder.exists()) {
+                    repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath +
+                            "$dataFolderSufix-td")
+                    backupedFolder.renameTo(Paths.get(backupedFolder.parentFile.absolutePath, "data").toString())
+                }
+            }
         }
     }
 }
+
 task("deploy") {
     description "Setup the Crafter CMS environment/s"
 
@@ -543,19 +574,18 @@ def cloneModule(commandLinePrefix, module) {
             }
             def arry = commandLinePrefix + gitCloneCmd + ["-b", gitSourceBranch, finalUrl, path]
             if (file(path).exists()) {
-                println("Module ${module} has already been initialized, please use " +
+                logger.lifecycle("Module ${module} has already been initialized, please use " +
                         "'update' to update it.")
             } else {
-                println "Cloning: ${module}, branch: ${gitSourceBranch}, url: ${finalUrl}"
+                logger.lifecycle "Cloning: ${module}, branch: ${gitSourceBranch}, url: ${finalUrl}"
                 executeProcess(arry, ".")
             }
         }
     }
 }
 
-
 //TODO: all of this can be just on function with 4 params.
-def startAuth(commandLinePrefix, startUpFile, params=[]) {
+def startAuth(commandLinePrefix, startUpFile, params = []) {
     def btask = tasks.findByPath("startAuth")
     if (btask != null) {
         return btask
@@ -566,18 +596,18 @@ def startAuth(commandLinePrefix, startUpFile, params=[]) {
     }
 }
 
-def startDelivery(commandLinePrefix, startUpFile, params=[]) {
+def startDelivery(commandLinePrefix, startUpFile, params = []) {
     def btask = tasks.findByPath("startDelivery")
     if (btask != null) {
         return btask
     } else {
         tasks.create("startDelivery") {
-            executeProcess(commandLinePrefix + [startUpFile] +params, "$deliveryEnv/bin", true)
+            executeProcess(commandLinePrefix + [startUpFile] + params, "$deliveryEnv/bin", true)
         }
     }
 }
 
-def stopAuth(commandLinePrefix, shutDownFile, params=[]) {
+def stopAuth(commandLinePrefix, shutDownFile, params = []) {
     def btask = tasks.findByPath("stopAuth")
     if (btask != null) {
         return btask
@@ -588,13 +618,13 @@ def stopAuth(commandLinePrefix, shutDownFile, params=[]) {
     }
 }
 
-def stopDelivery(commandLinePrefix, shutDownFile, params=[]) {
+def stopDelivery(commandLinePrefix, shutDownFile, params = []) {
     def btask = tasks.findByPath("stopDelivery")
     if (btask != null) {
         return btask
     } else {
         tasks.create("stopDelivery") {
-            executeProcess(commandLinePrefix + [shutDownFile] +params, "$deliveryEnv/bin", true)
+            executeProcess(commandLinePrefix + [shutDownFile] + params, "$deliveryEnv/bin", true)
         }
     }
 }
@@ -648,7 +678,7 @@ def deployBinary(deployable, env) {
             into path.take(path.lastIndexOf('/'))
         }
     } else {
-        println "WARN: You haven't built ${module} module"
+        logger.lifecycle "WARN: You haven't built ${module} module"
     }
 }
 
@@ -658,11 +688,11 @@ def deployModule(commandLinePrefix, module, env) {
         return dtask
     } else {
         return tasks.create("deploy${module}${env}") {
-            println "Deploy ${module} to ${env}"
+            logger.lifecycle "Deploy ${module} to ${env}"
             if (module.equals("studio") && env.equals("delivery")) {
-                println "Ignoring module 'studio' can not be deployed in environment 'delivery'"
+                logger.lifecycle "Ignoring module 'studio' can not be deployed in environment 'delivery'"
             } else if ((module.equals("profile") && !includeProfile) || (module.equals("social") && !includeSocial)) {
-                println "Ignoring module '$module' not enabled for environment '$env'"
+                logger.lifecycle "Ignoring module '$module' not enabled for environment '$env'"
             } else {
                 def deployable = file(VALID_DEPLOYABLE_MODULES[module])
                 deployBinary(deployable, env)
@@ -759,10 +789,9 @@ def watchProcessOutput(process, processOutputFile) {
             reader = Files.newBufferedReader(Paths.get(processOutputFile.path), Charset.forName("UTF-8"))
         }
         while (process.alive) {
-            // Thread.sleep(100)
             def line = null
             while ((line = reader.readLine()) != null) {
-                println line
+                logger.lifecycle line
             }
         }
         processOutputFile.delete()
@@ -773,29 +802,8 @@ def askForPath() {
     def console = System.console();
     def inputPath = console.readLine("> Please enter path for selemiun driver of ${browserToTest} ")
     if (!file(inputPath).exists()) {
-        console.println("${inputPath} does not exist, please enter a new valid path");
+        console.logger.lifecycle("${inputPath} does not exist, please enter a new valid path");
         askForPath();
     }
     return inputPath
-}
-
-
-def waitUntilAuthIsUp(tryThinsManyTimes) {
-    if (tryThinsManyTimes <= 0) {
-        return false
-    } else {
-        try {
-            URL url = new URL("http://localhost:${authTomcatPort}/studio");
-            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-            HttpURLConnection.setFollowRedirects(false);
-            huc.setConnectTimeout(30000);
-            huc.setRequestMethod("GET");
-            huc.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 (.NET CLR 3.5.30729)");
-            huc.connect();
-            return true
-        } catch (java.net.SocketTimeoutException | java.net.ConnectException ex) {
-            println "Studio is not Ready yet trying again"
-            waitUntilAuthIsUp(tryThinsManyTimes - 1)
-        }
-    }
 }
