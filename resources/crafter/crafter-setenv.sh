@@ -34,7 +34,6 @@ export MONGODB_HOME="$CRAFTER_HOME/mongodb"
 export MONGODB_PID="$CRAFTER_ROOT/data/mongodb/mongod.lock"
 export MONGODB_DATA_DIR="$CRAFTER_ROOT/data/mongodb"
 export MONGODB_LOGS_DIR="$CRAFTER_ROOT/logs/mongodb"
-export TOMCAT_HTTP_PORT=@TOMCAT_HTTP_PORT@
 export MYSQL_DATA="$CRAFTER_ROOT/data/db"
 
 case "$(uname -s)" in

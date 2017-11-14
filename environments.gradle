@@ -157,7 +157,9 @@ task("authoringEnvironment"){
                                            MARIADB_PORT: String.valueOf(authMariaDbPort),
                                            TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
                                            MONGODB_PORT:String.valueOf(authMongoDBPort),
-                                           ENV:"authoring"
+                                           ENV:"authoring",
+                                           VERSION:project.version,
+                                           GIT_BUILD_ID:gitRevisionId
 
             ])
         }
@@ -318,7 +320,9 @@ task("deliveryEnvironment"){
                                            DEPLOYMENT_DIR: String.valueOf(deliveryDeploymentDir),
                                            TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
                                            MONGODB_PORT:String.valueOf(deliveryMongoDBPort),
-                                           ENV:"delivery"
+                                           ENV:"delivery",
+                                           VERSION:project.version,
+                                           GIT_BUILD_ID:gitRevisionId
             ])
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/")).exists() && !forceDeploy) {

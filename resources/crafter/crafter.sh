@@ -39,11 +39,26 @@ function help() {
   echo "    debug_tomcat, Starts Tomcat in debug mode"
   echo "    start_mongodb, Starts Mongo DB"
   echo "    stop_mongodb, Stops Mongo DB"
+  echo "    status, Status of all CrafterCms subsystems"
+  echo "    status_tomcat,Status of Tomcat"
+  echo "    status_deployer, Status of Deployer"
+  echo "    status_solr, Status of Solr"
+  echo "    status_mariadb, Status of MariaDB"
+  echo "    status_mongodb, Status of MonoDb"
   echo "    backup <name>, Perform a backup of all data"
   echo "    restore <file>, Perform a restore of all data"
-  exit 0;
+  exit 2;
 }
 
+
+function version(){
+ echo "Crafter CMS Copyright \(C) 2007-2013 Crafter Software Corporation."
+ echo "Version @VERSION@-@GIT_BUILD_ID@"
+}
+
+function man(){
+    man
+}
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
   echo $pid
@@ -128,12 +143,12 @@ function startSolr() {
       echo $possiblePID > $SOLR_PID
       echo "Process PID $possiblePID is listening port $SOLR_PORT"
       echo "Hijacking PID and saving into $SOLR_PID"
-      exit
+      exit 0
     fi
   else
     # IS it really up ?
     if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
-      exit 5
+      exit 6
     fi
     if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
     then
@@ -169,7 +184,7 @@ function debugSolr() {
   else
     # IS it really up ?
     if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
-      exit 5
+      exit 6
     fi
     if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
     then
@@ -231,7 +246,7 @@ function startTomcat() {
   else
     # Is it really up?
     if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
-      exit 5
+      exit 4
     fi
     if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
     then
@@ -267,7 +282,7 @@ function debugTomcat() {
   else
     # Is it really up?
     if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
-      exit 5
+      exit 4
     fi
     if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
     then
@@ -343,7 +358,7 @@ function startMongoDB(){
   else
     # Is it really up?
     if ! checkPortForRunning $MONGODB_PORT $(cat "$MONGODB_PID");then
-      exit 5
+      exit 7
     fi
 
     if ! pgrep -u `whoami` -F "$MONGODB_PID" >/dev/null
@@ -419,7 +434,6 @@ function solrStatus(){
     echo -e "\033[0m"
   fi
 }
-
 function deployerStatus(){
   echo "------------------------------------------------------------"
   echo "Crafter Deployer status                                     "
@@ -432,6 +446,12 @@ function deployerStatus(){
     echo "$deployerStatusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
     echo -e  "Status:\t"
     echo "$deployerStatusOut"  | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
+    deployerVersion=$(curl --silent  -f  "http://localhost:$DEPLOYER_PORT/api/1/monitor/version")
+    if [ $? -eq 0 ]; then
+        echo -e  "Version:\t"
+        printf $(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')
+        echo "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
+    fi
   else
     echo -e "\033[38;5;196m"
     echo "Crafter Deployer is not running or is unreachable on port $DEPLOYER_PORT"
@@ -452,14 +472,26 @@ function studioStatus(){
     echo "$studioStatusOut" | python -m json.tool | grep uptime | awk -F"[,|:]" '{print $2}'
     echo -e  "Status:\t"
     echo "$studioStatusOut" | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
-    echo -e "MySQL sub-process:\t"
-    echo -e "PID \t"
-    echo ` cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
+    deployerVersion=$(curl --silent  -f  "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/version.json")
+    if [ $? -eq 0 ]; then
+        echo -e  "Version:\t"
+        printf $(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')
+        echo "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
+    fi
   else
     echo -e "\033[38;5;196m"
-    echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTTP_PORT"
+    echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTT
+    P_PORT"
     echo -e "\033[0m"
   fi
+}
+
+function mariadbStatus(){
+  echo "------------------------------------------------------------"
+  echo "MariaDB status                                              "
+  echo "------------------------------------------------------------"
+  echo -e "PID \t"
+  echo `cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
 }
 
 function mongoDbStatus(){
@@ -509,7 +541,8 @@ function status(){
   solrStatus
   deployerStatus
   studioStatus
-  if isMongoNeeded ; then
+  mariadbStatus
+ if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
     mongoDbStatus
   fi
 }
@@ -729,6 +762,26 @@ case $1 in
   ;;
   restore)
     doRestore $2
+  ;;
+  status_tomcat)
+    studioStatus
+  ;;
+  status_deployer)
+    deployerStatus
+  ;;
+  status_solr)
+    solrStatus
+  ;;
+  status_mongo)
+   if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
+    mongoDbStatus
+  fi
+  ;;
+  status_mariadb)
+    mariadbStatus
+  ;;
+  --v | --version)
+    version
   ;;
   *)
   help

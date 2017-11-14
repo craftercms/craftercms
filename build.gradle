@@ -14,6 +14,7 @@ buildscript {
     dependencies {
         classpath group: 'org.apache.commons', name: 'commons-text', version: '1.1'
         classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+        classpath 'org.ajoberstar:grgit:1.1.0'
 
     }
 }
@@ -21,6 +22,8 @@ buildscript {
 plugins {
     id "de.undercouch.download" version "3.1.2"
 }
+
+project.version ="3.0.2-SNAPSHOT"
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
 def isOSX = System.getProperty('os.name').toLowerCase().contains('mac')
@@ -151,7 +154,8 @@ ext {
             "10586": "https://download.microsoft.com/download/C/0/7/C07EBF21-5305-4EC8-83B1-A6FCC8F93F45/MicrosoftWebDriver.msi",
             "10240": "https://download.microsoft.com/download/8/D/0/8D0D08CF-790D-4586-B726-C6469A9ED49C/MicrosoftWebDriver.msi"
     ]
-
+    git = org.ajoberstar.grgit.Grgit.open(dir: ".")
+    gitRevisionId = git.head().id.substring(0,6)
 }
 
 apply from: "downloads.gradle"
