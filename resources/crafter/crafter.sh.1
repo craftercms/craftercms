@@ -1,0 +1,470 @@
+'\" t
+.\"     Title: crafter.sh
+.\"    Author: [FIXME: author] [see http://www.docbook.org/tdg5/en/html/author]
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: 11/14/2017
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "CRAFTER\&.SH" "1" "11/14/2017" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+crafter.sh \- Handles lifecycle of Crafter CMS subsystems\&.
+.SH "SYNOPSIS"
+.sp
+\fBcrafter\&.sh\fR [\fIOPTION\fR]
+.SH "DESCRIPTION"
+.sp
+The crafter\&.sh starts,stop check status, restore and backups Crafter CMS subsystems\&. Paths and ports are configure in the file \fIcrafter\-setenv\&.sh\fR (see \fBCRAFTER\-SETENV\fR)\&.
+.SH "OPTION"
+.PP
+\fBstart\fR (\fIforceMongo\fR)
+.RS 4
+Starts all Crafter CMS subsystems (\fIMariaDb\fR,\fIStudio\fR,\fISolr\fR,\fIDeployer\fR) if the current installation requires it also starts Mongodb this can be forced if
+\fIforceMongo\fR
+send as a second argument\&.
+.RE
+.PP
+\fBstop\fR
+.RS 4
+Starts all Crafter CMS subsystems (\fIMariaDb\fR,\fIStudio\fR,\fISolr\fR,\fIDeployer\fR,\fIMongoDb\fR)
+.RE
+.PP
+\fBstatus\fR
+.RS 4
+Check the status of all Crafter CMS subsystems (\fIMariaDb\fR,\fIStudio\fR,\fISolr\fR,\fIDeployer\fR,\fIMongoDb\fR) returns the PID for all of them for
+\fIStudio\fR,
+\fISolr\fR,\fIDeployer\fR
+will also return the
+\fIuptime\fR
+and the
+\fIversion\fR
+that is currently running\&.
+.RE
+.PP
+\fBdebug\fR (\fIforceMongo\fR)
+.RS 4
+Starts all Crafter CMS subsystems (\fIMariaDb\fR,\fIStudio\fR,\fISolr\fR,\fIDeployer\fR) if the current installation requires it also starts Mongodb this can be forced if
+\fIforceMongo\fR
+send as a second param\&.
+\fIStudio\fR,\fISolr\fR
+and
+\fIDeployer\fR
+also starts with JDPA socket listening\&.
+.RE
+.PP
+\fBstart_tomcat\fR
+.RS 4
+Start Crafter CMS
+\fIStudio\fR
+subsystem\&. This subsystem includes
+\fIMariaDB\fR
+and
+\fIEngine\fR
+.RE
+.PP
+\fBstop_tomcat\fR
+.RS 4
+Start Crafter CMS
+\fIStudio\fR
+subsystem\&. This subsystem includes
+\fIMariaDB\fR
+and
+\fIEngine\fR
+.RE
+.PP
+\fBdebug_tomcat\fR
+.RS 4
+Start Crafter CMS
+\fIStudio\fR
+subsystem with the JDPA socket listening\&. This subsystem includes
+\fIMariaDB\fR
+and
+\fIEngine\fR
+.RE
+.PP
+\fBstatus_tomcat\fR
+.RS 4
+Returns the information of
+\fIStudio\fR
+subsystem including:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+PID:  Process id of the subsystem\&.
+uptime: Time since the subsystem is up in the \*(Aqhour\*(Aq \*(Aqminute\*(Aq \*(Aqseconds\*(Aq format\&.
+status: Status of the subsystem\&.
+version: Current version and build number\&.
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.PP
+\fBstart_deployer\fR
+.RS 4
+Start Crafter CMS
+\fIDeployer\fR
+subsystem\&.
+.RE
+.PP
+\fBstop_deployer\fR
+.RS 4
+Start Crafter CMS
+\fIDeployer\fR
+subsystem\&.
+.RE
+.PP
+\fBdebug_deployer\fR
+.RS 4
+Start Crafter CMS
+\fIDeployer\fR
+subsystem with the JDPA socket listening\&.
+.RE
+.PP
+\fBstatus_deployer\fR
+.RS 4
+Returns the information of
+\fIDeployer\fR
+subsystem including:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+PID:  Process id of the subsystem\&.
+uptime: Time since the subsystem is up in the \*(Aqhour\*(Aq \*(Aqminute\*(Aq \*(Aqseconds\*(Aq format\&.
+status: Status of the subsystem\&.
+version: Current version and build number\&.
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.PP
+\fBstart_solr\fR
+.RS 4
+Start Crafter CMS
+\fIDeployer\fR
+subsystem\&.
+.RE
+.PP
+\fBstop_solr\fR
+.RS 4
+Start Crafter CMS
+\fIDeployer\fR
+subsystem\&.
+.RE
+.PP
+\fBdebug_solr\fR
+.RS 4
+Start Crafter CMS
+\fIDeployer\fR
+subsystem with the JDPA socket listening\&.
+.RE
+.PP
+\fBstatus_solr\fR
+.RS 4
+Returns the information of
+\fISolr\fR
+subsystem including:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+PID:  Process id of the subsystem\&.
+uptime: Time since the subsystem is up in minutes\&.
+version: Current Solr version\&.
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.PP
+\fBstart_mongodb\fR
+.RS 4
+Start Crafter CMS
+\fIMongodb\fR
+subsystem\&. If the $CRAFTER_HOME/bin/mongodb folder is not found it will download and extract the configured mongodb version\&.
+.RE
+.PP
+\fBstop_mongodb\fR
+.RS 4
+Start Crafter CMS
+\fIDeployer\fR
+subsystem\&.
+.RE
+.PP
+\fBstatus_mongodb\fR
+.RS 4
+Returns the information of
+\fIMongodb\fR
+subsystem including:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+PID:  Process id of the subsystem\&.
+.fi
+.if n \{\
+.RE
+.\}
+.RE
+.PP
+\fBbackup\fR \fIZIP FILE\fR
+.RS 4
+Backup all Crafter CMS subsystems (\fIMariaDb\fR,\fIStudio\fR,\fISolr\fR,\fIDeployer\fR,\fIMongoDb\fR) data in the given
+\fIZIP FILE\fR\&.
+.RE
+.PP
+\fBbackup\fR \fIZIP FILE\fR
+.RS 4
+Restores all Crafter CMS subsystems (\fIMariaDb\fR,\fIStudio\fR,\fISolr\fR,\fIDeployer\fR,\fIMongoDb\fR) data form
+\fIZIP FILE\fR\&. All subsystems must be shutdown before performing the restore\&.
+.RE
+.PP
+\fBman\fR
+.RS 4
+Shows this man page
+.RE
+.PP
+\fB\-v, \-\-version\fR
+.RS 4
+Print program version number\&.
+.RE
+.SH "CRAFTER\-SETENV"
+.sp
+Environment Variables set by \fIcrafter\-setenv\&.sh\fR file\&.
+.PP
+\fBCATALINA_HOME\fR=PATH
+.RS 4
+Tomcat catalina home path\&.
+.RE
+.PP
+\fBCATALINA_PID\fR=FILE
+.RS 4
+Location of where to save tomcat process id file\&.
+.RE
+.PP
+\fBCATALINA_LOGS_DIR\fR=PATH
+.RS 4
+Location of where to save tomcat logs
+.RE
+.PP
+\fBCATALINA_OUT\fR=PATH
+.RS 4
+Location of where to save
+\fIcatalina\&.out\fR
+.RE
+.PP
+\fBCRAFTER_APPLICATION_LOGS\fR=PATH
+.RS 4
+Location where the
+\fIStudio\fR
+and
+\fIEngine\fR
+subsystem logs are saved\&.
+.RE
+.PP
+\fBCATALINA_OPTS\fR=PATH
+.RS 4
+JVM options send to tomcat\&.
+.RE
+.PP
+\fBTOMCAT_HTTP_PORT\fR=NUMBER
+.RS 4
+(Read only) On which port tomcat is running\&.
+.RE
+.PP
+\fBPROFILE_DEPLOY_WAR_PATH\fR=PATH
+.RS 4
+Location of
+\fIcrafter\-profile\fR
+war was exploded\&. Used to check if
+\fIMongodb\fR
+is needed
+.RE
+.PP
+\fBPROFILE_WAR_PATH\fR=FILE
+.RS 4
+Location of the
+\fIcrafter\-profile\&.war\fR
+file\&. Used to check if
+\fIMongodb\fR
+is needed\&.
+.RE
+.PP
+\fBSOLR_PORT\fR=NUMBER
+.RS 4
+Port on which Solr wil be run at\&.
+.RE
+.PP
+\fBSOLR_INDEXES_DIR\fR=PATH
+.RS 4
+Location of where to save Solr indexes\&.
+.RE
+.PP
+\fBSOLR_LOGS_DIR\fR=PATH
+.RS 4
+Location of where to save solr logs
+.RE
+.PP
+\fBSOLR_PID\fR=FILE
+.RS 4
+Location of Solr process id file\&.
+.RE
+.PP
+\fBSOLR_JAVA_OPTS\fR=PATH
+.RS 4
+JVM options send to tomcat\&.
+.RE
+.PP
+\fBSOLR_HOME\fR=PATH
+.RS 4
+Solr home\&.
+.RE
+.PP
+\fBDEPLOYER_PORT\fR=NUMBER
+.RS 4
+Port on which Deployer will be run at\&.
+.RE
+.PP
+\fBDEPLOYER_DATA_DIR\fR=PATH
+.RS 4
+Location of where to save Deployer site repo information\&.
+.RE
+.PP
+\fBDEPLOYER_LOGS_DIR\fR=PATH
+.RS 4
+Location of where to save Deployer logs
+.RE
+.PP
+\fBDEPLOYER_DEPLOYMENTS_DIR\fR=PATH
+.RS 4
+Location of where to save Deployer site repos\&.\&.
+.RE
+.PP
+\fBDEPLOYER_SDOUT\fR=FILE
+.RS 4
+Location of where to deployer stdout\&.
+.RE
+.PP
+\fBDEPLOYER_JAVA_OPTS\fR=PATH
+.RS 4
+JVM options send to tomcat\&.
+.RE
+.PP
+\fBDEPLOYER_PID\fR=FILE
+.RS 4
+Location of Deployer process id file\&.
+.RE
+.PP
+\fBMONGODB_PORT\fR=NUMBER
+.RS 4
+Port on which MongoDB will be run at\&.
+.RE
+.PP
+\fBMONGODB_HOME\fR=PATH
+.RS 4
+MongoDB installation dir\&.
+.RE
+.PP
+\fBMONGODB_PID\fR=FILE
+.RS 4
+Location of MongoDB process id file\&.
+.RE
+.PP
+\fBMONGODB_DATA_DIR\fR=PATH
+.RS 4
+Location of where MongoDB databases are saved\&.
+.RE
+.PP
+\fBMONGODB_LOGS_DIR\fR=FILE
+.RS 4
+Location of where to save mongodb logs\&.
+.RE
+.PP
+\fBMYSQL_DATA\fR=PATH
+.RS 4
+Location of MARIADB data files\&.
+.RE
+.PP
+\fBMYSQL_PID_FILE_NAME\fR=FILE
+.RS 4
+Location of MariaDB process id file\&.
+.RE
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure Trying to run Crafter CMS as root\&.
+.RE
+.PP
+\fB4\fR
+.RS 4
+Failure starting Tomcat
+.RE
+.PP
+\fB5\fR
+.RS 4
+Failure Trying to run Crafter CMS in a 32bit OS\&.
+.RE
+.PP
+\fB6\fR
+.RS 4
+Failure starting Solr
+.RE
+.PP
+\fB7\fR
+.RS 4
+Failure starting MongoDB
+.RE
+.SH "BUGS"
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+https://github\&.com/craftercms/craftercms/issues
+.fi
+.if n \{\
+.RE
+.\}
+.SH "RESOURCES"
+.sp
+Documentation: http://docs\&.craftercms\&.org/en/3\&.0/
+.sp
+Main web site: http://craftercms\&.org/
+.sp
+Source Code: https://github\&.com/craftercms/craftercms/
+.SH "COPYING"
+.sp
+Copyright (C) 2007\-2013 Crafter Software Corporation\&. Free use of this software is granted under the terms of the GNU General Public License v3 (GPL3)\&.
