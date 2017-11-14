@@ -56,7 +56,7 @@ function version(){
  echo "Version @VERSION@-@GIT_BUILD_ID@"
 }
 
-function man(){
+function manPages(){
     man "$CRAFTER_HOME/crafter.sh.1"
 }
 function pidOf(){
@@ -782,6 +782,9 @@ case $1 in
   ;;
   --v | --version)
     version
+  ;;
+  man)
+    manPages
   ;;
   *)
   help
