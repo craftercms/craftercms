@@ -57,7 +57,7 @@ function version(){
 }
 
 function man(){
-    man
+    man "$CRAFTER_HOME/crafter.sh.1"
 }
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
