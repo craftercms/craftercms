@@ -47,6 +47,8 @@ function help() {
   echo "    status_mongodb, Status of MonoDb"
   echo "    backup <name>, Perform a backup of all data"
   echo "    restore <file>, Perform a restore of all data"
+  echo ""
+  echo "For more information use '$(basename $BASH_SOURCE) man'"
   exit 2;
 }
 
