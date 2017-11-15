@@ -482,8 +482,7 @@ function studioStatus(){
     fi
   else
     echo -e "\033[38;5;196m"
-    echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTT
-    P_PORT"
+    echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTTP_PORT"
     echo -e "\033[0m"
   fi
 }
