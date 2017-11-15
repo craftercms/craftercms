@@ -20,6 +20,7 @@ task("authoringEnvironment"){
             copy {
                 from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
                 into "${authEnv}/bin"
+                exclude "**/webapps/**"
             }
             file("${authEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${authEnv}/bin/apache-tomcat"))
             file("${authEnv}/bin/apache-tomcat/shared/lib").mkdirs()
@@ -49,8 +50,9 @@ task("authoringEnvironment"){
         file("${authEnv}/data/deployer").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${authEnv}/bin/apache-tomcat/webapps/")
-        webapps.deleteDir()
-        webapps.mkdir()
+        if (!webapps.exists()) {
+            webapps.mkdir()
+        }
 
         copy{
             from "./resources/tomcat-config/setenv.sh"
@@ -196,6 +198,7 @@ task("deliveryEnvironment"){
             copy {
                 from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
                 into "${deliveryEnv}/bin"
+                exclude "**/webapps/**"
             }
             file("${deliveryEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${deliveryEnv}/bin/apache-tomcat"))
             file("${deliveryEnv}/bin/apache-tomcat/shared/lib").mkdirs()
@@ -224,8 +227,10 @@ task("deliveryEnvironment"){
         file("${deliveryEnv}/data/deployer").mkdirs()
         /** Remove Non util stuff **/
         def webapps = file("${deliveryEnv}/bin/apache-tomcat/webapps/")
-        webapps.deleteDir()
-        webapps.mkdir()
+        if (!webapps.exists()) {
+            webapps.mkdir()
+        }
+
 
         copy{
             from "./resources/tomcat-config/setenv.sh"
