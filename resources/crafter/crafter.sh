@@ -559,7 +559,7 @@ function status(){
 function doBackup() {
   export TARGET_NAME=$1
   if [ -z "$TARGET_NAME" ]; then
-    if [ -d "$MYSQL_DATA" ]; then
+    if [ -x "$CRAFTER_HOME/dbms/bin/mysqldump" ]; then
       export TARGET_NAME="crafter-authoring-backup"
     else
       export TARGET_NAME="crafter-delivery-backup"
@@ -579,13 +579,11 @@ function doBackup() {
 
   # MySQL Dump
   if [ -d "$MYSQL_DATA" ]; then
-    if [ ! -x "$CRAFTER_HOME/dbms/bin/mysqldump" ]; then
-      echo "Missing mysqldump binary, please upgrade your installation and try again"
-      exit 1
+    if [ -x "$CRAFTER_HOME/dbms/bin/mysqldump" ]; then
+      #Do dump
+      echo "Adding mysql dump"
+      $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
     fi
-    #Do dump
-    echo "Adding mysql dump"
-    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
   fi
 
   # MongoDB Dump
