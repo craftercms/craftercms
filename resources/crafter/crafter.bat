@@ -113,6 +113,9 @@ IF NOT DEFINED TARGET_NAME (
 FOR /F "tokens=2-4 delims=/ " %%a IN ("%DATE%") DO (SET CDATE=%%c-%%a-%%b)
 FOR /F "tokens=1-3 delims=:. " %%a IN ("%TIME%") DO (SET CTIME=%%a-%%b-%%c)
 SET TARGET_FILE="%CRAFTER_HOME%backups\%TARGET_NAME%-%CDATE%-%CTIME%.zip"
+IF EXIST "%TARGET_FILE%" (
+  DEL /Q "%TARGET_FILE%"
+)
 SET TEMP_FOLDER=%CRAFTER_HOME%temp
 
 echo "Starting backup into %TARGET_FILE%"
@@ -121,18 +124,24 @@ md "%CRAFTER_HOME%backups"
 
 REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
+	IF NOT EXIST "%CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe" (
+		echo "Missing mysqldump binary, please upgrade your installation and try again"
+		exit /b 1
+	)
 	echo "Adding MySQL dump"
 	start cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql
 )
 
 REM MongoDB Dump
 IF EXIST %MONGODB_DATA_DIR% (
-  echo "Adding mongodb dump"
-  %CRAFTER_BIN_FOLDER%\mongodb\bin\mongodump --port %MONGODB_PORT% --out "%TEMP_FOLDER%\mongodb" --quiet
-  cd "%TEMP_FOLDER%\mongodb"
-  java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar zip . "%TEMP_FOLDER%\mongodb.zip"
-  cd %CRAFTER_BIN_FOLDER%
-  rd /Q /S %TEMP_FOLDER%\mongodb
+  IF EXIST "%CRAFTER_BIN_FOLDER%\mongodb\bin\mongodump" (
+    echo "Adding mongodb dump"
+    %CRAFTER_BIN_FOLDER%\mongodb\bin\mongodump --port %MONGODB_PORT% --out "%TEMP_FOLDER%\mongodb" --quiet
+    cd "%TEMP_FOLDER%\mongodb"
+    java -jar %CRAFTER_BIN_FOLDER%\craftercms-utils.jar zip . "%TEMP_FOLDER%\mongodb.zip"
+    cd %CRAFTER_BIN_FOLDER%
+    rd /Q /S %TEMP_FOLDER%\mongodb
+  )
 )
 
 REM ZIP git repos
