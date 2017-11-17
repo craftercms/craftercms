@@ -16,9 +16,11 @@ function help(){
 	echo "Arguments:"
 	echo -e "\t SITENAME name of the site to be created."
 	echo -e "\t REPO_PATH (optional) location of the site content."
+  echo -e "\t PRIVATE_KEY (optional) location of the SSH private key."
 	echo "Examples:"
 	echo -e "\t $SCRIPT_NAME newSite"
 	echo -e "\t $SCRIPT_NAME newSite /usr/local/data/repos/sites/newSite/published"
+	echo -e "\t $SCRIPT_NAME newSite /usr/local/data/repos/sites/newSite/published /home/admin/.ssh/admin4k"
 }
 # pre flight check.
 if [ -z "$1" ]; then
@@ -26,7 +28,12 @@ if [ -z "$1" ]; then
 	exit 2
 fi
 
-if [ ! -d "DELIVERY_ROOT/../crafter-authoring" ]; then
+export DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+export DELIVERY_ROOT=$( cd "$DELIVERY_HOME/.." && pwd )
+export AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-authoring" && pwd )
+export AUTHORING_SITE_REPOS=$AUTHORING_ROOT/data/repos/sites
+
+if [ ! -d "$DELIVERY_ROOT/../crafter-authoring" ]; then
 	if [ -z "$2" ]; then
 		echo -e "\033[38;5;196m"
 		echo -e "Unable to find site $1 default repository path (../crafter-authoring/data/repos/sites/$1/published)."
@@ -41,11 +48,6 @@ if [ ! -d "DELIVERY_ROOT/../crafter-authoring" ]; then
 	    	exit 4
 	fi
 fi
-
-export DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-export DELIVERY_ROOT=$( cd "$DELIVERY_HOME/.." && pwd )
-export AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-authoring" && pwd )
-export AUTHORING_SITE_REPOS=$AUTHORING_ROOT/data/repos/sites
 
 if [ $# -eq 1 ]; then
 	SITE=$1
