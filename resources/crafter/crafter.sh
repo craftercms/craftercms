@@ -491,21 +491,31 @@ function mariadbStatus(){
   echo "------------------------------------------------------------"
   echo "MariaDB status                                              "
   echo "------------------------------------------------------------"
-  echo -e "PID \t"
-  echo `cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
+  if [ -s "$MYSQL_DATA/$MYSQL_PID_FILE_NAME" ]; then
+    echo -e "PID \t"
+    echo `cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
+  else
+    echo "MariaDB is not running."
+  fi
 }
 
 function mongoDbStatus(){
   echo "------------------------------------------------------------"
   echo "MongoDB status                                              "
   echo "------------------------------------------------------------"
-  if [ -e "$MONGODB_PID" ]; then
-    echo -e "MongoDB PID"
-    echo $(cat $MONGODB_PID)
-  else
-    echo -e "\033[38;5;196m"
-    echo " MongoDB is not running"
-    echo -e "\033[0m"
+ if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
+      if [ -e "$MONGODB_PID" ]; then
+        echo -e "MongoDB PID"
+        echo $(cat $MONGODB_PID)
+      else
+        echo -e "\033[38;5;196m"
+        echo " MongoDB is not running"
+        echo -e "\033[0m"
+      fi
+ elif [ ! -d "$MONGODB_HOME" ]; then
+    echo "MongoDB is not installed."
+ else
+    echo "MongoDB is not running"
   fi
 }
 
@@ -543,9 +553,7 @@ function status(){
   deployerStatus
   studioStatus
   mariadbStatus
- if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
-    mongoDbStatus
-  fi
+  mongoDbStatus
 }
 
 function doBackup() {
@@ -773,10 +781,8 @@ case $1 in
   status_solr)
     solrStatus
   ;;
-  status_mongo)
-   if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
+  status_mongodb)
     mongoDbStatus
-  fi
   ;;
   status_mariadb)
     mariadbStatus
