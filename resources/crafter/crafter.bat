@@ -104,7 +104,7 @@ goto cleanOnExit
 :backup
 SET TARGET_NAME=%2
 IF NOT DEFINED TARGET_NAME (
-  IF EXIST "%MYSQL_DATA%" (
+  IF EXIST "%CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe" (
     SET TARGET_NAME=crafter-authoring-backup
   ) ELSE (
     SET TARGET_NAME=crafter-delivery-backup
@@ -124,12 +124,10 @@ md "%CRAFTER_HOME%backups"
 
 REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
-	IF NOT EXIST "%CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe" (
-		echo "Missing mysqldump binary, please upgrade your installation and try again"
-		exit /b 1
+	IF EXIST "%CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe" (
+		echo "Adding MySQL dump"
+		start cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql
 	)
-	echo "Adding MySQL dump"
-	start cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql
 )
 
 REM MongoDB Dump
