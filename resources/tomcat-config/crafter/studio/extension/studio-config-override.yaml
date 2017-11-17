@@ -42,6 +42,17 @@ studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
 studio.db.dataPath: ../data/db
 
+
+##################################################
+##                   Security                   ##
+##################################################
+# Enable random admin password generation
+# studio.db.initializer.randomAdminPassword.enabled: false
+# Random admin password length
+# studio.db.initializer.randomAdminPassword.length: 16
+# Random admin password allowed chars
+# studio.db.initializer.randomAdminPassword.chars: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*_=+-/
+
 ##################################################
 ##        SMTP Configuration (Email)            ##
 ##################################################
