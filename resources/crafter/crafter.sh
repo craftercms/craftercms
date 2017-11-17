@@ -565,23 +565,32 @@ function doBackup() {
   echo "Starting backup into $TARGET_FILE"
   mkdir -p "$TEMP_FOLDER"
   mkdir -p "$TARGET_FOLDER"
-  rm "$TARGET_FILE"
+  if [ -f "$TARGET_FILE" ]; then
+    rm "$TARGET_FILE"
+  fi
 
   # MySQL Dump
   if [ -d "$MYSQL_DATA" ]; then
+    if [ ! -x "$CRAFTER_HOME/dbms/bin/mysqldump" ]; then
+      echo "Missing mysqldump binary, please upgrade your installation and try again"
+      exit 1
+    fi
     #Do dump
+    echo "Adding mysql dump"
     $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
   fi
 
   # MongoDB Dump
   if [ -d "$MONGODB_DATA_DIR" ]; then
-    echo "Adding mongodb dump"
-    $CRAFTER_HOME/mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
-    cd "$TEMP_FOLDER/mongodb"
-    java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
-    cd ..
-    rm -r mongodb
-    cd ..
+    if [ -x "$CRAFTER_HOME/mongodb/bin/mongodump" ]; then
+      echo "Adding mongodb dump"
+      $CRAFTER_HOME/mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
+      cd "$TEMP_FOLDER/mongodb"
+      java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
+      cd ..
+      rm -r mongodb
+      cd ..
+    fi
   fi
 
   # ZIP git repos
