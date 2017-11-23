@@ -59,7 +59,7 @@ netstat -o -n -a | findstr  "0.0.0.0:%MARIADB_PORT%"
 IF %ERRORLEVEL% equ 0 (
  echo Crafter CMS Database Port: %MARIADB_PORT% is in use.
  echo This might be because of a prior unsuccessful or incomplete shut down.
- echo "Please terminate that process before attempting to start Crafter CMS."
+ echo Please terminate that process before attempting to start Crafter CMS.
  pause
  exit /b 2
 )
