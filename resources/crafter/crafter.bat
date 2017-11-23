@@ -55,6 +55,14 @@ goto :init
 
 :initWithOutExit
 @rem Windows does not support Or in the If soo...
+netstat -o -n -a | findstr  "0.0.0.0:%MARIADB_PORT%"
+IF %ERRORLEVEL% equ 0 (
+ echo Crafter CMS Database Port: %MARIADB_PORT% is in use.
+ echo This might be because of a prior unsuccessful or incomplete shut down.
+ echo "Please terminate that process before attempting to start Crafter CMS."
+ pause
+ exit /b 2
+)
 
 IF EXIST %PROFILE_WAR_PATH% set start_mongo=true
 IF /i "%FORCE_MONGO%"=="forceMongo" set start_mongo=true
@@ -262,6 +270,12 @@ IF /i "%start_mongo%"=="true" (
 @rem Windows keeps vars live until cmd window die.
 set start_mongo=false
 call %CATALINA_HOME%\bin\shutdown.bat
+SLEEP 5
+netstat -o -n -a | findstr  "0.0.0.0:%MARIADB_PORT%"
+IF %ERRORLEVEL% equ 0 (
+  taskkill /IM mysqld.exe
+)
+
 call %DEPLOYER_HOME%\%DEPLOYER_SHUTDOWN%
 taskkill /FI "WINDOWTITLE eq \"Solr-%SOLR_PORT%\"
 goto cleanOnExit

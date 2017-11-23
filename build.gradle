@@ -301,6 +301,42 @@ task("start") {
     }
 }
 
+
+task("status") {
+    description "Start Crafter CMS"
+    if(!isWin) {
+        doLast {
+            def env = getEnv()
+            switch (env) {
+                case "all":
+                    if (!file(authEnv).exists() || !file(deliveryEnv).exists()) {
+                        throw new InvalidUserDataException("Neither enviroment ('authoring'/'delivery') are deployed. Please run deploy before 'status'.")
+                    }
+                    executeProcess(commandLinePrefix + ["./crafter.sh", "status"] , "$authEnv/bin", true)
+                    executeProcess(commandLinePrefix + ["./crafter.sh", "status"] , "$deliveryEnv/bin", true)
+                    break
+                case "authoring":
+                    if (!file(authEnv).exists()) {
+                        throw new InvalidUserDataException("The 'authoring' enviroment is not deployed. Please run 'deploy -Penv=authoring' before 'start'.")
+                    }
+                    executeProcess(commandLinePrefix + ["./crafter.sh", "status"] , "$authEnv/bin", true)
+                    break
+                case "delivery":
+                    if (!file(deliveryEnv).exists()) {
+                        throw new InvalidUserDataException("The 'delivery' enviroment is not deployed. Please run 'deploy -Penv=delivery' before 'start'.")
+                    }
+                    executeProcess(commandLinePrefix + ["./crafter.sh", "status"] , "$deliveryEnv/bin", true)
+                    break
+                default:
+                    throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
+            }
+        }
+    }else{
+        logger.lifecycle("The Status call is not yet avaiable on Windows")
+    }
+}
+
+
 task("stop") {
     description "Stop Crafter CMS"
 
