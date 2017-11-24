@@ -270,7 +270,7 @@ IF /i "%start_mongo%"=="true" (
 @rem Windows keeps vars live until cmd window die.
 set start_mongo=false
 call %CATALINA_HOME%\bin\shutdown.bat
-SLEEP 5
+SLEEP %TIME_BEFORE_KILL%
 netstat -o -n -a | findstr  "0.0.0.0:%MARIADB_PORT%"
 IF %ERRORLEVEL% equ 0 (
   taskkill /IM mysqld.exe
