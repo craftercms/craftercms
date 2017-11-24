@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.UUID;
+
 import org.apache.commons.text.StringEscapeUtils;
 
 import org.craftercms.bundle.utils.Action;
@@ -27,9 +29,12 @@ public class ApiPost implements Action {
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
 
-
-
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+
+                String uuid = UUID.randomUUID().toString();
+                conn.setRequestProperty("Cookie", "XSRF-TOKEN=" + uuid);
+                conn.setRequestProperty("X-XSRF-TOKEN", uuid);
+
                 try (OutputStream out = conn.getOutputStream()) {
                     out.write(body.getBytes());
                 }
