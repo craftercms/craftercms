@@ -36,5 +36,5 @@ SET DEPLOYER_DEBUG=debug.bat
 SET PROFILE_DEPLOY_WAR_PATH=%CATALINA_HOME%/webapps/crafter-profile
 SET PROFILE_WAR_PATH=%CATALINA_HOME%/webapps/crafter-profile.war
 SET FORCE_MONGO=%1
-rem in Seconds
+@rem in Seconds
 SET TIME_BEFORE_KILL=20
