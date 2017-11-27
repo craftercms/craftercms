@@ -55,7 +55,7 @@ function help() {
 
 function version(){
  echo "Crafter CMS Copyright \(C) 2007-2013 Crafter Software Corporation."
- echo "Version @VERSION@-@GIT_BUILD_ID@"
+ echo "Version 3.0.2-SNAPSHOT-62a550"
 }
 
 function manPages(){
@@ -225,38 +225,48 @@ function stopSolr() {
 
 function startTomcat() {
   cd $CRAFTER_HOME
-  echo "------------------------------------------------------------"
-  echo "Starting Tomcat"
-  echo "------------------------------------------------------------"
-  if [ ! -d $CATALINA_LOGS_DIR ]; then
-    mkdir -p $CATALINA_LOGS_DIR;
-  fi
-  # Step 1, does the CATALINA_PID exist and is valid
-  if [ ! -s "$CATALINA_PID" ]; then
-    ## Before run check if the port is available.
-    possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
+  if   [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
 
-    if  [ -z "$possiblePID" ];  then
-      export CATALINA_OPTS="$CATALINA_OPTS -Dcrafter.home=$CRAFTER_ROOT"
-      $CRAFTER_HOME/apache-tomcat/bin/catalina.sh start -secure
-    else
-      echo $possiblePID > $CATALINA_PID
-      echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
-      echo "Hijacking PID and saving into $CATALINA_PID"
-      exit
-    fi
-  else
-    # Is it really up?
-    if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
-      exit 4
-    fi
-    if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
-    then
-      echo "Tomcat Pid file is not ok, forcing startup"
-      rm "$CATALINA_PID"
-      startTomcat
-    fi
-    echo "Tomcat already started"
+      echo "------------------------------------------------------------"
+      echo "Starting Tomcat"
+      echo "------------------------------------------------------------"
+      if [ ! -d $CATALINA_LOGS_DIR ]; then
+        mkdir -p $CATALINA_LOGS_DIR;
+      fi
+      # Step 1, does the CATALINA_PID exist and is valid
+      if [ ! -s "$CATALINA_PID" ]; then
+        ## Before run check if the port is available.
+        possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
+
+        if  [ -z "$possiblePID" ];  then
+          export CATALINA_OPTS="$CATALINA_OPTS -Dcrafter.home=$CRAFTER_ROOT"
+          $CRAFTER_HOME/apache-tomcat/bin/catalina.sh start -secure
+        else
+          echo $possiblePID > $CATALINA_PID
+          echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
+          echo "Hijacking PID and saving into $CATALINA_PID"
+          exit
+        fi
+      else
+        # Is it really up?
+        if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
+          exit 4
+        fi
+        if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
+        then
+          echo "Tomcat Pid file is not ok, forcing startup"
+          rm "$CATALINA_PID"
+          startTomcat
+        fi
+        echo "Tomcat already started"
+      fi
+      else
+       echo ""
+       echo "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(pidOf "$MARIADB_PORT")."
+       echo "This might be because of a prior unsuccessful or incomplete shut down."
+       echo "Please terminate that process before attempting to start Crafter CMS."
+       read -t 10 #Time out for the read, (if gradle start)
+       exit -7
   fi
 }
 
@@ -477,8 +487,8 @@ function studioStatus(){
     deployerVersion=$(curl --silent  -f  "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/version.json")
     if [ $? -eq 0 ]; then
         echo -e  "Version:\t"
-        printf $(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')
-        echo "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
+        printf "$(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')"
+        echo  "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
     fi
   else
     echo -e "\033[38;5;196m"
@@ -578,7 +588,7 @@ function doBackup() {
   # MySQL Dump
   if [ -d "$MYSQL_DATA" ]; then
     #Do dump
-    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=33306 --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
   fi
 
   # MongoDB Dump
@@ -673,10 +683,10 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
     #Install DB
     $CRAFTER_HOME/dbms/bin/mysql_install_db --datadir="$MYSQL_DATA" --basedir="$CRAFTER_HOME/dbms" --no-defaults --force --skip-name-resolve
     #Start DB
-    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir="$CRAFTER_HOME/dbms" --datadir="$MYSQL_DATA" --port=@MARIADB_PORT@ --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
+    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir="$CRAFTER_HOME/dbms" --datadir="$MYSQL_DATA" --port=33306 --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
     sleep 5
     # Import
-    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=@MARIADB_PORT@ < "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=33306 < "$TEMP_FOLDER/crafter.sql"
     # Stop DB
     kill $(cat $CRAFTER_HOME/MariaDB4j.pid)
     start

@@ -35,7 +35,7 @@ export MONGODB_PID="$CRAFTER_ROOT/data/mongodb/mongod.lock"
 export MONGODB_DATA_DIR="$CRAFTER_ROOT/data/mongodb"
 export MONGODB_LOGS_DIR="$CRAFTER_ROOT/logs/mongodb"
 export MYSQL_DATA="$CRAFTER_ROOT/data/db"
-
+export MARIADB_PORT=@MARIADB_PORT@
 case "$(uname -s)" in
    Darwin)
     export MYSQL_PID_FILE_NAME="$(echo "$HOSTNAME" | awk -F'.' '{print $1}' ).pid"
