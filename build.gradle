@@ -96,7 +96,7 @@ ext {
     authMongoDBPort = project.hasProperty("authoring.mongo.port") ? project.property("authoring.mongo.port") : 27020
     authSolrPort = project.hasProperty("authoring.solr.port") ? project.property("authoring.solr.port") : 8694
     authSolrDebugPort = project.hasProperty("authoring.solr.debug.port") ? project.property("authoring.solr.debug.port") : 5005
-
+    authSMTPPort = project.hasProperty("authoring.studio.smtp.port") ? project.property("authoring.studio.smtp.port") : 25
     authMariaDbPort = project.hasProperty("authoring.mariadb.port") ? project.property("authoring.mariadb.port") : 33306
 
     authDeployerPort = project.hasProperty("authoring.deployer.port") ? project.property("authoring.deployer.port") : 9191
