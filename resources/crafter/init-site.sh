@@ -30,23 +30,25 @@ fi
 
 export DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export DELIVERY_ROOT=$( cd "$DELIVERY_HOME/.." && pwd )
-export AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-authoring" && pwd )
-export AUTHORING_SITE_REPOS=$AUTHORING_ROOT/data/repos/sites
-
-if [ ! -d "$DELIVERY_ROOT/../crafter-authoring" ]; then
-	if [ -z "$2" ]; then
+if [ -d "$DELIVERY_ROOT/../crafter-authoring" ]; then
+  export AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-authoring" && pwd )
+  export AUTHORING_SITE_REPOS=$AUTHORING_ROOT/data/repos/sites
+else
+  if [ -z "$2" ]; then
 		echo -e "\033[38;5;196m"
 		echo -e "Unable to find site $1 default repository path (../crafter-authoring/data/repos/sites/$1/published)."
 		echo -e "Location for site $1 repository location is needed."
 		echo -e "\033[0m"
 		help
 		exit 3;
-	elif [ ! -d "$2" ]; then
-	    	echo -e "\033[38;5;196m"
-	    	echo -e " $2 does not exists or unable to read"
-	    	echo -e "\033[0m"
-	    	exit 4
-	fi
+  fi
+fi
+
+if [[ ! "$2" =~ ^ssh.* ]] && [ ! -d "$2" ]; then
+    	echo -e "\033[38;5;196m"
+    	echo -e " $2 does not exists or unable to read"
+    	echo -e "\033[0m"
+    	exit 4
 fi
 
 if [ $# -eq 1 ]; then
