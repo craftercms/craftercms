@@ -569,7 +569,7 @@ function status(){
 function doBackup() {
   export TARGET_NAME=$1
   if [ -z "$TARGET_NAME" ]; then
-    if [ -d "$MYSQL_DATA" ]; then
+    if [ -x "$CRAFTER_HOME/dbms/bin/mysqldump" ]; then
       export TARGET_NAME="crafter-authoring-backup"
     else
       export TARGET_NAME="crafter-delivery-backup"
@@ -583,23 +583,30 @@ function doBackup() {
   echo "Starting backup into $TARGET_FILE"
   mkdir -p "$TEMP_FOLDER"
   mkdir -p "$TARGET_FOLDER"
-  rm "$TARGET_FILE"
+  if [ -f "$TARGET_FILE" ]; then
+    rm "$TARGET_FILE"
+  fi
 
   # MySQL Dump
   if [ -d "$MYSQL_DATA" ]; then
-    #Do dump
-    $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=33306 --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+    if [ -x "$CRAFTER_HOME/dbms/bin/mysqldump" ]; then
+      #Do dump
+      echo "Adding mysql dump"
+      $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=$MARIADB_PORT --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+    fi
   fi
 
   # MongoDB Dump
   if [ -d "$MONGODB_DATA_DIR" ]; then
-    echo "Adding mongodb dump"
-    $CRAFTER_HOME/mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
-    cd "$TEMP_FOLDER/mongodb"
-    java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
-    cd ..
-    rm -r mongodb
-    cd ..
+    if [ -x "$CRAFTER_HOME/mongodb/bin/mongodump" ]; then
+      echo "Adding mongodb dump"
+      $CRAFTER_HOME/mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
+      cd "$TEMP_FOLDER/mongodb"
+      java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
+      cd ..
+      rm -r mongodb
+      cd ..
+    fi
   fi
 
   # ZIP git repos
@@ -683,10 +690,10 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
     #Install DB
     $CRAFTER_HOME/dbms/bin/mysql_install_db --datadir="$MYSQL_DATA" --basedir="$CRAFTER_HOME/dbms" --no-defaults --force --skip-name-resolve
     #Start DB
-    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir="$CRAFTER_HOME/dbms" --datadir="$MYSQL_DATA" --port=33306 --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
+    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir="$CRAFTER_HOME/dbms" --datadir="$MYSQL_DATA" --port=$MARIADB_PORT --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
     sleep 5
     # Import
-    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=33306 < "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=$MARIADB_PORT < "$TEMP_FOLDER/crafter.sql"
     # Stop DB
     kill $(cat $CRAFTER_HOME/MariaDB4j.pid)
     start
