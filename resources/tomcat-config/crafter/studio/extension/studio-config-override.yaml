@@ -62,7 +62,7 @@ studio.db.dataPath: ../data/db
 # SMTP server name to send emails.
 # studio.mail.host: localhost
 # SMTP port number to send emails.
-# studio.mail.port: 25
+studio.mail.port: @SMTP_PORT@
 # SMTP username for authenticated access when sending emails.
 # studio.mail.username:
 # SMTP password for authenticated access when sending emails.
