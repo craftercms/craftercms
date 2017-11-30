@@ -17,7 +17,7 @@ set SITE=%1
 set REPO=%2
 set PRIVATE_KEY=%3
 
-IF NOT EXIST %AUTHORING_SITE_REPOS% (
+IF NOT EXIST "%AUTHORING_SITE_REPOS%\%SITE%" (
 	IF "%2" equ "" (
 		echo Unable to find site %1 default repository path ../crafter-authroing/data/repos/sites/%1/published
 		echo Location for site %1 repository location is needed
