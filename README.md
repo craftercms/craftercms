@@ -50,9 +50,9 @@ Archives will be named `crafter-cms-authoring.tar.gz` and `crafter-cms-authoring
 
 For the `delivery` environment, simply substitute the `env=authoring` with `env=delivery`.
 
-## 2.2 Init/Update,Build and Bundle from a given Tag/Branch
+## 2.2 Init/Update, Build and Bundle from a Tag/Branch
 
-To download, build and generate a Bundle from a given Tag or Branch of the source code,
+To download, build and generate a bundle from a given tag or branch of the source code,
 
 1. Clone the branch/tag of craftercms that you want to work with
 ```bash
