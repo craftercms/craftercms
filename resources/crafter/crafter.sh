@@ -55,7 +55,7 @@ function help() {
 
 function version(){
  echo "Crafter CMS Copyright \(C) 2007-2013 Crafter Software Corporation."
- echo "Version 3.0.2-62a550"
+ echo "Version 3.0.3-SNAPSHOT-62a550"
 }
 
 function manPages(){
