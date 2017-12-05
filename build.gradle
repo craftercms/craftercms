@@ -752,9 +752,9 @@ def checkEnvWD(path, env) {
         ddir.mkdir()
         def deployerDir = file("${path}/bin/crafter-deployer")
         deployerDir.mkdir()
-        downloadTomcat.execute()
-        downloadSolr.execute()
     }
+    downloadTomcat.execute()
+    downloadSolr.execute()
     if (env.equals("authoring")) {
         authoringEnvironment.execute()
     } else if (env.equals("delivery")) {
