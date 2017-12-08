@@ -20,8 +20,18 @@ You must have these prerequisites on your system before you begin:
 
 Let's begin :)
 
+If you're building a deployable Crafter CMS bundle, we'll clone the master branch:
+
 ```bash
 git clone https://github.com/craftercms/craftercms.git
+```
+
+OR
+
+If you would like to contribute to Crafter CMS, to build a developer's environment, we'll need to clone the develop branch:
+
+```bash
+git clone https://github.com/craftercms/craftercms.git -b develop
 ```
 
 # 2. Build a Deployable Bundle
