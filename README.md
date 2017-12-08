@@ -20,8 +20,18 @@ You must have these prerequisites on your system before you begin:
 
 Let's begin :)
 
+If you're building a deployable Crafter CMS bundle, we'll clone the master branch:
+
 ```bash
 git clone https://github.com/craftercms/craftercms.git
+```
+
+OR
+
+If you would like to contribute to Crafter CMS, to build a developer's environment, we'll need to clone the develop branch:
+
+```bash
+git clone https://github.com/craftercms/craftercms.git -b develop
 ```
 
 # 2. Build a Deployable Bundle
@@ -50,9 +60,9 @@ Archives will be named `crafter-cms-authoring.tar.gz` and `crafter-cms-authoring
 
 For the `delivery` environment, simply substitute the `env=authoring` with `env=delivery`.
 
-## 2.2 Init/Update,Build and Bundle from a given Tag/Branch
+## 2.2 Init/Update, Build and Bundle from a Tag/Branch
 
-To download, build and generate a Bundle from a given Tag or Branch of the source code,
+To download, build and generate a bundle from a given tag or branch of the source code,
 
 1. Clone the branch/tag of craftercms that you want to work with
 ```bash
