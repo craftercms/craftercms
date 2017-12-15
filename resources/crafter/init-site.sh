@@ -64,7 +64,7 @@ curl -s -X POST -H "Content-Type: application/json" -d '{"id":"'"$SITE"'"}' "htt
 echo ""
 
 echo "Creating Deployer Target"
-curl -s -X POST -H "Content-Type: application/json" -d '{"env":"default", "site_name":"'"$SITE"'", "template_name":"remote", "repo_url":"'"$REPO"'", "repo_branch":"live", "engine_url":"http://localhost:$TOMCAT_HTTP_PORT" '$PRIVATE_KEY' }' "http://localhost:$DEPLOYER_PORT/api/1/target/create"
+curl -s -X POST -H "Content-Type: application/json" -d '{"env":"default", "site_name":"'"$SITE"'", "template_name":"remote", "repo_url":"'"$REPO"'", "repo_branch":"live", "engine_url":"http://localhost:'$TOMCAT_HTTP_PORT'" '$PRIVATE_KEY' }' "http://localhost:$DEPLOYER_PORT/api/1/target/create"
 echo ""
 
 echo "Done"
