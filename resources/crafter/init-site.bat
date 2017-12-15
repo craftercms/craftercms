@@ -7,6 +7,7 @@ IF /i "%1"=="" goto shelp
 SET SITE=%1
 
 SET DELIVERY_HOME=%~dp0
+call %DELIVERY_HOME%\crafter-setenv.bat
 
 IF /i "%2"=="" (
   for %%i in ("%~dp0..") do set DELIVERY_ROOT=%%~fi\
@@ -31,9 +32,9 @@ IF /i "%3"=="" (
 )
 
 echo "Creating Solr Core"
-java -jar %DELIVERY_HOME%craftercms-utils.jar post "http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/create" "{""id"":""%SITE%""}" > nul
+java -jar %DELIVERY_HOME%craftercms-utils.jar post "http://localhost:%TOMCAT_HTTP_PORT%/crafter-search/api/2/admin/index/create" "{""id"":""%SITE%""}" > nul
 echo "Creating Deployer Target"
-java -jar %DELIVERY_HOME%craftercms-utils.jar post "http://localhost:@DEPLOYER_PORT@/api/1/target/create"  "{""env"":""default"", ""site_name"":""%SITE%"", ""template_name"":""remote"", ""repo_url"":""%REPO%"", ""repo_branch"":""live"", ""engine_url"":""http://localhost:@TOMCAT_HTTP_PORT@"" %PRIVATE_KEY% }" > nul
+java -jar %DELIVERY_HOME%craftercms-utils.jar post "http://localhost:%DEPLOYER_PORT%/api/1/target/create"  "{""env"":""default"", ""site_name"":""%SITE%"", ""template_name"":""remote"", ""repo_url"":""%REPO%"", ""repo_branch"":""live"", ""engine_url"":""http://localhost:%TOMCAT_HTTP_PORT%"" %PRIVATE_KEY% }" > nul
 echo Done
 exit /b 0
 

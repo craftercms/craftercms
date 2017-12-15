@@ -30,9 +30,11 @@ if [ -z "$1" ] || [ "$1" == "-help" ]; then
 	exit 2
 fi
 
+DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+. "$DELIVERY_HOME/crafter-setenv.sh"
+
 if [ $# -eq 1 ]; then
 	SITE=$1
-	DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 	DELIVERY_ROOT=$( cd "$DELIVERY_HOME/.." && pwd )
 	AUTHORING_ROOT=$( cd "$DELIVERY_ROOT/../crafter-authoring" && pwd )
 	REPO=$AUTHORING_ROOT/data/repos/sites/$SITE/published
@@ -58,11 +60,11 @@ if [[ ! "$REPO" =~ ^ssh.* ]] && [ ! -d "$REPO" ]; then
 fi
 
 echo "Creating Solr Core"
-curl -s -X POST -H "Content-Type: application/json" -d '{"id":"'"$SITE"'"}' "http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/create"
+curl -s -X POST -H "Content-Type: application/json" -d '{"id":"'"$SITE"'"}' "http://localhost:$TOMCAT_HTTP_PORT/crafter-search/api/2/admin/index/create"
 echo ""
 
 echo "Creating Deployer Target"
-curl -s -X POST -H "Content-Type: application/json" -d '{"env":"default", "site_name":"'"$SITE"'", "template_name":"remote", "repo_url":"'"$REPO"'", "repo_branch":"live", "engine_url":"http://localhost:@TOMCAT_HTTP_PORT@" '$PRIVATE_KEY' }' "http://localhost:@DEPLOYER_PORT@/api/1/target/create"
+curl -s -X POST -H "Content-Type: application/json" -d '{"env":"default", "site_name":"'"$SITE"'", "template_name":"remote", "repo_url":"'"$REPO"'", "repo_branch":"live", "engine_url":"http://localhost:'$TOMCAT_HTTP_PORT'" '$PRIVATE_KEY' }' "http://localhost:$DEPLOYER_PORT/api/1/target/create"
 echo ""
 
 echo "Done"
