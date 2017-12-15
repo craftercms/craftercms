@@ -12,66 +12,11 @@ if(isWin){
 /**
  Setup environment
  **/
-task("authoringEnvironment"){
+
+task("authoringPostEnvironment"){
     description "Setup the Crafter authoring environment"
 
     doLast {
-        if (!file("${authEnv}/bin/apache-tomcat").exists()) {
-            copy {
-                from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
-                into "${authEnv}/bin"
-                exclude "**/webapps/**"
-            }
-            file("${authEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${authEnv}/bin/apache-tomcat"))
-            file("${authEnv}/bin/apache-tomcat/shared/lib").mkdirs()
-        }
-
-
-        if(!file("${authEnv}/bin/solr").exists()) {
-            /** SOLR **/
-            copy {
-                from zipTree(downloadDir + "/solr-${solrVersion}.zip")
-                into "${authEnv}/bin"
-            }
-            file("${authEnv}/bin/solr-${solrVersion}").renameTo(file("${authEnv}/bin/solr"))
-
-        }
-        copy{
-            from "./src/search/crafter-search-provider/solr/configsets"
-            into "${authEnv}/bin/solr/server/solr/configsets"
-            eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/solr/server/solr/configsets")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
-
-        file("${authEnv}/data/indexes").mkdirs()
-        file("${authEnv}/data/deployer").mkdirs()
-        /** Remove Non util stuff **/
-        def webapps = file("${authEnv}/bin/apache-tomcat/webapps/")
-        if (!webapps.exists()) {
-            webapps.mkdir()
-        }
-
-        copy{
-            from "./resources/tomcat-config/setenv.sh"
-            from "./resources/tomcat-config/setenv.bat"
-            into "${authEnv}/bin/apache-tomcat/bin"
-            eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
-
-        copy{
-            from "./resources/tomcat-config/catalina.policy"
-            into "${authEnv}/bin/apache-tomcat/conf/"
-        }
-
-
-
         copy{
             from "./resources/tomcat-config/crafter"
             into "${authEnv}/bin/apache-tomcat/shared/classes/crafter"
@@ -113,35 +58,7 @@ task("authoringEnvironment"){
                 }
             }
         }
-        copy {
-            from "./src/deployer/README.md"
-            into "${authEnv}/bin/crafter-deployer/"
-            eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/crafter-deployer/")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
-        copy {
-            from "./src/studio/README.md"
-            into "${authEnv}/bin/apache-tomcat"
-            eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
 
-        copy {
-            from "./resources/LICENSE"
-            from "./resources/README.txt"
-            into "${authEnv}/"
-            eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
         copy{
             from ("./resources/crafter/"){
                 exclude "**/init-site.*"
@@ -193,63 +110,10 @@ task("authoringEnvironment"){
     }
 }
 
-task("deliveryEnvironment"){
+task("deliveryPostEnvironment"){
     description "Setup the Crafter CMS delivery environment"
 
     doLast{
-        if(!file("${deliveryEnv}/bin/apache-tomcat").exists()) {
-            copy {
-                from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
-                into "${deliveryEnv}/bin"
-                exclude "**/webapps/**"
-            }
-            file("${deliveryEnv}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${deliveryEnv}/bin/apache-tomcat"))
-            file("${deliveryEnv}/bin/apache-tomcat/shared/lib").mkdirs()
-        }
-
-        if(file("${deliveryEnv}/bin/solr")) {
-            /** SOLR **/
-            copy {
-                from zipTree(downloadDir + "/solr-${solrVersion}.zip")
-                into "${deliveryEnv}/bin"
-            }
-            file("${deliveryEnv}/bin/solr-${solrVersion}").renameTo(file("${deliveryEnv}/bin/solr"))
-        }
-
-        copy{
-            from "./src/search/crafter-search-provider/solr/configsets"
-            into "${deliveryEnv}/bin/solr/server/solr/configsets"
-            eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/solr/server/solr/configsets")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
-
-        file("${deliveryEnv}/data/indexes").mkdirs()
-        file("${deliveryEnv}/data/deployer").mkdirs()
-        /** Remove Non util stuff **/
-        def webapps = file("${deliveryEnv}/bin/apache-tomcat/webapps/")
-        if (!webapps.exists()) {
-            webapps.mkdir()
-        }
-
-
-        copy{
-            from "./resources/tomcat-config/setenv.sh"
-            from "./resources/tomcat-config/setenv.bat"
-            into "${deliveryEnv}/bin/apache-tomcat/bin"
-            eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
-
-        copy{
-            from "./resources/tomcat-config/catalina.policy"
-            into "${deliveryEnv}/bin/apache-tomcat/conf/"
-        }
 
         copy{
             from "./resources/tomcat-config-delivery/crafter"
@@ -284,35 +148,6 @@ task("deliveryEnvironment"){
             ])
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/crafter-deployer")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
-        copy {
-            from "./src/deployer/README.md"
-            into "${deliveryEnv}/bin/crafter-deployer/"
-            eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/crafter-deployer/")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
-        copy {
-            from "./src/studio/README.md"
-            into "${deliveryEnv}/bin/apache-tomcat"
-            eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat")).exists() && !forceDeploy) {
-                    it.exclude()
-                }
-            }
-        }
-
-        copy {
-            from "./resources/LICENSE"
-            from "./resources/README.txt"
-            into "${deliveryEnv}/"
-            eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -368,6 +203,108 @@ task("deliveryEnvironment"){
 }
 
 
+def envs = []
+if(getEnv().equalsIgnoreCase("all")){
+    envs=["authoring","delivery"]
+}else{
+    envs= [getEnv()]
+}
+
+envs.each{ env->
+    if(!tasks.findByName("${env}Environment")){
+        task "${env}Environment" doLast{
+            description "Setup the Crafter ${env} environment"
+            def path=env.equalsIgnoreCase("authoring")?"${authEnv}":"${deliveryEnv}"
+            if (!file("${path}/bin/apache-tomcat").exists()) {
+                copy {
+                    from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
+                    into "${path}/bin"
+                    exclude "**/webapps/**"
+                }
+                file("${path}/bin/apache-tomcat-${tomcatVersion}").renameTo(file("${path}/bin/apache-tomcat"))
+                file("${path}/bin/apache-tomcat/shared/lib").mkdirs()
+            }
+
+            if(!file("${path}/bin/solr").exists()) {
+                /** SOLR **/
+                copy {
+                    from zipTree(downloadDir + "/solr-${solrVersion}.zip")
+                    into "${path}/bin"
+                }
+                file("${path}/bin/solr-${solrVersion}").renameTo(file("${path}/bin/solr"))
+
+            }
+
+            copy{
+                from "./src/search/crafter-search-provider/solr/configsets"
+                into "${path}/bin/solr/server/solr/configsets"
+                eachFile {
+                    if (it.relativePath.getFile(file("${path}/bin/solr/server/solr/configsets")).exists() && !forceDeploy) {
+                        it.exclude()
+                    }
+                }
+            }
+
+            file("${path}/data/indexes").mkdirs()
+            file("${path}/data/deployer").mkdirs()
+
+
+            /** Remove Non util stuff **/
+            def webapps = file("${path}/bin/apache-tomcat/webapps/")
+            if (!webapps.exists()) {
+                webapps.mkdir()
+            }
+
+            copy{
+                from "./resources/tomcat-config/setenv.sh"
+                from "./resources/tomcat-config/setenv.bat"
+                into "${path}/bin/apache-tomcat/bin"
+                eachFile {
+                    if (it.relativePath.getFile(file("${path}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
+                        it.exclude()
+                    }
+                }
+            }
+
+            copy{
+                from "./resources/tomcat-config/catalina.policy"
+                into "${path}/bin/apache-tomcat/conf/"
+            }
+
+            copy {
+                from "./src/deployer/README.md"
+                into "${path}/bin/crafter-deployer/"
+                eachFile {
+                    if (it.relativePath.getFile(file("${path}/bin/crafter-deployer/")).exists() && !forceDeploy) {
+                        it.exclude()
+                    }
+                }
+            }
+            copy {
+                from "./src/studio/README.md"
+                into "${path}/bin/apache-tomcat"
+                eachFile {
+                    if (it.relativePath.getFile(file("${path}/bin/apache-tomcat")).exists() && !forceDeploy) {
+                        it.exclude()
+                    }
+                }
+            }
+
+            copy {
+                from "./resources/LICENSE"
+                from "./resources/README.txt"
+                into "${path}/"
+                eachFile {
+                    if (it.relativePath.getFile(file("${path}/")).exists() && !forceDeploy) {
+                        it.exclude()
+                    }
+                }
+            }
+        }
+    }
+    tasks.findByName("${env}Environment").finalizedBy("${env}PostEnvironment")
+}
+
 def updateTomcatPorts(serverConfigFile,http,ajp,shutdown,ssl){
     def serverConfig=new XmlParser().parse(serverConfigFile)
     serverConfig.@port=shutdown
@@ -386,7 +323,6 @@ def updateTomcatPorts(serverConfigFile,http,ajp,shutdown,ssl){
     printer.preserveWhitespace = true
     printer.print( serverConfig )
 }
-
 
 def updateTomcatContext(serverConfigFile){
     def contextConfig=new XmlParser().parse(serverConfigFile)

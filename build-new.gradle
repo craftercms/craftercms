@@ -139,7 +139,9 @@ apply from: "downloads.gradle"
 apply from: "environments.gradle"
 
 
+def envs=[]
 def deliveryDeps=[]
+def envDepends = []
 def cleanDeps = []
 def buildDeps = []
 def initDeps = []
@@ -148,9 +150,7 @@ def startDeps = []
 def stopDeps = []
 def statusDeps = []
 def preTestDeps = browserToTest.equalsIgnoreCase("chrome")? [downloadChromeDriver] : [downloadEdgeDriver]
-def bundleDeps = []
-def envs = []
-def envDepends = []
+
 
 if(getEnv().equalsIgnoreCase("all")){
     envs=["authoring","delivery"]
@@ -159,7 +159,6 @@ if(getEnv().equalsIgnoreCase("all")){
     envs= [getEnv()]
     envDepends = [tasks.findByName("${getEnv()}Environment")]
 }
-
 
 /** Some blackmagic here and there creates module_build tasks **/
 
@@ -227,21 +226,11 @@ VALID_MODULES.each { module ->
                 executeProcess(arry, "./src/${module}".toString())
             }
         }
-
-        def cleanTask =tasks.findByName("${module}_clean")
-        cleanTask.description "Cleans ${module} module"
-        cleanDeps.add(cleanTask)
+        cleanDeps.add(tasks.findByName("${module}_clean"))
         // Creates the Dependencies Array
-        def buildTask = tasks.findByName("${module}_build")
-        buildTask.description "Builds and installs locally ${module} module"
-        buildDeps.add(buildTask)
-        def initTask = tasks.findByName("${module}_init")
-        initTask.description = "Clones from ${gitURLTemplate}${module} branch ${gitSourceBranch} the module ${module}"
-        initDeps.add(initTask)
-        def updateTask= tasks.findByName("${module}_update")
-        updateTask.description "Updates from ${gitRepo} branch ${gitSourceBranch} the module ${module}"
-        updateDeps.add(updateTask)
-
+        buildDeps.add(tasks.findByName("${module}_build"))
+        initDeps.add(tasks.findByName("${module}_init"))
+        updateDeps.add(tasks.findByName("${module}_update"))
     } else {
         logger.debug("Task ${module}_build already exists")
     }
@@ -262,9 +251,7 @@ envs.each { env ->
                         deployBinary(file("./src/social/admin/target/crafter-social-admin.war"), env)
                     }
                 })
-                def deployTask=tasks.findByName("${module}_${env}_deploy")
-                deployTask.description "Deploy ${module} in the ${env} enviroment"
-                deliveryDeps.add(deployTask)
+                 deliveryDeps.add(tasks.findByName("${module}_${env}_deploy"))
             } else {
                 logger.debug("Task ${module}_deploy already exists")
             }
@@ -283,6 +270,7 @@ envs.each { env ->
             }
             executeProcess(commandLinePrefix + [startUpFile] + extraStartupParams, "${path}/bin", true)
         })
+        startDeps.add(tasks.findByName("${env}_start"))
     }
     if(!tasks.findByName("${env}_stop")){
         task "${env}_stop" doLast({
@@ -296,6 +284,8 @@ envs.each { env ->
             }
             executeProcess(commandLinePrefix + [shutDownFile] + extraStartupParams, "${path}/bin", true)
         })
+
+        stopDeps.add(tasks.findByName("${env}_stop"))
     }
 
     if(!tasks.findByName("${env}_status") && !isWin){
@@ -311,52 +301,7 @@ envs.each { env ->
             executeProcess(commandLinePrefix + ["./crafter.sh", "status"] , "${path}/bin", true)
         })
     }
-
-
-    if(!tasks.findByName("${env}_bundle_zip")){
-        task "${env}_bundle_zip"(type:Zip) {
-            description "Bundles as a Zip file ${env} enviroment"
-            doLast {
-                def environmentPath = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
-                from(environmentPath) {
-                    into("crafter")
-                }
-                archiveName "crafter-cms-${env}.zip"
-                fileMode null
-                dirMode null
-                includeEmptyDirs true
-                metadataCharset "UTF-8"
-                caseSensitive false
-                destinationDir(file("bundles/"))
-                zip64 true
-            }
-        }
-    }
-
-    if(!tasks.findByName("${env}_bundle_tar")){
-        task "${env}_bundle_tar"(type:Tar) {
-            description "Bundles as a Tar file ${env} enviroment"
-            doLast {
-                def environmentPath = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
-                from(environmentPath) {
-                    into("crafter")
-                }
-                archiveName "crafter-cms-${env}.tar.gz"
-                fileMode null
-                dirMode null
-                includeEmptyDirs true
-                caseSensitive false
-                compression = Compression.GZIP
-                destinationDir(file("bundles/"))
-            }
-        }
-    }
-
-    bundleDeps.add(tasks.findByName("${env}_bundle_zip"))
-    bundleDeps.add(tasks.findByName("${env}_bundle_tar"))
     statusDeps.add(tasks.findByName("${env}_status"))
-    stopDeps.add(tasks.findByName("${env}_stop"))
-    startDeps.add(tasks.findByName("${env}_start"))
 }
 
 
@@ -379,56 +324,29 @@ if(!includeProfile){
 
 task clean (){
     //Dummy task Builds used as dependency of other tasks
-    description "Clean all configured Crafter Modules"
 }
 
 task build (){
-    description "Builds all configured Crafter Modules"
     //Dummy task Builds used as dependency of other tasks
 }
 
 task init (dependsOn:initDeps) {
-    description "Clones all configured Crafter modules from ${gitURLTemplate} and branch ${gitSourceBranch}"
+    //Dummy task inits.
 }
 
 task update (dependsOn:updateDeps){
-    description "Update all configured Crafter modules from ${gitSourceBranch} and branch ${gitSourceBranch}"
+    //Dummy task that updates
 }
 
 task upgrade(){
-    description "Delete all enviroment information (keeps the site data,db and indexes), update builds and deploy a new enviroment."
+    //Dummy task that upgrade
 }
-task deploy (){
-    description "Deploys all configured Crafter Modules"
-}
-task bundle(dependsOn: bundleDeps){
-    description "Zips and Tars all Crafter enviroments."
-}
-task start (dependsOn: startDeps){
-    description "Starts configured Crafter enviroments.."
+task deploy (){}
 
-}
-task stop (dependsOn: stopDeps){
-    description "Stops configured Crafter enviroments.."
-}
-task status (dependsOn: statusDeps){
-    description "Gets the status configured Crafter enviroments.."
-}
+task start (dependsOn: startDeps){}
+task stop (dependsOn: stopDeps){}
+task status (dependsOn: statusDeps){}
 
-task utils(){
-    description "Builds and deploys Crafter Utililty tools jar file."
-    doLast {
-        def array = commandLinePrefix + ["mvn", "clean", "package"]
-        executeProcess(array, "./utils/")
-        envs.each { env ->
-            def path=env.equalsIgnoreCase("authoring")?"${authEnv}":"${deliveryEnv}"
-            copy {
-                from "./utils/target/craftercms-utils.jar"
-                into "${path}/bin"
-            }
-        }
-    }
-}
 
 task preUpgrade {
     def enviroments = []
@@ -442,7 +360,7 @@ task preUpgrade {
                 break
             case "delivery":
                 enviroments.add(new File("${deliveryEnv}"))
-                break
+               break
             default:
                 throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
         }
@@ -468,15 +386,15 @@ task preUpgrade {
 
 
 task preDeploy {
-    doLast {
-        if(getEnv().equalsIgnoreCase("all")) {
-            checkOrCreateCheck("${authEnv}")
-            checkOrCreateCheck("${deliveryEnv}")
-        }else{
-            def path=env.equalsIgnoreCase("authoring")?"${authEnv}":"${deliveryEnv}"
-            checkOrCreateCheck(path)
-        }
-    }
+  doLast {
+      if(getEnv().equalsIgnoreCase("all")) {
+          checkOrCreateCheck("${authEnv}")
+          checkOrCreateCheck("${deliveryEnv}")
+      }else{
+          def path=env.equalsIgnoreCase("authoring")?"${authEnv}":"${deliveryEnv}"
+          checkOrCreateCheck(path)
+      }
+  }
 }
 
 
@@ -556,8 +474,9 @@ task delay {
 }
 
 task test() {
-    description "Tests Crafter CMS."
     doLast {
+        println("TESTING")
+//    description "Builds and run tests"
         def actualCommandLinePost = ["-Dfile=" + testingSuites]
         def array = commandLinePrefix + ["mvn", "clean", "install"] + actualCommandLinePost
         executeProcess(array, "./src/test-suite")
@@ -565,16 +484,43 @@ task test() {
 }
 
 
+
+//
+//task("bundle") {
+//    description "Builds a deployable and distributable bundle of Crafter CMS"
+//
+//    doLast {
+//        def env = getEnv()
+//        switch (env) {
+//            case "all":
+//                pack(authEnv, "authoring")
+//                pack(deliveryEnv, "delivery")
+//                break
+//            case "authoring":
+//                pack(authEnv, "authoring")
+//                break
+//            case "delivery":
+//                pack(deliveryEnv, "delivery")
+//                break
+//            default:
+//                throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
+//        }
+//    }
+//}
+
 /** Makes sure Depends are run in order. **/
 dependsOnOrdered(clean,cleanDeps)
 dependsOnOrdered(build,[clean]+buildDeps)
 dependsOnOrdered(init,initDeps)
 dependsOnOrdered(update,updateDeps)
-dependsOnOrdered(deploy,[preDeploy,downloadTomcat,downloadSolr,utils]+envDepends+deliveryDeps)
+dependsOnOrdered(deploy,[preDeploy,downloadTomcat,downloadSolr]+envDepends+deliveryDeps)
 dependsOnOrdered(upgrade,[update,preUpgrade,build,deploy])
 dependsOnOrdered(test,[preTest,authoring_start,delay])
 test.finalizedBy(authoring_stop)
 test.finalizedBy(postTest)
+
+
+
 
 def deployBinary(deployable, env) {
     if (deployable.exists()) {
