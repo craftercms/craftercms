@@ -19,7 +19,7 @@ IF /i "%2"=="" (
 )
 
 IF NOT "%REPO:~0,3%" equ "ssh" (
-  IF NOT EXIST "%2" (
+  IF NOT EXIST "%REPO%" (
     echo "Repository path %REPO% for site \"%SITE%\" does not exist or cannot to read"
     exit /b 2
   )
