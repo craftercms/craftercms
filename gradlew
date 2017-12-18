@@ -28,10 +28,7 @@ APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
 
 # Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
-DEFAULT_JVM_OPTS=""
-
-# Disable Gradle daemon since it causes issues while working with two envs (authoring, delivery)
-GRADLE_OPTS="$GRADLE_OPTS -Dorg.gradle.daemon=false"
+DEFAULT_JVM_OPTS="-Dorg.gradle.daemon=false"
 
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD="maximum"
