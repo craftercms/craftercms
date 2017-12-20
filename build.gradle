@@ -161,8 +161,19 @@ if (getEnv().equalsIgnoreCase("all")) {
 }
 
 /** Some blackmagic here and there creates module_build tasks **/
+def buildModules=[]
+def deployModules = [:]
+if(project.hasProperty("moduleName")){
+    buildModules = project.property("moduleName").toLowerCase().split(",")
+    buildModules.each {
+        deployModules.put(it,VALID_DEPLOYABLE_MODULES[it])
+    }
+}else{
+    buildModules = VALID_MODULES
+    deployModules = VALID_DEPLOYABLE_MODULES
+}
 
-VALID_MODULES.each { module ->
+buildModules.each { module ->
 
     // Creates the Clean Task
     if (!tasks.findByPath("${module}_clean")) {
@@ -249,7 +260,7 @@ VALID_MODULES.each { module ->
 
 envs.each { env ->
 // Creates the deploy tasks
-    VALID_DEPLOYABLE_MODULES.keySet().each { module ->
+    deployModules.keySet().each { module ->
         if (!(env.equalsIgnoreCase("delivery") && module.equalsIgnoreCase("studio"))) {
             if (!tasks.findByName("${module}_${env}_deploy")) {
                 task "${module}_${env}_deploy" doLast({
@@ -380,6 +391,8 @@ if (!includeProfile) {
         it.name.contains("profile")
     })
 }
+
+
 
 task clean() {
     //Dummy task Builds used as dependency of other tasks
@@ -575,9 +588,13 @@ dependsOnOrdered(init, initDeps)
 dependsOnOrdered(update, updateDeps)
 dependsOnOrdered(deploy, [preDeploy, downloadTomcat, downloadSolr, utils] + envDepends + deliveryDeps)
 dependsOnOrdered(upgrade, [update, preUpgrade, build, deploy])
-dependsOnOrdered(test, [preTest, authoring_start, delay])
-test.finalizedBy(authoring_stop)
-test.finalizedBy(postTest)
+
+// If delivery no test (for now)
+if(!project.hasProperty("env") || (project.hasProperty("env") && !project.property("env").equalsIgnoreCase("delivery"))) {
+    dependsOnOrdered(test, [preTest, authoring_start, delay])
+    test.finalizedBy(authoring_stop)
+    test.finalizedBy(postTest)
+}
 
 def deployBinary(deployable, env) {
     if (deployable.exists()) {
