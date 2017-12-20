@@ -161,14 +161,14 @@ if (getEnv().equalsIgnoreCase("all")) {
 }
 
 /** Some blackmagic here and there creates module_build tasks **/
-def buildModules=[]
+def buildModules = []
 def deployModules = [:]
-if(project.hasProperty("moduleName")){
+if (project.hasProperty("moduleName")) {
     buildModules = project.property("moduleName").toLowerCase().split(",")
     buildModules.each {
-        deployModules.put(it,VALID_DEPLOYABLE_MODULES[it])
+        deployModules.put(it, VALID_DEPLOYABLE_MODULES[it])
     }
-}else{
+} else {
     buildModules = VALID_MODULES
     deployModules = VALID_DEPLOYABLE_MODULES
 }
@@ -186,30 +186,36 @@ buildModules.each { module ->
     }
 
     // Creates the Build Tasks
-    if (!tasks.findByPath("${module}_build") && !module.equalsIgnoreCase("test-suite")) {
-        task "${module}_build" doLast({
-            def actualCommandLinePost = [];
-            if (!testArtifacts) {
-                actualCommandLinePost.add("-Dmaven.test.skip=true")
-            }
-            if (module.equalsIgnoreCase("search")) {
-                actualCommandLinePost.add("-pl")
-                actualCommandLinePost.add("!crafter-search-itest")
-            } else if (module.equalsIgnoreCase("profile")) {
-                actualCommandLinePost.add("-pl")
-                if (!includeProfile) {
-                    actualCommandLinePost.add("!admin-console,!integration-tests,!server")
-                } else {
-                    actualCommandLinePost.add("!integration-tests")
+    if (!tasks.findByPath("${module}_build")) {
+        if (!module.equalsIgnoreCase("test-suite")) {
+            task "${module}_build" doLast({
+                def actualCommandLinePost = [];
+                if (!testArtifacts) {
+                    actualCommandLinePost.add("-Dmaven.test.skip=true")
                 }
-            }
-            if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
-                actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
-                actualCommandLinePost.add("-Dexec.skip=true")
-            }
-            def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
-            executeProcess(array, "./src/${module}".toString())
-        })
+                if (module.equalsIgnoreCase("search")) {
+                    actualCommandLinePost.add("-pl")
+                    actualCommandLinePost.add("!crafter-search-itest")
+                } else if (module.equalsIgnoreCase("profile")) {
+                    actualCommandLinePost.add("-pl")
+                    if (!includeProfile) {
+                        actualCommandLinePost.add("!admin-console,!integration-tests,!server")
+                    } else {
+                        actualCommandLinePost.add("!integration-tests")
+                    }
+                }
+                if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
+                    actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
+                    actualCommandLinePost.add("-Dexec.skip=true")
+                }
+                def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
+                executeProcess(array, "./src/${module}".toString())
+            })
+            // Creates the Dependencies Array
+            def buildTask = tasks.findByName("${module}_build")
+            buildTask.description "Builds and installs locally ${module} module"
+            buildDeps.add(buildTask)
+        }
         // Create init tasks
         task "${module}_init" doLast {
             def finalUrl = "${gitURLTemplate}${module}.git".toString()
@@ -241,10 +247,7 @@ buildModules.each { module ->
         def cleanTask = tasks.findByName("${module}_clean")
         cleanTask.description "Cleans ${module} module"
         cleanDeps.add(cleanTask)
-        // Creates the Dependencies Array
-        def buildTask = tasks.findByName("${module}_build")
-        buildTask.description "Builds and installs locally ${module} module"
-        buildDeps.add(buildTask)
+
         def initTask = tasks.findByName("${module}_init")
         initTask.description = "Clones from ${gitURLTemplate}${module} branch ${gitSourceBranch} the module ${module}"
         initDeps.add(initTask)
@@ -326,39 +329,39 @@ envs.each { env ->
     if (!tasks.findByName("${env}_bundle_zip")) {
         task "${env}_bundle_zip"(type: Zip) {
             description "Bundles as a Zip file ${env} enviroment"
-                def environmentPath = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
-                from(environmentPath) {
-                    into("crafter")
-                }
-                archiveName "crafter-cms-${env}.zip"
-                fileMode null
-                dirMode null
-                includeEmptyDirs true
-                metadataCharset "UTF-8"
-                caseSensitive false
-                destinationDir(file("bundles/"))
-                zip64 true
+            def environmentPath = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
+            from(environmentPath) {
+                into("crafter")
+            }
+            archiveName "crafter-cms-${env}.zip"
+            fileMode null
+            dirMode null
+            includeEmptyDirs true
+            metadataCharset "UTF-8"
+            caseSensitive false
+            destinationDir(file("bundles/"))
+            zip64 true
         }
     }
 
     if (!tasks.findByName("${env}_bundle_tar")) {
         task "${env}_bundle_tar"(type: Tar) {
             description "Bundles as a Tar file ${env} enviroment"
-                def environmentPath = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
-                from(environmentPath) {
-                    into("crafter")
-                }
-                archiveName "crafter-cms-${env}.tar.gz"
-                fileMode null
-                dirMode null
-                includeEmptyDirs true
-                caseSensitive false
-                compression = Compression.GZIP
-                destinationDir(file("bundles/"))
+            def environmentPath = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
+            from(environmentPath) {
+                into("crafter")
+            }
+            archiveName "crafter-cms-${env}.tar.gz"
+            fileMode null
+            dirMode null
+            includeEmptyDirs true
+            caseSensitive false
+            compression = Compression.GZIP
+            destinationDir(file("bundles/"))
         }
     }
 
-    switch (typeOfBundle.toLowerCase()){
+    switch (typeOfBundle.toLowerCase()) {
         case "zip":
             bundleDeps.add(tasks.findByName("${env}_bundle_zip"))
             break;
@@ -377,7 +380,7 @@ envs.each { env ->
 
 /* Cleanup non buildable modules */
 buildDeps.removeAll([tasks.findByName("studio-ui_build")] as Task[])
-cleanDeps.removeAll([tasks.findByName("studio-ui_clean")] as Task[])
+cleanDeps.removeAll([tasks.findByName("studio-ui_clean"), tasks.findByName("test-suite_build")] as Task[])
 
 if (!includeSocial) {
     buildDeps.removeAll([tasks.findByName('social_build')] as Task[])
@@ -590,7 +593,7 @@ dependsOnOrdered(deploy, [preDeploy, downloadTomcat, downloadSolr, utils] + envD
 dependsOnOrdered(upgrade, [update, preUpgrade, build, deploy])
 
 // If delivery no test (for now)
-if(!project.hasProperty("env") || (project.hasProperty("env") && !project.property("env").equalsIgnoreCase("delivery"))) {
+if (!project.hasProperty("env") || (project.hasProperty("env") && !project.property("env").equalsIgnoreCase("delivery"))) {
     dependsOnOrdered(test, [preTest, authoring_start, delay])
     test.finalizedBy(authoring_stop)
     test.finalizedBy(postTest)
