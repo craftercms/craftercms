@@ -2,9 +2,12 @@
 Crafter CMS uses a Git workflow that's based on Gitflow: http://nvie.com/posts/a-successful-git-branching-model
 
 ## High-level
-For every Crafter CMS repository, there are two long-running branches:
+For every Crafter CMS repository, there are two main long-running branches:
 * `develop`: this is where development activities happen, and this branch is not meant to be stable
 * `master`: this is stable and deployable
+
+There are long-running branches for every supported version of Crafter CMS:
+* support/v{VERSION}
 
 There are several other branches that are created and deleted over time, these include:
 * feature/bug branches: branches created to develop a features, perform a task or fix a bug as part of regular development
@@ -20,6 +23,17 @@ In addition, consider using:
 * Zsh http://www.zsh.org/
 * `oh-my-zsh` https://github.com/robbyrussell/oh-my-zsh
 * `git-flow-completion` https://github.com/bobthecow/git-flow-completion
+
+GitFlow is configured as follows:
+```
+gitflow.branch.master=master
+gitflow.branch.develop=develop
+gitflow.prefix.feature=feature/
+gitflow.prefix.release=release/
+gitflow.prefix.hotfix=hotfix/
+gitflow.prefix.support=support/
+gitflow.prefix.versiontag=v
+```
 
 ## Workflow
 ### Day-to-Day Development
