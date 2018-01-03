@@ -9,4 +9,9 @@
 
 ### Log/stack trace (use https://gist.github.com)
 
-### Specs: version, OS, browser, etc.
+### Specs
+#### Version
+
+#### OS
+
+#### Browser
