@@ -53,6 +53,12 @@ studio.db.dataPath: ../data/db
 # Random admin password allowed chars
 # studio.db.initializer.randomAdminPassword.chars: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*_=+-/
 
+# Defines security provider for accessing repository. Possible values
+# - db (users are stored in database)
+# - ldap (users are imported from LDAP into the database)
+# - headers (use when authenticating via headers) 
+# studio.security.type: ldap
+
 # LDAP Server url
 # studio.security.ldap.serverUrl: ldap://localhost:389
 # LDAP bind DN (user)
