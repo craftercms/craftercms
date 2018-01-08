@@ -34,6 +34,7 @@ crafter-delivery-env/
 crafter-authoring
 crafter-delivery
 downloads/
+plugins/
 !utils/src/main/java/org/craftercms/bundle/utils/
 utils/target
 .project

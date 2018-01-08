@@ -1,0 +1,43 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+def dir = Paths.get(project.getProperty("pluginDir"))
+def tempDir = Files.createTempDirectory(Paths.get("."), "temp-plugin")
+def pluginsDir = Paths.get("plugins").toFile()
+
+task preparePlugin {
+  description "Task to process and package a Crafter Studio plugin"
+  doFirst {
+    println "Crafter Plugin Builder"
+    println "checking contents of folder"
+    if(!project.hasProperty("pluginDir")) {
+      throw new GradleException("Missing required parameter 'pluginDir'")
+    }
+    if(!Files.exists(dir) || !Files.isDirectory(dir)) {
+      throw new GradleException("The path does not exist or is not a folder")
+    }
+    def manifest = dir.resolve("plugin.xml")
+    if(!Files.exists(manifest)) {
+      throw new GradleException("Missing required file ${manifest}")
+    }
+  }
+  doLast {
+    println "processing files"
+    copy {
+      from dir
+      into tempDir
+      filter(ReplaceTokens, tokens: [ PLUGIN_VERSION: "0.1.0" ])
+    }
+  }
+}
+
+task buildPlugin(type: Zip, dependsOn: preparePlugin) {
+  from tempDir
+  destinationDir pluginsDir
+  archiveName "plugin.car"
+  doLast {
+    delete tempDir
+  }
+}
