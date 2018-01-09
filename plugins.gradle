@@ -9,14 +9,16 @@ def dir
 def tempDir = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), "temp-crafter-plugin")
 def pluginsDir = Paths.get("plugins").toFile()
 
-def pluginId
-def pluginName
-def pluginVersion
-def crafterEdition
+def path = project.hasProperty("pluginPath")? project.getProperty("pluginPath") : null
+def pluginId = project.hasProperty("pluginId")? project.getProperty("pluginId") : null
+def pluginName = project.hasProperty("pluginName")? project.getProperty("pluginName") : null
+def pluginVersion = project.hasProperty("pluginVersion")? project.getProperty("pluginVersion") : null
+def crafterEdition = project.hasProperty("crafterEdition")? project.getProperty("crafterEdition") : null
+def buildNumber = project.hasProperty("buildNumber")? project.getProperty("buildNumber") : null
 
 task preparePlugin {
   description "Task to validate the contents of the plugin directory"
-  def path = project.hasProperty("pluginPath")? project.getProperty("pluginPath") : ""
+  
   if(path) {
     dir = Paths.get(path)
     if(!Files.exists(dir) || !Files.isDirectory(dir)) {
@@ -27,19 +29,23 @@ task preparePlugin {
       throw new GradleException("Missing required file ${manifest}")
     }
     def xml = new XmlParser().parse(Files.newInputStream(manifest))
-    pluginId = xml.id.text()
-    pluginName = xml.name.text()
-    pluginVersion = xml.version.text()
-    crafterEdition = xml['crafter-edition'].text()
+    pluginId = pluginId ?: xml.id.text()
+    pluginName = pluginName ?: xml.name.text()
+    pluginVersion = pluginVersion ?: xml.version.text()
+    crafterEdition = crafterEdition ?: xml['crafter-edition'].text()
+    buildNumber = buildNumber ?: UUID.randomUUID() as String
     copy {
       from dir
       into tempDir
-      filter(ReplaceTokens, tokens: [ PLUGIN_ID: pluginId,
-                                      PLUGIN_NAME: pluginName, 
-                                      PLUGIN_VERSION: pluginVersion,
-                                      CRAFTER_EDITION: crafterEdition,
-                                      BUILD_DATE: new Date().getTime() as String
-                                      ])
+      filter(ReplaceTokens,
+             tokens: [ 
+                PLUGIN_ID: pluginId,
+                PLUGIN_NAME: pluginName, 
+                PLUGIN_VERSION: pluginVersion,
+                CRAFTER_EDITION: crafterEdition,
+                BUILD_DATE: new Date().getTime() as String,
+                BUILD_NUMBER: buildNumber
+             ])
     }
   }
 }
@@ -53,5 +59,6 @@ task packagePlugin(type: Zip, dependsOn: preparePlugin) {
   
   doLast {
     delete tempDir
+    println "Complete, plugin written to file '$pluginsDir/${pluginName}-${pluginVersion}.car'"
   }
 }
