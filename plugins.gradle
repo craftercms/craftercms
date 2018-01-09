@@ -1,0 +1,64 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
+import groovy.util.XmlParser
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+def dir
+def tempDir = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), "temp-crafter-plugin")
+def pluginsDir = Paths.get("plugins").toFile()
+
+def path = project.hasProperty("pluginPath")? project.getProperty("pluginPath") : null
+def pluginId = project.hasProperty("pluginId")? project.getProperty("pluginId") : null
+def pluginName = project.hasProperty("pluginName")? project.getProperty("pluginName") : null
+def pluginVersion = project.hasProperty("pluginVersion")? project.getProperty("pluginVersion") : null
+def crafterEdition = project.hasProperty("crafterEdition")? project.getProperty("crafterEdition") : null
+def buildNumber = project.hasProperty("buildNumber")? project.getProperty("buildNumber") : null
+
+task preparePlugin {
+  description "Task to validate the contents of the plugin directory"
+  
+  if(path) {
+    dir = Paths.get(path)
+    if(!Files.exists(dir) || !Files.isDirectory(dir)) {
+      throw new GradleException("The path does not exist or is not a folder")
+    }
+    def manifest = dir.resolve("plugin.xml")
+    if(!Files.exists(manifest)) {
+      throw new GradleException("Missing required file ${manifest}")
+    }
+    def xml = new XmlParser().parse(Files.newInputStream(manifest))
+    pluginId = pluginId ?: xml.id.text()
+    pluginName = pluginName ?: xml.name.text()
+    pluginVersion = pluginVersion ?: xml.version.text()
+    crafterEdition = crafterEdition ?: xml['crafter-edition'].text()
+    buildNumber = buildNumber ?: UUID.randomUUID() as String
+    copy {
+      from dir
+      into tempDir
+      filter(ReplaceTokens,
+             tokens: [ 
+                PLUGIN_ID: pluginId,
+                PLUGIN_NAME: pluginName, 
+                PLUGIN_VERSION: pluginVersion,
+                CRAFTER_EDITION: crafterEdition,
+                BUILD_DATE: new Date().getTime() as String,
+                BUILD_NUMBER: buildNumber
+             ])
+    }
+  }
+}
+
+task packagePlugin(type: Zip, dependsOn: preparePlugin) {
+  description "Task to process and package Crafter Studio plugins"
+  
+  from tempDir
+  destinationDir pluginsDir
+  archiveName "${pluginName}-${pluginVersion}.car"
+  
+  doLast {
+    delete tempDir
+    println "Complete, plugin written to file '$pluginsDir/${pluginName}-${pluginVersion}.car'"
+  }
+}
