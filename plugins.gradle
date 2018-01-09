@@ -1,0 +1,57 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
+import groovy.util.XmlParser
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+def dir
+def tempDir = Files.createTempDirectory(Paths.get(System.getProperty("java.io.tmpdir")), "temp-crafter-plugin")
+def pluginsDir = Paths.get("plugins").toFile()
+
+def pluginId
+def pluginName
+def pluginVersion
+def crafterEdition
+
+task preparePlugin {
+  description "Task to validate the contents of the plugin directory"
+  def path = project.hasProperty("pluginPath")? project.getProperty("pluginPath") : ""
+  if(path) {
+    dir = Paths.get(path)
+    if(!Files.exists(dir) || !Files.isDirectory(dir)) {
+      throw new GradleException("The path does not exist or is not a folder")
+    }
+    def manifest = dir.resolve("plugin.xml")
+    if(!Files.exists(manifest)) {
+      throw new GradleException("Missing required file ${manifest}")
+    }
+    def xml = new XmlParser().parse(Files.newInputStream(manifest))
+    pluginId = xml.id.text()
+    pluginName = xml.name.text()
+    pluginVersion = xml.version.text()
+    crafterEdition = xml['crafter-edition'].text()
+    copy {
+      from dir
+      into tempDir
+      filter(ReplaceTokens, tokens: [ PLUGIN_ID: pluginId,
+                                      PLUGIN_NAME: pluginName, 
+                                      PLUGIN_VERSION: pluginVersion,
+                                      CRAFTER_EDITION: crafterEdition,
+                                      BUILD_DATE: new Date().getTime() as String
+                                      ])
+    }
+  }
+}
+
+task packagePlugin(type: Zip, dependsOn: preparePlugin) {
+  description "Task to process and package Crafter Studio plugins"
+  
+  from tempDir
+  destinationDir pluginsDir
+  archiveName "${pluginName}-${pluginVersion}.car"
+  
+  doLast {
+    delete tempDir
+  }
+}

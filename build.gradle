@@ -137,7 +137,7 @@ ext {
 
 apply from: "downloads.gradle"
 apply from: "environments.gradle"
-apply from: "car-builder.gradle"
+apply from: "plugins.gradle"
 
 
 def deliveryDeps = []
