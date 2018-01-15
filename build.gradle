@@ -114,7 +114,7 @@ ext {
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
 
     /** Cloneable Artifacts **/
-    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite"]
+    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite", "car-builder"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -379,8 +379,15 @@ envs.each { env ->
 }
 
 /* Cleanup non buildable modules */
-buildDeps.removeAll([tasks.findByName("studio-ui_build")] as Task[])
-cleanDeps.removeAll([tasks.findByName("studio-ui_clean"), tasks.findByName("test-suite_build")] as Task[])
+buildDeps.removeAll([
+  tasks.findByName("studio-ui_build"),
+  tasks.findByName("car-builder_build")
+] as Task[])
+cleanDeps.removeAll([
+  tasks.findByName("studio-ui_clean"),
+  tasks.findByName("car-builder_clean"),
+  tasks.findByName("test-suite_build")
+] as Task[])
 
 if (!includeSocial) {
     buildDeps.removeAll([tasks.findByName('social_build')] as Task[])
@@ -582,6 +589,14 @@ task test() {
         def array = commandLinePrefix + ["mvn", "clean", "install"] + actualCommandLinePost
         executeProcess(array, "./src/test-suite")
     }
+}
+
+task packagePlugin(type: GradleBuild) {
+  description "Verifies a folder and creates a Crafter Studio plugin archive"
+  
+  buildFile = Paths.get("src", "car-builder", "build.gradle")
+  tasks = ['packagePlugin']
+  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
 }
 
 /** Makes sure Depends are run in order. **/
