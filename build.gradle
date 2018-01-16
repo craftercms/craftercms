@@ -114,7 +114,7 @@ ext {
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
 
     /** Cloneable Artifacts **/
-    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite", "car-builder"]
+    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite", "plugin-maker"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -381,11 +381,11 @@ envs.each { env ->
 /* Cleanup non buildable modules */
 buildDeps.removeAll([
   tasks.findByName("studio-ui_build"),
-  tasks.findByName("car-builder_build")
+  tasks.findByName("plugin-maker_build")
 ] as Task[])
 cleanDeps.removeAll([
   tasks.findByName("studio-ui_clean"),
-  tasks.findByName("car-builder_clean"),
+  tasks.findByName("plugin-maker_clean"),
   tasks.findByName("test-suite_build")
 ] as Task[])
 
@@ -591,11 +591,30 @@ task test() {
     }
 }
 
-task packagePlugin(type: GradleBuild) {
-  description "Verifies a folder and creates a Crafter Studio plugin archive"
+task newPlugin(type: GradleBuild) {
+  description "Creates the folder structure for a new plugin"
+  group "plugin"
   
-  buildFile = Paths.get("src", "car-builder", "build.gradle")
+  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
+  tasks = ['newPlugin']
+  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
+}
+
+task packagePlugin(type: GradleBuild) {
+  description "Packages a Crafter Studio plugin"
+  group "plugin"
+  
+  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
   tasks = ['packagePlugin']
+  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
+}
+
+task publishPlugin(type: GradleBuild) {
+  description "Publishes a plugin to the Crafter Marketplace"
+  group "plugin"
+  
+  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
+  tasks = ['publishPlugin']
   startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
 }
 
