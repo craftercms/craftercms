@@ -653,12 +653,13 @@ def deployBinary(deployable, env) {
 
 def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     ProcessBuilder pb = new ProcessBuilder(command)
-    def processOutput = File.createTempFile("process", "out")
     pb.directory(new File(workingDir))
-    pb.redirectOutput(processOutput)
+    pb.redirectError(ProcessBuilder.Redirect.PIPE)
+    pb.redirectOutput(ProcessBuilder.Redirect.PIPE)
+    pb.redirectErrorStream(true)
     Process proc = pb.start();
     if (!silentBuild) {
-        watchProcessOutput(proc, processOutput)
+        watchProcessOutput(proc, null)
     }
     proc.waitFor()
     if (proc.exitValue() != 0) {
@@ -668,21 +669,19 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
 
 // Poor's man tail (but get's the job done)
 def watchProcessOutput(process, processOutputFile) {
+    def processInput = process.getInputStream()
+    def bufferedReader = new BufferedReader(new InputStreamReader(processInput))
     Thread.start {
-
-        def reader = null
-        if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-            reader = Files.newBufferedReader(Paths.get(processOutputFile.path), Charset.forName("ISO-8859-1"))
-        } else {
-            reader = Files.newBufferedReader(Paths.get(processOutputFile.path), Charset.forName("UTF-8"))
-        }
-        while (process.alive) {
-            def line = null
-            while ((line = reader.readLine()) != null) {
-                logger.lifecycle line
+        synchronized (this) {
+            while (process.alive) {
+                if (bufferedReader.ready()) {
+                    def line = null
+                    while ((line = bufferedReader.readLine()) != null) {
+                        logger.lifecycle line
+                    }
+                }
             }
         }
-        processOutputFile.delete()
     }
 }
 
