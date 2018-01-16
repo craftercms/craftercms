@@ -39,3 +39,4 @@ utils/target
 .project
 .settings/
 .vscode/
+selftest-env/*
