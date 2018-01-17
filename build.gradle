@@ -114,7 +114,7 @@ ext {
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
 
     /** Cloneable Artifacts **/
-    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite"]
+    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite", "plugin-maker"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -379,8 +379,15 @@ envs.each { env ->
 }
 
 /* Cleanup non buildable modules */
-buildDeps.removeAll([tasks.findByName("studio-ui_build")] as Task[])
-cleanDeps.removeAll([tasks.findByName("studio-ui_clean"), tasks.findByName("test-suite_build")] as Task[])
+buildDeps.removeAll([
+  tasks.findByName("studio-ui_build"),
+  tasks.findByName("plugin-maker_build")
+] as Task[])
+cleanDeps.removeAll([
+  tasks.findByName("studio-ui_clean"),
+  tasks.findByName("plugin-maker_clean"),
+  tasks.findByName("test-suite_build")
+] as Task[])
 
 if (!includeSocial) {
     buildDeps.removeAll([tasks.findByName('social_build')] as Task[])
@@ -582,6 +589,33 @@ task test() {
         def array = commandLinePrefix + ["mvn", "clean", "install"] + actualCommandLinePost
         executeProcess(array, "./src/test-suite")
     }
+}
+
+task newPlugin(type: GradleBuild) {
+  description "Creates the folder structure for a new plugin"
+  group "plugin"
+  
+  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
+  tasks = ['newPlugin']
+  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
+}
+
+task packagePlugin(type: GradleBuild) {
+  description "Packages a Crafter Studio plugin"
+  group "plugin"
+  
+  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
+  tasks = ['packagePlugin']
+  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
+}
+
+task publishPlugin(type: GradleBuild) {
+  description "Publishes a plugin to the Crafter Marketplace"
+  group "plugin"
+  
+  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
+  tasks = ['publishPlugin']
+  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
 }
 
 /** Makes sure Depends are run in order. **/

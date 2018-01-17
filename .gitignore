@@ -40,3 +40,4 @@ utils/target
 .settings/
 .vscode/
 selftest-env/*
+plugins
