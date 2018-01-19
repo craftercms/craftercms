@@ -14,10 +14,7 @@ set APP_BASE_NAME=%~n0
 set APP_HOME=%DIRNAME%
 
 @rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
-set DEFAULT_JVM_OPTS=
-
-@rem Disable Gradle daemon since it causes issues while working with two envs (authoring, delivery)
-set GRADLE_OPTS="-Dorg.gradle.daemon=false"
+set DEFAULT_JVM_OPTS=-Dorg.gradle.daemon=false
 
 @rem Find java.exe
 if defined JAVA_HOME goto findJavaFromJavaHome
