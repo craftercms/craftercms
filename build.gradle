@@ -22,7 +22,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.0.3-SNAPSHOT"
+project.version = "3.1.0-SNAPSHOT"
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
 
@@ -114,7 +114,7 @@ ext {
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
 
     /** Cloneable Artifacts **/
-    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite"]
+    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite", "plugin-maker"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -379,8 +379,15 @@ envs.each { env ->
 }
 
 /* Cleanup non buildable modules */
-buildDeps.removeAll([tasks.findByName("studio-ui_build")] as Task[])
-cleanDeps.removeAll([tasks.findByName("studio-ui_clean"), tasks.findByName("test-suite_build")] as Task[])
+buildDeps.removeAll([
+  tasks.findByName("studio-ui_build"),
+  tasks.findByName("plugin-maker_build")
+] as Task[])
+cleanDeps.removeAll([
+  tasks.findByName("studio-ui_clean"),
+  tasks.findByName("plugin-maker_clean"),
+  tasks.findByName("test-suite_build")
+] as Task[])
 
 if (!includeSocial) {
     buildDeps.removeAll([tasks.findByName('social_build')] as Task[])
@@ -584,6 +591,33 @@ task test() {
     }
 }
 
+task newPlugin(type: GradleBuild) {
+  description "Creates the folder structure for a new plugin"
+  group "plugin"
+  
+  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
+  tasks = ['newPlugin']
+  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
+}
+
+task packagePlugin(type: GradleBuild) {
+  description "Packages a Crafter Studio plugin"
+  group "plugin"
+  
+  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
+  tasks = ['packagePlugin']
+  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
+}
+
+task publishPlugin(type: GradleBuild) {
+  description "Publishes a plugin to the Crafter Marketplace"
+  group "plugin"
+  
+  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
+  tasks = ['publishPlugin']
+  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
+}
+
 /** Makes sure Depends are run in order. **/
 dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
@@ -619,12 +653,13 @@ def deployBinary(deployable, env) {
 
 def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     ProcessBuilder pb = new ProcessBuilder(command)
-    def processOutput = File.createTempFile("process", "out")
     pb.directory(new File(workingDir))
-    pb.redirectOutput(processOutput)
+    pb.redirectError(ProcessBuilder.Redirect.PIPE)
+    pb.redirectOutput(ProcessBuilder.Redirect.PIPE)
+    pb.redirectErrorStream(true)
     Process proc = pb.start();
     if (!silentBuild) {
-        watchProcessOutput(proc, processOutput)
+        watchProcessOutput(proc, null)
     }
     proc.waitFor()
     if (proc.exitValue() != 0) {
@@ -634,21 +669,19 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
 
 // Poor's man tail (but get's the job done)
 def watchProcessOutput(process, processOutputFile) {
+    def processInput = process.getInputStream()
+    def bufferedReader = new BufferedReader(new InputStreamReader(processInput))
     Thread.start {
-
-        def reader = null
-        if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-            reader = Files.newBufferedReader(Paths.get(processOutputFile.path), Charset.forName("ISO-8859-1"))
-        } else {
-            reader = Files.newBufferedReader(Paths.get(processOutputFile.path), Charset.forName("UTF-8"))
-        }
-        while (process.alive) {
-            def line = null
-            while ((line = reader.readLine()) != null) {
-                logger.lifecycle line
+        synchronized (this) {
+            while (process.alive) {
+                if (bufferedReader.ready()) {
+                    def line = null
+                    while ((line = bufferedReader.readLine()) != null) {
+                        logger.lifecycle line
+                    }
+                }
             }
         }
-        processOutputFile.delete()
     }
 }
 
