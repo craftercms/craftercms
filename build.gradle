@@ -106,7 +106,7 @@ ext {
     testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
 
     testingSuites = project.hasProperty("crafter.testing.suites") ? project.property("crafter.testing.suites") :
-            "src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml,src/test/resources/testngAPI.xml" +
+            "src/test/resources/testngAPI.xml,src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml" +
                     ",src/test/resources/testngSanityTest.xml"
 
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
