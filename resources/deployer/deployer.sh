@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
+
 DEPLOYER_HOME=${DEPLOYER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$DEPLOYER_HOME/.." && pwd )}
-LOGS_DIR=${DEPLOYER_LOGS_DIR:="$DEPLOYER_HOME/logs"}
-DATA_DIR=${DEPLOYER_DATA_DIR:="$CRAFTER_HOME/data/deployer"}
-DEPLOYMENTS_DIR=${DEPLOYER_DEPLOYMENTS_DIR:="$CRAFTER_HOME/repos/sites"}
+CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
+LOGS_DIR=${DEPLOYER_LOGS_DIR:="$CRAFTER_ROOT/logs/deployer"}
+DATA_DIR=${DEPLOYER_DATA_DIR:="$CRAFTER_ROOT/data/deployer"}
+DEPLOYMENTS_DIR=${DEPLOYER_DEPLOYMENTS_DIR:="$CRAFTER_ROOT/data/repos/sites"}
 TARGETS_DIR=$DATA_DIR/targets
 PROCESSED_COMMITS=$DATA_DIR/processed-commits
 PORT=${DEPLOYER_PORT:="9191"}
 JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HOME/logback-spring.xml -Dlogs.dir=$LOGS_DIR -Ddeployments.dir=$DEPLOYMENTS_DIR -Dtargets.dir=$TARGETS_DIR -DprocessedCommits.dir=$PROCESSED_COMMITS"
-PID=${DEPLOYER_PID:="$DEPLOYER_HOME/crafter-deployer.pid"}
-OUTPUT=${DEPLOYER_SDOUT:="$DEPLOYER_HOME/crafter-deployer.out"}
+PID=${DEPLOYER_PID:="$DATA_DIR/crafter-deployer.pid"}
+OUTPUT=${DEPLOYER_SDOUT:="$LOGS_DIR/crafter-deployer.out"}
 
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)

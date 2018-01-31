@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<role-mappings>
+    <groups>
+        <group name="Admin">
+            <role>admin</role>
+        </group>
+        <group name="Developer">
+            <role>developer</role>
+        </group>
+        <group name="Author">
+            <role>author</role>
+        </group>
+        <group name="Publisher">
+            <role>publisher</role>
+        </group>
+        <group name="Reviewer">
+            <role>reviewer</role>
+        </group>
+    </groups>
+</role-mappings>

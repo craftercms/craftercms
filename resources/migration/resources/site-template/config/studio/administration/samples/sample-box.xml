@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Box profiles configuration file. This files configures 0 or more
+    profiles with the information required by the Box API.
+
+    For every profile you need to specify:
+    <profile>
+        <id/>
+        <clientId/>
+        <clientSecret/>
+        <enterpriseId/>
+        <publicKeyId/>
+        <privateKeyPath/>
+        <privateKeyPassword/>
+        <uploadFolder/>
+    </profile>
+
+    id:	a unique id for this profile, this will be referenced in the
+        control defined in the content type
+    clientId: Box client id (recommended to be encrypted)
+    clientSecret: Box client secret (recommended to be encrypted)
+    enterpriseId: Box enterprise id (recommended to be encrypted)
+    publicKeyId: Box public key id (recommended to be encrypted)
+    privateKeyPath: Full path for the private key file
+    privateKeyPassword: Password used to decrypt the private key (recommended to be encrypted)
+    uploadFolder: Name of the folder where files will be uploaded
+
+-->
+<box>
+    <profile>
+        <id>box-default</id>
+        <clientId>...</clientId>
+        <clientSecret>...</clientSecret>
+        <enterpriseId>...</enterpriseId>
+        <publicKeyId>...</publicKeyId>
+        <privateKeyPath>...</privateKeyPath>
+        <privateKeyPassword>...</privateKeyPassword>
+        <uploadFolder>videos</uploadFolder>
+    </profile>
+</box>

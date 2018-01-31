@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	This file configures Studio's Rich Text Editor (RTE), and it supports several configuration profiles, where the
+	content model selects which profile to use for which RTE field in the forms.
+-->
+<config>
+    <setup>
+        <id>generic</id> <!-- This starts a profile configuration -->
+        <rteStylesheets> <!-- This informs the RTE to use the CSS files -->
+            <link>
+                <loadFromPreview>true</loadFromPreview>
+                <url>/static-assets/css/style.css</url>
+            </link>
+
+            <link>
+                <appliesToChannel>iphonev,iphoneh</appliesToChannel>
+                <loadFromPreview>true</loadFromPreview>
+                <url>/static-assets/mobile/css/iphone.css</url>
+            </link>
+            <link>
+                <appliesToChannel>iphonev,iphoneh</appliesToChannel>
+                <loadFromPreview>true</loadFromPreview>
+                <url>/static-assets/mobile/css/libs/jquery.mobile-1.0.min.css</url>
+            </link>
+        </rteStylesheets>
+
+        <toolbarItems1>
+            formatselect,|,bold,italic,underline,strikethrough,|,sub,sup,charmap,|,outdent,indent,blockquote,|,justifyleft,justifycenter,justifyright,justifyfull,|,bullist,numlist,|,managedImage,link,unlink,anchor,|,edithtml,|,undo,redo
+        </toolbarItems1>
+        <toolbarItems2></toolbarItems2>
+        <toolbarItems3></toolbarItems3>
+        <toolbarItems4></toolbarItems4>
+
+        <rteLinkStyles> <!-- configures HTTP link styles within the RTE (double click a link in the RTE and select the
+						`Class` field. -->
+            <style>
+                <!-- first row is the title -->
+                <name>Link Styles</name>
+                <value>Link Styles</value>
+            </style>
+            <style>
+                <name>Standard</name>
+                <value>standard</value>
+            </style>
+            <style>
+                <name>Single</name>
+                <value>single</value>
+            </style>
+            <style>
+                <name>Hidden</name>
+                <value>hidden</value>
+            </style>
+            <style>
+                <name>Title link</name>
+                <value>titleLink</value>
+            </style>
+            <style>
+                <name>Button</name>
+                <value>mediumButton</value>
+            </style>
+        </rteLinkStyles>
+
+        <!-- Widgets: These are Crafter components that can be dragged and dropped in the RTE -->
+        <rteWidgets>
+            <!--
+            <widget>
+                <name />
+                <description />
+                <contentIdField />
+                <contentIdType />
+                <contentPath />
+                <contentType />
+                <includeJs />
+                <includeCss />
+            </widget>
+            -->
+        </rteWidgets>
+
+        <!-- Modules: -->
+        <rteModules>
+            <module>insert-image</module>
+            <module>channel</module>
+            <module>edit-html</module>
+        </rteModules>
+    </setup>
+
+    <setup>
+        <id>sidebar</id>
+
+        <rteStylesheets>
+            <link>
+                <loadFromPreview>true</loadFromPreview>
+                <url>/static-assets/css/style1.css</url>
+            </link>
+        </rteStylesheets>
+
+        <rteStyleOverride>
+            body { background: none; background-color: white; padding-top: 10px; }
+            .layoutColumn { border: 1px solid gray; }
+            .layoutColumn3 { border: 1px solid gray; }
+            .layoutColumn4 { border: 1px solid gray; }
+        </rteStyleOverride>
+
+        <rteStyleTags>
+            <tag>
+                <label>Body copy</label>
+                <tagName>span</tagName>
+                <className>bodyCopy</className>
+            </tag>
+            <tag>
+                <label>Standard sub-headline</label>
+                <tagName>h2</tagName>
+                <className>subHead</className>
+            </tag>
+        </rteStyleTags>
+
+        <stockRteToolbarItems>
+            <item>
+                <name>fonts</name>
+                <className>yui-toolbar-group yui-toolbar-group-fontstyle</className>
+            </item>
+            <item>
+                <name>fontsize</name>
+                <className>yui-button yui-push-button yui-toolbar-fontsize yui-toolbar-spinbutton</className>
+            </item>
+            <item>
+                <name>underline</name>
+                <className>yui-button yui-push-button yui-toolbar-underline</className>
+            </item>
+            <item>
+                <name>alignment</name>
+                <className>yui-toolbar-group yui-toolbar-group-alignment</className>
+            </item>
+            <item>
+                <name>lists and indent</name>
+                <className>yui-toolbar-group yui-toolbar-group-indentlist2</className>
+            </item>
+            <!--item>
+               <name>inserts</name>
+               <className>yui-toolbar-group yui-toolbar-group-insertitem</className>
+            </item-->
+            <item>
+                <name>color</name>
+                <className>yui-button-disabled yui-color-button-disabled yui-button yui-color-button
+                    yui-toolbar-forecolor
+                </className>
+            </item>
+            <item>
+                <name>color</name>
+                <className>yui-button yui-color-button yui-toolbar-forecolor</className>
+            </item>
+            <item>
+                <name>highlight</name>
+                <className>yui-button-disabled yui-color-button-disabled yui-button yui-color-button
+                    yui-toolbar-backcolor
+                </className>
+            </item>
+            <item>
+                <name>highlight</name>
+                <className>yui-button yui-color-button yui-toolbar-backcolor</className>
+            </item>
+            <item>
+                <name>Remove Formatting</name>
+                <className>yui-button-disabled yui-push-button-disabled yui-button yui-push-button
+                    yui-toolbar-removeformat
+                </className>
+            </item>
+            <item>
+                <name>show/hide elements</name>
+                <className>yui-button yui-push-button yui-toolbar-hiddenelements</className>
+            </item>
+            <item>
+                <name>Justify</name>
+                <className>yui-button yui-push-button yui-toolbar-justifyfull</className>
+            </item>
+        </stockRteToolbarItems>
+
+        <rteLinkStyles>
+            <style>
+                <!-- first row is the title -->
+                <name>Link Styles</name>
+                <value>Link Styles</value>
+            </style>
+            <style>
+                <name>Standard</name>
+                <value>standard</value>
+            </style>
+        </rteLinkStyles>
+
+        <rteModules>
+            <module>insertdate</module>
+        </rteModules>
+        <rteLinkTargets>
+            <target>
+                <name>Blank</name>
+                <value>_blank</value>
+            </target>
+            <target>
+                <name>Self</name>
+                <value>_self</value>
+            </target>
+            <target>
+                <name>Parent</name>
+                <value>_parent</value>
+            </target>
+            <target>
+                <name>Top</name>
+                <value>_top</value>
+            </target>
+        </rteLinkTargets>
+
+    </setup>
+
+    <rteTablestyles>
+
+        <checkered><![CDATA[
+								
+								var trs = currentTable.rows;
+								var alternateRow = true;
+								var color;
+								var oddstyles = 'oddrowcolor';
+								oddstyles = oddstyles.split(' ');
+								var eventstyles = 'evenrowcolor';
+								eventstyles = eventstyles.split(' ');
+								var k = 0;
+								for (var j=0; j<trs.length; j++) {
+								
+									if(j > 0){
+										if(trs[j].className == 'tblSub'){
+											k = j;
+											continue;
+										}
+									
+										var tds =  trs[j].getElementsByTagName('td');
+										
+										for(var i =0; i < tds.length; ++i){
+											if(i == 0){
+												 color = (alternateRow == true ?'#FFCC66': '#BCE6BC');
+												alternateRow = !alternateRow;
+											}else{
+												color = (color == '#BCE6BC' ? '#FFCC66' : '#BCE6BC');
+											}
+											if((j - k)%2 != 0){
+
+													tds[i].style.backgroundColor = '#efefef';
+													if( oddstyles.length > i){
+														if(i == (tds.length - 1) ){
+															tds[i].className = oddstyles[oddstyles.length - 1] ;
+														}else{
+														tds[i].className = oddstyles[i] ;
+														}
+													}else{
+														tds[i].className = oddstyles[oddstyles.length - 1] ;
+													}
+													tds[i].style.backgroundColor= color ;								
+											}else {
+													tds[i].style.backgroundColor = '#fff';
+
+													if( eventstyles.length > i){
+														if(i == (tds.length - 1) ){
+															tds[i].className = eventstyles[eventstyles.length - 1] ;
+														}else{
+															tds[i].className = eventstyles[i] ;
+														}
+														
+													}else{
+														tds[i].className = eventstyles[oddstyles.length - 1] ;
+													}
+													tds[i].style.backgroundColor= color ;																			}
+										}
+									}
+								}
+
+			]]>
+        </checkered>
+        <altrowstable><![CDATA[
+						var trs = currentTable.rows;
+								var oddstyles = 'oddrowcolor';
+								oddstyles = oddstyles.split(' ');
+								var eventstyles = 'eddrowcolor'; //should be evenstyles
+								eventstyles = eventstyles.split(' ');
+								var k = 0;
+								for (var j=0; j<trs.length; j++) {
+								
+									if(j > 0){
+										if(trs[j].className == 'tblSub'){
+											k = j;
+											continue;
+										}
+									
+										var tds =  trs[j].getElementsByTagName('td');
+										
+										for(var i =0; i < tds.length; ++i){
+											
+											if((j - k)%2 != 0){
+												if( oddstyles.length > i){
+													if(i == (tds.length - 1) ){
+															tds[i].className = oddstyles[oddstyles.length - 1] ;
+														}else{
+														tds[i].className = oddstyles[i] ;
+													}
+												}else{
+													tds[i].className = oddstyles[oddstyles.length - 1] ;
+												}
+											}else {
+												if( eventstyles.length > i){
+													if(i == (tds.length - 1) ){
+															tds[i].className = eventstyles[eventstyles.length - 1] ;
+														}else{
+															tds[i].className = eventstyles[i] ;
+														}
+												}else{
+													tds[i].className = eventstyles[oddstyles.length - 1] ;
+												}
+											}
+										}
+									}
+								}
+			]]>
+        </altrowstable>
+    </rteTablestyles>
+</config>
