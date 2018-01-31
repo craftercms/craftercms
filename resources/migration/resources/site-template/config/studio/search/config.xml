@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	This file configures the search results screen in Studio and allows you to configure filters and result-type
+	renderers.
+
+
+	The structure of the file:
+    <config>
+        <filters>
+            <filter> (configures possible filters to restrict search to specific content or file types)
+                <name /> (name of filter, this maps to a JS file located at
+                            /webapps/studio/default-site/static-assets/components/cstudio-search/filters/{name}.js)
+                <label />
+                <default /> (true/false if this is the default filter)
+            </filter>
+        </filters>
+
+        <resultTemplates> (configures the preview templates that show a preview of content in result-sets)
+            <template>
+                <type /> (Studio content type)
+                <name /> (name of preview template, this maps to a JS file located at
+                        /webapps/studio/default-site/static-assets/components/cstudio-search/results/{name}.js)
+            </template>
+        </resultTemplates>
+    </config>
+-->
+<config>
+    <filters>
+        <filter>
+            <name>default</name>
+            <label>Default</label>
+            <default>true</default>
+        </filter>
+    </filters>
+
+    <resultTemplates>
+        <template>
+            <type>*</type>
+            <name>default</name>
+        </template>
+    </resultTemplates>
+</config>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dependency-resolver>
+    <item-types>
+        <item-type>
+            <!-- name of type -->
+            <name>page</name>
+            <!-- how to identify items of this type -->
+            <includes>
+                <!-- path pattern regexes (multiple) -->
+                <path-pattern>/site/website/.*\.xml</path-pattern>
+            </includes>
+            <!-- how to find dependencies in these items -->
+            <dependency-types>
+                <dependency-type>
+                    <name>page</name>
+                    <includes>
+                        <pattern>
+                            <find-regex>/site/website/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+                <dependency-type>
+                    <name>component</name>
+                    <includes>
+                        <pattern>
+                            <find-regex>/site/components/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>/site/system/page-components/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>/site/component-bindings/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>/site/indexes/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>/site/resources/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+                <dependency-type>
+                    <name>asset</name>
+                    <includes>
+                        <!-- path patterns to look for (multiple) -->
+                        <pattern>
+                            <find-regex>/static-assets/([^&lt;"']+)</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+                <dependency-type>
+                    <name>rendering-template</name>
+                    <includes>
+                        <pattern>
+                            <find-regex>/templates/([^&lt;"]+)\.ftl</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+                <dependency-type>
+                    <name>script</name>
+                    <includes>
+                        <pattern>
+                            <find-regex>/scripts/([^&lt;"]+)\.groovy</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>&lt;content-type&gt;/(.*)/(.*)&lt;/content-type&gt;</find-regex>
+                            <transforms>
+                                <transform>
+                                    <match>&lt;content-type&gt;/(.*)/(.*)&lt;/content-type&gt;</match>
+                                    <replace>/scripts/$1s/$2.groovy</replace>
+                                </transform>
+                            </transforms>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+            </dependency-types>
+        </item-type>
+        <item-type>
+            <!-- name of type -->
+            <name>component</name>
+            <!-- how to identify items of this type -->
+            <includes>
+                <!-- path pattern regexes (multiple) -->
+                <path-pattern>/site/components/([^&lt;]+)\.xml</path-pattern>
+                <path-pattern>/site/system/page-components/([^&lt;]+)\.xml</path-pattern>
+                <path-pattern>/site/component-bindings/([^&lt;]+)\.xml</path-pattern>
+                <path-pattern>/site/indexes/([^&lt;]+)\.xml</path-pattern>
+                <path-pattern>/site/resources/([^&lt;]+)\.xml</path-pattern>
+            </includes>
+            <!-- how to find dependencies in these items -->
+            <dependency-types>
+                <dependency-type>
+                    <name>page</name>
+                    <includes>
+                        <pattern>
+                            <find-regex>/site/website/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+                <dependency-type>
+                    <name>component</name>
+                    <includes>
+                        <pattern>
+                            <find-regex>/site/components/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>/site/system/page-components/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>/site/component-bindings/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>/site/indexes/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>/site/resources/([^&lt;]+)\.xml</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+                <dependency-type>
+                    <name>asset</name>
+                    <includes>
+                        <!-- path patterns to look for (multiple) -->
+                        <pattern>
+                            <find-regex>/static-assets/([^&lt;"']+)</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+                <dependency-type>
+                    <name>rendering-template</name>
+                    <includes>
+                        <pattern>
+                            <find-regex>/templates/([^&lt;"]+)\.ftl</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+                <dependency-type>
+                    <name>script</name>
+                    <includes>
+                        <pattern>
+                            <find-regex>/scripts/([^&lt;"]+)\.groovy</find-regex>
+                        </pattern>
+                        <pattern>
+                            <find-regex>&lt;content-type&gt;/(.*)/(.*)&lt;/content-type&gt;</find-regex>
+                            <transforms>
+                                <transform>
+                                    <match>&lt;content-type&gt;/(.*)/(.*)&lt;/content-type&gt;</match>
+                                    <replace>/scripts/$1s/$2.groovy</replace>
+                                </transform>
+                            </transforms>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+            </dependency-types>
+        </item-type>
+        <item-type>
+            <!-- name of type -->
+            <name>asset</name>
+            <!-- how to identify items of this type -->
+            <includes>
+                <!-- path pattern regexes (multiple) -->
+                <path-pattern>/static-assets/([^&lt;"']+)</path-pattern>
+            </includes>
+            <!-- how to find dependencies in these items -->
+            <dependency-types>
+                <dependency-type>
+                    <name>asset</name>
+                    <includes>
+                        <!-- path patterns to look for (multiple) -->
+                        <pattern>
+                            <find-regex>/static-assets/([^&lt;"']+)</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+            </dependency-types>
+        </item-type>
+        <item-type>
+            <!-- name of type -->
+            <name>rendering-template</name>
+            <!-- how to identify items of this type -->
+            <includes>
+                <!-- path pattern regexes (multiple) -->
+                <path-pattern>/templates/([^&lt;"]+)\.ftl</path-pattern>
+            </includes>
+            <!-- how to find dependencies in these items -->
+            <dependency-types>
+                <dependency-type>
+                    <name>asset</name>
+                    <includes>
+                        <!-- path patterns to look for (multiple) -->
+                        <pattern>
+                            <find-regex>/static-assets/([^&lt;"']+)</find-regex>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+                <dependency-type>
+                    <name>rendering-template</name>
+                    <includes>
+                        <find-regex>/templates/([^&lt;"]+)\.ftl</find-regex>
+                    </includes>
+                </dependency-type>
+            </dependency-types>
+        </item-type>
+        <item-type>
+            <!-- name of type -->
+            <name>script</name>
+            <!-- how to identify items of this type -->
+            <includes>
+                <!-- path pattern regexes (multiple) -->
+                <path-pattern>/scripts/([^&lt;"]+)\.groovy</path-pattern>
+            </includes>
+            <!-- how to find dependencies in these items -->
+            <dependency-types>
+                <dependency-type>
+                    <name>script</name>
+                    <includes>
+                        <!-- path patterns to look for (multiple) -->
+                        <pattern>
+                            <find-regex>import scripts.(.*)</find-regex>
+                            <transforms>
+                                <transform>
+                                    <match>(.*)</match>
+                                    <replace>$1</replace>
+                                </transform>
+                            </transforms>
+                        </pattern>
+                    </includes>
+                </dependency-type>
+            </dependency-types>
+        </item-type>
+    </item-types>
+</dependency-resolver>
