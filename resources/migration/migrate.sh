@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 MIGRATION_TOOL_HOME=${MIGRATION_TOOL_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$MIGRATION_TOOL_HOME/.." && pwd )}
@@ -102,6 +102,9 @@ function importContentTypes() {
 	targetComponentContentTypesDir=$targetContentTypesDir/component
 	targetPageContentTypesDir=$targetContentTypesDir/page
 
+	mkdir -p targetComponentContentTypesDir=$targetContentTypesDir/component
+	mkdir -p targetPageContentTypesDir=$targetContentTypesDir/page
+
 	echo -e "\e[34m------------------------------------------------------------\e[0m"
 	echo -e "\e[34mImporting content types"
 	echo -e "\e[34m------------------------------------------------------------\e[0m"
@@ -174,6 +177,23 @@ function importContent() {
 		fi
 
 		cp $SRC_CONTENT_DIR/config/site.xml $MIGRATE_REPO_DIR/config/engine/site-config.xml
+
+		echo "Updating <targeting> configuration in $MIGRATE_REPO_DIR/config/engine/site-config.xml..."
+
+		defaultLocale=$(sed -rn 's/\s*<defaultLocale>([^<>]+)<\/defaultLocale>\s*/\1/p' $MIGRATE_REPO_DIR/config/engine/site-config.xml)
+
+		# Update config fields
+		sed -i 's/i10n/targeting/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/localizedPaths/rootFolders/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/forceCurrentLocale/redirectToTargetedUrl/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/defaultLocale/fallbackTargetId/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		# Add default locale
+		sed -i "s/<site>/<site>\n\n\t<defaultLocale>$defaultLocale<\/defaultLocale>/g" $MIGRATE_REPO_DIR/config/engine/site-config.xml
+
+		echo "Adding Crafter 2 backwards compatibility configuration in $MIGRATE_REPO_DIR/config/engine/site-config.xml..."
+
+		# Add Crafter 2 compatible model conversion
+		sed -i "s/<site>/<site>\n\n\t<compatibility>\n\t\t<enableCrafter2ModelConversion>true<\/enableCrafter2ModelConversion>\n\t<\/compatibility>/g" $MIGRATE_REPO_DIR/config/engine/site-config.xml
 	fi
 
 	if [ -f "$SRC_CONTENT_DIR/config/spring/application-context.xml" ]; then
@@ -192,19 +212,27 @@ function importContent() {
 	cd $CURRENT_DIR
 }
 
-function updateDateFormat() {
+function updateDescriptorDates() {
 	echo -e "\e[34m------------------------------------------------------------\e[0m"
 	echo -e "\e[34mUpdating date format"
 	echo -e "\e[34m------------------------------------------------------------\e[0m"
 
-	echo "NOTE: This process only changes the format of stored dates in XML descriptors. If you're referencing _dt variables in Freemarker and Groovy be sure "
-	echo "to follow the Upgrade to Crafter CMS 3.0.x from 2.5.x guide for how to update the code."
+	echo "NOTE: This process changes the format of stored dates in XML descriptors. If you're parsing dates from the content model in Freemarker "
+	echo "or Groovy you need to change the pattern from MM/dd/yyyy HH:mm:ss to yyyy-MM-dd'T'HH:mm:ss.SSSX. The following are the files found with the "
+	echo "old date pattern. Be sure that you're not changing a date pattern that is used to format a date that is displayed in the view."
+	echo
 
-	find $MIGRATE_REPO_DIR/site -type f -name '*.xml' -exec sed -i -E 's/([0-9]+)\/([0-9]+)\/([0-9]{4}) ([0-9]+:[0-9]+:[0-9]+)/\3-\1-\2T\4.000Z/g' {} \;
+	grep -rn "MM/dd/yyyy HH:mm:ss" $MIGRATE_REPO_DIR/templates $MIGRATE_REPO_DIR/scripts
+
+	echo
+	read -p "Press enter to continue"
+
+	echo "Updating XML dates in descriptors..."
+	find $MIGRATE_REPO_DIR/site -type f -name '*.xml' -exec sed -i -r 's/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2})/\3-\1-\2T\4.000Z/g' {} \;
 
 	cd $MIGRATE_REPO_DIR
 	git add .
-	git commit -m "Updated date format of XML descriptors"
+	git commit -m "Updated XML descriptor dates"
 	cd $CURRENT_DIR
 }
 
@@ -266,5 +294,5 @@ setupMigrateRepo
 importContentTypes
 importConfiguredLists
 importContent
-updateDateFormat
+updateDescriptorDates
 createSite

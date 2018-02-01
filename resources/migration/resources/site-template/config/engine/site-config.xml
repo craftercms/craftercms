@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+    <compatibility>
+        <enableCrafter2ModelConversion>true</enableCrafter2ModelConversion>
+    </compatibility>
+
+</site>
