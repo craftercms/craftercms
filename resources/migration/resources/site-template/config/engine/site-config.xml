@@ -2,7 +2,7 @@
 <site>
 
     <compatibility>
-        <enableCrafter2ModelConversion>true</enableCrafter2ModelConversion>
+        <disableFullModelTypeConversion>true</disableFullModelTypeConversion>
     </compatibility>
 
 </site>
