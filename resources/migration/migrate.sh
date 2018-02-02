@@ -102,8 +102,8 @@ function importContentTypes() {
 	targetComponentContentTypesDir=$targetContentTypesDir/component
 	targetPageContentTypesDir=$targetContentTypesDir/page
 
-	mkdir -p targetComponentContentTypesDir=$targetContentTypesDir/component
-	mkdir -p targetPageContentTypesDir=$targetContentTypesDir/page
+	mkdir -p $targetContentTypesDir/component
+	mkdir -p $targetContentTypesDir/page
 
 	echo -e "\e[34m------------------------------------------------------------\e[0m"
 	echo -e "\e[34mImporting content types"
@@ -177,23 +177,6 @@ function importContent() {
 		fi
 
 		cp $SRC_CONTENT_DIR/config/site.xml $MIGRATE_REPO_DIR/config/engine/site-config.xml
-
-		echo "Updating <targeting> configuration in $MIGRATE_REPO_DIR/config/engine/site-config.xml..."
-
-		defaultLocale=$(sed -rn 's/\s*<defaultLocale>([^<>]+)<\/defaultLocale>\s*/\1/p' $MIGRATE_REPO_DIR/config/engine/site-config.xml)
-
-		# Update config fields
-		sed -i 's/i10n/targeting/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
-		sed -i 's/localizedPaths/rootFolders/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
-		sed -i 's/forceCurrentLocale/redirectToTargetedUrl/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
-		sed -i 's/defaultLocale/fallbackTargetId/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
-		# Add default locale
-		sed -i "s/<site>/<site>\n\n\t<defaultLocale>$defaultLocale<\/defaultLocale>/g" $MIGRATE_REPO_DIR/config/engine/site-config.xml
-
-		echo "Adding Crafter 2 backwards compatibility configuration in $MIGRATE_REPO_DIR/config/engine/site-config.xml..."
-
-		# Add Crafter 2 compatible model conversion
-		sed -i "s/<site>/<site>\n\n\t<compatibility>\n\t\t<enableCrafter2ModelConversion>true<\/enableCrafter2ModelConversion>\n\t<\/compatibility>/g" $MIGRATE_REPO_DIR/config/engine/site-config.xml
 	fi
 
 	if [ -f "$SRC_CONTENT_DIR/config/spring/application-context.xml" ]; then
@@ -209,6 +192,42 @@ function importContent() {
 	cd $MIGRATE_REPO_DIR
 	git add .
 	git commit -m "Imported content"
+	cd $CURRENT_DIR
+}
+
+function updateEngineConfig() {
+	echo -e "\e[34m------------------------------------------------------------\e[0m"
+	echo -e "\e[34mUpdating config/engine/site-config.xml"
+	echo -e "\e[34m------------------------------------------------------------\e[0m"
+
+	if [ -f "$SRC_CONTENT_DIR/config/site.xml" ] && [ -f "$MIGRATE_REPO_DIR/config/engine/site-config.xml" ]; then
+		echo "Updating <targeting> configuration..."
+
+		defaultLocale=$(sed -rn 's/\s*<defaultLocale>([^<>]+)<\/defaultLocale>\s*/\1/p' $MIGRATE_REPO_DIR/config/engine/site-config.xml)
+
+		# Update config fields
+		sed -i 's/i10n/targeting/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/localizedPaths/rootFolders/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/forceCurrentLocale/redirectToTargetedUrl/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/defaultLocale/fallbackTargetId/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		# Add default locale
+		sed -i "s/<site>/<site>\n\n\t<defaultLocale>$defaultLocale<\/defaultLocale>/g" $MIGRATE_REPO_DIR/config/engine/site-config.xml
+
+		echo "Disabling full content model type conversion for compatibility with 2.5..."
+
+		# Up to and including version 2:
+		# Crafter Engine, in the FreeMarker host only, converts model elements based on a suffix type hint, but only for the first level in
+		# the model, and not for _dt. For example, for contentModel.myvalue_i Integer is returned, but for contentModel.repeater.myvalue_i
+		# and contentModel.date_dt a String is returned. In the Groovy host no type of conversion was performed.
+		#
+		# In version 3 onwards, Crafter Engine converts elements with any suffix type hints (including _dt) at at any level in the content
+		# model and for both Freemarker and Groovy hosts.
+		sed -i "s/<site>/<site>\n\n\t<compatibility>\n\t\t<disableFullModelTypeConversion>true<\/disableFullModelTypeConversion>\n\t<\/compatibility>/g" $MIGRATE_REPO_DIR/config/engine/site-config.xml
+	fi
+
+	cd $MIGRATE_REPO_DIR
+	git add .
+	git commit -m "Updated Engine config"
 	cd $CURRENT_DIR
 }
 
@@ -294,5 +313,6 @@ setupMigrateRepo
 importContentTypes
 importConfiguredLists
 importContent
+updateEngineConfig
 updateDescriptorDates
 createSite
