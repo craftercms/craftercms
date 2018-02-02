@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
 
-    <compatibility>
-        <disableFullModelTypeConversion>true</disableFullModelTypeConversion>
-    </compatibility>
+  <!-- Compatibility properties -->
+  <compatibility>
+      <!--
+      Disables full content model type conversion.
+
+      Up to and including version 2:
+      Crafter Engine, in the FreeMarker host only, converts model elements based on a suffix type hint, but only for the first level in
+      the model, and not for _dt. For example, for contentModel.myvalue_i Integer is returned, but for contentModel.repeater.myvalue_i
+      and contentModel.date_dt a String is returned. In the Groovy host no type of conversion was performed.
+
+      In version 3 onwards, Crafter Engine converts elements with any suffix type hints (including _dt) at at any level in the content
+      model and for both Freemarker and Groovy hosts.
+      -->
+      <disableFullModelTypeConversion>true</disableFullModelTypeConversion>
+  </compatibility>
 
 </site>
