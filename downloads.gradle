@@ -52,6 +52,19 @@ task downloadSolr() {
     }
 }
 
+task downloadIEDriver {
+    doFirst{
+        download{
+            src WINDOWS_IE_DRIVER_URL
+            overwrite false
+            dest ("./src/test-suite/bin/ie-x64.zip")
+        }
+        copy {
+            from zipTree("./src/test-suite/bin/ie-x64.zip")
+            into "./src/test-suite/bin/${browserToTest}-win/"
+        }
+    }
+}
 
 task downloadEdgeDriver(){
     doFirst{
