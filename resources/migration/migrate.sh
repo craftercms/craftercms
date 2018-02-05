@@ -231,7 +231,7 @@ function updateEngineConfig() {
 	cd $CURRENT_DIR
 }
 
-function updateDescriptorDates() {
+function updateDateFormat() {
 	echo -e "\e[34m------------------------------------------------------------\e[0m"
 	echo -e "\e[34mUpdating date format"
 	echo -e "\e[34m------------------------------------------------------------\e[0m"
@@ -314,5 +314,5 @@ importContentTypes
 importConfiguredLists
 importContent
 updateEngineConfig
-updateDescriptorDates
+updateDateFormat
 createSite
