@@ -402,7 +402,20 @@ if (!includeProfile) {
     })
 }
 
-
+task selftest {
+    description "Selftest gradle script."
+    doLast {
+        def selftestScript="initialSetupCheckForTestScript"
+        if (isWin) {
+            selftestScript+=".bat"
+        }else {
+            selftestScript+=".sh"
+        }
+        def array = commandLinePrefix + [selftestScript]
+        println array
+        executeProcess(array, "./src/test-suite")
+    }
+}
 
 task clean() {
     //Dummy task Builds used as dependency of other tasks
