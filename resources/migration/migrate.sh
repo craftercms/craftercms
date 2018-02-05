@@ -231,7 +231,7 @@ function updateEngineConfig() {
 	cd $CURRENT_DIR
 }
 
-function updateDescriptorDates() {
+function updateDateFormat() {
 	echo -e "\e[34m------------------------------------------------------------\e[0m"
 	echo -e "\e[34mUpdating date format"
 	echo -e "\e[34m------------------------------------------------------------\e[0m"
@@ -244,7 +244,7 @@ function updateDescriptorDates() {
 	grep -rn "MM/dd/yyyy HH:mm:ss" $MIGRATE_REPO_DIR/templates $MIGRATE_REPO_DIR/scripts
 
 	echo
-	read -p "Press enter to continue"
+	read -p "Please make any necessary changes and then press enter to continue"
 
 	echo "Updating XML dates in descriptors..."
 	find $MIGRATE_REPO_DIR/site -type f -name '*.xml' -exec sed -i -r 's/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2})/\3-\1-\2T\4.000Z/g' {} \;
@@ -314,5 +314,5 @@ importContentTypes
 importConfiguredLists
 importContent
 updateEngineConfig
-updateDescriptorDates
+updateDateFormat
 createSite
