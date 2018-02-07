@@ -684,7 +684,7 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
             proc.destroy()
         }
     })
-    if (!silentBuild && !printOutputUntilFinish) {
+    if (!silentBuild) {
         watchProcessOutput(proc, null)
     }
     proc.waitFor()
