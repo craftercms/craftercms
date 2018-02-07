@@ -411,7 +411,7 @@ task selftest {
         def selftestScript="initialSetupCheckForTestScript"
         if (isWin) {
             selftestScript+=".bat"
-        }else {
+        } else {
             selftestScript = "./"+selftestScript+".sh"
         }
         def array = commandLinePrefix + [selftestScript]
