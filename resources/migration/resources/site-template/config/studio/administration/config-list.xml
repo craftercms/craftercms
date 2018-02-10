@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This file configures the list of configurations available in the SiteConfig section for this site/blueprint.
+
+    For every configuration you'd like to make editable, you need:
+        <file>
+            <path />
+            <title />
+            <description />
+            <samplePath />
+        </file>
+
+    The elements are:
+    - path: the path to the file. This path is rooted in /config off the base of the site/blueprint
+    - title: the title of this file. This should be a key into the string-table in Studio's localization string table
+        "base.js", if no entry is found, Studio will use the string you have here as is
+    - description: the description of this file.  This should be a key into the string-table in Studio's localization
+        string table "base.js", if no entry is found, Studio will use the string you have here as is
+    - samplePath: the path to a sample file to help the user update the file
+-->
+<config>
+    <files>
+        <file>
+            <path>/studio/site-config.xml</path>
+            <title>confTabSiteConfiguration</title>
+            <description>confTabSiteConfigurationDesc</description>
+            <samplePath>/studio/administration/samples/sample-site-config.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/context-nav/sidebar.xml</path>
+            <title>confTabSidebarConf</title>
+            <description>confTabSidebarConfDesc</description>
+            <samplePath>/studio/administration/samples/sample-sidebar.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/form-control-config/rte/rte-setup.xml</path>
+            <title>confTabRTEConf</title>
+            <description>confTabRTEConfDesc</description>
+            <samplePath>/studio/administration/samples/sample-form-control-rte-setup.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/preview-tools/components-config.xml</path>
+            <title>confTabPreviewComponentsConf</title>
+            <description>confTabPreviewComponentsConfDesc</description>
+            <samplePath>/studio/administration/samples/sample-preview-components-config.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/targeting/targeting-config.xml</path>
+            <title>confTabTargetingConfiguration</title>
+            <description>confTabTargetingConfigurationDesc</description>
+            <samplePath>/studio/administration/samples/sample-targeting-config.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/preview-tools/panel.xml</path>
+            <title>confTabPreviewPanelConf</title>
+            <description>confTabconfTabPreviewPanelConfDesc</description>
+            <samplePath>/studio/administration/samples/sample-preview-panel.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/workflow/notification-config.xml</path>
+            <title>confTabNotificationConf</title>
+            <description>confTabNotificationConfDesc</description>
+            <samplePath>/studio/administration/samples/sample-notification-config.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/permission-mappings-config.xml</path>
+            <title>confTabPermissionsMappings</title>
+            <description>confTabPermissionsMappingsDesc</description>
+            <samplePath>/studio/administration/samples/sample-permission-mappings-config.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/role-mappings-config.xml</path>
+            <title>confTabRoleMappings</title>
+            <description>confTabRoleMappingsDesc</description>
+            <samplePath>/studio/administration/samples/sample-role-mappings-config.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/environment/environment-config.xml</path>
+            <title>confTabEnvironmentConfiguration</title>
+            <description>confTabEnvironmentConfigurationDesc</description>
+            <samplePath>/studio/administration/samples/sample-environment-config.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/data-sources/cmis-config.xml</path>
+            <title>confTabCMISConfiguration</title>
+            <description>confTabCMISConfigurationDesc</description>
+            <samplePath>/studio/administration/samples/sample-cmis-config.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/context-nav/contextual-nav.xml</path>
+            <title>confTabContextualNavigationConf</title>
+            <description>confTabContextualNavigationConfDesc</description>
+            <samplePath>/studio/administration/samples/sample-contextual-nav.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/administration/site-config-tools.xml</path>
+            <title>confTabSiteConf</title>
+            <description>confTabSiteConfDesc</description>
+            <samplePath>/studio/administration/samples/sample-site-config-tools.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/administration/config-list.xml</path>
+            <title>confTabConfigurations</title>
+            <description>confTabConfDesc</description>
+            <samplePath>/studio/administration/samples/sample-config-list.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/mime-type.xml</path>
+            <title>Mime Types</title>
+            <description>mime Types</description>
+            <samplePath>/studio/administration/samples/sample-mime-type.xml</samplePath>
+        </file>
+        <file>
+            <path>/engine/site-config.xml</path>
+            <title>confTabEngineSiteConfiguration</title>
+            <description>confTabEngineSiteConfigurationDesc</description>
+            <samplePath>/studio/administration/samples/sample-engine-site-config.xml</samplePath>
+        </file>
+        <file>
+            <path>/engine/application-context.xml</path>
+            <title>confTabEngineSiteAppContextConfiguration</title>
+            <description>confTabEngineSiteAppContextConfigurationDesc</description>
+            <samplePath>/studio/administration/samples/sample-engine-application-context.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/aws/aws.xml</path>
+            <title>AWS Profiles</title>
+            <description>AWS Profiles</description>
+            <samplePath>/studio/administration/samples/sample-aws.xml</samplePath>
+        </file>
+        <file>
+            <path>/studio/box/box.xml</path>
+            <title>Box Profiles</title>
+            <description>Box Profiles</description>
+            <samplePath>/studio/administration/samples/sample-box.xml</samplePath>
+        </file>
+    </files>
+</config>

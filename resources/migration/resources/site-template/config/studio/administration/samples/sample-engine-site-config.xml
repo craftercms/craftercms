@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This file configures site properties used by Crafter Engine
+
+    Below are the properties used by Crafter Engine:
+
+    (General Properties)
+    <indexFileName />  (The name of a page's index file)
+    <defaultLocale />  (Default locale for the site)
+
+    (Filter Properties)
+    <filters> (Defines the filter mappings)
+        <filter>
+            <script> (Specifies the complete path to the filter script)
+                <mapping>
+                    <include /> (Contains Ant patterns (separated by comma) that request URLs should match for the filter to be executed)
+                    or
+                    <exclude /> (Contains patterns that the requests shouldn't match)
+                </mapping>
+            </script>
+        </filter>
+    </filters>
+
+    (CORS Properties)
+    <cors>
+        <enable>true</enable> (Enable/disable CORS headers, default is false)
+        (Values for each of the headers that will be added to responses)
+        <accessControlMaxAge>3600</accessControlMaxAge>
+        <accessControlAllowOrigin>*</accessControlAllowOrigin>
+        <accessControlAllowMethods>GET\, POST\, PUT</accessControlAllowMethods>
+        <accessControlAllowHeaders>Content-Type</accessControlAllowHeaders>
+        <accessControlAllowCredentials>true</accessControlAllowCredentials>
+    </cors>
+
+    (Content Targeting Properties)
+    <targeting>
+        <enabled /> (Enable/disable content targeting, default is false)
+        <rootFolders /> (Root folders handled for content targeting)
+        <excludePatterns /> (Regex patterns used to exclude certain paths from content targeting)
+        <availableTargetIds /> (Valid target IDs)
+        <fallbackTargetId /> (Target ID used as a last resort when resolving targeted content)
+        <mergeFolders /> (Sets whether the content of folders that have the same "family" of target IDs should be merged)
+        <redirectToTargetedUrl /> (Sets whether the request should be redirected when the targeted URL is different from the current URL)
+    </targeting>
+
+    (Profile Properties)
+    <profile>
+        <api>
+            <accessTokenId /> (The access token to use for the Crafter Profile REST calls.  This should always be specified on multi-tenant configurations)
+        </api>
+    </profile>
+
+    (Security Properties)
+    <security>
+        <login>
+            <formUrl /> (The URL of the login form page)
+            <defaultSuccessUrl /> (The URL to redirect to if the login was successful and the user could not be redirected to the previous page)
+            <alwaysUseDefaultSuccessUrl /> (Sets whether to always redirect to the default success URL after a successful login)
+            <failureUrl /> (The URL to redirect to if the login fails)
+        </login>
+        <logout>
+            <successUrl /> (The URL to redirect after a successful logout)
+        </logout>
+        <accessDenied>
+            <errorPageUrl /> (The URL of the page to show when access has been denied to a user to a certain resource)
+        </accessDenied>
+        <urlRestrictions> (Contains any number of restriction elements)
+            <restriction> (Restriction element, access is denied if a request matches the URL, and the expression evaluates to false)
+                <url /> (URL pattern)
+                <expression /> (Spring EL expression)
+            </restriction>
+        </urlRestrictions>
+    </security>
+
+    (Social Properties)
+    <socialConnections>
+        <facebookConnectionFactory>
+            <appId /> (The Facebook app ID required for establishing connections with Facebook)
+            <appSecret /> (The Facebook app secret required for establishing connections with Facebook)
+        </facebookConnectionFactory>
+    </socialConnections>
+
+    (Job Properties)
+    <jobs>
+        <jobFolder> (Specifies a folder which will be looked up for scripts to be scheduled using a certain cron expression)
+            <path /> (Path absolute to the site root)
+            <cronExpression /> (Cron expression)
+        </jobFolder>
+        <job> (Specifies a single script job to be scheduled)
+            <path />
+            <cronExpression />
+        </job>
+    </jobs>
+
+    You can learn more about Crafter Engine site configuration here:
+    http://docs.craftercms.org/en/3.0/site-administrators/engine/engine-site-configuration.html
+
+-->
+
+<site>
+    <!-- General properties -->
+    <indexFileName>index.xml</indexFileName>
+    <defaultLocale>en</defaultLocale>
+
+    <!-- Filter properties -->
+    <filters>
+        <filter>
+            <script>/scripts/filters/testFilter1.groovy</script>
+            <mapping>
+                <include>/**</include>
+            </mapping>
+        </filter>
+        <filter>
+            <script>/scripts/filters/testFilter2.groovy</script>
+            <mapping>
+                <include>/**</include>
+            </mapping>
+        </filter>
+        <filter>
+            <script>/scripts/filters/testFilter3.groovy</script>
+            <mapping>
+                <include>/**</include>
+                <exclude>/static-assets/**</exclude>
+            </mapping>
+        </filter>
+    </filters>
+
+    <!-- CORS Properties -->
+    <cors>
+        <enable>true</enable>
+        <accessControlMaxAge>3600</accessControlMaxAge>
+        <accessControlAllowOrigin>*</accessControlAllowOrigin>
+        <accessControlAllowMethods>GET\, POST\, PUT</accessControlAllowMethods>
+        <accessControlAllowHeaders>Content-Type</accessControlAllowHeaders>
+        <accessControlAllowCredentials>true</accessControlAllowCredentials>
+    </cors>
+
+    <!-- Content targeting properties -->
+    <targeting>
+        <enabled>true</enabled>
+        <rootFolders>/site/website</rootFolders>
+        <excludePatterns>/site/website/index\.xml</excludePatterns>
+        <availableTargetIds>en,ja,ja_JP,ja_JP_JP</availableTargetIds>
+        <fallbackTargetId>en</fallbackTargetId>
+        <mergeFolders>true</mergeFolders>
+        <redirectToTargetedUrl>false</redirectToTargetedUrl>
+    </targeting>
+
+    <!-- Profile properties -->
+    <profile>
+        <api>
+            <accessTokenId>${enc:q3l5YNoKH38RldAkg6EAGjxlI7+K7Cl4iEmMJNlemNOjcuhaaQNPLwAB824QcJKCbEeLfsg+QSfHCYNcNP/yMw==}</accessTokenId>
+        </api>
+    </profile>
+
+    <!-- Security properties -->
+    <security>
+        <login>
+            <formUrl>/signin</formUrl>
+            <defaultSuccessUrl>/home</defaultSuccessUrl>
+            <alwaysUseDefaultSuccessUrl>true</alwaysUseDefaultSuccessUrl>
+            <failureUrl>/signin?error=loginFailure</failureUrl>
+        </login>
+        <logout>
+            <successUrl>/home</successUrl>
+        </logout>
+        <accessDenied>
+            <errorPageUrl>/signin?error=accessDenied</errorPageUrl>
+        </accessDenied>
+        <urlRestrictions>
+            <restriction>
+                <url>/*</url>
+                <expression>hasRole('USER')</expression>
+            </restriction>
+        </urlRestrictions>
+    </security>
+
+    <!-- Social properties -->
+    <socialConnections>
+        <facebookConnectionFactory>
+            <appId>${enc:Nk4ZJWGGNIf9tt0X8BudixQhHekkBbG1AJE6myeqxp8=}</appId>
+            <appSecret>${enc:JOqVSAHHPYmIO8dC5VCz4KDBbKK466zKeAEowuDRqDammJ+07XmRbB+2ob5T8mg6gAEjDs5WxMuMiMPaDr4wOg==}</appSecret>
+        </facebookConnectionFactory>
+    </socialConnections>
+
+    <!-- Job properties -->
+    <jobs>
+        <jobFolder>
+            <path>/scripts/jobs/morejobs</path>
+            <cronExpression>0 0/15 * * * ?</cronExpression>
+        </jobFolder>
+        <job>
+            <path>/scripts/jobs/testJob.groovy</path>
+            <cronExpression>0 0/15 * * * ?</cronExpression>
+        </job>
+    </jobs>
+</site>

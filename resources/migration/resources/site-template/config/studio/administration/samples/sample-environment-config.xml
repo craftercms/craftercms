@@ -1,0 +1,31 @@
+<!--
+    This file configures the environments Crafter Studio can publish to.
+
+    The file structure is:
+
+    <environment-config>
+        <preview-server-url />
+        <authoring-server-url />
+        <live-server-url />
+        <open-sidebar />
+        <publishing-targets>
+            <target>
+                <repo-branch-name />
+                <display-label />
+            </target>
+        </publishing-targets>
+    </environment-config>
+
+-->
+<environment-config>
+    <preview-server-url>http://localhost:8080</preview-server-url>
+    <authoring-server-url>http://localhost:8080/studio</authoring-server-url>
+    <live-server-url>http://localhost:9080/?crafterSite={siteName}</live-server-url>
+    <open-sidebar>false</open-sidebar>
+    <publishing-targets>
+        <target>
+            <repo-branch-name>live</repo-branch-name>
+            <display-label>Live</display-label>
+        </target>
+    </publishing-targets>
+</environment-config>

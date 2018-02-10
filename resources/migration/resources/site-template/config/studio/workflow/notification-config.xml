@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- notification-config.xml
+
+    This file configures the workflow notification system.
+
+-->
+<notificationConfig>
+    <lang name="en"> <!-- language specific notifications -->
+        <deploymentFailureNotification> <!-- list of email addresses to notify in case of publishing failure -->
+            <email>admin@example.com</email>
+            <email>admin2@example.com</email>
+        </deploymentFailureNotification>
+
+        <approverEmails> <!-- list of content approver emails -->
+            <email>admin@example.com</email>
+            <email>admin2@example.com</email>
+        </approverEmails>
+
+        <generalMessages> <!-- list of general messages -->
+            <!-- example scheduling policy -->
+            <content key="scheduling-policy"><![CDATA[The {siteName} processes all publishing requests each business day, between 4PM EST and 6PM EST, unless a specific date/time is requested.<br/><br/>All requests received after 4PM EST may not be processed until the next business day.<br/><br/>If you have any questions about this policy or need a publish request processed immediately, please email the administrator.]]>
+            </content>
+        </generalMessages>
+
+        <cannedMessages> <!-- list of canned messages to speed up workflow approval processes -->
+            <content  title="Not Approved" key="NotApproved"><![CDATA[Please make the following revisions and resubmit.]]></content>
+            <content  title="Typos" key="Typos"><![CDATA[This content has multiple misspellings and/or grammatical errors. Please correct and re-submit.]]></content>
+            <content  title="Incorrect Branding" key="IB"><![CDATA[This content uses incorrect or outdated terms, images, and/or colors. Please correct and re-submit.]]></content>
+            <content  title="Broken Links" key="BrokenLinks"><![CDATA[This content has non-working links that may be due to incomplete and/or misspelled URLs.  Any links directing users to websites without the Acme.com primary navigation, or directing users to a document must open in a new browser window. Please correct and re-submit.]]></content>
+            <content  title="Needs Section Owner's Approval" key="NSOA"><![CDATA[This content needs the approval of its section&apos;s owner to insure there is no negative impact on other pages/areas of section, etc. Once you have their approval please email the Web Marketing Operations Team and re-submit this publish request.]]></content>
+        </cannedMessages>
+
+        <completeMessages> <!-- list of completion messages (when action is completed) -->
+            <content key="submitToGoLive"><![CDATA[An email notification has been sent to the team. Your content will be reviewed and (if approved) pushed live between 4PM EST and 6PM EST of the business day that the request was received. If this request is sent after business hours, it will be reviewed and (if approved) pushed live as soon as possible, the next business day.<br/><br/>If you need to make further revisions to this item, please re-submit this publish request after making them.<br/><br/>If this request needs immediate attention, please email the administrator.]]></content>
+            <content key="delete">
+                Item(s) has been pushed for delete. It will be deleted shortly.
+            </content>
+            <content key="go-live">Item(s) has been pushed live. It will be visible on the live site shortly.</content>
+            <content key="schedule-to-go-live">The scheduled item(s) will go live on: ${date}.&lt;br/&gt;&lt;br/&gt;</content>
+            <content key="reject">Rejection has been sent. Item(s) have NOT been pushed live and have returned to draft state.</content>
+            <content key="delete">Item(s) has been pushed for delete. It will be deleted shortly.</content>
+            <content key="schedule-to-go-live">Item(s) have been scheduled to go live.</content>
+        </completeMessages>
+
+        <emailTemplates> <!-- email templates written in FreeMarker -->
+            <emailTemplate key="deploymentError">
+                <subject>Deployment error on site ${siteName}</subject>
+                <body><![CDATA[
+                        <html>
+                            <head>
+                                <meta charset="utf-8"/>
+                            </head>
+                            <body style=" font-size: 12pt;">
+                                <p>
+                                    The following content was unable to deploy:
+                                    <ul>
+                                        <#list files as file>
+                                                <li>${file.internalName!file.name}</li>
+                                        </#list>
+                                    </ul>
+                                        Error:<br/>
+                                        ${deploymentError.toString()}
+                                    <br/><br/>
+                                    <a href="${liveUrl}" >
+                                        <img style="max-width: 350px;  max-height: 350px;" src="${liveUrl}/static-assets/images/workflow-email-footer.png" alt="" />
+                                    </a>
+                                </p>
+                            </body>
+                        </html>
+]]></body>
+            </emailTemplate>
+
+            <emailTemplate key="contentApproved">
+                <subject><![CDATA[<#if scheduleDate??>Content Scheduled <#else>Content Approved</#if>]]></subject>
+                <!-- Timezone can/is being overwritten in the following template -->
+                <body><![CDATA[
+                        <#setting time_zone='EST'>
+                        <html>
+                            <head>
+                                <meta charset="utf-8"/>
+                            </head>
+                            <body style=" font-size: 12pt;">
+                                <p>
+                                    <#if scheduleDate??>
+                                        The following content has been scheduled for publishing on ${scheduleDate?string["MMM dd, yyyy 'at' hh:mm a"]} Eastern Time.
+                                    <#else>
+                                        The following content has been reviewed and approved by ${approver.firstName!approver.username} ${approver.lastName!""}:
+                                    </#if>
+                               <ul>
+                                  <#list files as file>
+                                        <#if file.page>
+                                            <a href="${liveUrl}/${file.browserUri!""}">
+                                           </#if>
+                                       <li>${file.internalName!file.name}</li>
+                                        <#if file.page>
+                                          </a>
+                                      </#if>
+                                    </#list>
+                                </ul><br/>
+                                <#if scheduleDate??>
+                                    <a href="${liveUrl}">Click Here to View Your Published Content</a>
+                                    <br/>
+                                </#if>
+                                <a href="${authoringUrl}/site-dashboard" >
+                                    <img style="max-width: 350px;  max-height: 350px;" src="${liveUrl}/static-assets/images/workflow-email-footer.png" alt="" />
+                                </a>
+                                </p>
+                            </body>
+                        </html>
+                        ]]></body>
+            </emailTemplate>
+
+            <emailTemplate key="submittedForReview">
+                <subject>Content Review</subject>
+                <body><![CDATA[
+                    						<#setting time_zone='EST'>
+                        <html>
+                        <head>
+                            <meta charset="utf-8"/>
+                        </head>
+                        <body style=" font-size: 12pt">
+                            <p>
+                                ${submitter.first_name!submitter.username} ${submitter.last_name} has submitted items for your review:
+                              <ul>
+                              <#list files as file>
+                                	<#if file.page>
+                                  	<a href="${authoringUrl}/preview/#/?page=${file.browserUri!""}&site=${siteName}">
+                                       </#if>
+    	                           <li>${file.internalName!file.name}</li>
+                                  	<#if file.page>
+	                                  </a>
+                                  </#if>
+                                </#list>
+                            </ul>
+                            <#if submissionComments?has_content>
+                            Comments:<br/>
+                                ${submissionComments!""}
+                                <br/>
+                            </#if><br/>
+                            <a href="${previewUrl}/site-dashboard">Click Here to View Content Waiting for Approval</a>
+                            <br/><br/>
+        <a href="${liveUrl}" >
+            <img style="max-width: 350px;  max-height: 350px;" src="${liveUrl}/static-assets/images/workflow-email-footer.png" alt="" />
+        </a>
+    </p>
+                        </body>
+                        </html>
+                        ]]></body>
+            </emailTemplate>
+
+            <emailTemplate key="contentRejected">
+                <subject>Content Requires Revision</subject>
+                <body><![CDATA[
+						<#setting time_zone='EST'>
+                        <html>
+                            <head>
+                                <meta charset="utf-8"/>
+                            </head>
+                             <body style=" font-size: 12pt;">
+                                <p>
+                                    The following content has been reviewed and requires some revision before it can be approved:
+                                    <ul>
+                                  <#list files as file>
+                                        <#if file.page>
+                                            <a href="${authoringUrl}/preview/#/?page=${file.browserUri!""}&site=${siteName}">
+                                           </#if>
+                                       <li>${file.internalName!file.name}</li>
+                                        <#if file.page>
+                                          </a>
+                                      </#if>
+                                    </#list>
+                                </ul>
+                                Reason:<br/>
+                                    ${rejectionReason!""}
+                                <br/><br/>
+                                <a href="${authoringUrl}/site-dashboard" >
+                                    <img style="max-width: 350px;  max-height: 350px;" src="${liveUrl}/static-assets/images/workflow-email-footer.png" alt="" />
+                                </a>
+                                </p>
+                            </body>
+                        </html>
+                        ]]></body>
+            </emailTemplate>
+            <emailTemplate key="contentExpiringSoon">
+                <subject>Content Expiring Soon</subject>
+                <body><![CDATA[
+                     <html>
+                            <head>
+                                <meta charset="utf-8"/>
+                            </head>
+                             <body>
+                                <p>
+                                    ${monitorName} in site '${siteName}':
+                                    <ul>
+                                  <#list items as item>
+                                        <#if item.url??>
+                                            <li><a href="${item.url}">${item.internalName!item.id}</a></li>
+                                        <#else>
+                                            <li>${item.internalName!item.id}</li>
+                                      </#if>
+                                    </#list>
+                                </ul>
+                                </p>
+                            </body>
+                        </html>
+                        ]]></body>
+            </emailTemplate>
+        </emailTemplates>
+    </lang>
+</notificationConfig>
