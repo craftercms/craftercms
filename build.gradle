@@ -22,7 +22,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.0.5-SNAPSHOT"
+project.version = "3.0.6-SNAPSHOT"
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
 
@@ -405,7 +405,19 @@ if (!includeProfile) {
     })
 }
 
-
+task selftest {
+    description "Selftest gradle script."
+    doLast {
+        def selftestScript="initialSetupCheckForTestScript"
+        if (isWin) {
+            selftestScript+=".bat"
+        } else {
+            selftestScript = "./"+selftestScript+".sh"
+        }
+        def array = commandLinePrefix + [selftestScript]
+        executeProcess(array, "./src/test-suite", true)
+    }
+}
 
 task clean() {
     //Dummy task Builds used as dependency of other tasks
@@ -660,10 +672,18 @@ def deployBinary(deployable, env) {
 def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     ProcessBuilder pb = new ProcessBuilder(command)
     pb.directory(new File(workingDir))
-    pb.redirectError(ProcessBuilder.Redirect.PIPE)
-    pb.redirectOutput(ProcessBuilder.Redirect.PIPE)
+    if (!printOutputUntilFinish)  {
+        pb.redirectError(ProcessBuilder.Redirect.PIPE)
+        pb.redirectOutput(ProcessBuilder.Redirect.PIPE)
+    }
     pb.redirectErrorStream(true)
     Process proc = pb.start();
+    Runtime.getRuntime().addShutdownHook({
+        if(proc.alive) {
+            println "Killing Process ${command} on dir ${workingDir}"
+            proc.destroy()
+        }
+    })
     if (!silentBuild) {
         watchProcessOutput(proc, null)
     }
@@ -672,6 +692,7 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
         throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
     }
 }
+
 
 // Poor's man tail (but get's the job done)
 def watchProcessOutput(process, processOutputFile) {
@@ -683,7 +704,7 @@ def watchProcessOutput(process, processOutputFile) {
                 if (bufferedReader.ready()) {
                     def line = null
                     while ((line = bufferedReader.readLine()) != null) {
-                        logger.lifecycle line
+                        println line
                     }
                 }
             }
