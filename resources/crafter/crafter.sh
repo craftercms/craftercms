@@ -54,8 +54,8 @@ function help() {
 
 
 function version(){
- echo "Crafter CMS Copyright \(C) 2007-2013 Crafter Software Corporation."
- echo "Version 3.0.3-SNAPSHOT-62a550"
+ echo "Copyright (C) 2007-2018 Crafter Software Corporation. All rights reserved."
+ echo "Version @VERSION@-@GIT_BUILD_ID@"
 }
 
 function manPages(){
@@ -754,7 +754,7 @@ case $1 in
   ;;
   start_solr)
   logo
-  startSolr36
+  startSolr
   ;;
   stop_solr)
   logo
