@@ -22,7 +22,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.0.8-SNAPSHOT"
+project.version = "3.0.9-SNAPSHOT"
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
 
@@ -558,6 +558,14 @@ task preTest(dependsOn: preTestDeps) {
             properties.add("webBrowser=${browserToTest}")
             properties.add("baseUrl=http://localhost:8080/studio/#/login")
             properties.add("${browserToTest}.driver.path=${StringEscapeUtils.escapeJava(file(driverPath).absolutePath)}")
+            properties.add("deliverybaseUrl=http://localhost:9080/")
+            
+            if (SystemUtils.IS_OS_WINDOWS) {
+                properties.add("executionenvironment=windows")
+            } else {
+                properties.add("executionenvironment=unix")
+            }
+            
             Files.write(Paths.get("./src/test-suite/test-properties.properties"), properties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
         }
 
