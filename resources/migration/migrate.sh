@@ -132,7 +132,7 @@ function importConfiguredLists() {
 			mkdir -p $MIGRATE_REPO_DIR/config/studio/form-control-config/configured-lists
 		fi
 
-		cp -r $SRC_STUDIO_CONFIG_DIR/form-control-config/configured-lists $MIGRATE_REPO_DIR/config/studio/form-control-config/configured-lists
+		cp -r $SRC_STUDIO_CONFIG_DIR/form-control-config/configured-lists $MIGRATE_REPO_DIR/config/studio/form-control-config
 
 		cd $MIGRATE_REPO_DIR
 		git add .
