@@ -3,6 +3,8 @@
 ##################################################
 # Absolute or relative path to repository base (all actual repositories will be under this)
 studio.repo.basePath: ../data/repos
+# Sandbox git repository branch for every site
+# studio.repo.siteSandboxBranch: master
 
 ############################################################
 ##                    Preview Deployer                    ##
@@ -56,7 +58,7 @@ studio.db.dataPath: ../data/db
 # Defines security provider for accessing repository. Possible values
 # - db (users are stored in database)
 # - ldap (users are imported from LDAP into the database)
-# - headers (use when authenticating via headers) 
+# - headers (use when authenticating via headers)
 # studio.security.type: ldap
 
 # LDAP Server url
