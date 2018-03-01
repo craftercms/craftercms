@@ -3,6 +3,8 @@
 ##################################################
 # Absolute or relative path to repository base (all actual repositories will be under this)
 studio.repo.basePath: ../data/repos
+# Sandbox git repository branch for every site
+# studio.repo.siteSandboxBranch: master
 
 ############################################################
 ##                    Preview Deployer                    ##
