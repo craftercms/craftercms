@@ -9,18 +9,19 @@ SET SITE=%1
 SET DELIVERY_HOME=%~dp0
 call %DELIVERY_HOME%\crafter-setenv.bat
 
-IF /i "%2"=="" (
-  for %%i in ("%~dp0..") do set DELIVERY_ROOT=%%~fi\
-  for %%i in ("%~dp0..\..") do set AUTHORING_ROOT=%%~fi\
-  SET AUTHORING_SITE_REPOS=%AUTHORING_ROOT%crafter-authoring\data\repos\sites
-  SET REPO=%AUTHORING_SITE_REPOS%\%SITE%\published
-) ELSE (
-  SET REPO=%2
-)
+SET AUTHORING_ROOT=%DELIVERY_HOME%..\..\
+SET AUTHORING_SITE_REPOS=%AUTHORING_ROOT%crafter-authoring\data\repos\sites
+SET REPO=%AUTHORING_SITE_REPOS%\%SITE%\published
+
+IF /i "%2" NEQ "" SET REPO=%2
 
 IF NOT "%REPO:~0,3%" equ "ssh" (
   IF NOT EXIST "%REPO%" (
     echo "Repository path %REPO% for site \"%SITE%\" does not exist or cannot to read"
+    exit /b 2
+  )
+   IF NOT EXIST "%REPO%\.git" (
+    echo "Repository path %REPO% for site \"%SITE%\" is not a git repo"
     exit /b 2
   )
 )
