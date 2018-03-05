@@ -1,6 +1,10 @@
 #!/bin/bash
 
-source setenv.sh
+export MIGRATION_TOOL_HOME=${MIGRATION_TOOL_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
+export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$MIGRATION_TOOL_HOME/.." && pwd )}
+export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
+
+. "$MIGRATION_TOOL_HOME/setenv.sh"
 
 SCRIPT_NAME=$(basename "$0")
 
@@ -39,7 +43,6 @@ echo "--------------------------------------------------------------------"
 read -p "Replace old content type controllers (controller.js, extract.js, extract.groovy and controller.groovy) with latest controllers (not recommended if you have custom code in the controllers)? [y/n]: " REPLACE_OLD_CONTROLLERS
 export REPLACE_OLD_CONTROLLERS
 
-echo
 echo
 echo -e "\e[34mRunning migration in background and tailing ($MIGRATION_LOG_PATH)\e[0m"
 echo

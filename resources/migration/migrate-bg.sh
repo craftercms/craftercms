@@ -1,8 +1,8 @@
 #!/bin/bash
 
-function createdMigrateRepo() {
+function createMigrationRepo() {
 	echo "------------------------------------------------------------"
-	echo "Create migrate directory"
+	echo "Creating migration directory"
 	echo "------------------------------------------------------------"
 
 	if [ -d "$MIGRATION_REPO_DIR" ]; then
@@ -181,30 +181,32 @@ function commitFiles() {
 
 	git config core.bigFileThreshold 20m
 	git config core.compression 0
-	git config core.compression false
+	git config core.fileMode false
 	git update-index
 
 	count=0
 
 	echo -n "Committing files..."
 
-	git ls-files --others --exclude-standard | while read file
-	do
-		git add "$file"
+	git ls-files --others --exclude-standard | {
+		while read file
+		do
+			git add "$file"
 
-		((count++))
+			((count++))
 
-		if ! ((count % $COMMIT_EVERY)); then
-			git commit -m "Committing migrated files" --quiet
-			echo -n "$count..."
-		fi
-	done
+			if ! ((count % $COMMIT_EVERY)); then
+				git commit -m "Committing migrated files" --quiet
+				echo -n "$count..."
+			fi
+		done
 
-	# Commit remaining files
-	git commit -m "Committing migrated files" --quiet
+		# Commit remaining files
+		git commit -m "Committing migrated files" --quiet
 
-	echo
-	echo "Total files committed: $count"
+		echo
+		echo "Total files committed: $count"
+	}
 
 	cd $CURRENT_DIR
 }
@@ -229,7 +231,9 @@ function checkDateFormatInCode() {
 
 }
 
-createdMigrateRepo
+startTime=$SECONDS
+
+createMigrationRepo
 copyContentTypes
 copyConfiguredLists
 copyContent
@@ -238,4 +242,6 @@ updateDatesInDescriptors
 commitFiles
 checkDateFormatInCode
 
-echo "Migration completed"
+duration=$(($SECONDS - $startTime))
+
+echo "Migration completed in $duration seconds"

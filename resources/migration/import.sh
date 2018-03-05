@@ -1,6 +1,10 @@
 #!/bin/bash
 
-source setenv.sh
+export MIGRATION_TOOL_HOME=${MIGRATION_TOOL_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
+export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$MIGRATION_TOOL_HOME/.." && pwd )}
+export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
+
+. "$MIGRATION_TOOL_HOME/setenv.sh"
 
 SCRIPT_NAME=$(basename "$0")
 

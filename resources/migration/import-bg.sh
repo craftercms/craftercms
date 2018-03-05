@@ -29,7 +29,7 @@ function importSite() {
 		exit 1
 	fi
 
-	remoteUrl=$(cd "$MIGRATE_REPO_DIR" && pwd)
+	remoteUrl=$(cd "$MIGRATION_REPO_DIR" && pwd)
 	requestBody="{\"site_id\":\"$TARGET_SITE_NAME\",\"description\":\"$TARGET_SITE_NAME\",\"use_remote\":true,\"remote_url\":\"$remoteUrl\",\"remote_name\":\"origin\",\"create_option\":\"clone\"}"
 
 	echo -n "Creating site... "
@@ -37,4 +37,10 @@ function importSite() {
 	echo "Response status: $status"
 }
 
+startTime=$SECONDS
+
 importSite
+
+duration=$(($SECONDS - $startTime))
+
+echo "Import completed in $duration seconds"
