@@ -1,22 +1,22 @@
 #!/bin/bash
 
 function createdMigrateRepo() {
-	echo -e "------------------------------------------------------------"
-	echo -e "Create migrate directory"
-	echo -e "------------------------------------------------------------"
+	echo "------------------------------------------------------------"
+	echo "Create migrate directory"
+	echo "------------------------------------------------------------"
 
-	if [ -d "$MIGRATE_REPO_DIR" ]; then
-		rm -rf $MIGRATE_REPO_DIR
+	if [ -d "$MIGRATION_REPO_DIR" ]; then
+		rm -rf $MIGRATION_REPO_DIR
 	fi
 
-	mkdir -p $MIGRATE_REPO_DIR
+	mkdir -p $MIGRATION_REPO_DIR
 	# Creating new site with site-template
-	cp -r $RESOURCES_DIR/site-template/* $MIGRATE_REPO_DIR
+	cp -r $RESOURCES_DIR/site-template/* $MIGRATION_REPO_DIR
 	# Changing {siteName} in files with the actual site name
-	find $MIGRATE_REPO_DIR -type f -exec sed -i "s/{siteName}/$TARGET_SITE_NAME/g" {} \;
+	find $MIGRATION_REPO_DIR -type f -exec sed -i "s/{siteName}/$TARGET_SITE_NAME/g" {} \;
 }
 
-function importSingleContentType() {
+function copySingleContentType() {
 	srcDir=$1
 	targetDir=$2
 	contentType=$3
@@ -34,7 +34,7 @@ function importSingleContentType() {
 	esac
 }
 
-function importContentTypeCollection() {
+function copyContentTypeCollection() {
 	srcDir=$1
 	targetDir=$2
 	contentTypes=($(ls "$srcDir"))
@@ -43,49 +43,49 @@ function importContentTypeCollection() {
 
 	for contentType in "${contentTypes[@]}"
 	do
-		importSingleContentType $srcDir $targetDir $contentType $REPLACE_OLD_CONTROLLERS
+		copySingleContentType $srcDir $targetDir $contentType $REPLACE_OLD_CONTROLLERS
 	done
 }
 
-function importContentTypes() {
+function copyContentTypes() {
 	srcContentTypesDir=$SRC_STUDIO_CONFIG_DIR/content-types
 	srcComponentContentTypesDir=$srcContentTypesDir/component
 	srcPageContentTypesDir=$srcContentTypesDir/page
-	targetContentTypesDir=$MIGRATE_REPO_DIR/config/studio/content-types
+	targetContentTypesDir=$MIGRATION_REPO_DIR/config/studio/content-types
 	targetComponentContentTypesDir=$targetContentTypesDir/component
 	targetPageContentTypesDir=$targetContentTypesDir/page
 
 	mkdir -p $targetContentTypesDir/component
 	mkdir -p $targetContentTypesDir/page
 
-	echo -e "------------------------------------------------------------"
-	echo -e "Importing content types"
-	echo -e "------------------------------------------------------------"
+	echo "------------------------------------------------------------"
+	echo "Copying content types"
+	echo "------------------------------------------------------------"
 
-	importContentTypeCollection $srcComponentContentTypesDir $targetComponentContentTypesDir
-	importContentTypeCollection $srcPageContentTypesDir $targetPageContentTypesDir
+	copyContentTypeCollection $srcComponentContentTypesDir $targetComponentContentTypesDir
+	copyContentTypeCollection $srcPageContentTypesDir $targetPageContentTypesDir
 }
 
-function importConfiguredLists() {
+function copyConfiguredLists() {
 	if [ -d "$SRC_STUDIO_CONFIG_DIR/form-control-config/configured-lists" ]; then
-		echo -e "------------------------------------------------------------"
-		echo -e "Importing configured lists"
-		echo -e "------------------------------------------------------------"
+		echo "------------------------------------------------------------"
+		echo "Copying configured lists"
+		echo "------------------------------------------------------------"
 
 		echo "Copying configured lists from $SRC_STUDIO_CONFIG_DIR/form-control-config/configured-lists"
 
-		if [ ! -d "$MIGRATE_REPO_DIR/config/studio/form-control-config/configured-lists" ]; then
-			mkdir -p $MIGRATE_REPO_DIR/config/studio/form-control-config/configured-lists
+		if [ ! -d "$MIGRATION_REPO_DIR/config/studio/form-control-config/configured-lists" ]; then
+			mkdir -p $MIGRATION_REPO_DIR/config/studio/form-control-config/configured-lists
 		fi
 
-		cp -r $SRC_STUDIO_CONFIG_DIR/form-control-config/configured-lists $MIGRATE_REPO_DIR/config/studio/form-control-config
+		cp -r $SRC_STUDIO_CONFIG_DIR/form-control-config/configured-lists $MIGRATION_REPO_DIR/config/studio/form-control-config
 	fi
 }
 
-function importContent() {
-	echo -e "------------------------------------------------------------"
-	echo -e "Importing content"
-	echo -e "------------------------------------------------------------"
+function copyContent() {
+	echo "------------------------------------------------------------"
+	echo "Copying content"
+	echo "------------------------------------------------------------"
 
 	ls "$SRC_CONTENT_DIR" | while read folder
 	do
@@ -93,59 +93,59 @@ function importContent() {
 		then
 			folderPath=$SRC_CONTENT_DIR/$folder
 
-			echo "Copying $folderPath folder to $MIGRATE_REPO_DIR/$folder..."
-			cp -r $folderPath $MIGRATE_REPO_DIR
+			echo "Copying $folderPath folder to $MIGRATION_REPO_DIR/$folder..."
+			cp -r $folderPath $MIGRATION_REPO_DIR
 		fi
 	done
 
 	if [ -d "$SRC_CONTENT_DIR/classes/groovy" ]; then
-		echo "Copying $SRC_CONTENT_DIR/classes/groovy to $MIGRATE_REPO_DIR/scripts/classes..."
+		echo "Copying $SRC_CONTENT_DIR/classes/groovy to $MIGRATION_REPO_DIR/scripts/classes..."
 
-		if [ ! -d "$MIGRATE_REPO_DIR/scripts" ]; then
-			mkdir -p $MIGRATE_REPO_DIR/scripts
+		if [ ! -d "$MIGRATION_REPO_DIR/scripts" ]; then
+			mkdir -p $MIGRATION_REPO_DIR/scripts
 		fi
 
-		cp -r $SRC_CONTENT_DIR/classes/groovy $MIGRATE_REPO_DIR/scripts/classes
+		cp -r $SRC_CONTENT_DIR/classes/groovy $MIGRATION_REPO_DIR/scripts/classes
 	fi
 
 	if [ -f "$SRC_CONTENT_DIR/config/site.xml" ]; then
-		echo "Copying $SRC_CONTENT_DIR/config/site.xml to $MIGRATE_REPO_DIR/config/engine/site-config.xml..."
+		echo "Copying $SRC_CONTENT_DIR/config/site.xml to $MIGRATION_REPO_DIR/config/engine/site-config.xml..."
 
-		if [ ! -d "$MIGRATE_REPO_DIR/config/engine" ]; then
-			mkdir -p $MIGRATE_REPO_DIR/config/engine
+		if [ ! -d "$MIGRATION_REPO_DIR/config/engine" ]; then
+			mkdir -p $MIGRATION_REPO_DIR/config/engine
 		fi
 
-		cp $SRC_CONTENT_DIR/config/site.xml $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		cp $SRC_CONTENT_DIR/config/site.xml $MIGRATION_REPO_DIR/config/engine/site-config.xml
 	fi
 
 	if [ -f "$SRC_CONTENT_DIR/config/spring/application-context.xml" ]; then
-		echo "Copying $SRC_CONTENT_DIR/config/spring/application-context.xml to $MIGRATE_REPO_DIR/config/engine/application-context.xml..."
+		echo "Copying $SRC_CONTENT_DIR/config/spring/application-context.xml to $MIGRATION_REPO_DIR/config/engine/application-context.xml..."
 
-		if [ ! -d "$MIGRATE_REPO_DIR/config/engine" ]; then
-			mkdir -p $MIGRATE_REPO_DIR/config/engine
+		if [ ! -d "$MIGRATION_REPO_DIR/config/engine" ]; then
+			mkdir -p $MIGRATION_REPO_DIR/config/engine
 		fi
 
-		cp $SRC_CONTENT_DIR/config/spring/application-context.xml $MIGRATE_REPO_DIR/config/engine/application-context.xml
+		cp $SRC_CONTENT_DIR/config/spring/application-context.xml $MIGRATION_REPO_DIR/config/engine/application-context.xml
 	fi
 }
 
 function updateEngineConfig() {
-	if [ -f "$SRC_CONTENT_DIR/config/site.xml" ] && [ -f "$MIGRATE_REPO_DIR/config/engine/site-config.xml" ]; then
-		echo -e "------------------------------------------------------------"
-		echo -e "Updating config/engine/site-config.xml"
-		echo -e "------------------------------------------------------------"
+	if [ -f "$SRC_CONTENT_DIR/config/site.xml" ] && [ -f "$MIGRATION_REPO_DIR/config/engine/site-config.xml" ]; then
+		echo "------------------------------------------------------------"
+		echo "Updating config/engine/site-config.xml"
+		echo "------------------------------------------------------------"
 
 		echo "Updating <targeting> configuration..."
 
-		defaultLocale=$(sed -rn 's/\s*<defaultLocale>([^<>]+)<\/defaultLocale>\s*/\1/p' $MIGRATE_REPO_DIR/config/engine/site-config.xml)
+		defaultLocale=$(sed -rn 's/\s*<defaultLocale>([^<>]+)<\/defaultLocale>\s*/\1/p' $MIGRATION_REPO_DIR/config/engine/site-config.xml)
 
 		# Update config fields
-		sed -i 's/i10n/targeting/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
-		sed -i 's/localizedPaths/rootFolders/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
-		sed -i 's/forceCurrentLocale/redirectToTargetedUrl/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
-		sed -i 's/defaultLocale/fallbackTargetId/g' $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/i10n/targeting/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/localizedPaths/rootFolders/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/forceCurrentLocale/redirectToTargetedUrl/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+		sed -i 's/defaultLocale/fallbackTargetId/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
 		# Add default locale
-		sed -i "s/<site>/<site>\n\n\t<defaultLocale>$defaultLocale<\/defaultLocale>/g" $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		sed -i "s/<site>/<site>\n\n\t<defaultLocale>$defaultLocale<\/defaultLocale>/g" $MIGRATION_REPO_DIR/config/engine/site-config.xml
 
 		echo "Disabling full content model type conversion for compatibility with 2.5..."
 
@@ -156,28 +156,33 @@ function updateEngineConfig() {
 		#
 		# In version 3 onwards, Crafter Engine converts elements with any suffix type hints (including _dt) at at any level in the content
 		# model and for both Freemarker and Groovy hosts.
-		sed -i "s/<site>/<site>\n\n\t<compatibility>\n\t\t<disableFullModelTypeConversion>true<\/disableFullModelTypeConversion>\n\t<\/compatibility>/g" $MIGRATE_REPO_DIR/config/engine/site-config.xml
+		sed -i "s/<site>/<site>\n\n\t<compatibility>\n\t\t<disableFullModelTypeConversion>true<\/disableFullModelTypeConversion>\n\t<\/compatibility>/g" $MIGRATION_REPO_DIR/config/engine/site-config.xml
 	fi
 }
 
 function updateDatesInDescriptors() {
-	echo -e "------------------------------------------------------------"
-	echo -e "Updating dates in XML descriptors"
-	echo -e "------------------------------------------------------------"
+	echo "------------------------------------------------------------"
+	echo "Updating dates in XML descriptors"
+	echo "------------------------------------------------------------"
 
 	echo "Updating dates in XML descriptors..."
-	find $MIGRATE_REPO_DIR/site -type f -name '*.xml' -exec sed -i -r 's/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2})/\3-\1-\2T\4.000Z/g' {} \;
+	find $MIGRATION_REPO_DIR/site -type f -name '*.xml' -exec sed -i -r 's/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2})/\3-\1-\2T\4.000Z/g' {} \;
 }
 
 function commitFiles() {
-	echo -e "------------------------------------------------------------"
-	echo -e "Setting up migrate directory as Git repo"
-	echo -e "------------------------------------------------------------"
+	echo "------------------------------------------------------------"
+	echo "Setting up migrate directory as Git repo"
+	echo "------------------------------------------------------------"
 
-	cd $MIGRATE_REPO_DIR
+	cd $MIGRATION_REPO_DIR
 
 	echo "Initializing Git repo..."
 	git init
+
+	git config core.bigFileThreshold 20m
+	git config core.compression 0
+	git config core.compression false
+	git update-index
 
 	count=0
 
@@ -204,71 +209,33 @@ function commitFiles() {
 	cd $CURRENT_DIR
 }
 
-function createSite() {
-	echo -e "------------------------------------------------------------"
-	echo -e "Creating site in Studio"
-	echo -e "------------------------------------------------------------"
-
-	rm -f $COOKIE_JAR
-
-	echo
-	echo -n "Getting CSRF token... "
-	status=$(curl -s -o /dev/null -w "%{http_code}" --cookie-jar "$COOKIE_JAR" "$GET_CSRF_TOKEN_URL")
-	echo "Response status: $status"
-
-	if [ "$status" != "200" ]; then
-		echo "HTTP call failed. Unable to continue"
-		exit 1
-	fi
-
-	csrfToken=$(grep XSRF-TOKEN $COOKIE_JAR | sed 's/^.*XSRF-TOKEN\s*//')
-	requestBody="{\"username\":\"$STUDIO_USERNAME\",\"password\":\"$STUDIO_PASSWORD\"}"
-
-	echo -n "Login to Studio... "
-	status=$(curl -s -o /dev/null -w "%{http_code}" -d "$requestBody" --cookie "$COOKIE_JAR" --cookie-jar "$COOKIE_JAR" --header "X-XSRF-TOKEN:$csrfToken" --header "Content-Type: application/json" -X POST "$LOGIN_URL")
-	echo "Response status: $status"
-
-	if [ "$status" != "200" ]; then
-		echo "HTTP call failed. Unable to continue"
-		exit 1
-	fi
-
-	remoteUrl=$(cd "$MIGRATE_REPO_DIR" && pwd)
-	requestBody="{\"site_id\":\"$TARGET_SITE_NAME\",\"description\":\"$TARGET_SITE_NAME\",\"use_remote\":true,\"remote_url\":\"$remoteUrl\",\"remote_name\":\"origin\",\"create_option\":\"clone\"}"
-
-	echo -n "Creating site... "
-	status=$(curl -s -o /dev/null -w "%{http_code}" -d "$requestBody" --cookie "$COOKIE_JAR" --cookie-jar "$COOKIE_JAR" --header "X-XSRF-TOKEN:$csrfToken" --header "Content-Type: application/json" -X POST "$CREATE_SITE_URL")
-	echo "Response status: $status"
-}
-
 function checkDateFormatInCode() {
-	echo -e "------------------------------------------------------------"
-	echo -e "Checking date formats in code"
-	echo -e "------------------------------------------------------------"
+	echo "------------------------------------------------------------"
+	echo "Checking date formats in code"
+	echo "------------------------------------------------------------"
 
 	echo "NOTE: If you're parsing dates from the content model in Freemarker or Groovy you need to change the pattern from the old date pattern "
 	echo "MM/dd/yyyy HH:mm:ss to the new one, yyyy-MM-dd'T'HH:mm:ss.SSSX. The following are the files found with the old date pattern. Be sure "
 	echo "that you're not changing a date pattern that is used to format a date that is displayed in the view."
 	echo
 
-	if [ -d "$MIGRATE_REPO_DIR/templates" ]; then
-		grep -rn "MM/dd/yyyy HH:mm:ss" $MIGRATE_REPO_DIR/templates
+	if [ -d "$MIGRATION_REPO_DIR/templates" ]; then
+		grep -rn "MM/dd/yyyy HH:mm:ss" $MIGRATION_REPO_DIR/templates
 	fi
 
-	if [ -d "$MIGRATE_REPO_DIR/scripts" ]; then
-		grep -rn "MM/dd/yyyy HH:mm:ss" $MIGRATE_REPO_DIR/scripts
+	if [ -d "$MIGRATION_REPO_DIR/scripts" ]; then
+		grep -rn "MM/dd/yyyy HH:mm:ss" $MIGRATION_REPO_DIR/scripts
 	fi
 
 }
 
 createdMigrateRepo
-importContentTypes
-importConfiguredLists
-importContent
+copyContentTypes
+copyConfiguredLists
+copyContent
 updateEngineConfig
 updateDatesInDescriptors
 commitFiles
-createSite
-checkDateFormatInCode > $DATE_FORMAT_SEARCH_RESULTS_PATH
+checkDateFormatInCode
 
 echo "Migration completed"
