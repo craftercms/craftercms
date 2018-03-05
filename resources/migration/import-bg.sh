@@ -41,6 +41,6 @@ startTime=$SECONDS
 
 importSite
 
-duration=$(($SECONDS - $startTime))
+duration=$((SECONDS - startTime))
 
 echo "Import completed in $duration seconds"

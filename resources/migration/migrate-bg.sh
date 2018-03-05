@@ -195,7 +195,7 @@ function commitFiles() {
 
 			((count++))
 
-			if ! ((count % $COMMIT_EVERY)); then
+			if ! ((count % COMMIT_EVERY)); then
 				git commit -m "Committing migrated files" --quiet
 				echo -n "$count..."
 			fi
@@ -242,6 +242,6 @@ updateDatesInDescriptors
 commitFiles
 checkDateFormatInCode
 
-duration=$(($SECONDS - $startTime))
+duration=$((SECONDS - startTime))
 
 echo "Migration completed in $duration seconds"
