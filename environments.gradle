@@ -108,7 +108,7 @@ task("authoringPostEnvironment") {
             }
             exec {
                 workingDir "${authEnv}/bin/migration"
-                commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh"]
+                commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh", "import-bg.sh", "setenv.sh"]
             }
             exec {
                 workingDir "${authEnv}/bin"
