@@ -81,6 +81,10 @@ studio.db.dataPath: ../data/db
 # studio.security.ldap.userAttribute.siteId: crafterSite
 # LDAP groups attribute
 # studio.security.ldap.userAttribute.groupName: crafterGroup
+# LDAP groups attribute name regex
+# studio.security.ldap.userAttribute.groupName.regex: cn=Crafter_([a-zAZ]+),.*
+# LDAP groups attribute match index
+# studio.security.ldap.userAttribute.groupName.matchIndex: 1
 # LDAP default site if site ID attribute not found
 # studio.security.ldap.defaultSiteId: default
 
