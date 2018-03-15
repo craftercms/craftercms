@@ -58,7 +58,7 @@ studio.db.dataPath: ../data/db
 # Defines security provider for accessing repository. Possible values
 # - db (users are stored in database)
 # - ldap (users are imported from LDAP into the database)
-# - headers (use when authenticating via headers) 
+# - headers (use when authenticating via headers)
 # studio.security.type: ldap
 
 # LDAP Server url
@@ -81,6 +81,8 @@ studio.db.dataPath: ../data/db
 # studio.security.ldap.userAttribute.siteId: crafterSite
 # LDAP groups attribute
 # studio.security.ldap.userAttribute.groupName: crafterGroup
+# LDAP default site if site ID attribute not found
+# studio.security.ldap.defaultSiteId: default
 
 # Authentication via headers enabled
 # studio.authentication.headers.enabled: false
