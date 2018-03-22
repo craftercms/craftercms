@@ -43,7 +43,8 @@ studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&pas
 studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
 studio.db.dataPath: ../data/db
-
+# Socket path for the embedded database
+studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 
 ##################################################
 ##                   Security                   ##
