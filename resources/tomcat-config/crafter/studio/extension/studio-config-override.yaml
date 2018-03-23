@@ -61,6 +61,11 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # - ldap (users are imported from LDAP into the database)
 # - headers (use when authenticating via headers)
 # studio.security.type: ldap
+# 
+# Salt for encrypting
+# studio.security.cipher.salt: TDEsDF8vx3gV4c7G
+# Key for encrypting
+# studio.security.cipher.key: AoCcBdnsTa9R3DdG
 
 # LDAP Server url
 # studio.security.ldap.serverUrl: ldap://localhost:389
