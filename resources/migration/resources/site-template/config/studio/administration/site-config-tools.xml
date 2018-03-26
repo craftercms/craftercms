@@ -258,10 +258,6 @@
             <label>Audit</label>
         </tool>
         <tool>
-            <name>bulkoperations</name>
-            <label>Bulk Operations</label>
-        </tool>
-        <tool>
             <name>workflow-states</name>
             <label>Workflow States</label>
         </tool>
@@ -272,6 +268,13 @@
         <tool>
             <name>log-view</name>
             <label>Log Console</label>
+        </tool>
+        <tool>
+            <name>status-view</name>
+            <label>Publishing</label>
+            <icon>
+                <class>fa-cloud-upload</class>
+            </icon>
         </tool>
     </tools>
 </config>
