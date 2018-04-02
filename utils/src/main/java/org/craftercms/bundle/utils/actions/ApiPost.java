@@ -64,7 +64,7 @@ public class ApiPost implements Action {
         if(code != 200) {
             System.err.println("Code: " + code);
             System.err.println("Message: " + conn.getResponseMessage());
-            throw new RuntimeException("Login failed");
+            throw new IllegalArgumentException("Login failed");
         }
 
     }
