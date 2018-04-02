@@ -702,7 +702,7 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
     for SITE in $(ls $DEPLOYER_DEPLOYMENTS_DIR)
     do
       echo "Running sync for site $SITE"
-      java -jar $CRAFTER_HOME/craftercms-utils.jar post "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }"
+      java -jar $CRAFTER_HOME/craftercms-utils.jar post "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }" true
     done
   fi
 

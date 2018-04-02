@@ -253,7 +253,7 @@ timeout /nobreak /t 120
 cd %CRAFTER_HOME%data\repos\sites
 FOR /D %%S in (*) do (
   echo "Running sync for site '%%S'"
-  start /b java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar post "http://localhost:%TOMCAT_HTTP_PORT%/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }"
+  start /b /wait java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar post "http://localhost:%TOMCAT_HTTP_PORT%/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }" true
 )
 :skipAuth
 
