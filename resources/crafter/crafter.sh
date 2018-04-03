@@ -682,7 +682,7 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
   # UNZIP deployer data
   echo "Restoring deployer data"
   rm -rf "$DEPLOYER_DATA_DIR/*"
-  java -jar craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
 
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
