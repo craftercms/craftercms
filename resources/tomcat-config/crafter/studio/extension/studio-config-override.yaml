@@ -43,7 +43,8 @@ studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&pas
 studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
 studio.db.dataPath: ../data/db
-
+# Socket path for the embedded database
+studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 
 ##################################################
 ##                   Security                   ##
@@ -58,8 +59,13 @@ studio.db.dataPath: ../data/db
 # Defines security provider for accessing repository. Possible values
 # - db (users are stored in database)
 # - ldap (users are imported from LDAP into the database)
-# - headers (use when authenticating via headers) 
+# - headers (use when authenticating via headers)
 # studio.security.type: ldap
+# 
+# Salt for encrypting
+# studio.security.cipher.salt: TDEsDF8vx3gV4c7G
+# Key for encrypting
+# studio.security.cipher.key: AoCcBdnsTa9R3DdG
 
 # LDAP Server url
 # studio.security.ldap.serverUrl: ldap://localhost:389
@@ -81,6 +87,12 @@ studio.db.dataPath: ../data/db
 # studio.security.ldap.userAttribute.siteId: crafterSite
 # LDAP groups attribute
 # studio.security.ldap.userAttribute.groupName: crafterGroup
+# LDAP groups attribute name regex
+# studio.security.ldap.userAttribute.groupName.regex: cn=Crafter_([a-zAZ]+),.*
+# LDAP groups attribute match index
+# studio.security.ldap.userAttribute.groupName.matchIndex: 1
+# LDAP default site if site ID attribute not found
+# studio.security.ldap.defaultSiteId: default
 
 # Authentication via headers enabled
 # studio.authentication.headers.enabled: false
