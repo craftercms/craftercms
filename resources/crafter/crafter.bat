@@ -134,10 +134,10 @@ REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
 	IF EXIST "%CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe" (
 		echo "Adding MySQL dump"
-		start cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql
-		echo "SET GLOBAL innodb_large_prefix = TRUE ;\nSET GLOBAL innodb_file_format = 'BARRACUDA' ;\nSET GLOBAL innodb_file_format_max = 'BARRACUDA' ;\nSET GLOBAL innodb_file_per_table = TRUE ;\n" > temp.txt
-		type crafter.sql >> temp.txt
-		move /y temp.txt crafter.sql
+		start /w cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=33306 --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql
+		echo SET GLOBAL innodb_large_prefix = TRUE ; SET GLOBAL innodb_file_format = 'BARRACUDA' ; SET GLOBAL innodb_file_format_max = 'BARRACUDA' ; SET GLOBAL innodb_file_per_table = TRUE ; > %TEMP_FOLDER%\temp.txt
+		type %TEMP_FOLDER%\crafter.sql >> %TEMP_FOLDER%\temp.txt
+		move /y %TEMP_FOLDER%\temp.txt %TEMP_FOLDER%\crafter.sql
 	)
 )
 
@@ -241,16 +241,16 @@ echo "Restoring Authoring Data"
 md "%MYSQL_DATA%"
 REM Start DB
 echo "Starting DB"
-start java -jar -DmariaDB4j.port=%MARIADB_PORT% -DmariaDB4j.baseDir=%CRAFTER_HOME%/dbms -DmariaDB4j.dataDir=%MYSQL_DATA% %CRAFTER_HOME%/mariaDB4j-app.jar
+start java -jar -DmariaDB4j.port=%MARIADB_PORT% -DmariaDB4j.baseDir=%CRAFTER_HOME%\dbms -DmariaDB4j.dataDir=%MYSQL_DATA% %CRAFTER_BIN_FOLDER%\mariaDB4j-app.jar
 timeout /nobreak /t 30
 REM Import
 echo "Restoring DB"
-start "MySQL Import" /W %CRAFTER_BIN_FOLDER%dbms\bin\mysql.exe --user=root --port=@MARIADB_PORT@ --protocol=TCP --binary-mode -e "source %TEMP_FOLDER%\crafter.sql"
+start /B /W %CRAFTER_BIN_FOLDER%dbms\bin\mysql.exe --user=root --port=33306 --protocol=TCP -e "source %TEMP_FOLDER%\crafter.sql"
 timeout /nobreak /t 5
 REM Stop DB
 echo "Stopping DB"
 set /p pid=<mariadb4j.pid
-taskkill /pid %pid%
+taskkill /pid %pid% /t /f
 timeout /nobreak /t 5
 :skipAuth
 
