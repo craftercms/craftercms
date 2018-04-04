@@ -30,7 +30,7 @@ function importSite() {
 	fi
 
 	remoteUrl=$(cd "$MIGRATION_REPO_DIR" && pwd)
-	requestBody="{\"site_id\":\"$TARGET_SITE_NAME\",\"description\":\"$TARGET_SITE_NAME\",\"use_remote\":true,\"remote_url\":\"$remoteUrl\",\"remote_name\":\"origin\",\"create_option\":\"clone\"}"
+	requestBody="{\"site_id\":\"$TARGET_SITE_NAME\",\"description\":\"$TARGET_SITE_NAME\",\"authentication_type\":\"none\",\"use_remote\":true,\"remote_url\":\"$remoteUrl\",\"remote_name\":\"origin\",\"create_option\":\"clone\"}"
 
 	echo -n "Creating site... "
 	status=$(curl -s -o /dev/null -w "%{http_code}" -d "$requestBody" --cookie "$COOKIE_JAR" --cookie-jar "$COOKIE_JAR" --header "X-XSRF-TOKEN:$csrfToken" --header "Content-Type: application/json" -X POST "$CREATE_SITE_URL")
