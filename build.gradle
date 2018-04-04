@@ -649,7 +649,7 @@ dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
 dependsOnOrdered(init, initDeps)
 dependsOnOrdered(update, updateDeps)
-dependsOnOrdered(deploy, [preDeploy, downloadTomcat, downloadSolr, utils] + envDepends + deliveryDeps)
+dependsOnOrdered(deploy, [preDeploy, downloadTomcat, downloadSolr, downloadMariaDB4j, utils] + envDepends + deliveryDeps)
 dependsOnOrdered(upgrade, [update, preUpgrade, build, deploy])
 
 // If delivery no test (for now)

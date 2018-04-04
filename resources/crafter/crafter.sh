@@ -593,6 +593,7 @@ function doBackup() {
       #Do dump
       echo "Adding mysql dump"
       $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=$MARIADB_PORT --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+      echo -e "SET GLOBAL innodb_large_prefix = TRUE ;\nSET GLOBAL innodb_file_format = 'BARRACUDA' ;\nSET GLOBAL innodb_file_format_max = 'BARRACUDA' ;\nSET GLOBAL innodb_file_per_table = TRUE ;\n$(cat $TEMP_FOLDER/crafter.sql)" > $TEMP_FOLDER/crafter.sql
     fi
   fi
 
@@ -687,27 +688,21 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
     mkdir "$MYSQL_DATA"
-    #Install DB
-    $CRAFTER_HOME/dbms/bin/mysql_install_db --datadir="$MYSQL_DATA" --basedir="$CRAFTER_HOME/dbms" --no-defaults --force --skip-name-resolve
     #Start DB
-    $CRAFTER_HOME/dbms/bin/mysqld --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir="$CRAFTER_HOME/dbms" --datadir="$MYSQL_DATA" --port=$MARIADB_PORT --pid="$CRAFTER_HOME/MariaDB4j.pid" --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE &
-    sleep 5
+    echo "Starting DB"
+    java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_HOME/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_HOME/mariaDB4j-app.jar &
+    sleep 30
     # Import
-    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=$MARIADB_PORT < "$TEMP_FOLDER/crafter.sql"
+    echo "Restoring DB"
+    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=$MARIADB_PORT --protocol=TCP --binary-mode < "$TEMP_FOLDER/crafter.sql"
     # Stop DB
-    kill $(cat $CRAFTER_HOME/MariaDB4j.pid)
-    start
-    echo "Waiting for studio to start"
-    sleep 60
-    for SITE in $(ls $DEPLOYER_DEPLOYMENTS_DIR)
-    do
-      echo "Running sync for site $SITE"
-      java -jar $CRAFTER_HOME/craftercms-utils.jar post "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"$SITE\" }" true
-    done
+    echo "Stopping DB"
+    kill $(cat mariadb4j.pid)
+    sleep 10
   fi
 
   rm -r "$TEMP_FOLDER"
-  echo "Restore completed"
+  echo "Restore complete, you may now start the system"
 }
 
 function logo() {

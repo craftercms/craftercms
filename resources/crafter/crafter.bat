@@ -134,7 +134,10 @@ REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
 	IF EXIST "%CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe" (
 		echo "Adding MySQL dump"
-		start cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=@MARIADB_PORT@ --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql
+		start /w cmd /c %CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe --databases crafter --port=33306 --protocol=tcp --user=root ^> %TEMP_FOLDER%\crafter.sql
+		echo SET GLOBAL innodb_large_prefix = TRUE ; SET GLOBAL innodb_file_format = 'BARRACUDA' ; SET GLOBAL innodb_file_format_max = 'BARRACUDA' ; SET GLOBAL innodb_file_per_table = TRUE ; > %TEMP_FOLDER%\temp.txt
+		type %TEMP_FOLDER%\crafter.sql >> %TEMP_FOLDER%\temp.txt
+		move /y %TEMP_FOLDER%\temp.txt %TEMP_FOLDER%\crafter.sql
 	)
 )
 
@@ -236,29 +239,23 @@ REM If it is an authoring env then sync the repos
 IF NOT EXIST "%TEMP_FOLDER%\crafter.sql" ( goto skipAuth )
 echo "Restoring Authoring Data"
 md "%MYSQL_DATA%"
-REM Install DB
-start "MySQL Installation" /W %CRAFTER_BIN_FOLDER%dbms\bin\mysql_install_db.exe --datadir="%MYSQL_DATA%"
 REM Start DB
-start "MySQL Server" %CRAFTER_BIN_FOLDER%dbms\bin\mysqld.exe --no-defaults --console --skip-grant-tables --max_allowed_packet=64M --basedir="%CRAFTER_BIN_FOLDER%dbms" --datadir="%MYSQL_DATA%" --port=@MARIADB_PORT@ --innodb_large_prefix=TRUE --innodb_file_format=BARRACUDA --innodb_file_format_max=BARRACUDA --innodb_file_per_table=TRUE
-timeout /nobreak /t 5
+echo "Starting DB"
+start java -jar -DmariaDB4j.port=%MARIADB_PORT% -DmariaDB4j.baseDir=%CRAFTER_HOME%\dbms -DmariaDB4j.dataDir=%MYSQL_DATA% %CRAFTER_BIN_FOLDER%\mariaDB4j-app.jar
+timeout /nobreak /t 30
 REM Import
-start "MySQL Import" /W %CRAFTER_BIN_FOLDER%dbms\bin\mysql.exe --user=root --port=@MARIADB_PORT@ -e "source %TEMP_FOLDER%\crafter.sql"
+echo "Restoring DB"
+start /B /W %CRAFTER_BIN_FOLDER%dbms\bin\mysql.exe --user=root --port=33306 --protocol=TCP -e "source %TEMP_FOLDER%\crafter.sql"
 timeout /nobreak /t 5
 REM Stop DB
-taskkill /IM mysqld.exe
-REM start tomcat
-call :initWithOutExit
-echo "Waiting for studio to start"
-timeout /nobreak /t 120
-cd %CRAFTER_HOME%data\repos\sites
-FOR /D %%S in (*) do (
-  echo "Running sync for site '%%S'"
-  start /b /wait java -jar %CRAFTER_BIN_FOLDER%craftercms-utils.jar post "http://localhost:%TOMCAT_HTTP_PORT%/studio/api/1/services/api/1/repo/sync-from-repo.json" "{ \"site_id\":\"%%S\" }" true
-)
+echo "Stopping DB"
+set /p pid=<mariadb4j.pid
+taskkill /pid %pid% /t /f
+timeout /nobreak /t 5
 :skipAuth
 
 rd /S /Q "%TEMP_FOLDER%"
-echo "Restore completed"
+echo "Restore complete, you may now start the system"
 goto cleanOnExitKeepTermAlive
 
 
