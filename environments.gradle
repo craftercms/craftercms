@@ -246,6 +246,11 @@ envs.each { env ->
                 file("${path}/bin/solr-${solrVersion}").renameTo(file("${path}/bin/solr"))
 
             }
+            
+            copy {
+              from "$downloadDir/mariaDB4j-app.jar"
+              into "${path}/bin"
+            }
 
             copy {
                 from "./src/search/crafter-search-provider/solr/configsets"

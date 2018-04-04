@@ -115,6 +115,15 @@ task downloadChromeDriver(){
     }
 }
 
+task downloadMariaDB4j {
+  doFirst {
+    download {
+      src "https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.craftercms.mariaDB4j&a=mariaDB4j-app&v=LATEST"
+      overwrite true
+      dest "${downloadDir}/mariaDB4j-app.jar"
+    }
+  }
+}
 
 def sha1(file){
     MessageDigest md = MessageDigest.getInstance("SHA1");
