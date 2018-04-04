@@ -44,7 +44,7 @@
                     <includes>
                         <!-- path patterns to look for (multiple) -->
                         <pattern>
-                            <find-regex>/static-assets/([^&lt;"']+)</find-regex>
+                            <find-regex>/static-assets/([^&lt;"'\)]+)</find-regex>
                         </pattern>
                     </includes>
                 </dependency-type>
@@ -122,7 +122,7 @@
                     <includes>
                         <!-- path patterns to look for (multiple) -->
                         <pattern>
-                            <find-regex>/static-assets/([^&lt;"']+)</find-regex>
+                            <find-regex>/static-assets/([^&lt;"'\)]+)</find-regex>
                         </pattern>
                     </includes>
                 </dependency-type>
@@ -159,7 +159,7 @@
             <!-- how to identify items of this type -->
             <includes>
                 <!-- path pattern regexes (multiple) -->
-                <path-pattern>/static-assets/([^&lt;"']+)</path-pattern>
+                <path-pattern>/static-assets/([^&lt;"'\)]+)</path-pattern>
             </includes>
             <!-- how to find dependencies in these items -->
             <dependency-types>
@@ -168,7 +168,7 @@
                     <includes>
                         <!-- path patterns to look for (multiple) -->
                         <pattern>
-                            <find-regex>/static-assets/([^&lt;"']+)</find-regex>
+                            <find-regex>/static-assets/([^&lt;"'\)]+)</find-regex>
                         </pattern>
                     </includes>
                 </dependency-type>
@@ -189,7 +189,7 @@
                     <includes>
                         <!-- path patterns to look for (multiple) -->
                         <pattern>
-                            <find-regex>/static-assets/([^&lt;"']+)</find-regex>
+                            <find-regex>/static-assets/([^&lt;"'\)]+)</find-regex>
                         </pattern>
                     </includes>
                 </dependency-type>
