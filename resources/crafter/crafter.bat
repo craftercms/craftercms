@@ -78,7 +78,9 @@ IF /i "%start_mongo%"=="true" (
 start %DEPLOYER_HOME%\%DEPLOYER_STARTUP%
 IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir %CRAFTER_HOME%\data\indexes
 start %CRAFTER_BIN_FOLDER%solr\bin\solr start -f -p %SOLR_PORT% -s %SOLR_HOME% -Dcrafter.solr.index=%CRAFTER_HOME%\data\indexes
+pushd %CRAFTER_BIN_FOLDER%
 call %CATALINA_HOME%\bin\startup.bat
+popd
 @rem Windows keep variables live until terminal dies.
 set start_mongo=false
 goto :eof
