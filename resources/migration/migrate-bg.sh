@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ "$(uname -s)" == "Darwin" ]; then
+  GNU=0
+else
+  GNU=1
+fi
+
 function createMigrationRepo() {
 	echo "------------------------------------------------------------"
 	echo "Creating migration directory"
@@ -13,7 +19,11 @@ function createMigrationRepo() {
 	# Creating new site with site-template
 	cp -r $RESOURCES_DIR/site-template/* $MIGRATION_REPO_DIR
 	# Changing {siteName} in files with the actual site name
-	find $MIGRATION_REPO_DIR -type f -exec sed -i "s/{siteName}/$TARGET_SITE_NAME/g" {} \;
+  if [ $GNU -eq 1 ]; then
+    find $MIGRATION_REPO_DIR -type f -exec sed -i "s/{siteName}/$TARGET_SITE_NAME/g" {} \;
+  else
+    find $MIGRATION_REPO_DIR -type f -exec sed -i '' "s/{siteName}/$TARGET_SITE_NAME/g" {} \;
+  fi
 }
 
 function copySingleContentType() {
@@ -137,15 +147,28 @@ function updateEngineConfig() {
 
 		echo "Updating <targeting> configuration..."
 
-		defaultLocale=$(sed -rn 's/\s*<defaultLocale>([^<>]+)<\/defaultLocale>\s*/\1/p' $MIGRATION_REPO_DIR/config/engine/site-config.xml)
+    if [ $GNU -eq 1 ]; then
+      defaultLocale=$(sed -rn 's/\s*<defaultLocale>([^<>]+)<\/defaultLocale>\s*/\1/p' $MIGRATION_REPO_DIR/config/engine/site-config.xml)
+    else
+      defaultLocale=$(sed -En 's/\s*<defaultLocale>([^<>]+)<\/defaultLocale>\s*/\1/p' $MIGRATION_REPO_DIR/config/engine/site-config.xml)
+    fi
 
 		# Update config fields
-		sed -i 's/i10n/targeting/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
-		sed -i 's/localizedPaths/rootFolders/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
-		sed -i 's/forceCurrentLocale/redirectToTargetedUrl/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
-		sed -i 's/defaultLocale/fallbackTargetId/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
-		# Add default locale
-		sed -i "s/<site>/<site>\n\n\t<defaultLocale>$defaultLocale<\/defaultLocale>/g" $MIGRATION_REPO_DIR/config/engine/site-config.xml
+    if [ $GNU -eq 1 ]; then
+      sed -i 's/i10n/targeting/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+      sed -i 's/localizedPaths/rootFolders/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+      sed -i 's/forceCurrentLocale/redirectToTargetedUrl/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+      sed -i 's/defaultLocale/fallbackTargetId/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+      # Add default locale
+      sed -i "s/<site>/<site>\n\n\t<defaultLocale>$defaultLocale<\/defaultLocale>/g" $MIGRATION_REPO_DIR/config/engine/site-config.xml
+    else
+      sed -i '' 's/i10n/targeting/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+      sed -i '' 's/localizedPaths/rootFolders/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+      sed -i '' 's/forceCurrentLocale/redirectToTargetedUrl/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+      sed -i '' 's/defaultLocale/fallbackTargetId/g' $MIGRATION_REPO_DIR/config/engine/site-config.xml
+      # Add default locale
+      sed -i '' "s/<site>/<site>\n\n\t<defaultLocale>$defaultLocale<\/defaultLocale>/g" $MIGRATION_REPO_DIR/config/engine/site-config.xml
+    fi
 
 		echo "Disabling full content model type conversion for compatibility with 2.5..."
 
@@ -156,7 +179,11 @@ function updateEngineConfig() {
 		#
 		# In version 3 onwards, Crafter Engine converts elements with any suffix type hints (including _dt) at at any level in the content
 		# model and for both Freemarker and Groovy hosts.
-		sed -i "s/<site>/<site>\n\n\t<compatibility>\n\t\t<disableFullModelTypeConversion>true<\/disableFullModelTypeConversion>\n\t<\/compatibility>/g" $MIGRATION_REPO_DIR/config/engine/site-config.xml
+    if [ $GNU -eq 1 ]; then
+      sed -i "s/<site>/<site>\n\n\t<compatibility>\n\t\t<disableFullModelTypeConversion>true<\/disableFullModelTypeConversion>\n\t<\/compatibility>/g" $MIGRATION_REPO_DIR/config/engine/site-config.xml
+    else
+      sed -i '' "s/<site>/<site>\n\n\t<compatibility>\n\t\t<disableFullModelTypeConversion>true<\/disableFullModelTypeConversion>\n\t<\/compatibility>/g" $MIGRATION_REPO_DIR/config/engine/site-config.xml
+    fi
 	fi
 }
 
@@ -166,7 +193,11 @@ function updateDatesInDescriptors() {
 	echo "------------------------------------------------------------"
 
 	echo "Updating dates in XML descriptors..."
-	find $MIGRATION_REPO_DIR/site -type f -name '*.xml' -exec sed -i -r 's/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2})/\3-\1-\2T\4.000Z/g' {} \;
+  if [ $GNU -eq 1 ]; then
+    find $MIGRATION_REPO_DIR/site -type f -name '*.xml' -exec sed -i -r 's/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2})/\3-\1-\2T\4.000Z/g' {} \;
+  else
+    find $MIGRATION_REPO_DIR/site -type f -name '*.xml' -exec sed -i '' -E 's/([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2})/\3-\1-\2T\4.000Z/g' {} \;
+  fi
 }
 
 function commitFiles() {
