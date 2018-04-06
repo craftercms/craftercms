@@ -248,9 +248,10 @@ envs.each { env ->
             }
             
             copy {
-              from "$downloadDir/mariaDB4j-app.jar"
-              into "${path}/bin"
+              from "$downloadDir/mariaDB4j-app-${mariadb4jVersion}.jar"
+              into "${path}/bin/"
             }
+            file("${path}/bin/mariaDB4j-app-${mariadb4jVersion}.jar").renameTo(file("${path}/bin/mariaDB4j-app.jar"))
 
             copy {
                 from "./src/search/crafter-search-provider/solr/configsets"
