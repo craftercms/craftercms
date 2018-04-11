@@ -62,6 +62,7 @@ task("authoringPostEnvironment") {
         copy {
             from("./resources/crafter/") {
                 exclude "**/init-site.*"
+                exclude "**/remove-site.*"
                 eachFile {
                     if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
                         it.exclude()
@@ -201,7 +202,7 @@ task("deliveryPostEnvironment") {
             exec {
                 workingDir "${deliveryEnv}/bin"
                 commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
-                                                 "crafter-setenv.sh", "init-site.sh"]
+                                                 "crafter-setenv.sh", "init-site.sh", "remove-site.sh"]
             }
         }
 
