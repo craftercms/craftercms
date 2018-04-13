@@ -122,7 +122,7 @@ ext {
             "search"  : "./src/search/crafter-search-server/target/crafter-search.war",
             "profile" : "./src/profile/server/target/crafter-profile.war",
             "engine"  : "./src/engine/target/ROOT.war",
-            "deployer": "./src/deployer/target/crafter-deployer.jar",
+            "deployer": "./src/deployer/target/crafter-deployer-exec.jar",
             "studio"  : "./src/studio/target/studio.war",
             "social"  : "./src/social/server/target/crafter-social.war"]
     WINDOWS_EDGE_DRIVER_URL = [
@@ -672,6 +672,7 @@ def deployBinary(deployable, env) {
         copy {
             from deployable.absolutePath
             into path.take(path.lastIndexOf('/'))
+            rename('-exec', '')
         }
     } else {
         logger.lifecycle "WARN: You haven't built ${module} module"
