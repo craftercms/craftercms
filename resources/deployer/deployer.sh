@@ -9,7 +9,7 @@ DEPLOYMENTS_DIR=${DEPLOYER_DEPLOYMENTS_DIR:="$CRAFTER_ROOT/data/repos/sites"}
 TARGETS_DIR=$DATA_DIR/targets
 PROCESSED_COMMITS=$DATA_DIR/processed-commits
 PORT=${DEPLOYER_PORT:="9191"}
-JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HOME/logback-spring.xml -Dlogs.dir=$LOGS_DIR -Ddeployments.dir=$DEPLOYMENTS_DIR -Dtargets.dir=$TARGETS_DIR -DprocessedCommits.dir=$PROCESSED_COMMITS"
+JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HOME/logback-spring.xml -Dlogs.dir=$LOGS_DIR -Ddeployments.dir=$DEPLOYMENTS_DIR -Dtargets.dir=$TARGETS_DIR -DprocessedCommits.dir=$PROCESSED_COMMITS -Dloader.path=$DEPLOYER_HOME/lib"
 PID=${DEPLOYER_PID:="$DATA_DIR/crafter-deployer.pid"}
 OUTPUT=${DEPLOYER_SDOUT:="$LOGS_DIR/crafter-deployer.out"}
 
