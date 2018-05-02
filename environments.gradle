@@ -228,6 +228,15 @@ envs.each { env ->
         task "${env}Environment" doLast {
             description "Setup the Crafter ${env} environment"
             def path = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
+
+            if (!file("${path}/bin/groovy").exists()) {
+                copy {
+                    from zipTree(downloadDir + "/apache-groovy-${groovyVersion}.zip")
+                    into "${path}/bin"
+                }
+                file("${path}/bin/groovy-${groovyVersion}").renameTo(file("${path}/bin/groovy"))
+            }
+
             if (!file("${path}/bin/apache-tomcat").exists()) {
                 copy {
                     from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
@@ -239,15 +248,13 @@ envs.each { env ->
             }
 
             if (!file("${path}/bin/solr").exists()) {
-                /** SOLR **/
                 copy {
                     from zipTree(downloadDir + "/solr-${solrVersion}.zip")
                     into "${path}/bin"
                 }
                 file("${path}/bin/solr-${solrVersion}").renameTo(file("${path}/bin/solr"))
-
             }
-            
+
             copy {
               from "$downloadDir/mariaDB4j-app-${mariadb4jVersion}.jar"
               into "${path}/bin/"

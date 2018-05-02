@@ -38,6 +38,7 @@ if (isWin) {
 ext {
 
     /** Unzip Properties **/
+    groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.4.15"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.24"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "6.4.1"
     mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.2.4"
@@ -560,13 +561,13 @@ task preTest(dependsOn: preTestDeps) {
             properties.add("baseUrl=http://localhost:8080/studio/#/login")
             properties.add("${browserToTest}.driver.path=${StringEscapeUtils.escapeJava(file(driverPath).absolutePath)}")
             properties.add("deliverybaseUrl=http://localhost:9080/")
-            
+
             if (SystemUtils.IS_OS_WINDOWS) {
                 properties.add("executionenvironment=windows")
             } else {
                 properties.add("executionenvironment=unix")
             }
-            
+
             Files.write(Paths.get("./src/test-suite/test-properties.properties"), properties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
         }
 
@@ -621,7 +622,7 @@ task test() {
 task newPlugin(type: GradleBuild) {
   description "Creates the folder structure for a new plugin"
   group "plugin"
-  
+
   buildFile = Paths.get("src", "plugin-maker", "build.gradle")
   tasks = ['newPlugin']
   startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
@@ -630,7 +631,7 @@ task newPlugin(type: GradleBuild) {
 task packagePlugin(type: GradleBuild) {
   description "Packages a Crafter Studio plugin"
   group "plugin"
-  
+
   buildFile = Paths.get("src", "plugin-maker", "build.gradle")
   tasks = ['packagePlugin']
   startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
@@ -639,7 +640,7 @@ task packagePlugin(type: GradleBuild) {
 task publishPlugin(type: GradleBuild) {
   description "Publishes a plugin to the Crafter Marketplace"
   group "plugin"
-  
+
   buildFile = Paths.get("src", "plugin-maker", "build.gradle")
   tasks = ['publishPlugin']
   startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
@@ -650,7 +651,7 @@ dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
 dependsOnOrdered(init, initDeps)
 dependsOnOrdered(update, updateDeps)
-dependsOnOrdered(deploy, [preDeploy, downloadTomcat, downloadSolr, downloadMariaDB4j, utils] + envDepends + deliveryDeps)
+dependsOnOrdered(deploy, [preDeploy, downloadGroovy, downloadTomcat, downloadSolr, downloadMariaDB4j, utils] + envDepends + deliveryDeps)
 dependsOnOrdered(upgrade, [update, preUpgrade, build, deploy])
 
 // If delivery no test (for now)
