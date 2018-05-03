@@ -78,16 +78,16 @@ def buildCli(cli) {
 	cli.h(longOpt: 'help', 'Show usage information')
 	cli.b(longOpt: 'branch', args: 1, argName: 'branch', 'The name of the branch to clone (live by default)')
 	cli.u(longOpt: 'username', args: 1, argName: 'username', 'The username for the remote Git repo, when using basic ' +
-																													 'authentication')
+			'authentication')
 	cli.p(longOpt: 'password', args: 1, argName: 'password', 'The password for the remote Git repo, when using basic ' +
-																													 'authentication')
+			'authentication')
 	cli.k(longOpt: 'private-key', args: 1, argName: 'path', 'The path to the private key, if it\'s not under the ' +
-																													'default path (~/.ssh/id_rsa), when authenticating ' +
-																													'through SSH to the remote Git repo')
+			'default path (~/.ssh/id_rsa), when authenticating ' +
+			'through SSH to the remote Git repo')
 	cli.f(longOpt: 'passphrase', args: 1, argName: 'passphrase', 'The passphrase of the private key (when the key is ' +
-																															 'passphrase protected)')
-	cli.a(longOpt: 'notification-addresses', args: 1, argName: 'addresses', 'A comma-separated list of email addresses ' +
-																																					'that should receive deployment notifications')
+			'passphrase protected)')
+	cli.a(longOpt: 'notification-addresses', args: 1, argName: 'addresses', 'A comma-separated list of email ' +
+			'addresses that should receive deployment notifications')
 }
 
 /**
@@ -204,7 +204,7 @@ if (options) {
 	def extraArguments = options.arguments();
 	if (CollectionUtils.isNotEmpty(extraArguments)) {
 		def siteName = extraArguments[0]
-		def repoPath = null;
+		def repoPath
 
 		if (extraArguments.size() >= 2) {
 			repoPath = extraArguments[1]
