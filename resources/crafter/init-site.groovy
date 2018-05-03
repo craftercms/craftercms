@@ -200,7 +200,7 @@ if (options) {
 		return
 	}
 
-	// Extract the site and repo path
+	// Parse the options and arguments
 	def extraArguments = options.arguments();
 	if (CollectionUtils.isNotEmpty(extraArguments)) {
 		def siteName = extraArguments[0]
