@@ -13,6 +13,25 @@ buildscript {
 import java.security.MessageDigest;
 import org.apache.commons.lang3.SystemUtils;
 
+task downloadGroovy() {
+    description = "Downloads and checks groovy integrity"
+    doFirst{
+        download {
+            src "https://dl.bintray.com/groovy/maven/apache-groovy-binary-${groovyVersion}.zip"
+            overwrite false
+            dest file("${downloadDir}/apache-groovy-${groovyVersion}.zip")
+        }
+        download {
+            src "https://dl.bintray.com/groovy/maven/apache-groovy-binary-${groovyVersion}.zip.sha256"
+            dest file("${downloadDir}/apache-groovy-${groovyVersion}.zip.sha256")
+            overwrite false
+        }
+    }
+    doLast{
+        assert sha256(new File(downloadDir, "apache-groovy-${groovyVersion}.zip")) ==  new File(downloadDir, "apache-groovy-${groovyVersion}.zip.sha256").getText('UTF-8')
+    }
+}
+
 task downloadTomcat() {
     description = "Downloads and checks tomcat integrity"
     doFirst{
@@ -31,7 +50,7 @@ task downloadTomcat() {
         assert sha1(new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip")) ==  new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
     }
 }
-/** Dowloads any external Resources **/
+
 task downloadSolr() {
     description = "Unzip Solr and Solr's war (from Maven central) signature"
     doFirst{
@@ -88,7 +107,7 @@ task downloadEdgeDriver(){
         }else{
             println "We could not found a suitable selenium driver for your windows build  ${winBuildNumber}"
             println "Please go to https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/ and download"
-            println "the proper driver version and then configure its location in the `./src/test-suite/test-properties.properties` file " 
+            println "the proper driver version and then configure its location in the `./src/test-suite/test-properties.properties` file "
         }
     }
 }
@@ -125,33 +144,41 @@ task downloadMariaDB4j {
   }
 }
 
-def sha1(file){
-    MessageDigest md = MessageDigest.getInstance("SHA1");
-    FileInputStream fis = new FileInputStream(file.path);
-    byte[] dataBytes = new byte[1024];
-    int nread = 0;
-    while ((nread = fis.read(dataBytes)) != -1) {
-        md.update(dataBytes, 0, nread);
-    };
-    byte[] mdbytes = md.digest();
-    //convert the byte to hex format
-    StringBuffer sb = new StringBuffer("");
-    for (int i = 0; i < mdbytes.length; i++) {
-        sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
-    }
-    return sb.toString()
+def messageDigest(file, alg) {
+  MessageDigest md = MessageDigest.getInstance(alg);
+  FileInputStream fis = new FileInputStream(file.path);
+  byte[] dataBytes = new byte[1024];
+  int nread = 0;
+  while ((nread = fis.read(dataBytes)) != -1) {
+      md.update(dataBytes, 0, nread);
+  };
+  byte[] mdbytes = md.digest();
+  //convert the byte to hex format
+  StringBuffer sb = new StringBuffer("");
+  for (int i = 0; i < mdbytes.length; i++) {
+      sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+  }
+  return sb.toString()
+}
+
+def sha1(file) {
+  messageDigest(file, "SHA1");
+}
+
+def sha256(file) {
+  messageDigest(file, "SHA-256");
 }
 
 def getWindowsBuildNumber(){
-     try {
-            def term = "OS Version"
-            Runtime rt = Runtime.getRuntime();
-            Process pr = rt.exec("CMD /C SYSTEMINFO | FINDSTR /B /C:\"" + term + "\"");
-            BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-             def fullwinVersion = input.readLine()
-             return fullwinVersion.substring(fullwinVersion.lastIndexOf("Build")+6)
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-        return "";
+  try {
+    def term = "OS Version"
+    Runtime rt = Runtime.getRuntime();
+    Process pr = rt.exec("CMD /C SYSTEMINFO | FINDSTR /B /C:\"" + term + "\"");
+    BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+    def fullwinVersion = input.readLine()
+    return fullwinVersion.substring(fullwinVersion.lastIndexOf("Build") + 6)
+  } catch (IOException e) {
+    System.err.println(e.getMessage());
+  }
+  return "";
 }
