@@ -60,7 +60,6 @@ task downloadSolr() {
             dest file("${downloadDir}/solr-${solrVersion}.zip")
         }
         download {
-            //           http://archive.apache.org/dist/lucene/solr/6.4.1/solr-6.4.1.zip.sha1
             src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip.sha1"
             dest file("${downloadDir}/solr-${solrVersion}.zip.sha1")
             overwrite false
