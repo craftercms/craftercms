@@ -18,6 +18,10 @@ You must have these prerequisites on your system before you begin:
 
 * If you're on OS X, then using  [`brew`](http://brew.sh) install the latest `openssl` formula, like this: `brew install openssl`
 
+**Linux prerequisite**
+
+* Some of the scripts uses `lsof`.  Please note that some Linux distributions does not come with `lsof` pre-installed and so, may need to be installed.  To install `lsof` for Debian-based Linux distros: `apt-get install lsof`.  To install `lsof` for RedHat-based Linux distros: `yum install lsof`
+
 Let's begin :)
 
 If you're building a deployable Crafter CMS bundle, we'll clone the master branch:

@@ -62,6 +62,7 @@ task("authoringPostEnvironment") {
         copy {
             from("./resources/crafter/") {
                 exclude "**/init-site.*"
+                exclude "**/remove-site.*"
                 eachFile {
                     if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
                         it.exclude()
@@ -201,7 +202,7 @@ task("deliveryPostEnvironment") {
             exec {
                 workingDir "${deliveryEnv}/bin"
                 commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
-                                                 "crafter-setenv.sh", "init-site.sh"]
+                                                 "crafter-setenv.sh", "init-site.sh", "remove-site.sh"]
             }
         }
 
@@ -227,6 +228,15 @@ envs.each { env ->
         task "${env}Environment" doLast {
             description "Setup the Crafter ${env} environment"
             def path = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
+
+            if (!file("${path}/bin/groovy").exists()) {
+                copy {
+                    from zipTree(downloadDir + "/apache-groovy-${groovyVersion}.zip")
+                    into "${path}/bin"
+                }
+                file("${path}/bin/groovy-${groovyVersion}").renameTo(file("${path}/bin/groovy"))
+            }
+
             if (!file("${path}/bin/apache-tomcat").exists()) {
                 copy {
                     from zipTree(downloadDir + "/apache-tomcat-${tomcatVersion}.zip")
@@ -238,14 +248,18 @@ envs.each { env ->
             }
 
             if (!file("${path}/bin/solr").exists()) {
-                /** SOLR **/
                 copy {
                     from zipTree(downloadDir + "/solr-${solrVersion}.zip")
                     into "${path}/bin"
                 }
                 file("${path}/bin/solr-${solrVersion}").renameTo(file("${path}/bin/solr"))
-
             }
+
+            copy {
+              from "$downloadDir/mariaDB4j-app-${mariadb4jVersion}.jar"
+              into "${path}/bin/"
+            }
+            file("${path}/bin/mariaDB4j-app-${mariadb4jVersion}.jar").renameTo(file("${path}/bin/mariaDB4j-app.jar"))
 
             copy {
                 from "./src/search/crafter-search-provider/solr/configsets"
