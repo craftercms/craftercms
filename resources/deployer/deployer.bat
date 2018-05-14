@@ -13,18 +13,8 @@ IF NOT DEFINED DEPLOYER_PRODCESSED_COMMITS_DIR (SET DEPLOYER_PRODCESSED_COMMITS_
 IF NOT DEFINED DEPLOYER_WIN_TITLE (SET DEPLOYER_WIN_TITLE="Crafter Deployer @ENV@")
 
 SET DEPLOYER_PID_FILE=%CRAFTER_HOME%\crafter-deployer.pid
-echo "CRAFTER_ROOT=%CRAFTER_ROOT%"
-echo "CRAFTER_HOME=%CRAFTER_HOME%"
-echo "DEPLOYER_HOME=%DEPLOYER_HOME%"
-echo "DEPLOYER_PORT=%DEPLOYER_PORT%"
-echo "DEPLOYER_DATA_DIR=%DEPLOYER_DATA_DIR%"
-echo "DEPLOYER_LOGS_DIR=%DEPLOYER_LOGS_DIR%"
-echo "DEPLOYER_DEPLOYMENTS_DIR=%DEPLOYER_DEPLOYMENTS_DIR%"
-echo "DEPLOYER_TARGET_DIR=%DEPLOYER_TARGET_DIR%"
-echo "DEPLOYER_PRODCESSED_COMMITS_DIR=%DEPLOYER_PRODCESSED_COMMITS_DIR%"
-echo "DEPLOYER_WIN_TITLE=%DEPLOYER_WIN_TITLE%"
 
-SET DEPLOYER_JAVA_OPTS=-Dserver.port=%DEPLOYER_PORT% -Dlogging.config=%DEPLOYER_HOME%\logback-spring.xml -Dlogs.dir=%DEPLOYER_LOGS_DIR% -Ddeployments.dir=%DEPLOYER_DEPLOYMENTS_DIR% -Dtargets.dir=%DEPLOYER_TARGET_DIR% -DprocessedCommits.dir=%DEPLOYER_PRODCESSED_COMMITS_DIR% -Dloader.path=%DEPLOYER_HOME%\lib
+SET DEPLOYER_JAVA_OPTS=-Dserver.port=%DEPLOYER_PORT% -Dlogging.config="%DEPLOYER_HOME%\logback-spring.xml" -Dlogs.dir="%DEPLOYER_LOGS_DIR%" -Ddeployments.dir="%DEPLOYER_DEPLOYMENTS_DIR%" -Dtargets.dir="%DEPLOYER_TARGET_DIR%" -DprocessedCommits.dir="%DEPLOYER_PRODCESSED_COMMITS_DIR%" -Dloader.path="%DEPLOYER_HOME%\lib"
 
 title=%DEPLOYER_WIN_TITLE%
 echo "Starting Crafter Deployer"
@@ -49,14 +39,14 @@ echo "-d --debug, Implieds start, Start crafter deployer in debug mode"
 exit /b 0
 
 :init
-cd %DEPLOYER_HOME%
+cd "%DEPLOYER_HOME%"
 java -jar %DEPLOYER_JAVA_OPTS% crafter-deployer.jar
-cd %CRAFTER_HOME%\bin
+cd "%CRAFTER_HOME%\bin"
 exit /b 0
 
 :skill
 @echo on
-IF exist DEPLOYER_PID_FILE goto stopById
+IF exist "%DEPLOYER_PID_FILE%" goto stopById
 goto stopByTitleName
 exit /b 0
 
@@ -68,10 +58,10 @@ for /f "tokens=2 delims=," %%a in ('
 exit /b 0
 
 :stopById
-taskkill /F %DEPLOYER_PID_FILE%
+taskkill /F "%DEPLOYER_PID_FILE%"
 exit /b 0
 
 :debug
 set DEPLOYER_JAVA_OPTS=%DEPLOYER_JAVA_OPTS% -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=%DEPLOYER_DEBUG_PORT%
 cd crafter-deployer
-java -jar %DEPLOYER_JAVA_OPTS% %DEPLOYER_HOME%\crafter-deployer.jar
+java -jar %DEPLOYER_JAVA_OPTS% "%DEPLOYER_HOME%\crafter-deployer.jar"
