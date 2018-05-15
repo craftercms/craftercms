@@ -702,6 +702,7 @@ def executeProcess(command, workingDir, printOutputUntilFinish = false) {
     if (proc.exitValue() != 0) {
         throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
     }
+    proc.destroy()
 }
 
 
