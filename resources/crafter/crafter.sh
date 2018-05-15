@@ -131,6 +131,9 @@ function startSolr() {
   echo "------------------------------------------------------------"
   echo "Starting Solr"
   echo "------------------------------------------------------------"
+  if [ ! -d $SOLR_INDEXES_DIR ]; then
+    mkdir -p $SOLR_INDEXES_DIR;
+  fi
   if [ ! -d $SOLR_LOGS_DIR ]; then
     mkdir -p $SOLR_LOGS_DIR;
   fi
@@ -167,9 +170,13 @@ function debugSolr() {
   echo "------------------------------------------------------------"
   echo "Starting Solr"
   echo "------------------------------------------------------------"
+  if [ ! -d $SOLR_INDEXES_DIR ]; then
+    mkdir -p $SOLR_INDEXES_DIR;
+  fi
   if [ ! -d $SOLR_LOGS_DIR ]; then
     mkdir -p $SOLR_LOGS_DIR;
   fi
+
   if [ ! -s "$SOLR_PID" ]; then
     ## Before run check if the port is available.
     possiblePID=$(pidOf $SOLR_PORT)
@@ -446,6 +453,7 @@ function solrStatus(){
     echo -e "\033[0m"
   fi
 }
+
 function deployerStatus(){
   echo "------------------------------------------------------------"
   echo "Crafter Deployer status                                     "
@@ -643,7 +651,7 @@ function doRestore() {
     exit 1
   fi
   export TEMP_FOLDER="$CRAFTER_HOME/temp"
-  
+
   read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the \
 existing sites and associated database and replace everything with the restored data. If you \
 care about the existing state of the system then stop this process, backup the system, and then \
@@ -652,10 +660,10 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
     echo "Canceling restore"
     exit 0
   fi
-  
+
   echo "Clearing all existing data"
   rm -rf $CRAFTER_ROOT/data/*
-  
+
   echo "Starting restore from $SOURCE_FILE"
   mkdir -p "$TEMP_FOLDER"
 
@@ -679,7 +687,7 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
   echo "Restoring solr indexes"
   rm -rf "$SOLR_INDEXES_DIR/*"
   java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
-    
+
   # UNZIP deployer data
   echo "Restoring deployer data"
   rm -rf "$DEPLOYER_DATA_DIR/*"
