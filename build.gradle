@@ -1,5 +1,7 @@
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.text.StringEscapeUtils
+import org.apache.commons.io.input.Tailer
+import org.apache.commons.io.input.TailerListenerAdapter
 
 import java.nio.charset.Charset
 import java.nio.file.Files
@@ -13,6 +15,7 @@ buildscript {
     dependencies {
         classpath group: 'org.apache.commons', name: 'commons-text', version: '1.1'
         classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+        classpath group: 'commons-io', name: 'commons-io', version: '2.6'
         classpath 'org.ajoberstar:grgit:1.1.0'
 
     }
@@ -22,7 +25,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.0.12"
+project.version = "3.0.13"
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
 
@@ -36,6 +39,11 @@ if (isWin) {
 }
 
 ext {
+
+    /** Subprocess Properties **/
+    processLogFile = ".gradle.log"
+    processTailReadDelay = 100
+    processTailFinishDelay = 1000
 
     /** Unzip Properties **/
     groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.4.15"
@@ -95,7 +103,7 @@ ext {
 
     /** Git properties **/
     gitURLTemplate = project.hasProperty("crafter.git.url") ? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "master"
+    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "v3.0.13"
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
     shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone") : false
     studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo") : false
@@ -299,7 +307,7 @@ envs.each { env ->
             if (!file(path).exists()) {
                 throw new InvalidUserDataException("The '${env}' enviroment is not deployed. Please run 'deploy -Penv=${env}' before 'start'.")
             }
-            executeProcess(commandLinePrefix + [startUpFile] + extraStartupParams, "${path}/bin", true)
+            executeProcess(commandLinePrefix + [startUpFile] + extraStartupParams, "${path}/bin")
         })
     }
     if (!tasks.findByName("${env}_stop")) {
@@ -312,7 +320,7 @@ envs.each { env ->
             if (!file(path).exists()) {
                 throw new InvalidUserDataException("The '${env}' enviroment is not deployed. Please run 'deploy -Penv=${env}' before 'start'.")
             }
-            executeProcess(commandLinePrefix + [shutDownFile] + extraStartupParams, "${path}/bin", true)
+            executeProcess(commandLinePrefix + [shutDownFile] + extraStartupParams, "${path}/bin")
         })
     }
 
@@ -326,7 +334,7 @@ envs.each { env ->
             if (!file(path).exists()) {
                 throw new InvalidUserDataException("The '${env}' enviroment is not deployed. Please run 'deploy -Penv=${env}' before 'start'.")
             }
-            executeProcess(commandLinePrefix + ["./crafter.sh", "status"], "${path}/bin", true)
+            executeProcess(commandLinePrefix + ["./crafter.sh", "status"], "${path}/bin")
         })
     }
 
@@ -417,7 +425,7 @@ task selftest {
             selftestScript = "./"+selftestScript+".sh"
         }
         def array = commandLinePrefix + [selftestScript]
-        executeProcess(array, "./src/test-suite", true)
+        executeProcess(array, "./src/test-suite")
     }
 }
 
@@ -680,47 +688,29 @@ def deployBinary(deployable, env) {
     }
 }
 
-def executeProcess(command, workingDir, printOutputUntilFinish = false) {
+def executeProcess(command, workingDir) {
     ProcessBuilder pb = new ProcessBuilder(command)
     pb.directory(new File(workingDir))
-    if (!printOutputUntilFinish)  {
-        pb.redirectError(ProcessBuilder.Redirect.PIPE)
-        pb.redirectOutput(ProcessBuilder.Redirect.PIPE)
-    }
     pb.redirectErrorStream(true)
-    Process proc = pb.start();
-    Runtime.getRuntime().addShutdownHook({
-        if(proc.alive) {
-            println "Killing Process ${command} on dir ${workingDir}"
-            proc.destroy()
+    def log = new File(processLogFile)
+    pb.redirectOutput(ProcessBuilder.Redirect.to(log))
+    def tailer = null
+    if(!silentBuild) {
+      tailer = Tailer.create(log, new TailerListenerAdapter() {
+        def void handle(String line) {
+          println line
         }
-    })
-    if (!silentBuild) {
-        watchProcessOutput(proc, null)
+      }, processTailReadDelay)
     }
+    Process proc = pb.start();
     proc.waitFor()
+    if(tailer) {
+      Thread.sleep(processTailFinishDelay)
+      tailer.stop()
+    }
+    log.delete()
     if (proc.exitValue() != 0) {
         throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
-    }
-    proc.destroy()
-}
-
-
-// Poor's man tail (but get's the job done)
-def watchProcessOutput(process, processOutputFile) {
-    def processInput = process.getInputStream()
-    def bufferedReader = new BufferedReader(new InputStreamReader(processInput))
-    Thread.start {
-        synchronized (this) {
-            while (process.alive) {
-                if (bufferedReader.ready()) {
-                    def line = null
-                    while ((line = bufferedReader.readLine()) != null) {
-                        println line
-                    }
-                }
-            }
-        }
     }
 }
 
