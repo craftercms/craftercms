@@ -214,6 +214,7 @@ task("deliveryPostEnvironment") {
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
         downloadGrapes(commandLinePrefix, "init-site.groovy")
+        downloadGrapes(commandLinePrefix, "remove-site.groovy")
     }
 }
 
