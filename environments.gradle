@@ -100,7 +100,9 @@ task("authoringPostEnvironment") {
         if (!isWin) {
             exec {
                 workingDir "${authEnv}/bin/apache-tomcat/bin/"
-                commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
+                commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", "daemon.sh",
+                                                 "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh",
+                                                 "version.sh"]
             }
             exec {
                 workingDir "${authEnv}/bin/crafter-deployer/"
@@ -108,11 +110,13 @@ task("authoringPostEnvironment") {
             }
             exec {
                 workingDir "${authEnv}/bin/migration"
-                commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh", "import-bg.sh", "setenv.sh"]
+                commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh",
+                                                 "import-bg.sh", "setenv.sh"]
             }
             exec {
                 workingDir "${authEnv}/bin"
-                commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh", "crafter-setenv.sh"]
+                commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
+                                                 "crafter-setenv.sh", "upgrade.sh"]
             }
         }
 
@@ -203,7 +207,7 @@ task("deliveryPostEnvironment") {
             exec {
                 workingDir "${deliveryEnv}/bin"
                 commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
-                                                 "crafter-setenv.sh", "init-site.sh", "remove-site.sh"]
+                                                 "crafter-setenv.sh", "init-site.sh", "remove-site.sh", "upgrade.sh"]
             }
         }
 
