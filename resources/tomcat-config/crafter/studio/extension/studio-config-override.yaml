@@ -5,6 +5,12 @@
 studio.repo.basePath: ../data/repos
 # Sandbox git repository branch for every site
 # studio.repo.siteSandboxBranch: master
+# Published Environments config using yaml enabled if true
+# studio.repo.sitePublishedEnvironment.enabled: false
+# Published git repository branch for live environment
+# studio.repo.sitePublishedEnvironment.live: live
+# Published git repository branch for staging environments (comma separated value)
+# studio.repo.sitePublishedEnvironment.staging: staging
 
 ############################################################
 ##                    Preview Deployer                    ##
