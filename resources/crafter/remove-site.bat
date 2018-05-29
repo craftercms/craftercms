@@ -2,6 +2,7 @@
 REM Script to remove a site from a delivery environment.
 
 SET DELIVERY_HOME=%~dp0
+
 call %DELIVERY_HOME%\crafter-setenv.bat
 
 REM Execute Groovy script
