@@ -2,6 +2,7 @@
 REM Script to create the Solr core & Deployer target for a delivery environment.
 
 SET DELIVERY_HOME=%~dp0
+
 call %DELIVERY_HOME%\crafter-setenv.bat
 
 REM Execute Groovy script
