@@ -11,7 +11,7 @@ if [ "$(whoami)" == "root" ]; then
 fi
 
 export CRAFTER_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-export CRAFTER_ROOT=$( cd "$( dirname "$CRAFTER_HOME/.." )" && pwd )
+export CRAFTER_ROOT=$( cd "$CRAFTER_HOME/.." && pwd )
 
 . "$CRAFTER_HOME/crafter-setenv.sh"
 

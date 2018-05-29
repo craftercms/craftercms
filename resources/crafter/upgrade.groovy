@@ -206,6 +206,8 @@ def backupBin() {
 	def timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())
 	def backupBinFolder = new File(getCrafterBackupsFolder(), "crafter-${ENVIRONMENT_NAME}-bin.${timestamp}")
 
+	println "Backing up bin directory to ${backupBinFolder}"
+
 	FileUtils.copyDirectory(getCrafterBinFolder(), backupBinFolder)
 }
 
