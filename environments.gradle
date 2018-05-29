@@ -125,7 +125,11 @@ task("authoringPostEnvironment") {
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${authEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${authEnv}/bin/solr/server/solr/solr.xml")
+<<<<<<< 43f46d4ef2d9f0dc0154f25bdc5aa2f56bd6ca23
         downloadGrapes("${authEnv}/bin", "upgrade.groovy")
+=======
+        downloadGrapes("${authEnv}/bin", commandLinePrefix, "upgrade.groovy")
+>>>>>>> * Some fixes to the upgrade script.
     }
 }
 
@@ -218,9 +222,14 @@ task("deliveryPostEnvironment") {
         updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
+<<<<<<< 43f46d4ef2d9f0dc0154f25bdc5aa2f56bd6ca23
         downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
         downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
         downloadGrapes("${deliveryEnv}/bin", "upgrade.groovy")
+=======
+        downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "init-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "remove-site.groovy")
+>>>>>>> * Some fixes to the upgrade script.
     }
 }
 
@@ -403,10 +412,10 @@ def addSolrIndexHome(solrServerConfig) {
  * Download Grape dependencies beforehand so that Groovy scripts can run without Internet connection. We do this by
  * calling the script with -h to just print the help info
  */
-def downloadGrapes(binFolder, groovyScript) {
+def downloadGrapes(binFolder, commandLinePrefix, groovyScript) {
     exec {
         workingDir binFolder
-        commandLine commandLinePrefix + [isWin ? "groovy\\bin\\groovy" : "groovy/bin/groovy", "-Dgrape.root=.", groovyScript, "-h"]
+        commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-Dgrape.root=.", groovyScript, "-h"]
         // ignore output
         standardOutput = new ByteArrayOutputStream()
     }
