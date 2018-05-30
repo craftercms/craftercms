@@ -125,11 +125,7 @@ task("authoringPostEnvironment") {
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${authEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${authEnv}/bin/solr/server/solr/solr.xml")
-<<<<<<< 43f46d4ef2d9f0dc0154f25bdc5aa2f56bd6ca23
-        downloadGrapes("${authEnv}/bin", "upgrade.groovy")
-=======
         downloadGrapes("${authEnv}/bin", commandLinePrefix, "upgrade.groovy")
->>>>>>> * Some fixes to the upgrade script.
     }
 }
 
@@ -222,14 +218,9 @@ task("deliveryPostEnvironment") {
         updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
-<<<<<<< 43f46d4ef2d9f0dc0154f25bdc5aa2f56bd6ca23
-        downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
-        downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
-        downloadGrapes("${deliveryEnv}/bin", "upgrade.groovy")
-=======
         downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "init-site.groovy")
         downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "remove-site.groovy")
->>>>>>> * Some fixes to the upgrade script.
+        downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "upgrade.groovy")
     }
 }
 

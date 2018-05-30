@@ -63,9 +63,11 @@ def getCrafterBackupsFolder() {
  */
 def buildCli(cli) {
 	cli.h(longOpt: 'help', 'Show usage information')
+	cli.u(longOpt: 'bundle-url', args: 1, argName: 'url', 'The URL of the Crafter bundle to be used for the upgrade')
 	cli.f(longOpt: 'full', 'If a full upgrade should be performed. In a non-full upgrade, only the Tomcat wars and ' +
 												 'the Deployer jar are upgraded. In a full upgrade, the entire bin directory is upgraded, ' +
-												 'keeping only the Tomcat shared config and the Solr config')
+												 'keeping only the Tomcat shared config, Tomcat\'s server.xml, the Solr config, and the ' +
+												 'crafter-setenv scripts')
 }
 
 /**
@@ -157,17 +159,19 @@ def extractBundle(bundleFile, targetFolder) {
  * Downloads a Crafter Authoring/Delivery bundle, performs an md5sum to check if it was downloaded correctly, and
  * unzips the bundle
  */
-def downloadCrafterBundle(version, envSuffix, targetFolder) {
+def downloadCrafterBundle(version, bundleUrl, envSuffix, targetFolder) {
 	println "============================================================"
 	println "Downloading Crafter ${version}"
 	println "============================================================"
 
-	def bundleUrl = "${DOWNLOADS_BASE_URL}/${version}/crafter-cms-${envSuffix}"
+	if (!bundleUrl) {
+		bundleUrl = "${DOWNLOADS_BASE_URL}/${version}/crafter-cms-${envSuffix}"
 
-	if (SystemUtils.IS_OS_WINDOWS) {
-		bundleUrl += ".zip"
-	} else {
-		bundleUrl += ".tar.gz"
+		if (SystemUtils.IS_OS_WINDOWS) {
+			bundleUrl += ".zip"
+		} else {
+			bundleUrl += ".tar.gz"
+		}
 	}
 
 	def md5SumUrl = "${bundleUrl}.md5"
@@ -241,6 +245,14 @@ def doUpgrade(newVersion, newBinFolder, fullUpgrade) {
 		FileUtils.deleteDirectory(newSharedFolder)
 		FileUtils.copyDirectory(sharedFolder, newSharedFolder)
 
+		println "Copying original Tomcat server.xml to new bin folder..."
+
+		def serverXmlFile = new File(binFolder, "apache-tomcat/conf/server.xml")
+		def newServerXmlFile = new File(newBinFolder, "apache-tomcat/conf/server.xml")
+
+		FileUtils.forceDelete(newServerXmlFile)
+		FileUtils.copyFile(serverXmlFile, newServerXmlFile)
+
 		println "Copying original Deployer config to new bin folder..."
 
 		def deployerConfigFolder = new File(binFolder, "crafter-deployer/config")
@@ -256,6 +268,20 @@ def doUpgrade(newVersion, newBinFolder, fullUpgrade) {
 
 		FileUtils.deleteDirectory(newSolrConfigset)
 		FileUtils.copyDirectory(solrConfigset, newSolrConfigset)
+
+		println "Copying original crafter-setenv.sh and crafter-setenv.bat to new bin folder..."
+
+		def setenvFile = new File(binFolder, "crafter-setenv.sh")
+		def newSetenvFile = new File(newBinFolder, "crafter-setenv.sh")
+
+		FileUtils.forceDelete(newSetenvFile)
+		FileUtils.copyFile(setenvFile, newSetenvFile)
+
+		setenvFile = new File(binFolder, "crafter-setenv.bat")
+		newSetenvFile = new File(newBinFolder, "crafter-setenv.bat")
+
+		FileUtils.forceDelete(newSetenvFile)
+		FileUtils.copyFile(setenvFile, newSetenvFile)
 
 		println "Replacing original bin folder with new bin folder..."
 
@@ -298,11 +324,11 @@ def startCrafter() {
 /**
  * Executes the upgrade.
  */
-def upgradeCrafter(version, fullUpgrade) {
+def upgradeCrafter(version, bundleUrl, fullUpgrade) {
 	def tmpFolder = Files.createTempDirectory("crafter-upgrade").toFile()
 
 	try {
-		def newVersionFolder = downloadCrafterBundle(version, ENVIRONMENT_NAME, tmpFolder)
+		def newVersionFolder = downloadCrafterBundle(version, bundleUrl, ENVIRONMENT_NAME, tmpFolder)
 		def newBinFolder = new File(newVersionFolder, "bin")
 
 		backupData()
@@ -335,7 +361,7 @@ if (options) {
 	if (CollectionUtils.isNotEmpty(extraArguments)) {
 		def version = extraArguments[0]
 
-		upgradeCrafter(version, options.full)
+		upgradeCrafter(version, options.'bundle-url', options.full)
 	} else {
 		exitWithError(cli, 'No <version> was specified')
 	}
