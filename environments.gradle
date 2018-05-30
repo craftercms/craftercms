@@ -222,6 +222,7 @@ task("deliveryPostEnvironment") {
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
         downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "init-site.groovy")
         downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "remove-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "upgrade.groovy")
     }
 }
 
