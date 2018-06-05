@@ -7,57 +7,6 @@
 		@Grab(group='net.lingala.zip4j', module='zip4j', version='1.3.2')
 ])
 
-import groovy.transform.Field;
-
-import java.io.File
-import java.net.URL
-import java.nio.file.Files
-import java.text.SimpleDateFormat
-import java.util.Date
-
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.collections4.CollectionUtils
-import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.SystemUtils
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FilenameUtils
-
-import net.lingala.zip4j.core.ZipFile
-
-@Field final DOWNLOADS_BASE_URL = "https://downloads.craftercms.org"
-@Field final ENVIRONMENT_NAME = "@ENV@"
-@Field final UNZIPPED_CRAFTER_FOLDER_NAME = "crafter"
-
-/**
- * Returns the value of an environment variable.
- */
-def getEnv(varName) {
-	def env = System.getenv()
-
-	return env[varName]
-}
-
-/**
- * Returns the root folder for the Crafter installation.
- */
-def getCrafterRootFolder() {
-	return new File(getEnv("CRAFTER_ROOT"))
-}
-
-/**
- * Returns the bin folder for the Crafter installation.
- */
-def getCrafterBinFolder() {
-	return new File(getCrafterRootFolder(), "bin")
-}
-
-/**
- * Returns the backups folder for the Crafter installation.
- */
-def getCrafterBackupsFolder() {
-	return new File(getCrafterRootFolder(), "backups")
-}
-
 /**
  * Builds the CLI and adds the possible options
  */
@@ -93,10 +42,14 @@ def exitWithError(cli, msg) {
  * Executes a command line process.
  */
 def executeCommand(workingDir, command) {
+	if (SystemUtils.IS_OS_WINDOWS) {
+		command  = ["cmd", "/c"] + command
+	}
+
 	def processBuilder = new ProcessBuilder(command)
 
 	if (workingDir) {
-		processBuilder.directory(workingDir)
+		processBuilder.directory(workingDir.toFile())
 	}
 
 	processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
@@ -116,11 +69,17 @@ def executeCommand(workingDir, command) {
  * Downloads the file from the URL into the target folder.
  */
 def downloadFile(sourceUrl, targetFolder) {
-	def url = new URL(sourceUrl)
+	def url = sourceUrl.toURL()
 	def filename = FilenameUtils.getName(url.path)
-	def targetFile = new File(targetFolder, filename)
+	def targetFile = targetFolder.resolve(filename)
 
-	FileUtils.copyURLToFile(url, targetFile)
+	// url.withInputStream { in ->
+	// 	Files.copy(in, targetFile)
+	// }
+
+	url.withInputStream { is ->
+    Files.copy(is, targetFile)
+	}
 
 	return targetFile
 }
@@ -129,8 +88,9 @@ def downloadFile(sourceUrl, targetFolder) {
  * Computes an md5sum and compares it against an md5sum file.
  */
 def checksum(file, downloadedMd5SumFile) {
-	def computedMd5Sum = DigestUtils.md5Hex(file.newInputStream())
-	def downloadedMd5Sum = StringUtils.substringBefore(FileUtils.readFileToString(downloadedMd5SumFile, "UTF-8"), " ")
+	def computedMd5Sum = DigestUtils.md5Hex(Files.newInputStream(file))
+	def downloadedMd5SumFileContent = new String(Files.readAllBytes(downloadedMd5SumFile), "UTF-8")
+	def downloadedMd5Sum = StringUtils.substringBefore(downloadedMd5SumFileContent, " ")
 
 	if (!computedMd5Sum.equals(downloadedMd5Sum)) {
 		throw new RuntimeException("The md5sum for file ${file} doesn't match the downloaded md5sum")
@@ -143,23 +103,23 @@ def checksum(file, downloadedMd5SumFile) {
 def extractBundle(bundleFile, targetFolder) {
 	println "Extracting bundle..."
 
-	if (FilenameUtils.getExtension(bundleFile.name).equalsIgnoreCase("zip")) {
+	if (FilenameUtils.getExtension(bundleFile.fileName.toString()).equalsIgnoreCase("zip")) {
 		// Extract as zip
-		def zipFile = new ZipFile(bundleFile)
-				zipFile.extractAll(targetFolder.absolutePath)
+		def zipFile = new ZipFile(bundleFile.toAbsolutePath().toString())
+				zipFile.extractAll(targetFolder.toAbsolutePath().toString())
 	} else {
 		// Extract as tar.gz
-		executeCommand(targetFolder, ["tar", "xzf", bundleFile.absolutePath])
+		executeCommand(targetFolder, ["tar", "xzf", bundleFile.toAbsolutePath().toString()])
 	}
 
-	return new File(targetFolder, UNZIPPED_CRAFTER_FOLDER_NAME)
+	return targetFolder.resolve(UNZIPPED_CRAFTER_FOLDER_NAME)
 }
 
 /**
  * Downloads a Crafter Authoring/Delivery bundle, performs an md5sum to check if it was downloaded correctly, and
  * unzips the bundle
  */
-def downloadCrafterBundle(version, bundleUrl, envSuffix, targetFolder) {
+def downloadCrafterBundle(version, bundleUrl, envSuffix) {
 	println "============================================================"
 	println "Downloading Crafter ${version}"
 	println "============================================================"
@@ -175,6 +135,7 @@ def downloadCrafterBundle(version, bundleUrl, envSuffix, targetFolder) {
 	}
 
 	def md5SumUrl = "${bundleUrl}.md5"
+	def targetFolder = getUpgradeTmpFolder()
 
 	println "Downloading bundle @ ${bundleUrl}..."
 	def bundleFile = downloadFile(bundleUrl, targetFolder)
@@ -208,11 +169,11 @@ def backupBin() {
 	println "============================================================"
 
 	def timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())
-	def backupBinFolder = new File(getCrafterBackupsFolder(), "crafter-${ENVIRONMENT_NAME}-bin.${timestamp}")
+	def backupBinFolder = getCrafterBackupsFolder().resolve("crafter-${ENVIRONMENT_NAME}-bin.${timestamp}")
 
 	println "Backing up bin directory to ${backupBinFolder}"
 
-	FileUtils.copyDirectory(getCrafterBinFolder(), backupBinFolder)
+	NioUtils.copyDirectory(getCrafterBinFolder(), backupBinFolder)
 }
 
 /**
@@ -239,54 +200,54 @@ def doUpgrade(newVersion, newBinFolder, fullUpgrade) {
 
 		println "Copying original Tomcat shared folder to new bin folder..."
 
-		def sharedFolder = new File(binFolder, "apache-tomcat/shared")
-		def newSharedFolder = new File(newBinFolder, "apache-tomcat/shared")
+		def sharedFolder = binFolder.resolve("apache-tomcat/shared")
+		def newSharedFolder = newBinFolder.resolve("apache-tomcat/shared")
 
-		FileUtils.deleteDirectory(newSharedFolder)
-		FileUtils.copyDirectory(sharedFolder, newSharedFolder)
+		NioUtils.deleteDirectory(newSharedFolder)
+		NioUtils.copyDirectory(sharedFolder, newSharedFolder)
 
 		println "Copying original Tomcat server.xml to new bin folder..."
 
-		def serverXmlFile = new File(binFolder, "apache-tomcat/conf/server.xml")
-		def newServerXmlFile = new File(newBinFolder, "apache-tomcat/conf/server.xml")
+		def serverXmlFile = binFolder.resolve("apache-tomcat/conf/server.xml")
+		def newServerXmlFile = newBinFolder.resolve("apache-tomcat/conf/server.xml")
 
-		FileUtils.forceDelete(newServerXmlFile)
-		FileUtils.copyFile(serverXmlFile, newServerXmlFile)
+		Files.detete(newServerXmlFile)
+		Files.copy(serverXmlFile, newServerXmlFile, COPY_ATTRIBUTES)
 
 		println "Copying original Deployer config to new bin folder..."
 
-		def deployerConfigFolder = new File(binFolder, "crafter-deployer/config")
-		def newDeployerConfigFolder = new File(newBinFolder, "crafter-deployer/config")
+		def deployerConfigFolder = binFolder.resolve("crafter-deployer/config")
+		def newDeployerConfigFolder = newBinFolder.resolve("crafter-deployer/config")
 
-		FileUtils.deleteDirectory(newDeployerConfigFolder)
-		FileUtils.copyDirectory(deployerConfigFolder, newDeployerConfigFolder)
+		NioUtils.deleteDirectory(newDeployerConfigFolder)
+		NioUtils.copyDirectory(deployerConfigFolder, newDeployerConfigFolder)
 
 		println "Copying original Crafter Solr configset to new bin folder..."
 
-		def solrConfigset = new File(binFolder, "solr/server/solr/configsets/crafter_configs")
-		def newSolrConfigset = new File(newBinFolder, "solr/server/solr/configsets/crafter_configs")
+		def solrConfigset = binFolder.resolve("solr/server/solr/configsets/crafter_configs")
+		def newSolrConfigset = newBinFolder.resolve("solr/server/solr/configsets/crafter_configs")
 
-		FileUtils.deleteDirectory(newSolrConfigset)
-		FileUtils.copyDirectory(solrConfigset, newSolrConfigset)
+		NioUtils.deleteDirectory(newSolrConfigset)
+		NioUtils.copyDirectory(solrConfigset, newSolrConfigset)
 
 		println "Copying original crafter-setenv.sh and crafter-setenv.bat to new bin folder..."
 
-		def setenvFile = new File(binFolder, "crafter-setenv.sh")
-		def newSetenvFile = new File(newBinFolder, "crafter-setenv.sh")
+		def setenvFile = binFolder.resolve("crafter-setenv.sh")
+		def newSetenvFile = newBinFolder.resolve("crafter-setenv.sh")
 
-		FileUtils.forceDelete(newSetenvFile)
-		FileUtils.copyFile(setenvFile, newSetenvFile)
+		Files.delete(newSetenvFile)
+		Files.copy(setenvFile, newSetenvFile, COPY_ATTRIBUTES)
 
-		setenvFile = new File(binFolder, "crafter-setenv.bat")
-		newSetenvFile = new File(newBinFolder, "crafter-setenv.bat")
+		setenvFile = binFolder.resolve("crafter-setenv.bat")
+		newSetenvFile = newBinFolder.resolve("crafter-setenv.bat")
 
-		FileUtils.forceDelete(newSetenvFile)
-		FileUtils.copyFile(setenvFile, newSetenvFile)
+		Files.delete(newSetenvFile)
+		Files.copy(setenvFile, newSetenvFile, COPY_ATTRIBUTES)
 
 		println "Replacing original bin folder with new bin folder..."
 
-		FileUtils.deleteDirectory(binFolder)
-		FileUtils.moveDirectory(newBinFolder, binFolder)
+		NioUtils.deleteDirectory(binFolder)
+		Files.move(newBinFolder, binFolder)
 	} else {
 		println "============================================================"
 		println "Upgrading Crafter to ${newVersion} (war/jar upgrade only)"
@@ -294,19 +255,19 @@ def doUpgrade(newVersion, newBinFolder, fullUpgrade) {
 
 		println "Copying new Tomcat wars..."
 
-		def webappsFolder = new File(binFolder, "apache-tomcat/webapps")
-		def newWebappsFolder = new File(newBinFolder, "apache-tomcat/webapps")
+		def webappsFolder = binFolder.resolve("apache-tomcat/webapps")
+		def newWebappsFolder = newBinFolder.resolve("apache-tomcat/webapps")
 
-		FileUtils.deleteDirectory(webappsFolder)
-		FileUtils.moveDirectory(newWebappsFolder, webappsFolder)
+		NioUtils.deleteDirectory(webappsFolder)
+		Files.move(newWebappsFolder, webappsFolder)
 
 		println "Copying new Deployer jar..."
 
-		def deployerJar = new File(binFolder, "crafter-deployer/crafter-deployer.jar")
-		def newDeployerJar = new File(newBinFolder, "crafter-deployer/crafter-deployer.jar")
+		def deployerJar = binFolder.resolve("crafter-deployer/crafter-deployer.jar")
+		def newDeployerJar = newBinFolder.resolve("crafter-deployer/crafter-deployer.jar")
 
-		FileUtils.forceDelete(deployerJar)
-		FileUtils.moveFile(newDeployerJar, deployerJar)
+		Files.delete(deployerJar)
+		Files.move(newDeployerJar, deployerJar)
 	}
 }
 
@@ -325,24 +286,18 @@ def startCrafter() {
  * Executes the upgrade.
  */
 def upgradeCrafter(version, bundleUrl, fullUpgrade) {
-	def tmpFolder = Files.createTempDirectory("crafter-upgrade").toFile()
+	def newVersionFolder = downloadCrafterBundle(version, bundleUrl, ENVIRONMENT_NAME)
+	def newBinFolder = newVersionFolder.resolve("bin")
 
-	try {
-		def newVersionFolder = downloadCrafterBundle(version, bundleUrl, ENVIRONMENT_NAME, tmpFolder)
-		def newBinFolder = new File(newVersionFolder, "bin")
+	backupData()
+	shutdownCrafter()
+	backupBin()
+	doUpgrade(version, newBinFolder, fullUpgrade)
+	startCrafter()
 
-		backupData()
-		shutdownCrafter()
-		backupBin()
-		doUpgrade(version, newBinFolder, fullUpgrade)
-		startCrafter()
-
-		println "============================================================"
-		println "Upgrade complete"
-		println "============================================================"
-	} finally {
-		FileUtils.deleteQuietly(tmpFolder)
-	}
+	println "============================================================"
+	println "Upgrade complete"
+	println "============================================================"
 }
 
 def cli = new CliBuilder(usage: 'upgrade [options] <version>')
