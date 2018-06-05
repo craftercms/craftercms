@@ -125,7 +125,7 @@ task("authoringPostEnvironment") {
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${authEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${authEnv}/bin/solr/server/solr/solr.xml")
-        downloadGrapes("${authEnv}/bin", commandLinePrefix, "upgrade.groovy")
+        downloadGrapes("${authEnv}/bin", "upgrade.groovy")
     }
 }
 
@@ -218,9 +218,9 @@ task("deliveryPostEnvironment") {
         updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
-        downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "init-site.groovy")
-        downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "remove-site.groovy")
-        downloadGrapes("${deliveryEnv}/bin", commandLinePrefix, "upgrade.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "upgrade.groovy")
     }
 }
 
@@ -403,7 +403,7 @@ def addSolrIndexHome(solrServerConfig) {
  * Download Grape dependencies beforehand so that Groovy scripts can run without Internet connection. We do this by
  * calling the script with -h to just print the help info
  */
-def downloadGrapes(binFolder, commandLinePrefix, groovyScript) {
+def downloadGrapes(binFolder, groovyScript) {
     exec {
         workingDir binFolder
         commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-Dgrape.root=.", groovyScript, "-h"]
