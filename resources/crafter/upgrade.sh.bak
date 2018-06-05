@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Script to upgrade the Crafter installation
+
+if [ "$(whoami)" == "root" ]; then
+	echo -e "\033[38;5;196m"
+	echo -e "Crafter CMS cowardly refuses to run as root."
+	echo -e "Running as root is dangerous and is not supported."
+	echo -e "\033[0m"
+	exit 1
+fi
+
+export CRAFTER_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+export CRAFTER_ROOT=$( cd "$CRAFTER_HOME/.." && pwd )
+export UPGRADE_TMP_DIR="$CRAFTER_ROOT/upgrade"
+
+. "$CRAFTER_HOME/crafter-setenv.sh"
+
+# Clean any leftover tmp folder and create a new one
+rm -rf "$UPGRADE_TMP_DIR"
+mkdir "$UPGRADE_TMP_DIR"
+
+# Move groovy bin files and Groovy upgrade script to tmp folder. The script will be executed from there to
+# avoid deleting files that are being executed
+cp -r "$CRAFTER_HOME/groovy" "$UPGRADE_TMP_DIR/"
+cp -r "$CRAFTER_HOME/grapes" "$UPGRADE_TMP_DIR/"
+cp "$CRAFTER_HOME/upgrade.groovy" "$UPGRADE_TMP_DIR/"
+
+# Execute Groovy script
+"$UPGRADE_TMP_DIR/groovy/bin/groovy" -Dgrape.root="$UPGRADE_TMP_DIR" "$UPGRADE_TMP_DIR/upgrade.groovy" "$@"
+
+# Clean any leftover tmp folder
+rm -rf "$UPGRADE_TMP_DIR"
