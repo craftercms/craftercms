@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 import org.apache.tools.ant.filters.ReplaceTokens
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
@@ -400,7 +402,7 @@ def addSolrIndexHome(solrServerConfig) {
 def downloadGrapes(commandLinePrefix, groovyScript) {
     exec {
         workingDir "${deliveryEnv}/bin"
-        commandLine commandLinePrefix + ["groovy/bin/groovy", "-Dgrape.root=.", groovyScript, "-h"]
+        commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-Dgrape.root=.", groovyScript, "-h"]
         // ignore output
         standardOutput = new ByteArrayOutputStream()
         errorOutput = new ByteArrayOutputStream()
