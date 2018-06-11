@@ -94,13 +94,15 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # LDAP site ID attribute
 # studio.security.ldap.userAttribute.siteId: crafterSite
 # LDAP site ID attribute name regex
-# studio.security.ldap.userAttribute.siteId.regex: cn=Crafter_([a-zAZ]+),.*
+# studio.security.ldap.userAttribute.siteId.regex: .*
 # LDAP site ID attribute match index
 # studio.security.ldap.userAttribute.siteId.matchIndex: 0
+# LDAP group name match index for the site ID attribute
+# studio.security.ldap.userAttribute.siteId.groupName.matchIndex: 1
 # LDAP groups attribute
 # studio.security.ldap.userAttribute.groupName: crafterGroup
 # LDAP groups attribute name regex
-# studio.security.ldap.userAttribute.groupName.regex: cn=Crafter_([a-zAZ]+),.*
+# studio.security.ldap.userAttribute.groupName.regex: .*
 # LDAP groups attribute match index
 # studio.security.ldap.userAttribute.groupName.matchIndex: 1
 # LDAP default site if site ID attribute not found
