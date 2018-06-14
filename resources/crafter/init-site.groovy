@@ -5,6 +5,7 @@
 		@Grab(group='commons-io', module='commons-io', version='2.6'),
 		@Grab(group='io.github.http-builder-ng', module='http-builder-ng-core', version='1.0.3')
 ])
+
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -189,7 +190,7 @@ def initSite(siteName, repoPath, targetParams) {
 	createDeployerTarget(siteName, repoPath, targetParams)
 }
 
-def cli = new CliBuilder(usage: 'init-site [options] [site] [repo-path]')
+def cli = new CliBuilder(usage: 'init-site [options] <site> [repo-path]')
 buildCli(cli)
 
 def options = cli.parse(args)
@@ -249,6 +250,6 @@ if (options) {
 
 		initSite(siteName, repoPath, targetParams)
 	} else {
-		exitWithError(cli, 'Neither [site] nor [repo-path] where specified')
+		exitWithError(cli, 'Neither <site> nor [repo-path] where specified')
 	}
 }

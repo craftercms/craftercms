@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 import org.apache.tools.ant.filters.ReplaceTokens
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
@@ -12,7 +14,6 @@ if (isWin) {
 /**
  Setup environment
  **/
-
 task("authoringPostEnvironment") {
     description "Setup the Crafter authoring environment"
 
@@ -116,9 +117,10 @@ task("authoringPostEnvironment") {
                 commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh", "crafter-setenv.sh"]
             }
         }
+
         updateCatalinaSettings(authEnv);
         updateTomcatPorts("${authEnv}/bin/apache-tomcat/conf/server.xml", authTomcatPort, authTomcatAJPPort,
-                authTomcatShutdownPort, authTomcatSSLPort)
+                          authTomcatShutdownPort, authTomcatSSLPort)
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${authEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${authEnv}/bin/solr/server/solr/solr.xml")
@@ -193,7 +195,8 @@ task("deliveryPostEnvironment") {
             exec {
                 workingDir "${deliveryEnv}/bin/apache-tomcat/bin/"
                 commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", "daemon.sh",
-                                                 "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
+                                                 "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh",
+                                                 "version.sh"]
             }
             exec {
                 workingDir "${deliveryEnv}/bin/crafter-deployer/"
@@ -207,11 +210,13 @@ task("deliveryPostEnvironment") {
         }
 
         updateTomcatPorts("${deliveryEnv}/bin/apache-tomcat/conf/server.xml", deliveryTomcatPort, deliveryTomcatAJPPort,
-                deliveryTomcatShutdownPort, deliveryTomcatSSLPort)
+                          deliveryTomcatShutdownPort, deliveryTomcatSSLPort)
         updateCatalinaSettings(deliveryEnv)
         updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
+        downloadGrapes(commandLinePrefix, "init-site.groovy")
+        downloadGrapes(commandLinePrefix, "remove-site.groovy")
     }
 }
 
@@ -305,6 +310,7 @@ envs.each { env ->
                     }
                 }
             }
+
             copy {
                 from "./src/studio/README.md"
                 into "${path}/bin/apache-tomcat"
@@ -327,6 +333,7 @@ envs.each { env ->
             }
         }
     }
+
     tasks.findByName("${env}Environment").finalizedBy("${env}PostEnvironment")
 }
 
@@ -385,5 +392,19 @@ def addSolrIndexHome(solrServerConfig) {
         def printer = new XmlNodePrinter(new PrintWriter(solrServerConfig))
         printer.preserveWhitespace = true
         printer.print(contextConfig)
+    }
+}
+
+/**
+ * Download Grape dependencies beforehand so that Groovy scripts can run without Internet connection. We do this by
+ * calling the script with -h to just print the help info
+ */
+def downloadGrapes(commandLinePrefix, groovyScript) {
+    exec {
+        workingDir "${deliveryEnv}/bin"
+        commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-Dgrape.root=.", groovyScript, "-h"]
+        // ignore output
+        standardOutput = new ByteArrayOutputStream()
+        errorOutput = new ByteArrayOutputStream()
     }
 }

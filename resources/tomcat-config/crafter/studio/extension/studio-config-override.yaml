@@ -5,6 +5,14 @@
 studio.repo.basePath: ../data/repos
 # Sandbox git repository branch for every site
 # studio.repo.siteSandboxBranch: master
+# Use the legacy environment-config.xml config file (for backward compatibility),
+# if true, environment configuration listed in this file will not be considered
+# studio.configuration.site.environmentConfig.enabled: true
+# If not using environment-config.xml, environments are configured here
+# Git repository branch for the `live` environment, default "live"
+# studio.repo.published.live: live
+# Git repository branch for the `staging` environment, default "staging"
+# studio.repo.published.staging: staging
 
 ############################################################
 ##                    Preview Deployer                    ##
@@ -61,7 +69,7 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # - ldap (users are imported from LDAP into the database)
 # - headers (use when authenticating via headers)
 # studio.security.type: ldap
-# 
+#
 # Salt for encrypting
 # studio.security.cipher.salt: TDEsDF8vx3gV4c7G
 # Key for encrypting
@@ -85,10 +93,16 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # studio.security.ldap.userAttribute.email: mail
 # LDAP site ID attribute
 # studio.security.ldap.userAttribute.siteId: crafterSite
+# LDAP site ID attribute name regex
+# studio.security.ldap.userAttribute.siteId.regex: .*
+# LDAP site ID attribute match index
+# studio.security.ldap.userAttribute.siteId.matchIndex: 0
+# LDAP group name match index for the site ID attribute
+# studio.security.ldap.userAttribute.siteId.groupName.matchIndex: 1
 # LDAP groups attribute
 # studio.security.ldap.userAttribute.groupName: crafterGroup
 # LDAP groups attribute name regex
-# studio.security.ldap.userAttribute.groupName.regex: cn=Crafter_([a-zAZ]+),.*
+# studio.security.ldap.userAttribute.groupName.regex: .*
 # LDAP groups attribute match index
 # studio.security.ldap.userAttribute.groupName.matchIndex: 1
 # LDAP default site if site ID attribute not found
