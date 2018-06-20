@@ -25,7 +25,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.0.14-SNAPSHOT"
+project.version = "3.0.15-SNAPSHOT"
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
 
@@ -46,9 +46,9 @@ ext {
     processTailFinishDelay = 1000
 
     /** Unzip Properties **/
-    groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.4.15"
+    groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.5.0"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.24"
-    solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "6.6.3"
+    solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "6.6.4"
     mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.2.4"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     /** Environment Building properties **/
@@ -111,7 +111,7 @@ ext {
     keepBin = project.hasProperty("keepBin") ? project.property("keepBin") : false
 
     testingPlatform = project.hasProperty("crafter.testing.platform") ? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ", "-")
-    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : 2.37
+    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : 2.40
     browserToTest = project.hasProperty("crafter.testing.browser") ? project.property("crafter.testing.browser") : "chrome"
     testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
 
