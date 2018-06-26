@@ -403,8 +403,7 @@ def downloadGrapes(commandLinePrefix, groovyScript) {
     exec {
         workingDir "${deliveryEnv}/bin"
         commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-Dgrape.root=.", groovyScript, "-h"]
-        // ignore output
+        // ignore regular output, keep showing errors
         standardOutput = new ByteArrayOutputStream()
-        errorOutput = new ByteArrayOutputStream()
     }
 }
