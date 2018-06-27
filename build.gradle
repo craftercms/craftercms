@@ -49,7 +49,7 @@ ext {
     groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.5.0"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.24"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "6.6.4"
-    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.2.4"
+    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.2.5"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     /** Environment Building properties **/
     authEnv = project.hasProperty("authoring.root") ? project.property("authoring.root") : "./crafter-authoring/"
@@ -116,8 +116,19 @@ ext {
     testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
 
     testingSuites = project.hasProperty("crafter.testing.suites") ? project.property("crafter.testing.suites") :
-            "src/test/resources/testngAPI.xml,src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml" +
-                    ",src/test/resources/testngSanityTest.xml"
+            "src/test/resources/testng_SanityTest.xml"+
+                ",src/test/resources/testng_StudioAccountManagement.xml"+
+                ",src/test/resources/testng_StudioContent.xml" +
+                ",src/test/resources/testng_StudioContextualNavigation.xml"+
+                ",src/test/resources/testng_StudioSiteDropdown.xml"+
+                ",src/test/resources/testng_StudioDashboard.xml"+
+                ",src/test/resources/testng_StudioGeneral.xml"+
+                ",src/test/resources/testng_StudioPreviewTools.xml"+
+                ",src/test/resources/testng_StudioSiteConfig.xml"+
+                ",src/test/resources/testng_StudioSites.xml"+
+                ",src/test/resources/testng_StudioUsers.xml"+
+                ",src/test/resources/testng_StudioLoginLogout.xml"+
+                ",src/test/resources/testng_StudioAPI.xml"
 
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
     silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent") : false
