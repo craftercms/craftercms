@@ -51,6 +51,13 @@ class EnvironmentUtils {
 	}
 
 	/**
+	 * Returns the data folder for the Crafter installation.
+	 */
+	static def getCrafterDataFolder() {
+		return getCrafterRootFolder().resolve("data")
+	}
+
+	/**
 	 * Returns the backups folder for the Crafter installation.
 	 */
 	static def getCrafterBackupsFolder() {
@@ -62,6 +69,18 @@ class EnvironmentUtils {
 	 */
 	static def getUpgradeTmpFolder() {
 		return Paths.get(FilenameUtils.normalize(getEnv("UPGRADE_TMP_DIR")))
+	}
+
+	/**
+	 * Return true if the script should run in download grapes only mode.
+	 */
+	static def isDownloadGrapesOnlyMode() {
+		def downloadGrapesOnly = System.getProperty("mode.downloadGrapesOnly")
+		if (downloadGrapesOnly) {
+			return Boolean.parseBoolean(downloadGrapesOnly)
+		} else {
+			return false
+		}
 	}
 
 }

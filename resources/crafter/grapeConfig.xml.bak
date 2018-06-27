@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<ivysettings>
+  <settings defaultResolver="downloadGrapes"/>
+  <resolvers>
+    <chain name="downloadGrapes">
+      <!-- no local m2 repo is defined to avoid conflicst with depedencies in m2 -->
+      <filesystem name="cachedGrapes">
+        <ivy pattern="${user.home}/.groovy/grapes/[organisation]/[module]/ivy-[revision].xml"/>
+        <artifact pattern="${user.home}/.groovy/grapes/[organisation]/[module]/[type]s/[artifact]-[revision](-[classifier]).[ext]"/>
+      </filesystem>
+      <ibiblio name="ibiblio" m2compatible="true"/>
+    </chain>
+  </resolvers>
+</ivysettings>

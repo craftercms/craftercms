@@ -16,34 +16,8 @@ import org.apache.commons.io.FilenameUtils
 
 import static groovyx.net.http.HttpBuilder.configure
 
-/**
- * Returns the value of an environment variable.
- */
-def getEnv(varName) {
-	def env = System.getenv()
-
-	return env[varName]
-}
-
-/**
- * Returns the URL of the Tomcat.
- */
-def getTomcatUrl() {
-	def port = getEnv('TOMCAT_HTTP_PORT')
-	def url = "http://localhost:${port}"
-
-	return url;
-}
-
-/**
- * Returns the URL of the Deployer.
- */
-def getDeployerUrl() {
-	def port = getEnv('DEPLOYER_PORT')
-	def url = "http://localhost:${port}"
-
-	return url;
-}
+import static utils.EnvironmentUtils.*
+import static utils.ScriptUtils.*
 
 /**
  * Infers the repo path assuming a developer installation of Crafter CMS (both Crafter Authoring and Delivery at the
@@ -189,6 +163,8 @@ def initSite(siteName, repoPath, targetParams) {
 	createSolrCore(siteName)
 	createDeployerTarget(siteName, repoPath, targetParams)
 }
+
+checkDownloadGrapesOnlyMode(getClass())
 
 def cli = new CliBuilder(usage: 'init-site [options] <site> [repo-path]')
 buildCli(cli)

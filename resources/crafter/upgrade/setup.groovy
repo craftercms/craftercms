@@ -4,6 +4,9 @@ import java.nio.file.Path
 import utils.NioUtils
 
 import static utils.EnvironmentUtils.*
+import static utils.ScriptUtils.*
+
+checkDownloadGrapesOnlyMode(getClass())
 
 def binFolder = getCrafterBinFolder()
 def tmpFolder = getUpgradeTmpFolder()

@@ -7,6 +7,30 @@
 		@Grab(group='net.lingala.zip4j', module='zip4j', version='1.3.2')
 ])
 
+import groovy.transform.Field
+
+import java.nio.file.Files
+import java.text.SimpleDateFormat
+import java.util.Date
+
+import org.apache.commons.codec.digest.DigestUtils
+import org.apache.commons.collections4.CollectionUtils
+import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.SystemUtils
+import org.apache.commons.io.FilenameUtils
+
+import net.lingala.zip4j.core.ZipFile
+
+import utils.NioUtils
+
+import static java.nio.file.StandardCopyOption.*
+import static utils.EnvironmentUtils.*
+import static utils.ScriptUtils.*
+
+@Field final DOWNLOADS_BASE_URL = "https://downloads.craftercms.org"
+@Field final ENVIRONMENT_NAME = "@ENV@"
+@Field final UNZIPPED_CRAFTER_FOLDER_NAME = "crafter"
+
 /**
  * Builds the CLI and adds the possible options
  */
@@ -72,10 +96,6 @@ def downloadFile(sourceUrl, targetFolder) {
 	def url = sourceUrl.toURL()
 	def filename = FilenameUtils.getName(url.path)
 	def targetFile = targetFolder.resolve(filename)
-
-	// url.withInputStream { in ->
-	// 	Files.copy(in, targetFile)
-	// }
 
 	url.withInputStream { is ->
     Files.copy(is, targetFile)
@@ -157,7 +177,11 @@ def backupData() {
 	println "Backing up data"
 	println "============================================================"
 
-	executeCommand(getCrafterBinFolder(), [SystemUtils.IS_OS_WINDOWS ? "crafter.bat" : "./crafter.sh", "backup"])
+	if (Files.exists(getCrafterDataFolder().resolve("repos"))) {
+		executeCommand(getCrafterBinFolder(), [SystemUtils.IS_OS_WINDOWS ? "crafter.bat" : "./crafter.sh", "backup"])
+	} else {
+		println "No repos folder found. Skipping data backup"
+	}
 }
 
 /**
@@ -169,7 +193,13 @@ def backupBin() {
 	println "============================================================"
 
 	def timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())
-	def backupBinFolder = getCrafterBackupsFolder().resolve("crafter-${ENVIRONMENT_NAME}-bin.${timestamp}")
+	def backupsFolder = getCrafterBackupsFolder()
+
+	if (!Files.exists(backupsFolder)) {
+		Files.createDirectories(backupsFolder)
+	}
+
+	def backupBinFolder = backupsFolder.resolve("crafter-${ENVIRONMENT_NAME}-bin.${timestamp}")
 
 	println "Backing up bin directory to ${backupBinFolder}"
 
@@ -211,7 +241,7 @@ def doUpgrade(newVersion, newBinFolder, fullUpgrade) {
 		def serverXmlFile = binFolder.resolve("apache-tomcat/conf/server.xml")
 		def newServerXmlFile = newBinFolder.resolve("apache-tomcat/conf/server.xml")
 
-		Files.detete(newServerXmlFile)
+		Files.delete(newServerXmlFile)
 		Files.copy(serverXmlFile, newServerXmlFile, COPY_ATTRIBUTES)
 
 		println "Copying original Deployer config to new bin folder..."
@@ -299,6 +329,8 @@ def upgradeCrafter(version, bundleUrl, fullUpgrade) {
 	println "Upgrade complete"
 	println "============================================================"
 }
+
+checkDownloadGrapesOnlyMode(getClass())
 
 def cli = new CliBuilder(usage: 'upgrade [options] <version>')
 buildCli(cli)
