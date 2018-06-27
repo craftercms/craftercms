@@ -1,5 +1,7 @@
 import groovy.transform.Field
 
+import java.nio.file.Paths
+
 import org.apache.tools.ant.filters.ReplaceTokens
 
 @Field final isWin = System.getProperty('os.name').toLowerCase().contains('windows')
@@ -220,8 +222,8 @@ task("deliveryPostEnvironment") {
         updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
-        // downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
-        // downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
         downloadGrapes("${deliveryEnv}/bin", "upgrade/setup.groovy")
         downloadGrapes("${deliveryEnv}/bin", "upgrade/upgrade.groovy")
         downloadGrapes("${deliveryEnv}/bin", "upgrade/cleanup.groovy")
