@@ -1,7 +1,6 @@
 import groovy.transform.Field
 
 import java.nio.file.Paths
-
 import org.apache.tools.ant.filters.ReplaceTokens
 
 @Field final isWin = System.getProperty('os.name').toLowerCase().contains('windows')
