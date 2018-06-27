@@ -125,7 +125,9 @@ task("authoringPostEnvironment") {
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${authEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${authEnv}/bin/solr/server/solr/solr.xml")
-        downloadGrapes("${authEnv}/bin", "upgrade.groovy")
+        downloadGrapes("${authEnv}/bin", "upgrade/setup.groovy")
+        downloadGrapes("${authEnv}/bin", "upgrade/upgrade.groovy")
+        downloadGrapes("${authEnv}/bin", "upgrade/cleanup.groovy")
     }
 }
 
@@ -218,9 +220,11 @@ task("deliveryPostEnvironment") {
         updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
-        downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
-        downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
-        downloadGrapes("${deliveryEnv}/bin", "upgrade.groovy")
+        // downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
+        // downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "upgrade/setup.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "upgrade/upgrade.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "upgrade/cleanup.groovy")
     }
 }
 
@@ -406,8 +410,7 @@ def addSolrIndexHome(solrServerConfig) {
 def downloadGrapes(binFolder, groovyScript) {
     exec {
         workingDir binFolder
-        commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-Dgrape.root=.", groovyScript, "-h"]
-        // ignore output
-        standardOutput = new ByteArrayOutputStream()
+        commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-cp", binFolder,
+          "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true", groovyScript]
     }
 }
