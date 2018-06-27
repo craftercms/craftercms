@@ -15,4 +15,4 @@ export DELIVERY_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 . "$DELIVERY_HOME/crafter-setenv.sh"
 
 # Execute Groovy script
-$DELIVERY_HOME/groovy/bin/groovy -Dgrape.root=$DELIVERY_HOME $DELIVERY_HOME/remove-site.groovy "$@"
+"$DELIVERY_HOME/groovy/bin/groovy" -cp "$DELIVERY_HOME" -Dgrape.root="$DELIVERY_HOME" "$DELIVERY_HOME/remove-site.groovy" "$@"
