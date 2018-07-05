@@ -39,8 +39,8 @@ def buildCli(cli) {
 	cli.u(longOpt: 'bundle-url', args: 1, argName: 'url', 'The URL of the Crafter bundle to be used for the upgrade')
 	cli.f(longOpt: 'full', 'If a full upgrade should be performed. In a non-full upgrade, only the Tomcat wars and ' +
 												 'the Deployer jar are upgraded. In a full upgrade, the entire bin directory is upgraded, ' +
-												 'keeping only the Tomcat shared config, Tomcat\'s server.xml, the Solr config, and the ' +
-												 'crafter-setenv scripts')
+												 'keeping only Tomcat\'s shared folder, Tomcat\'s conf folder, the Crafter Solr config, ' +
+												 'the Deployer config folder, and the crafter-setenv scripts')
 }
 
 /**
@@ -228,7 +228,7 @@ def doUpgrade(newVersion, newBinFolder, fullUpgrade) {
 		println "Upgrading Crafter to ${newVersion} (full upgrade)"
 		println "============================================================"
 
-		println "Copying original Tomcat shared folder to new bin folder..."
+		println "Copying original Tomcat shared to new bin folder..."
 
 		def sharedFolder = binFolder.resolve("apache-tomcat/shared")
 		def newSharedFolder = newBinFolder.resolve("apache-tomcat/shared")
@@ -236,13 +236,13 @@ def doUpgrade(newVersion, newBinFolder, fullUpgrade) {
 		NioUtils.deleteDirectory(newSharedFolder)
 		NioUtils.copyDirectory(sharedFolder, newSharedFolder)
 
-		println "Copying original Tomcat server.xml to new bin folder..."
+		println "Copying original Tomcat conf to new bin folder..."
 
-		def serverXmlFile = binFolder.resolve("apache-tomcat/conf/server.xml")
-		def newServerXmlFile = newBinFolder.resolve("apache-tomcat/conf/server.xml")
+		def confFolder = binFolder.resolve("apache-tomcat/conf")
+		def newConfFolder = newBinFolder.resolve("apache-tomcat/conf")
 
-		Files.delete(newServerXmlFile)
-		Files.copy(serverXmlFile, newServerXmlFile, COPY_ATTRIBUTES)
+		NioUtils.deleteDirectory(newConfFolder)
+		NioUtils.copyDirectory(confFolder, newConfFolder)
 
 		println "Copying original Deployer config to new bin folder..."
 
