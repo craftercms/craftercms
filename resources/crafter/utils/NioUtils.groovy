@@ -36,21 +36,23 @@ class NioUtils {
 	 * Deletes the specified directory {@code Path} recursively.
 	 */
 	static def deleteDirectory(directory) {
-		Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+		if (Files.exists(directory)) {
+			Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
 
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				Files.delete(file);
-				return CONTINUE;
-			}
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					Files.delete(file);
+					return CONTINUE;
+				}
 
-			@Override
-			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-				Files.delete(dir);
-				return CONTINUE;
-			}
+				@Override
+				public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+					Files.delete(dir);
+					return CONTINUE;
+				}
 
-		})
+			})
+		}
 	}
 
 }
