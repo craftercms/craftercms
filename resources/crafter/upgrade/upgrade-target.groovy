@@ -14,7 +14,6 @@ import java.util.Date
 
 import org.apache.commons.collections4.CollectionUtils
 import org.apache.commons.lang3.SystemUtils
-import org.apache.commons.io.FilenameUtils
 
 import utils.NioUtils
 
@@ -22,9 +21,7 @@ import static java.nio.file.StandardCopyOption.*
 import static utils.EnvironmentUtils.*
 import static utils.ScriptUtils.*
 
-@Field final DOWNLOADS_BASE_URL = "https://downloads.craftercms.org"
 @Field final ENVIRONMENT_NAME = "@ENV@"
-@Field final UNZIPPED_CRAFTER_FOLDER_NAME = "crafter"
 
 /**
  * Builds the CLI and adds the possible options
@@ -169,7 +166,7 @@ def doUpgrade(binFolder, newBinFolder, fullUpgrade) {
 		println "Replacing ${binFolder} with ${newBinFolder}..."
 
 		NioUtils.deleteDirectory(binFolder)
-		Files.copyDirectory(newBinFolder, binFolder)
+		NioUtils.copyDirectory(newBinFolder, binFolder)
 	} else {
 		println "============================================================"
 		println "Upgrading Crafter (copying war/jar and upgrade scripts)"
@@ -212,7 +209,7 @@ def doUpgrade(binFolder, newBinFolder, fullUpgrade) {
 
 		println "Copying ${newGrapeConfigFile} to ${grapeConfigFile}..."
 
-		Files.delete(grapeConfigFile)
+		Files.deleteIfExists(grapeConfigFile)
 		Files.copy(newGrapeConfigFile, grapeConfigFile)
 
 		def utilsFolder = binFolder.resolve("utils")
@@ -287,7 +284,7 @@ if (options) {
 	def extraArguments = options.arguments();
 	if (CollectionUtils.isNotEmpty(extraArguments)) {
 		def targetPath = extraArguments[0]
-		def targetFolder = Paths.get(FilenameUtils.normalize(targetPath))
+		def targetFolder = Paths.get(targetPath)
 
 		upgrade(targetFolder, options.full)
 	} else {
