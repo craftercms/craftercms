@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Script to upgrade the Crafter installation
+# Script download new version of the Crafter installation bundle
 
 if [ "$(whoami)" == "root" ]; then
 	echo -e "\033[38;5;196m"
@@ -17,7 +17,5 @@ export UPGRADE_TMP_DIR="$CRAFTER_ROOT/upgrade"
 
 . "$CRAFTER_HOME/crafter-setenv.sh"
 
-# Execute Groovy scripts
-"$CRAFTER_HOME/groovy/bin/groovy" -cp "$CRAFTER_HOME" -Dgrape.root="$CRAFTER_HOME" "$UPGRADE_HOME/setup.groovy"
-"$UPGRADE_TMP_DIR/groovy/bin/groovy" -cp "$UPGRADE_TMP_DIR" -Dgrape.root="$UPGRADE_TMP_DIR" "$UPGRADE_TMP_DIR/upgrade.groovy" "$@"
-"$CRAFTER_HOME/groovy/bin/groovy" -cp "$CRAFTER_HOME" -Dgrape.root="$CRAFTER_HOME" "$UPGRADE_HOME/cleanup.groovy"
+# Execute Groovy script
+"$CRAFTER_HOME/groovy/bin/groovy" -cp "$CRAFTER_HOME" -Dgrape.root="$CRAFTER_HOME" "$UPGRADE_HOME/download-bundle.groovy" "$@"

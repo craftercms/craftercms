@@ -2,9 +2,6 @@ package utils
 
 import java.nio.file.Paths
 
-@Grab(group='commons-io', module='commons-io', version='2.6')
-import org.apache.commons.io.FilenameUtils
-
 class EnvironmentUtils {
 
 	/**
@@ -40,7 +37,7 @@ class EnvironmentUtils {
 	 * Returns the root folder for the Crafter installation.
 	 */
 	static def getCrafterRootFolder() {
-		return Paths.get(FilenameUtils.normalize(getEnv("CRAFTER_ROOT")))
+		return Paths.get(getEnv("CRAFTER_ROOT"))
 	}
 
 	/**
@@ -68,7 +65,7 @@ class EnvironmentUtils {
 	 * Returns the tmp folder used for the upgrade
 	 */
 	static def getUpgradeTmpFolder() {
-		return Paths.get(FilenameUtils.normalize(getEnv("UPGRADE_TMP_DIR")))
+		return Paths.get(getEnv("UPGRADE_TMP_DIR"))
 	}
 
 	/**
