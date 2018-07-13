@@ -7,7 +7,7 @@ export CATALINA_LOGS_DIR=$CRAFTER_ROOT/logs/tomcat
 export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
 export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
 export CATALINA_OPTS="-Dcatalina.logs=$CATALINA_LOGS_DIR -server -Xss1024K -Xms1G -Xmx4G -Dapplication.logs=$CRAFTER_APPLICATION_LOGS"
-export TOMCAT_HTTP_PORT=@TOMCAT_HTTP_PORT@
+export TOMCAT_HTTP_PORT=`grep Connector.*HTTP/1.1 $CATALINA_HOME/conf/server.xml|awk -F "port=" '{print $2}'|awk -F '"' '{print $2}'`
 
 export PROFILE_DEPLOY_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile"
 export PROFILE_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile.war"
