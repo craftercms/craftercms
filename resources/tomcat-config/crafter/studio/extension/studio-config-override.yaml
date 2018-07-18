@@ -5,9 +5,6 @@
 studio.repo.basePath: ../data/repos
 # Sandbox git repository branch for every site
 # studio.repo.siteSandboxBranch: master
-# Use the legacy environment-config.xml config file (for backward compatibility),
-# if true, environment configuration listed in this file will not be considered
-# studio.configuration.site.environmentConfig.enabled: true
 # If not using environment-config.xml, environments are configured here
 # Git repository branch for the `live` environment, default "live"
 # studio.repo.published.live: live
