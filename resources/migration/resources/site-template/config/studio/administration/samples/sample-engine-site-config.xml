@@ -8,6 +8,11 @@
     <indexFileName />  (The name of a page's index file)
     <defaultLocale />  (Default locale for the site)
 
+    (Navigation Properties)
+    <navigation>
+        <additionalFields /> (List of additional fields to include for dynamic navigation items)
+    </navigation>
+
     (Filter Properties)
     <filters> (Defines the filter mappings)
         <filter>
@@ -101,6 +106,13 @@
     <!-- General properties -->
     <indexFileName>index.xml</indexFileName>
     <defaultLocale>en</defaultLocale>
+
+    <!-- Navigation properties -->
+    <!--
+    <navigation>
+        <additionalFields>navIcon,componentType</additionalFields>
+    </navigation>
+    -->
 
     <!-- Filter properties -->
     <filters>

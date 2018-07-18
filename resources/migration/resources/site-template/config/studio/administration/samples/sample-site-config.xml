@@ -4,6 +4,9 @@
     <display-name>{siteName}</display-name>
     <default-timezone>EST5EDT</default-timezone>
 
+    <!-- Server used for preview, if not specified it defaults to the same server where Studio is running. -->
+    <!-- previewServer>http://localhost:3000</previewServer -->
+
     <repository rootPrefix="/site">
 
         <level-descriptor>crafter-level-descriptor.level.xml</level-descriptor>

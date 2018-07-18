@@ -276,5 +276,12 @@
                 <class>fa-cloud-upload</class>
             </icon>
         </tool>
+        <tool>
+            <name>repository</name>
+            <label>Remote Repositories</label>
+            <icon>
+                <class>fa-database</class>
+            </icon>
+        </tool>
     </tools>
 </config>

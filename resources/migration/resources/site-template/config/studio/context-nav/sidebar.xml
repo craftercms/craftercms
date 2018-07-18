@@ -28,6 +28,48 @@
 		</modulehook>
 	</contextNav>
 
+    Common module hooks include:
+           <modulehook>
+              <name>wcm-root-folder</name>           Type: Browsable content tree of descriptors and folders
+              <showDivider>true</showDivider>        Display a visual divider after the folder (true/false)
+              <params>
+                 <label>Pages</label>                Label
+                 <path>/site/website</path>          Path to root tree at. You mave multiple path elements
+                 <showRootItem>true</showRootItem>   Display the root folder (true/false)
+                 <onClick>preview</onClick>          Attempt to preview asset on click
+                 <roles>...</roles>                  (optional roles list that has access to the menu item)
+              </params>
+           </modulehook>
+
+           <modulehook>
+              <name>wcm-asset-folder</name>          Type: Browsable content tree of files and folders
+              <showDivider>true</showDivider>        Display a visual divider after the foler (true/false)
+              <params>
+                 <label>Static Assets</label>        Label
+                 <path>/static-assets</path>         Path to root tree at. You mave multiple path elements
+                 <showRootItem>true</showRootItem>   Display the root folder (true/false)
+                 <onClick>preview</onClick>          Attempt to prview asset on click
+                 <roles>...</roles>                  (optional roles list that has access to the menu item)
+              </params>
+           </modulehook>
+
+          <modulehook>
+            <name>dashboard</name>                   Type: Display a link to the Sites Dashboard
+            <params>
+              <label>Dashboard</label>               Label
+              <path>/site-dashboard</path>           Relative link to Sites Dashboard
+              <roles>...</roles>                     (optional roles list that has access to the menu item)
+            </params>
+          </modulehook>
+
+          <modulehook>
+            <name>site-config</name>                 Type: Display a link to the Site Config Panel
+            <params>
+              <label>Dashboard</label>               Label
+              <path>/site-dashboard</path>           Relative link to Site Config Panel
+              <roles>...</roles>                     (optional roles list that has access to the menu item)
+            </params>
+          </modulehook>
 -->
 <contextNav>
     <contexts>
