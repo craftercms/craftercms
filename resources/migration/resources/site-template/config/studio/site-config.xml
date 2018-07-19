@@ -8,6 +8,13 @@
     <wem-project>{siteName}</wem-project>
     <display-name>{siteName}</display-name>
     <default-timezone>EST5EDT</default-timezone>
+    <sandbox-branch>master</sandbox-branch>
+
+    <published-repository>
+        <enable-staging-environment>false</enable-staging-environment>
+        <staging-environment>staging</staging-environment>
+        <live-environment>live</live-environment>
+    </published-repository>
 
     <repository rootPrefix="/site">
 

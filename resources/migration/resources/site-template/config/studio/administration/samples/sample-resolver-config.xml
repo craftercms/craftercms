@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- resolver-config.xml
 
-    This file configures what file paths Crafter considers a dependency and how they should be extracted 
+    This file configures how to identify items and find dependencies in those items identified.
 
 -->
 <dependency-resolver>
