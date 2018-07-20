@@ -11,4 +11,4 @@ SET DOWNLOADS_BASE_URL=https://downloads.craftercms.org
 call %CRAFTER_HOME%\crafter-setenv.bat
 
 REM Execute Groovy script
-%CRAFTER_HOME%\groovy\bin\groovy -cp %CRAFTER_HOME% -Dgrape.root=%CRAFTER_HOME% %UPGRADE_HOME%\download-bundle.groovy %*
+%CRAFTER_HOME%\groovy\bin\groovy -cp %CRAFTER_HOME% -Dgrape.root=%CRAFTER_HOME% %UPGRADE_HOME%\start-upgrade.groovy %*
