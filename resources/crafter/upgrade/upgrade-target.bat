@@ -4,6 +4,7 @@ REM Script to upgrade a target Crafter installation based on this bundle
 SET UPGRADE_HOME=%~dp0
 SET CRAFTER_HOME=%UPGRADE_HOME%\..
 SET CRAFTER_ROOT=%CRAFTER_HOME%\..
+SET ENVIRONMENT_NAME=@ENV@
 
 call %CRAFTER_HOME%\crafter-setenv.bat
 
