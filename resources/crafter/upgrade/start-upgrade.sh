@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Script to upgrade a target Crafter installation based on this bundle
+# Script download new version of the Crafter installation bundle
 
 if [ "$(whoami)" == "root" ]; then
   echo -e "\033[38;5;196m"
@@ -13,9 +13,12 @@ fi
 export UPGRADE_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export CRAFTER_HOME=$( cd "$UPGRADE_HOME/.." && pwd )
 export CRAFTER_ROOT=$( cd "$CRAFTER_HOME/.." && pwd )
+export UPGRADE_TMP_DIR="$CRAFTER_ROOT/upgrade"
 export ENVIRONMENT_NAME="@ENV@"
+export DOWNLOADS_BASE_URL="https://downloads.craftercms.org"
+export UNZIPPED_BUNDLE_FOLDER_NAME="crafter"
 
 . "$CRAFTER_HOME/crafter-setenv.sh"
 
-# Execute Groovy scripts
-"$CRAFTER_HOME/groovy/bin/groovy" -cp "$CRAFTER_HOME" -Dgrape.root="$CRAFTER_HOME" "$UPGRADE_HOME/upgrade-target.groovy" "$@"
+# Execute Groovy script
+"$CRAFTER_HOME/groovy/bin/groovy" -cp "$CRAFTER_HOME" -Dgrape.root="$CRAFTER_HOME" "$UPGRADE_HOME/start-upgrade.groovy" "$@"
