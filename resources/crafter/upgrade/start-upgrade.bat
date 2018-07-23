@@ -4,7 +4,7 @@ REM Script download new version of the Crafter installation bundle
 SET UPGRADE_HOME=%~dp0
 SET CRAFTER_HOME=%UPGRADE_HOME%\..
 SET CRAFTER_ROOT=%CRAFTER_HOME%\..
-SET UPGRADE_TMP_DIR=%CRAFTER_ROOT%\tmp\upgrade
+SET UPGRADE_TMP_DIR=%CRAFTER_ROOT%\temp\upgrade
 SET ENVIRONMENT_NAME=@ENV@
 SET DOWNLOADS_BASE_URL=https://downloads.craftercms.org
 
