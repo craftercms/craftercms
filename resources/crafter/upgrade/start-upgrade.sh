@@ -13,7 +13,7 @@ fi
 export UPGRADE_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export CRAFTER_HOME=$( cd "$UPGRADE_HOME/.." && pwd )
 export CRAFTER_ROOT=$( cd "$CRAFTER_HOME/.." && pwd )
-export UPGRADE_TMP_DIR="$CRAFTER_ROOT/upgrade"
+export UPGRADE_TMP_DIR="$CRAFTER_ROOT/temp/upgrade"
 export ENVIRONMENT_NAME="@ENV@"
 export DOWNLOADS_BASE_URL="https://downloads.craftercms.org"
 export UNZIPPED_BUNDLE_FOLDER_NAME="crafter"
