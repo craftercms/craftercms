@@ -123,6 +123,12 @@
             <samplePath>/studio/administration/samples/sample-engine-application-context.xml</samplePath>
         </file>
         <file>
+            <path>/studio/dependency/resolver-config.xml</path>
+            <title>Dependency Resolver Configuration</title>
+            <description>Dependency Resolver Configuration</description>
+            <samplePath>/studio/administration/samples/sample-resolver-config.xml</samplePath>
+        </file>
+        <file>
             <path>/studio/aws/aws.xml</path>
             <title>AWS Profiles</title>
             <description>AWS Profiles</description>

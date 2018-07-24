@@ -232,7 +232,7 @@ function stopSolr() {
 
 function startTomcat() {
   cd $CRAFTER_HOME
-  if   [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
+  if [[ ! -d "$CRAFTER_HOME/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
 
       echo "------------------------------------------------------------"
       echo "Starting Tomcat"

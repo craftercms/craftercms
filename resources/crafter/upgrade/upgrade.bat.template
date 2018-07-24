@@ -1,0 +1,13 @@
+@echo off
+REM Script that upgrades the current installation.
+REM WARNING: Don't execute this script from the bin/upgrade folder. Only to be executed after calling start-upgrade.bat
+
+SET SCRIPT_DIR=%~dp0
+SET UNZIPPED_BUNDLE=%SCRIPT_DIR%\crafter
+SET TARGET_INST_PATH=%SCRIPT_DIR%\..\..
+
+REM Executes the upgrade from the bundle
+call %UNZIPPED_BUNDLE%\bin\upgrade\upgrade-target.bat {{full_upgrade}} %TARGET_INST_PATH%
+
+echo.
+echo If the upgrade was completed successfully, please delete the upgrade temp directory (rmdir /Q /S %SCRIPT_DIR%)

@@ -1,15 +1,13 @@
-import java.nio.file.Paths
+import groovy.transform.Field
 
+import java.nio.file.Paths
 import org.apache.tools.ant.filters.ReplaceTokens
 
-def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
-def isOSX = System.getProperty('os.name').toLowerCase().contains('mac')
-def isNix = (System.getProperty('os.name').toLowerCase().contains('nix') || System.getProperty('os.name').toLowerCase().contains('aix') || System.getProperty('os.name').toLowerCase().contains('nux'))
+@Field final isWin = System.getProperty('os.name').toLowerCase().contains('windows')
+@Field final isOSX = System.getProperty('os.name').toLowerCase().contains('mac')
+@Field final isNix = (System.getProperty('os.name').toLowerCase().contains('nix') || System.getProperty('os.name').toLowerCase().contains('aix') || System.getProperty('os.name').toLowerCase().contains('nux'))
 
-def commandLinePrefix = []
-if (isWin) {
-    commandLinePrefix = ["cmd", "/c"]
-}
+@Field def commandLinePrefix = isWin ? ["cmd", "/c"] : []
 
 /**
  Setup environment
@@ -102,7 +100,9 @@ task("authoringPostEnvironment") {
         if (!isWin) {
             exec {
                 workingDir "${authEnv}/bin/apache-tomcat/bin/"
-                commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh", "version.sh"]
+                commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", "daemon.sh",
+                                                 "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh",
+                                                 "version.sh"]
             }
             exec {
                 workingDir "${authEnv}/bin/crafter-deployer/"
@@ -110,11 +110,14 @@ task("authoringPostEnvironment") {
             }
             exec {
                 workingDir "${authEnv}/bin/migration"
-                commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh", "import-bg.sh", "setenv.sh"]
+                commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh",
+                                                 "import-bg.sh", "setenv.sh"]
             }
             exec {
                 workingDir "${authEnv}/bin"
-                commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh", "crafter-setenv.sh"]
+                commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
+                                                 "crafter-setenv.sh", "upgrade/start-upgrade.sh",
+                                                 "upgrade/upgrade-target.sh"]
             }
         }
 
@@ -124,6 +127,8 @@ task("authoringPostEnvironment") {
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${authEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${authEnv}/bin/solr/server/solr/solr.xml")
+        downloadGrapes("${authEnv}/bin", "upgrade/start-upgrade.groovy")
+        downloadGrapes("${authEnv}/bin", "upgrade/upgrade-target.groovy")
     }
 }
 
@@ -205,7 +210,8 @@ task("deliveryPostEnvironment") {
             exec {
                 workingDir "${deliveryEnv}/bin"
                 commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
-                                                 "crafter-setenv.sh", "init-site.sh", "remove-site.sh"]
+                                                 "crafter-setenv.sh", "init-site.sh", "remove-site.sh",
+                                                 "upgrade/start-upgrade.sh", "upgrade/upgrade-target.sh"]
             }
         }
 
@@ -215,8 +221,10 @@ task("deliveryPostEnvironment") {
         updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
-        downloadGrapes(commandLinePrefix, "init-site.groovy")
-        downloadGrapes(commandLinePrefix, "remove-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "upgrade/start-upgrade.groovy")
+        downloadGrapes("${deliveryEnv}/bin", "upgrade/upgrade-target.groovy")
     }
 }
 
@@ -399,12 +407,10 @@ def addSolrIndexHome(solrServerConfig) {
  * Download Grape dependencies beforehand so that Groovy scripts can run without Internet connection. We do this by
  * calling the script with -h to just print the help info
  */
-def downloadGrapes(commandLinePrefix, groovyScript) {
+def downloadGrapes(binFolder, groovyScript) {
     exec {
-        workingDir "${deliveryEnv}/bin"
-        commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-Dgrape.root=.", groovyScript, "-h"]
-        // ignore output
-        standardOutput = new ByteArrayOutputStream()
-        errorOutput = new ByteArrayOutputStream()
+        workingDir binFolder
+        commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-cp", binFolder,
+          "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true", groovyScript]
     }
 }

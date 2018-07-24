@@ -25,7 +25,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.0.14"
+project.version = "3.0.15"
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
 
@@ -46,10 +46,10 @@ ext {
     processTailFinishDelay = 1000
 
     /** Unzip Properties **/
-    groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.4.15"
+    groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.5.0"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.24"
-    solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "6.6.3"
-    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.2.4"
+    solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "6.6.4"
+    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.2.7"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     /** Environment Building properties **/
     authEnv = project.hasProperty("authoring.root") ? project.property("authoring.root") : "./crafter-authoring/"
@@ -103,7 +103,7 @@ ext {
 
     /** Git properties **/
     gitURLTemplate = project.hasProperty("crafter.git.url") ? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "master"
+    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "v3.0.15"
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
     shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone") : false
     studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo") : false
@@ -111,13 +111,24 @@ ext {
     keepBin = project.hasProperty("keepBin") ? project.property("keepBin") : false
 
     testingPlatform = project.hasProperty("crafter.testing.platform") ? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ", "-")
-    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : 2.37
+    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : 2.40
     browserToTest = project.hasProperty("crafter.testing.browser") ? project.property("crafter.testing.browser") : "chrome"
     testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
 
     testingSuites = project.hasProperty("crafter.testing.suites") ? project.property("crafter.testing.suites") :
-            "src/test/resources/testngAPI.xml,src/test/resources/testng.xml,src/test/resources/testngcomplexscenarios.xml" +
-                    ",src/test/resources/testngSanityTest.xml"
+            "src/test/resources/testng_SanityTest.xml"+
+                ",src/test/resources/testng_StudioAccountManagement.xml"+
+                ",src/test/resources/testng_StudioContent.xml" +
+                ",src/test/resources/testng_StudioContextualNavigation.xml"+
+                ",src/test/resources/testng_StudioSiteDropdown.xml"+
+                ",src/test/resources/testng_StudioDashboard.xml"+
+                ",src/test/resources/testng_StudioGeneral.xml"+
+                ",src/test/resources/testng_StudioPreviewTools.xml"+
+                ",src/test/resources/testng_StudioSiteConfig.xml"+
+                ",src/test/resources/testng_StudioSites.xml"+
+                ",src/test/resources/testng_StudioUsers.xml"+
+                ",src/test/resources/testng_StudioLoginLogout.xml"+
+                ",src/test/resources/testng_StudioAPI.xml"
 
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
     silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent") : false

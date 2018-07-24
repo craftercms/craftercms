@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Script that upgrades the current installation.
+# WARNING: Don't execute this script from the bin/upgrade folder. Only to be executed after calling start-upgrade.sh
+
+if [ "$(whoami)" == "root" ]; then
+  echo -e "\033[38;5;196m"
+  echo -e "Crafter CMS cowardly refuses to run as root."
+  echo -e "Running as root is dangerous and is not supported."
+  echo -e "\033[0m"
+  exit 1
+fi
+
+SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+UNZIPPED_BUNDLE=$( cd "$SCRIPT_DIR/crafter" && pwd )
+TARGET_INST_PATH=$( cd "$SCRIPT_DIR/../.." && pwd )
+
+# Executes the upgrade from the bundle
+$UNZIPPED_BUNDLE/bin/upgrade/upgrade-target.sh {{full_upgrade}} $TARGET_INST_PATH
+
+echo ""
+echo "If the upgrade was completed successfully, please delete the upgrade temp directory (rm -rf $SCRIPT_DIR)"
