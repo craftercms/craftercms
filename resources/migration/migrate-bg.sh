@@ -262,6 +262,20 @@ function checkDateFormatInCode() {
 
 }
 
+function checkWorkingCopies() {
+	echo "------------------------------------------------------------"
+	echo "Checking working copies in content"
+	echo "------------------------------------------------------------"
+	
+	echo "NOTE: If there are any 'working copy' files you will need to decide whether to discard them or replace the"
+	echo "original files and commit the changes before importing the migrated site."
+	echo
+	
+	if [ -d "$MIGRATION_REPO_DIR/site" ]; then
+		find "$MIGRATION_REPO_DIR" -name '*(Working Copy)*'
+	fi
+}
+
 startTime=$SECONDS
 
 createMigrationRepo
@@ -272,6 +286,7 @@ updateEngineConfig
 updateDatesInDescriptors
 commitFiles
 checkDateFormatInCode
+checkWorkingCopies
 
 duration=$((SECONDS - startTime))
 
