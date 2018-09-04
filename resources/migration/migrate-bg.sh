@@ -262,9 +262,9 @@ function checkDateFormatInCode() {
 
 }
 
-function checkAlfrescoWorkingCopies() {
+function checkWorkingCopies() {
 	echo "------------------------------------------------------------"
-	echo "Checking Alfresco working copies in content"
+	echo "Checking working copies in content"
 	echo "------------------------------------------------------------"
 	
 	echo "NOTE: If there are any 'working copy' files you will need to decide whether to discard them or replace the"
@@ -286,7 +286,7 @@ updateEngineConfig
 updateDatesInDescriptors
 commitFiles
 checkDateFormatInCode
-checkAlfrescoWorkingCopies
+checkWorkingCopies
 
 duration=$((SECONDS - startTime))
 
