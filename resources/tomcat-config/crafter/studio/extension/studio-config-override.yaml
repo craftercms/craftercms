@@ -114,6 +114,12 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 #   Example:
 #   craftercms1645,Author,anothersite,Author
 # studio.authentication.headers.groups: groups
+# Enable/disable logout for headers authenticated users (SSO)
+# studio.authentication.headers.logout.enabled: false
+# If logout is enabled for headers authenticated users (SSO), set the URL
+# studio.authentication.headers.logout.url: /mellon/logout
+# If logout is enabled for headers authenticated users (SSO), specify the HTTP method
+# studio.authentication.headers.logout.method: GET
 
 ##################################################
 ##        SMTP Configuration (Email)            ##
