@@ -25,7 +25,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.0.17-SNAPSHOT" // craftercms version flag
+project.version = "3.0.17" // craftercms version flag
 
 def isWin = System.getProperty('os.name').toLowerCase().contains('windows')
 
@@ -103,7 +103,7 @@ ext {
 
     /** Git properties **/
     gitURLTemplate = project.hasProperty("crafter.git.url") ? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "support/3.0.x" // craftercms branch flag
+    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "v3.0.17" // craftercms branch flag
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
     shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone") : false
     studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo") : false
