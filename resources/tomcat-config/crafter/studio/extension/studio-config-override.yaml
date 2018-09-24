@@ -116,10 +116,9 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # studio.authentication.headers.groups: groups
 # Enable/disable logout for headers authenticated users (SSO)
 # studio.authentication.headers.logout.enabled: false
-# If logout is enabled for headers authenticated users (SSO), set the URL
-# studio.authentication.headers.logout.url: /mellon/logout
-# If logout is enabled for headers authenticated users (SSO), specify the HTTP method
-# studio.authentication.headers.logout.method: GET
+# If logout is enabled for headers authenticated users (SSO), set the URL where SP (Service Provider) logout is provided
+# (to be called after local logout)
+# studio.authentication.headers.logout.url: /mellon/logout?RedirectTo={loginUrl}
 
 ##################################################
 ##        SMTP Configuration (Email)            ##
