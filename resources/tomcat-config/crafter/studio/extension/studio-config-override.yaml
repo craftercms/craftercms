@@ -113,13 +113,13 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # Authentication header for groups: comma separated list of groups
 #   Example:
 #   site_author,site_xyz_developer
-studio.authentication.headers.groups: groups
+# studio.authentication.headers.groups: groups
 # Enable/disable logout for headers authenticated users (SSO)
-studio.authentication.headers.logout.enabled: false
+# studio.authentication.headers.logout.enabled: false
 # If logout is enabled for headers authenticated users (SSO), set the endpoint of the SP or IdP logout, which should
 # be called after local logout. The {baseUrl} macro is provided so that the browser is redirected back to Studio
 # after logout (https://STUDIO_SERVER:STUDIO_PORT/studio)
-studio.authentication.headers.logout.url: /mellon/logout?ReturnTo={baseUrl}
+# studio.authentication.headers.logout.url: /mellon/logout?ReturnTo={baseUrl}
 
 ##################################################
 ##        SMTP Configuration (Email)            ##
