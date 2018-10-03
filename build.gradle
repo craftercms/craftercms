@@ -111,7 +111,7 @@ ext {
     keepBin = project.hasProperty("keepBin") ? project.property("keepBin") : false
 
     testingPlatform = project.hasProperty("crafter.testing.platform") ? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ", "-")
-    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : 2.40
+    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : 2.42
     browserToTest = project.hasProperty("crafter.testing.browser") ? project.property("crafter.testing.browser") : "chrome"
     testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
 
@@ -126,9 +126,11 @@ ext {
                 ",src/test/resources/testng_StudioPreviewTools.xml"+
                 ",src/test/resources/testng_StudioSiteConfig.xml"+
                 ",src/test/resources/testng_StudioSites.xml"+
+                ",src/test/resources/testng_StudioRemoteReposScenarios.xml"+
                 ",src/test/resources/testng_StudioUsers.xml"+
                 ",src/test/resources/testng_StudioLoginLogout.xml"+
-                ",src/test/resources/testng_StudioAPI.xml"
+                ",src/test/resources/testng_StudioAPI.xml"+
+                ",src/test/resources/testng_StudioAPI2.xml"
 
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
     silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent") : false
