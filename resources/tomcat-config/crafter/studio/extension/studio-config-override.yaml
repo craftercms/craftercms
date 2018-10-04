@@ -120,7 +120,59 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # be called after local logout. The {baseUrl} macro is provided so that the browser is redirected back to Studio
 # after logout (https://STUDIO_SERVER:STUDIO_PORT/studio)
 # studio.authentication.headers.logout.url: /mellon/logout?ReturnTo={baseUrl}
-
+# Studio authentication chain configuration
+# studio.authentication.chain:
+  # Authentication provider type
+  # - provider: HEADERS
+    # Authentication via headers enabled
+    # enabled: false
+    # Authentication header for secure key
+    # secureKeyHeader: secure_key
+    # Authentication headers secure key that is expected to match secure key value from headers
+    # Typically this is placed in the header by the authentication agent, e.g. Apache mod_mellon
+    # secureKeyHeaderValue: secure
+    # Authentication header for username
+    # usernameHeader: username
+    # Authentication header for first name
+    # firstNameHeader: firstname
+    # Authentication header for last name
+    # lastNameHeader: lastname
+    # Authentication header for email
+    # emailHeader: email
+    # Authentication header for groups: comma separated list of sites and groups
+    #   Example:
+    #   site_author,site_xyz_developer
+    # groupsHeader: groups
+  # Authentication provider type
+  # - provider: LDAP
+    # Authentication via LDAP enabled
+    # enabled: false
+    # LDAP Server url
+    # ldapUrl: ldap://localhost:389
+    # LDAP bind DN (user)
+    # ldapUsername: cn=Manager,dc=my-domain,dc=com
+    # LDAP bind password
+    # ldapPassword: secret
+    # LDAP base context (directory root)
+    # ldapBaseContext: dc=my-domain,dc=com
+    # LDAP username attribute
+    # usernameLdapAttribute: uid
+    # LDAP first name attribute
+    # firstNameLdapAttribute: cn
+    # LDAP last name attribute
+    # lastNameLdapAttribute: sn
+    # Authentication header for email
+    # emailLdapAttribute: mail
+    # LDAP groups attribute
+    # groupNameLdapAttribute: crafterGroup
+    # LDAP groups attribute name regex
+    # groupNameLdapAttributeRegex: .*
+    # LDAP groups attribute match index
+    # groupNameLdapAttributeMatchIndex: 0
+# Authentication provider type
+  # - provider: DB
+    # Authentication via DB enabled
+    # enabled: true
 ##################################################
 ##        SMTP Configuration (Email)            ##
 ##################################################
