@@ -410,11 +410,13 @@ envs.each { env ->
 /* Cleanup non buildable modules */
 buildDeps.removeAll([
   tasks.findByName("studio-ui_build"),
-  tasks.findByName("plugin-maker_build")
+  tasks.findByName("plugin-maker_build"),
+  tasks.findByName("studio-ui-ng_build")
 ] as Task[])
 cleanDeps.removeAll([
   tasks.findByName("studio-ui_clean"),
   tasks.findByName("plugin-maker_clean"),
+  tasks.findByName("studio-ui-ng_clean"),
   tasks.findByName("test-suite_build")
 ] as Task[])
 
