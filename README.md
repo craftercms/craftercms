@@ -187,4 +187,4 @@ You can update, build, deploy, start or stop a module by:
 * In the current version of Crafter CMS, some services run in the same Web container, and that implies the stopping/starting of one of these services will cause other services to stop/start as well.
 
 # 4. Advanced Topics
-For more detailed information and advanced topic, please visit the [detailed documentation](http://docs.craftercms.org/en/3.1/developers/projects/craftercms).
+For more detailed information and advanced topic, please visit the [detailed documentation](http://docs.craftercms.org/en/3.1/developers/projects/craftercms/index.html).
