@@ -1,6 +1,6 @@
 # Crafter CMS
 
-Crafter CMS is an open source content management system for Web sites, mobile apps, VR and more. You can learn more about Crafter here: http://docs.craftercms.org/en/latest/index.html
+Crafter CMS is an open source content management system for Web sites, mobile apps, VR and more. You can learn more about Crafter here: http://docs.craftercms.org/en/3.0/index.html
 
 This repository is the parent project that builds everything and helps you build one of two things:
 
@@ -101,7 +101,7 @@ Start Crafter CMS,
     ./gradlew start
 ```
 
-You can now point your browser to [http://localhost:8080/studio](http://localhost:8080/studio) and start using Crafter CMS. To get started with your first Crafter CMS experience, you can follow this guide: [http://docs.craftercms.org/en/latest/content-authors/index.html](http://docs.craftercms.org/en/latest/content-authors/index.html).
+You can now point your browser to [http://localhost:8080/studio](http://localhost:8080/studio) and start using Crafter CMS. To get started with your first Crafter CMS experience, you can follow this guide: [http://docs.craftercms.org/en/3.0/content-authors/index.html](http://docs.craftercms.org/en/3.0/content-authors/index.html).
 
 ##### Note
 * The authoring environment runs on port `8080`, a great place to start, while the delivery environment runs on port 
@@ -141,14 +141,14 @@ To build, start and stop one of the two environments is similar to building/star
 The mechanics for working with a single module are similar to working with _all_, with one exception: You can deploy a module to one or both environments (`authoring`/`delivery`).
 
 Crafter CMS comprises the modules:
-* [`core`](http://docs.craftercms.org/en/latest/developers/projects/core/index.html)
-* [`commons`](http://docs.craftercms.org/en/latest/developers/projects/commons/index.html)
-* [`engine`](http://docs.craftercms.org/en/latest/developers/projects/engine/index.html)
-* [`studio`](http://docs.craftercms.org/en/latest/developers/projects/studio/index.html)
-* [`search`](http://docs.craftercms.org/en/latest/developers/projects/search/index.html)
-* [`profile`](http://docs.craftercms.org/en/latest/developers/projects/profile/index.html)
-* [`social`](http://docs.craftercms.org/en/latest/developers/projects/social/index.html)
-* [`deployer`](http://docs.craftercms.org/en/latest/developers/projects/deployer/index.html)
+* [`core`](http://docs.craftercms.org/en/3.0/developers/projects/core/index.html)
+* [`commons`](http://docs.craftercms.org/en/3.0/developers/projects/commons/index.html)
+* [`engine`](http://docs.craftercms.org/en/3.0/developers/projects/engine/index.html)
+* [`studio`](http://docs.craftercms.org/en/3.0/developers/projects/studio/index.html)
+* [`search`](http://docs.craftercms.org/en/3.0/developers/projects/search/index.html)
+* [`profile`](http://docs.craftercms.org/en/3.0/developers/projects/profile/index.html)
+* [`social`](http://docs.craftercms.org/en/3.0/developers/projects/social/index.html)
+* [`deployer`](http://docs.craftercms.org/en/3.0/developers/projects/deployer/index.html)
 
 You'll find these projects checked out and ready for you to contribute to in the folder `src/{moduleName}`.
 
@@ -187,4 +187,4 @@ You can update, build, deploy, start or stop a module by:
 * In the current version of Crafter CMS, some services run in the same Web container, and that implies the stopping/starting of one of these services will cause other services to stop/start as well.
 
 # 4. Advanced Topics
-For more detailed information and advanced topic, please visit the [detailed documentation](http://docs.craftercms.org/en/latest/developers/projects/craftercms).
+For more detailed information and advanced topic, please visit the [detailed documentation](http://docs.craftercms.org/en/3.0/developers/projects/craftercms/index.html).
