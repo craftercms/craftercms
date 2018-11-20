@@ -137,7 +137,9 @@ ext {
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
 
     /** Cloneable Artifacts **/
-    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite", "plugin-maker"]
+    VALID_MODULES = 
+      ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite", 
+      "plugin-maker", "studio-ui-ng"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -232,6 +234,7 @@ buildModules.each { module ->
                 }
                 if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
                     actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
+                    actualCommandLinePost.add("-Dstudio.ui.alpha.path=../studio-ui-ng")
                     actualCommandLinePost.add("-Dexec.skip=true")
                 }
                 def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
@@ -407,11 +410,13 @@ envs.each { env ->
 /* Cleanup non buildable modules */
 buildDeps.removeAll([
   tasks.findByName("studio-ui_build"),
-  tasks.findByName("plugin-maker_build")
+  tasks.findByName("plugin-maker_build"),
+  tasks.findByName("studio-ui-ng_build")
 ] as Task[])
 cleanDeps.removeAll([
   tasks.findByName("studio-ui_clean"),
   tasks.findByName("plugin-maker_clean"),
+  tasks.findByName("studio-ui-ng_clean"),
   tasks.findByName("test-suite_build")
 ] as Task[])
 
