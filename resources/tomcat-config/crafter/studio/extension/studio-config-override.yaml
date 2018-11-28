@@ -200,24 +200,27 @@ studio.mail.port: @SMTP_PORT@
 # Enable/disable (value true/false) debug mode for email service. Enabling debug mode allows tracking/debugging communication between email service and SMTP server.
 # studio.mail.debug: false
 ##################################################
-##        Cluster node registration             ##
+##        Clustering node registration          ##
 ##################################################
 # Cluster node registration data
 # studio.clustering.node.registration:
-    # cluster member local IP
-#   localIp: 127.0.0.1
-    # authentication type to access local repository
-    # possible values
-    # - none (no authentication needed)
-    # - basic (username/password authentication)
-    # - token (authentication with security token)
-    # - key (ssh authentication)
+#   cluster member local IP
+#   localIp: 10.1.1.150
+#   authentication type to access local repository
+#   possible values
+#   - none (no authentication needed)
+#   - basic (username/password authentication)
+#   - token (authentication with security token)
+#   - key (ssh authentication)
 #   authenticationType: none
-    # username to access local repository
+#   username to access local repository
 #   username: user
-    # password to access local repository
+#   password to access local repository
 #   password: SuperSecurePassword
-    # security token to access local repository
+#   security token to access local repository
 #   token: token
-    # private key to access local repository
-#   privateKey: privateKey
+#   private key to access local repository (multiline string)
+#   privateKey: >
+#     -----BEGIN PRIVATE KEY-----
+#     privateKey
+#     -----END PRIVATE KEY-----
