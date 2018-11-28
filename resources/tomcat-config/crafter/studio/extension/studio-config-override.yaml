@@ -202,7 +202,7 @@ studio.mail.port: @SMTP_PORT@
 ##################################################
 ##        Clustering node registration          ##
 ##################################################
-# Cluster node registration data
+# Clustering node registration data
 # studio.clustering.node.registration:
 #   cluster member local IP
 #   localIp: 10.1.1.150
