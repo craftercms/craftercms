@@ -41,9 +41,13 @@ studio.preview.search.deleteUrl: http://localhost:@TOMCAT_HTTP_PORT@/crafter-sea
 # jdbc:DATABASE_PLATFORM;databaseName=DATABASE_NAME;create=true;user=DATABASE_USERNAME;password=DATABASE_USER_PASSWORD
 # Note that a relative path is not suitable for a production deployment
 studio.db.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@/crafter?user=crafter&password=crafter
+# External MariaDB database connection string
+# studio.db.url: jdbc:mariadb://192.168.1.1:3306/crafter?user=crafter&password=crafter
 
 # Connection string used to initialize database
 studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&password=
+# External MariaDB database connection string used to initialize database
+# studio.db.initializer.url: jdbc:mariadb://192.168.1.1:3306/crafter?user=root&password=
 # Port number for the embedded database (note this must match what's in the connection URLs in this config file)
 studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
@@ -195,3 +199,28 @@ studio.mail.port: @SMTP_PORT@
 # studio.mail.smtp.ehlo: true
 # Enable/disable (value true/false) debug mode for email service. Enabling debug mode allows tracking/debugging communication between email service and SMTP server.
 # studio.mail.debug: false
+##################################################
+##                 Clustering                   ##
+##################################################
+# Cluster node registration data
+# studio.clustering.node.registration:
+#   cluster member local IP
+#   localIp: 10.1.1.150
+#   authentication type to access local repository
+#   possible values
+#   - none (no authentication needed)
+#   - basic (username/password authentication)
+#   - token (authentication with security token)
+#   - key (ssh authentication)
+#   authenticationType: none
+#   username to access local repository
+#   username: user
+#   password to access local repository
+#   password: SuperSecurePassword
+#   security token to access local repository
+#   token: token
+#   private key to access local repository (multiline string)
+#   privateKey: >
+#     -----BEGIN PRIVATE KEY-----
+#     privateKey
+#     -----END PRIVATE KEY-----
