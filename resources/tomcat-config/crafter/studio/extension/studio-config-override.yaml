@@ -220,7 +220,7 @@ studio.mail.port: @SMTP_PORT@
 #  security token to access local repository
 #  token: token
 #  private key to access local repository (multiline string)
-#  privateKey: >
+#  privateKey: |
 #    -----BEGIN PRIVATE KEY-----
 #    privateKey
 #    -----END PRIVATE KEY-----
