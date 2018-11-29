@@ -200,9 +200,9 @@ studio.mail.port: @SMTP_PORT@
 # Enable/disable (value true/false) debug mode for email service. Enabling debug mode allows tracking/debugging communication between email service and SMTP server.
 # studio.mail.debug: false
 ##################################################
-##        Clustering node registration          ##
+##                 Clustering                   ##
 ##################################################
-# Clustering node registration data
+# Cluster node registration data
 # studio.clustering.node.registration:
 #  cluster member local IP
 #  localIp: 10.1.1.150
