@@ -202,6 +202,10 @@ studio.mail.port: @SMTP_PORT@
 ##################################################
 ##                 Clustering                   ##
 ##################################################
+# Sandbox Sync Job interval
+# studio.clustering.sandboxSyncJob.interval: 5000
+# Published Sync Job interval
+# studio.clustering.publishedSyncJob.interval: 60000
 # Cluster node registration data
 # studio.clustering.node.registration:
 #  cluster member local IP
