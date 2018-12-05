@@ -147,3 +147,23 @@ studio.mail.port: @SMTP_PORT@
 # studio.mail.smtp.ehlo: true
 # Enable/disable (value true/false) debug mode for email service. Enabling debug mode allows tracking/debugging communication between email service and SMTP server.
 # studio.mail.debug: false
+
+################################################################
+##                             CORS                           ##
+################################################################
+# This is configured as permissive by default for ease of deployment
+# Remember to tighten this up for production
+
+# Disable CORS headers completely
+# studio.cors.disable: false
+# Value for the Access-Control-Allow-Origin header
+# studio.cors.origins: '*'
+# Value for the Access-Control-Allow-Headers header
+# studio.cors.headers: '*'
+# Value for the Access-Control-Allow-Methods header
+# studio.cors.methods: '*'
+# Value for the Access-Control-Allow-Credentials header
+# studio.cors.credentials: true
+# Value for the Access-Control-Max-Age header
+# studio.cors.maxage: -1
+
