@@ -151,7 +151,10 @@ studio.mail.port: @SMTP_PORT@
 ################################################################
 ##                             CORS                           ##
 ################################################################
-# Disable completely CORS headers
+# This is configured as permissive by default for ease of deployment
+# Remember to tighten this up for production
+
+# Disable CORS headers completely
 # studio.cors.disable: false
 # Value for the Access-Control-Allow-Origin header
 # studio.cors.origins: '*'
