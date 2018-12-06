@@ -208,7 +208,7 @@ studio.mail.port: @SMTP_PORT@
 # studio.clustering.publishedSyncJob.interval: 60000
 # Cluster node registration data
 # studio.clustering.node.registration:
-#  cluster member local IP
+#  cluster member local IP (reachable to other cluster members)
 #  localIp: 10.1.1.150
 #  authentication type to access local repository
 #  possible values
