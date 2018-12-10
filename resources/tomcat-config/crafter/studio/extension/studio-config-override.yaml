@@ -84,28 +84,9 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # studio.security.ldap.bindPassword: secret
 # LDAP base context (directory root)
 # studio.security.ldap.baseContext: dc=my-domain,dc=com
-# LDAP username attribute
-# studio.security.ldap.userAttribute.username: uid
-# LDAP first name attribute
-# studio.security.ldap.userAttribute.firstName: cn
-# LDAP last name attribute
-# studio.security.ldap.userAttribute.lastName: sn
-# LDAP email attribute
-# studio.security.ldap.userAttribute.email: mail
-# LDAP groups attribute
-# studio.security.ldap.userAttribute.groupName: crafterGroup
-# LDAP groups attribute name regex
-# studio.security.ldap.userAttribute.groupName.regex: .*
-# LDAP groups attribute match index
-# studio.security.ldap.userAttribute.groupName.matchIndex: 0
 
 # Authentication via headers enabled
 # studio.authentication.headers.enabled: false
-# Authentication header for secure key
-# studio.authentication.headers.secureKeyHeaderName: secure_key
-# Authentication headers secure key that is expected to match secure key value from headers
-# Typically this is placed in the header by the authentication agent, e.g. Apache mod_mellon
-# studio.authentication.headers.secureKeyHeaderValue: secure
 # Authentication header for username
 # studio.authentication.headers.username: username
 # Authentication header for first name
