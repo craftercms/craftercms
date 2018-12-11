@@ -86,7 +86,7 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # studio.security.ldap.baseContext: dc=my-domain,dc=com
 
 # Authentication via headers enabled
-# studio.authentication.headers.enabled: falseBr
+# studio.authentication.headers.enabled: false
 # Authentication header for username
 # studio.authentication.headers.username: username
 # Authentication header for first name
@@ -229,5 +229,6 @@ studio.mail.port: @SMTP_PORT@
 # studio.cors.credentials: true
 # Value for the Access-Control-Max-Age header
 # studio.cors.maxage: -1
+
 # Active environment for multi environment configuration
-# environment: ENV
+# studio.configuration.environment.active: ENV
