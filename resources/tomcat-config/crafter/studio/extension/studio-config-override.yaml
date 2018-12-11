@@ -231,4 +231,5 @@ studio.mail.port: @SMTP_PORT@
 # studio.cors.maxage: -1
 
 # Active environment for multi environment configuration
+#   e.g. qa, prod, dev
 # studio.configuration.environment.active: ENV
