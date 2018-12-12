@@ -230,5 +230,5 @@ studio.mail.port: @SMTP_PORT@
 # Value for the Access-Control-Max-Age header
 # studio.cors.maxage: -1
 
-# Active environment for multi environment configuration, e.g. qa, prod, dev
+# The active environment for multi environment configuration, e.g. qa, prod, dev
 # studio.configuration.environment.active: ENV
