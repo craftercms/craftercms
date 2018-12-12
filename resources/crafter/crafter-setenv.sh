@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Logging variables
+# Locations variables
 export CRAFTER_LOGS_DIR=${CRAFTER_LOGS_DIR:="$CRAFTER_ROOT/logs"}
 
 # Tomcat variables
