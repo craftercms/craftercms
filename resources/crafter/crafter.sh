@@ -586,7 +586,7 @@ function doBackup() {
   export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
   export TARGET_FOLDER="$CRAFTER_ROOT/backups"
   export TARGET_FILE="$TARGET_FOLDER/$TARGET_NAME.$CURRENT_DATE.zip"
-  export TEMP_FOLDER="$CRAFTER_HOME/temp"
+  export TEMP_FOLDER="$CRAFTER_ROOT/temp/backup"
 
   echo "Starting backup into $TARGET_FILE"
   mkdir -p "$TEMP_FOLDER"
@@ -650,7 +650,7 @@ function doRestore() {
     help
     exit 1
   fi
-  export TEMP_FOLDER="$CRAFTER_HOME/temp"
+  export TEMP_FOLDER="$CRAFTER_ROOT/temp/backup"
 
   read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the \
 existing sites and associated database and replace everything with the restored data. If you \
