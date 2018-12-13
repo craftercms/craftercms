@@ -246,8 +246,7 @@ function startTomcat() {
         possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
         if  [ -z "$possiblePID" ];  then
-          export CATALINA_OPTS="$CATALINA_OPTS -Dcrafter.home=$CRAFTER_ROOT"
-          $CRAFTER_HOME/apache-tomcat/bin/catalina.sh start -secure
+          $CRAFTER_HOME/apache-tomcat/bin/catalina.sh start -security
         else
           echo $possiblePID > $CATALINA_PID
           echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
@@ -291,7 +290,7 @@ function debugTomcat() {
     possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
     if  [ -z "$possiblePID" ];  then
-      $CRAFTER_HOME/apache-tomcat/bin/catalina.sh jpda start;
+      $CRAFTER_HOME/apache-tomcat/bin/catalina.sh jpda start -security
     else
       echo $possiblePID > $CATALINA_PID
       echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
