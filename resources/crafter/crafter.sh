@@ -91,8 +91,8 @@ function checkPortForRunning(){
 
 function printTailInfo(){
   echo -e "\033[38;5;196m"
-  echo "Log files live here: \"$CRAFTER_ROOT/logs/\". "
-  echo "To follow the main tomcat log, you can \"tail -f $CRAFTER_ROOT/logs/tomcat/catalina.out\""
+  echo "Log files live here: \"$CRAFTER_LOGS_DIR\". "
+  echo "To follow the main tomcat log, you can \"tail -f $CRAFTER_LOGS_DIR/tomcat/catalina.out\""
   echo -e "\033[0m"
 }
 
@@ -246,8 +246,7 @@ function startTomcat() {
         possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
         if  [ -z "$possiblePID" ];  then
-          export CATALINA_OPTS="$CATALINA_OPTS -Dcrafter.home=$CRAFTER_ROOT"
-          $CRAFTER_HOME/apache-tomcat/bin/catalina.sh start -secure
+          $CRAFTER_HOME/apache-tomcat/bin/catalina.sh start -security
         else
           echo $possiblePID > $CATALINA_PID
           echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
@@ -291,7 +290,7 @@ function debugTomcat() {
     possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
     if  [ -z "$possiblePID" ];  then
-      $CRAFTER_HOME/apache-tomcat/bin/catalina.sh jpda start;
+      $CRAFTER_HOME/apache-tomcat/bin/catalina.sh jpda start -security
     else
       echo $possiblePID > $CATALINA_PID
       echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
@@ -368,7 +367,7 @@ function startMongoDB(){
     # Before run check if the port is available.
     possiblePID=$(pidOf $MONGODB_PORT)
     if  [ -z $possiblePID ];  then
-      $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_ROOT/data/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
+      $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_DATA_DIR/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
     else
       echo $possiblePID > $MONGODB_PID
       echo "Process PID $possiblePID is listening port $MONGODB_PORT"
@@ -407,7 +406,7 @@ function stopMongoDB(){
   if [ -s "$MONGODB_PID" ]; then
     case "$(uname -s)" in
       Linux)
-      $MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_ROOT/data/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
+      $MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_DATA_DIR/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
       ;;
       *)
       pkill -3 -F "$MONGODB_PID"
@@ -586,7 +585,7 @@ function doBackup() {
   export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
   export TARGET_FOLDER="$CRAFTER_ROOT/backups"
   export TARGET_FILE="$TARGET_FOLDER/$TARGET_NAME.$CURRENT_DATE.zip"
-  export TEMP_FOLDER="$CRAFTER_HOME/temp"
+  export TEMP_FOLDER="$CRAFTER_ROOT/temp/backup"
 
   echo "Starting backup into $TARGET_FILE"
   mkdir -p "$TEMP_FOLDER"
@@ -620,7 +619,7 @@ function doBackup() {
 
   # ZIP git repos
   echo "Adding git repos"
-  cd "$CRAFTER_ROOT/data/repos"
+  cd "$CRAFTER_DATA_DIR/repos"
   java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/repos.zip"
   # ZIP solr indexes
   echo "Adding solr indexes"
@@ -650,7 +649,7 @@ function doRestore() {
     help
     exit 1
   fi
-  export TEMP_FOLDER="$CRAFTER_HOME/temp"
+  export TEMP_FOLDER="$CRAFTER_ROOT/temp/backup"
 
   read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the \
 existing sites and associated database and replace everything with the restored data. If you \
@@ -662,7 +661,7 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
   fi
 
   echo "Clearing all existing data"
-  rm -rf $CRAFTER_ROOT/data/*
+  rm -rf $CRAFTER_DATA_DIR/*
 
   echo "Starting restore from $SOURCE_FILE"
   mkdir -p "$TEMP_FOLDER"
@@ -680,8 +679,8 @@ attempt the restore. Are you sure you want to proceed? (yes/no) "
 
   # UNZIP git repos
   echo "Restoring git repos"
-  rm -rf "$CRAFTER_ROOT/data/repos/*"
-  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_ROOT/data/repos"
+  rm -rf "$CRAFTER_DATA_DIR/repos/*"
+  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_DATA_DIR/repos"
 
   # UNZIP solr indexes
   echo "Restoring solr indexes"

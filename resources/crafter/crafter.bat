@@ -9,13 +9,14 @@ if %OSARCH%==32BIT (
 )
 
 rem Make sure this variable is clean.
-SET CRAFTER_BIN_FOLDER=
+SET CRAFTER_HOME=
+SET CRAFTER_ROOT=
 SET CATALINA_OPTS=
 rem Reinit variables
-SET CRAFTER_BIN_FOLDER=%~dp0
-for %%i in ("%~dp0..") do set CRAFTER_HOME=%%~fi\
+SET CRAFTER_HOME=%~dp0
+for %%i in ("%CRAFTER_HOME%..") do set CRAFTER_ROOT=%%~fi
 
-call "%CRAFTER_BIN_FOLDER%\crafter-setenv.bat" %2
+call "%CRAFTER_HOME%crafter-setenv.bat" %2
 
 IF /i "%1%"=="start" goto init
 IF /i "%1%"=="-s" goto init
@@ -40,17 +41,17 @@ echo "-d debug, Impli  eds start, Start crafter deployer in debug mode"
 exit /b 0
 
 :installMongo
- mkdir "%CRAFTER_BIN_FOLDER%mongodb"
- cd "%CRAFTER_BIN_FOLDER%mongodb"
- java -jar "%CRAFTER_BIN_FOLDER%craftercms-utils.jar" download mongodbmsi
- msiexec.exe /i mongodb.msi /passive INSTALLLOCATION="%CRAFTER_BIN_FOLDER%mongodb\" /l*v "%CRAFTER_BIN_FOLDER%mongodb\mongodb.log" /norestart
- SET MONGODB_BIN_DIR= "%CRAFTER_BIN_FOLDER%mongodb\bin\mongod.exe"
+ mkdir "%CRAFTER_HOME%mongodb"
+ cd "%CRAFTER_HOME%mongodb"
+ java -jar "%CRAFTER_HOME%craftercms-utils.jar" download mongodbmsi
+ msiexec.exe /i mongodb.msi /passive INSTALLLOCATION="%CRAFTER_HOME%mongodb\" /l*v "%CRAFTER_HOME%mongodb\mongodb.log" /norestart
+ SET MONGODB_BIN_DIR= "%CRAFTER_HOME%mongodb\bin\mongod.exe"
  IF NOT EXIST "%MONGODB_BIN_DIR%" (
      echo "Mongodb bin path not found trying download the zip %MONGODB_BIN_DIR%"
-     java -jar "%CRAFTER_BIN_FOLDER%craftercms-utils.jar" download mongodb
-     java -jar  "%CRAFTER_BIN_FOLDER%craftercms-utils.jar" unzip mongodb.zip "%CRAFTER_BIN_FOLDER%mongodb\bin" true
+     java -jar "%CRAFTER_HOME%craftercms-utils.jar" download mongodb
+     java -jar  "%CRAFTER_HOME%craftercms-utils.jar" unzip mongodb.zip "%CRAFTER_HOME%mongodb\bin" true
  )
- cd "%CRAFTER_BIN_FOLDER%"
+ cd "%CRAFTER_HOME%"
 goto :init
 
 :initWithOutExit
@@ -68,7 +69,7 @@ IF EXIST "%PROFILE_WAR_PATH%" set start_mongo=true
 IF /i "%FORCE_MONGO%"=="forceMongo" set start_mongo=true
 
 IF /i "%start_mongo%"=="true" (
-  set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
+  set mongoDir=%CRAFTER_HOME%mongodb
   IF NOT EXIST "%mongoDir%" goto installMongo
   IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir "%MONGODB_DATA_DIR%"
   IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir "%MONGODB_DATA_DIR%"
@@ -76,9 +77,9 @@ IF /i "%start_mongo%"=="true" (
   start "" "%mongoDir%\bin\mongod" --dbpath="%MONGODB_DATA_DIR%" --directoryperdb --journal --logpath="%MONGODB_LOGS_DIR%\mongod.log" --port %MONGODB_PORT%
 )
 start "" "%DEPLOYER_HOME%\%DEPLOYER_STARTUP%"
-IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir "%CRAFTER_HOME%\data\indexes"
-call "%CRAFTER_BIN_FOLDER%solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_HOME%\data\indexes"
-pushd "%CRAFTER_BIN_FOLDER%"
+IF NOT EXIST "%CRAFTER_DATA_DIR%\indexes" mkdir "%CRAFTER_DATA_DIR%\indexes"
+call "%CRAFTER_HOME%solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_DATA_DIR%\indexes"
+pushd "%CRAFTER_HOME%"
 call "%CATALINA_HOME%\bin\startup.bat"
 popd
 @rem Windows keep variables live until terminal dies.
@@ -96,7 +97,7 @@ IF EXIST "%PROFILE_WAR_PATH%" set start_mongo=true
 IF /i "%FORCE_MONGO%"=="forceMongo" set start_mongo=true
 
 IF /i "%start_mongo%"=="true" (
-  set mongoDir=%CRAFTER_BIN_FOLDER%mongodb
+  set mongoDir=%CRAFTER_HOME%mongodb
   IF NOT EXIST "%mongoDir%" goto installMongo
   IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir "%MONGODB_DATA_DIR%"
   IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir "%MONGODB_DATA_DIR%"
@@ -104,8 +105,8 @@ IF /i "%start_mongo%"=="true" (
   start "" "%mongoDir%\bin\mongod" --dbpath="%MONGODB_DATA_DIR%" --directoryperdb --journal --logpath="%MONGODB_LOGS_DIR%\mongod.log" --port %MONGODB_PORT%
 )
 start "" "%DEPLOYER_HOME%\%DEPLOYER_DEBUG%"
-IF NOT EXIST "%CRAFTER_HOME%\data\indexes" mkdir "%CRAFTER_HOME%\data\indexes"
-call "%CRAFTER_BIN_FOLDER%solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_HOME%\data\indexes" -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%SOLR_DEBUG_PORT%
+IF NOT EXIST "%CRAFTER_DATA_DIR%\indexes" mkdir "%CRAFTER_DATA_DIR%\indexes"
+call "%CRAFTER_HOME%solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_DATA_DIR%\indexes" -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%SOLR_DEBUG_PORT%
 call "%CATALINA_HOME%\bin\catalina.bat" jpda start
 @rem Windows keep variables live until terminal dies.
 set start_mongo=false
@@ -114,7 +115,7 @@ goto cleanOnExit
 :backup
 SET TARGET_NAME=%2
 IF NOT DEFINED TARGET_NAME (
-  IF EXIST "%CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe" (
+  IF EXIST "%CRAFTER_HOME%dbms\bin\mysqldump.exe" (
     SET TARGET_NAME=crafter-authoring-backup
   ) ELSE (
     SET TARGET_NAME=crafter-delivery-backup
@@ -122,21 +123,21 @@ IF NOT DEFINED TARGET_NAME (
 )
 FOR /F "tokens=2-4 delims=/ " %%a IN ("%DATE%") DO (SET CDATE=%%c-%%a-%%b)
 FOR /F "tokens=1-3 delims=:. " %%a IN ("%TIME%") DO (SET CTIME=%%a-%%b-%%c)
-SET TARGET_FILE="%CRAFTER_HOME%backups\%TARGET_NAME%-%CDATE%-%CTIME%.zip"
+SET TARGET_FILE="%CRAFTER_ROOT%\backups\%TARGET_NAME%-%CDATE%-%CTIME%.zip"
 IF EXIST "%TARGET_FILE%" (
   DEL /Q "%TARGET_FILE%"
 )
-SET TEMP_FOLDER=%CRAFTER_HOME%temp
+SET TEMP_FOLDER="%CRAFTER_ROOT%\temp\backup"
 
 echo "Starting backup into %TARGET_FILE%"
 md "%TEMP_FOLDER%"
-md "%CRAFTER_HOME%backups"
+md "%CRAFTER_ROOT%\backups"
 
 REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
-	IF EXIST "%CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe" (
+	IF EXIST "%CRAFTER_HOME%dbms\bin\mysqldump.exe" (
 		echo "Adding MySQL dump"
-		start /w "MySQL Dump" "%CRAFTER_BIN_FOLDER%dbms\bin\mysqldump.exe" --databases crafter --port=33306 --protocol=tcp --user=root --result-file="%TEMP_FOLDER%\crafter.sql"
+		start /w "MySQL Dump" "%CRAFTER_HOME%dbms\bin\mysqldump.exe" --databases crafter --port=%MARIADB_PORT% --protocol=tcp --user=root --result-file="%TEMP_FOLDER%\crafter.sql"
 		echo SET GLOBAL innodb_large_prefix = TRUE ; SET GLOBAL innodb_file_format = 'BARRACUDA' ; SET GLOBAL innodb_file_format_max = 'BARRACUDA' ; SET GLOBAL innodb_file_per_table = TRUE ; > "%TEMP_FOLDER%\temp.txt"
 		type "%TEMP_FOLDER%\crafter.sql" >> "%TEMP_FOLDER%\temp.txt"
 		move /y "%TEMP_FOLDER%\temp.txt" "%TEMP_FOLDER%\crafter.sql"
@@ -145,33 +146,33 @@ IF EXIST "%MYSQL_DATA%" (
 
 REM MongoDB Dump
 IF EXIST %MONGODB_DATA_DIR% (
-  IF EXIST "%CRAFTER_BIN_FOLDER%\mongodb\bin\mongodump" (
+  IF EXIST "%CRAFTER_HOME%mongodb\bin\mongodump" (
     echo "Adding mongodb dump"
-    "%CRAFTER_BIN_FOLDER%\mongodb\bin\mongodump" --port %MONGODB_PORT% --out "%TEMP_FOLDER%\mongodb" --quiet
+    "%CRAFTER_HOME%mongodb\bin\mongodump" --port %MONGODB_PORT% --out "%TEMP_FOLDER%\mongodb" --quiet
     cd "%TEMP_FOLDER%\mongodb"
-    java -jar "%CRAFTER_BIN_FOLDER%\craftercms-utils.jar zip" . "%TEMP_FOLDER%\mongodb.zip"
-    cd "%CRAFTER_BIN_FOLDER%"
+    java -jar "%CRAFTER_HOME%craftercms-utils.jar zip" . "%TEMP_FOLDER%\mongodb.zip"
+    cd "%CRAFTER_HOME%"
     rd /Q /S "%TEMP_FOLDER%\mongodb"
   )
 )
 
 REM ZIP git repos
 echo "Adding git repos"
-cd "%CRAFTER_HOME%\data\repos"
-java -jar "%CRAFTER_BIN_FOLDER%\craftercms-utils.jar" zip . "%TEMP_FOLDER%\repos.zip"
+cd "%CRAFTER_DATA_DIR%\repos"
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" zip . "%TEMP_FOLDER%\repos.zip"
 REM ZIP solr indexes
 echo "Adding solr indexes"
 cd "%SOLR_INDEXES_DIR%"
-java -jar "%CRAFTER_BIN_FOLDER%\craftercms-utils.jar" zip . "%TEMP_FOLDER%\indexes.zip"
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" zip . "%TEMP_FOLDER%\indexes.zip"
 REM ZIP deployer data
 echo "Adding deployer data"
 cd "%DEPLOYER_DATA_DIR%"
-java -jar "%CRAFTER_BIN_FOLDER%\craftercms-utils.jar" zip . "%TEMP_FOLDER%\deployer.zip"
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" zip . "%TEMP_FOLDER%\deployer.zip"
 REM ZIP everything (without compression)
 cd "%TEMP_FOLDER%"
-java -jar "%CRAFTER_BIN_FOLDER%\craftercms-utils.jar" zip . "%TARGET_FILE%" true
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" zip . "%TARGET_FILE%" true
 
-cd "%CRAFTER_HOME%"
+cd "%CRAFTER_ROOT%"
 rd /Q /S "%TEMP_FOLDER%"
 echo "Backup completed"
 goto cleanOnExitKeepTermAlive
@@ -199,42 +200,42 @@ attempt the restore. Are you sure you want to proceed? (yes/no)
 IF /i NOT "%DO_IT%"=="yes" ( exit /b 0 )
 
 echo "Clearing all existing data"
-rd /q /s "%CRAFTER_HOME%\data"
+rd /q /s "%CRAFTER_DATA_DIR%"
 
-SET TEMP_FOLDER="%CRAFTER_HOME%temp"
+SET TEMP_FOLDER="%CRAFTER_ROOT%\temp\backup"
 echo "Starting restore from %SOURCE_FILE%"
 md "%TEMP_FOLDER%"
 
 REM UNZIP everything
-java -jar "%CRAFTER_BIN_FOLDER%craftercms-utils.jar" unzip "%SOURCE_FILE%" "%TEMP_FOLDER%"
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" unzip "%SOURCE_FILE%" "%TEMP_FOLDER%"
 
 REM MongoDB Dump
 IF NOT EXIST "%TEMP_FOLDER%\mongodb.zip" ( goto skipMongo )
 echo "Restoring MongoDB"
 IF NOT EXIST "%MONGODB_DATA_DIR%" mkdir "%MONGODB_DATA_DIR%"
 IF NOT EXIST "%MONGODB_LOGS_DIR%" mkdir "%MONGODB_LOGS_DIR%"
-start "MongoDB" "%CRAFTER_BIN_FOLDER%mongodb\bin\mongod" --dbpath="%MONGODB_DATA_DIR%" --directoryperdb --journal --logpath="%MONGODB_LOGS_DIR%\mongod.log" --port %MONGODB_PORT%
-java -jar "%CRAFTER_BIN_FOLDER%craftercms-utils.jar" unzip "%TEMP_FOLDER%\mongodb.zip" "%TEMP_FOLDER%\mongodb"
-start "MongoDB Restore" /W "%CRAFTER_BIN_FOLDER%mongodb\bin\mongorestore" --port %MONGODB_PORT% "%TEMP_FOLDER%\mongodb"
+start "MongoDB" "%CRAFTER_HOME%mongodb\bin\mongod" --dbpath="%MONGODB_DATA_DIR%" --directoryperdb --journal --logpath="%MONGODB_LOGS_DIR%\mongod.log" --port %MONGODB_PORT%
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" unzip "%TEMP_FOLDER%\mongodb.zip" "%TEMP_FOLDER%\mongodb"
+start "MongoDB Restore" /W "%CRAFTER_HOME%mongodb\bin\mongorestore" --port %MONGODB_PORT% "%TEMP_FOLDER%\mongodb"
 taskkill /IM mongod.exe
 :skipMongo
 
 REM UNZIP git repos
 IF NOT EXIST "%TEMP_FOLDER%\repos.zip" ( goto skipRepos )
 echo "Restoring git repos"
-java -jar "%CRAFTER_BIN_FOLDER%craftercms-utils.jar" unzip "%TEMP_FOLDER%\repos.zip" "%CRAFTER_HOME%data/repos"
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" unzip "%TEMP_FOLDER%\repos.zip" "%CRAFTER_DATA_DIR%\repos"
 :skipRepos
 
 REM UNZIP solr indexes
 IF NOT EXIST "%TEMP_FOLDER%\indexes.zip" ( goto skipIndexes )
 echo "Restoring solr indexes"
-java -jar "%CRAFTER_BIN_FOLDER%craftercms-utils.jar" unzip "%TEMP_FOLDER%\indexes.zip" "%SOLR_INDEXES_DIR%"
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" unzip "%TEMP_FOLDER%\indexes.zip" "%SOLR_INDEXES_DIR%"
 :skipIndexes
 
 REM UNZIP deployer data
 IF NOT EXIST "%TEMP_FOLDER%\deployer.zip" ( goto skipDeployer )
 echo "Restoring deployer data"
-java -jar "%CRAFTER_BIN_FOLDER%craftercms-utils.jar" unzip "%TEMP_FOLDER%\deployer.zip" "%DEPLOYER_DATA_DIR%"
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" unzip "%TEMP_FOLDER%\deployer.zip" "%DEPLOYER_DATA_DIR%"
 :skipDeployer
 
 REM If it is an authoring env then sync the repos
@@ -243,11 +244,11 @@ echo "Restoring Authoring Data"
 md "%MYSQL_DATA%"
 REM Start DB
 echo "Starting DB"
-start java -jar -DmariaDB4j.port=%MARIADB_PORT% -DmariaDB4j.baseDir="%CRAFTER_HOME%\dbms" -DmariaDB4j.dataDir="%MYSQL_DATA%" "%CRAFTER_BIN_FOLDER%\mariaDB4j-app.jar"
+start java -jar -DmariaDB4j.port=%MARIADB_PORT% -DmariaDB4j.baseDir="%CRAFTER_ROOT%\dbms" -DmariaDB4j.dataDir="%MYSQL_DATA%" "%CRAFTER_HOME%mariaDB4j-app.jar"
 timeout /nobreak /t 30
 REM Import
 echo "Restoring DB"
-start /B /W "" "%CRAFTER_BIN_FOLDER%dbms\bin\mysql.exe" --user=root --port=33306 --protocol=TCP -e "source %TEMP_FOLDER%\crafter.sql"
+start /B /W "" "%CRAFTER_HOME%dbms\bin\mysql.exe" --user=root --port=%MARIADB_PORT% --protocol=TCP -e "source %TEMP_FOLDER%\crafter.sql"
 timeout /nobreak /t 5
 REM Stop DB
 echo "Stopping DB"
@@ -262,7 +263,7 @@ goto cleanOnExitKeepTermAlive
 
 
 :skill
-call "%CRAFTER_BIN_FOLDER%solr\bin\solr" stop -p %SOLR_PORT%
+call "%CRAFTER_HOME%solr\bin\solr" stop -p %SOLR_PORT%
 @rem Windows does not support Or in the If soo...
 
 netstat -o -n -a | findstr  "0.0.0.0:%MONGODB_PORT%"
@@ -288,9 +289,9 @@ goto cleanOnExit
 
 
 :cleanOnExit
-cd "%CRAFTER_BIN_FOLDER%"
+cd "%CRAFTER_HOME%"
 exit
 
 :cleanOnExitKeepTermAlive
-cd "%CRAFTER_BIN_FOLDER%"
+cd "%CRAFTER_HOME%"
 exit /b

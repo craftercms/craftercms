@@ -1,8 +1,8 @@
 #!/bin/bash
 
 export RESOURCES_DIR=${RESOURCES_DIR:=$MIGRATION_TOOL_HOME/resources}
-export WORK_DIR=${WORK_DIR:=$CRAFTER_ROOT/data/migration}
-export LOGS_DIR=${LOGS_DIR:=$CRAFTER_ROOT/logs/migration}
+export WORK_DIR=${WORK_DIR:=$CRAFTER_DATA_DIR/migration}
+export LOGS_DIR=${LOGS_DIR:=$CRAFTER_LOGS_DIR/migration}
 export CURRENT_DIR=$(pwd)
 export COMMIT_EVERY=1000
 export STUDIO_PORT=${STUDIO_PORT:=@TOMCAT_HTTP_PORT@}

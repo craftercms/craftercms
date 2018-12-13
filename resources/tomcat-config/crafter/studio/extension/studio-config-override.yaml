@@ -1,8 +1,8 @@
 ##################################################
 ##              Content Repository              ##
 ##################################################
-# Absolute or relative path to repository base (all actual repositories will be under this)
-studio.repo.basePath: ../data/repos
+# Absolute path to repository base (all actual repositories will be under this)
+studio.repo.basePath: ${sys:crafter.data.dir}/repos
 # Sandbox git repository branch for every site
 # studio.repo.siteSandboxBranch: master
 # If not using environment-config.xml, environments are configured here
@@ -24,7 +24,7 @@ studio.preview.deleteTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/de
 # URL to the preview Crafter Engine
 studio.preview.engineUrl: http://localhost:@TOMCAT_HTTP_PORT@
 # URL to the preview repository (aka Sandbox) where authors save work-in-progress
-studio.preview.repoUrl: ../data/repos/sites/{siteName}/sandbox
+studio.preview.repoUrl: ${sys:crafter.data.dir}/repos/sites/{siteName}/sandbox
 
 ############################################################
 ##                   Preview Search                       ##
@@ -51,9 +51,9 @@ studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&pas
 # Port number for the embedded database (note this must match what's in the connection URLs in this config file)
 studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
-studio.db.dataPath: ../data/db
+studio.db.dataPath: ${sys:crafter.data.dir}/db
 # Socket path for the embedded database
-studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
+studio.db.socket: ${sys:java.io.tmpdir}/MariaDB4j.@MARIADB_PORT@.sock
 
 ##################################################
 ##                   Security                   ##
@@ -230,6 +230,10 @@ studio.mail.port: @SMTP_PORT@
 # Value for the Access-Control-Max-Age header
 # studio.cors.maxage: -1
 
+<<<<<<< HEAD
 # Active environment for multi environment configuration
 #   e.g. qa, prod, dev
+=======
+# The active environment for multi environment configuration, e.g. qa, prod, dev
+>>>>>>> 36785dae1d4d95de336676730f9f4eb5ddaff85a
 # studio.configuration.environment.active: ENV
