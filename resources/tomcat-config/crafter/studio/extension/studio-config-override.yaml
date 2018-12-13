@@ -1,7 +1,7 @@
 ##################################################
 ##              Content Repository              ##
 ##################################################
-# Absolute or relative path to repository base (all actual repositories will be under this)
+# Absolute path to repository base (all actual repositories will be under this)
 studio.repo.basePath: ${sys:crafter.data.dir}/repos
 # Sandbox git repository branch for every site
 # studio.repo.siteSandboxBranch: master
@@ -53,7 +53,7 @@ studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
 studio.db.dataPath: ${sys:crafter.data.dir}/db
 # Socket path for the embedded database
-studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
+studio.db.socket: ${sys:java.io.tmpdir}/MariaDB4j.@MARIADB_PORT@.sock
 
 ##################################################
 ##                   Security                   ##
