@@ -284,9 +284,6 @@ envs.each { env ->
                 }
             }
 
-            file("${path}/data/indexes").mkdirs()
-            file("${path}/data/deployer").mkdirs()
-
             /** Remove Non util stuff **/
             def webapps = file("${path}/bin/apache-tomcat/webapps/")
             if (!webapps.exists()) {

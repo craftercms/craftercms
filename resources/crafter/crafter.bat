@@ -77,8 +77,8 @@ IF /i "%start_mongo%"=="true" (
   start "" "%mongoDir%\bin\mongod" --dbpath="%MONGODB_DATA_DIR%" --directoryperdb --journal --logpath="%MONGODB_LOGS_DIR%\mongod.log" --port %MONGODB_PORT%
 )
 start "" "%DEPLOYER_HOME%\%DEPLOYER_STARTUP%"
-IF NOT EXIST "%CRAFTER_ROOT%\data\indexes" mkdir "%CRAFTER_ROOT%\data\indexes"
-call "%CRAFTER_HOME%solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_ROOT%\data\indexes"
+IF NOT EXIST "%CRAFTER_DATA_DIR%\indexes" mkdir "%CRAFTER_DATA_DIR%\indexes"
+call "%CRAFTER_HOME%solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_DATA_DIR%\indexes"
 pushd "%CRAFTER_HOME%"
 call "%CATALINA_HOME%\bin\startup.bat"
 popd
@@ -105,8 +105,8 @@ IF /i "%start_mongo%"=="true" (
   start "" "%mongoDir%\bin\mongod" --dbpath="%MONGODB_DATA_DIR%" --directoryperdb --journal --logpath="%MONGODB_LOGS_DIR%\mongod.log" --port %MONGODB_PORT%
 )
 start "" "%DEPLOYER_HOME%\%DEPLOYER_DEBUG%"
-IF NOT EXIST "%CRAFTER_ROOT%\data\indexes" mkdir "%CRAFTER_ROOT%\data\indexes"
-call "%CRAFTER_HOME%solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_ROOT%\data\indexes" -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%SOLR_DEBUG_PORT%
+IF NOT EXIST "%CRAFTER_DATA_DIR%\indexes" mkdir "%CRAFTER_DATA_DIR%\indexes"
+call "%CRAFTER_HOME%solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_DATA_DIR%\indexes" -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%SOLR_DEBUG_PORT%
 call "%CATALINA_HOME%\bin\catalina.bat" jpda start
 @rem Windows keep variables live until terminal dies.
 set start_mongo=false
@@ -158,7 +158,7 @@ IF EXIST %MONGODB_DATA_DIR% (
 
 REM ZIP git repos
 echo "Adding git repos"
-cd "%CRAFTER_ROOT%\data\repos"
+cd "%CRAFTER_DATA_DIR%\repos"
 java -jar "%CRAFTER_HOME%craftercms-utils.jar" zip . "%TEMP_FOLDER%\repos.zip"
 REM ZIP solr indexes
 echo "Adding solr indexes"
@@ -200,7 +200,7 @@ attempt the restore. Are you sure you want to proceed? (yes/no)
 IF /i NOT "%DO_IT%"=="yes" ( exit /b 0 )
 
 echo "Clearing all existing data"
-rd /q /s "%CRAFTER_ROOT%\data"
+rd /q /s "%CRAFTER_DATA_DIR%"
 
 SET TEMP_FOLDER="%CRAFTER_ROOT%\temp\backup"
 echo "Starting restore from %SOURCE_FILE%"
@@ -223,7 +223,7 @@ taskkill /IM mongod.exe
 REM UNZIP git repos
 IF NOT EXIST "%TEMP_FOLDER%\repos.zip" ( goto skipRepos )
 echo "Restoring git repos"
-java -jar "%CRAFTER_HOME%craftercms-utils.jar" unzip "%TEMP_FOLDER%\repos.zip" "%CRAFTER_ROOT%\data\repos"
+java -jar "%CRAFTER_HOME%craftercms-utils.jar" unzip "%TEMP_FOLDER%\repos.zip" "%CRAFTER_DATA_DIR%\repos"
 :skipRepos
 
 REM UNZIP solr indexes
