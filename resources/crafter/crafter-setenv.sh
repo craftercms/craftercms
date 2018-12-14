@@ -10,7 +10,7 @@ export CATALINA_PID=$CATALINA_HOME/tomcat.pid
 export CATALINA_LOGS_DIR="$CRAFTER_LOGS_DIR/tomcat"
 export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
 export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
-export CATALINA_OPTS="-Dcatalina.logs=$CATALINA_LOGS_DIR -server -Xss1024K -Xms1G -Xmx4G -Dapplication.logs=$CRAFTER_APPLICATION_LOGS -Dcrafter.data.dir=$CRAFTER_DATA_DIR"
+export CATALINA_OPTS="-Dcrafter.root=$CRAFTER_ROOT -Dcrafter.home=$CRAFTER_HOME -Dcrafter.data.dir=$CRAFTER_DATA_DIR -Dcrafter.logs.dir=$CRAFTER_LOGS_DIR -Dcatalina.logs=$CATALINA_LOGS_DIR -server -Xss1024K -Xms1G -Xmx4G -Dapplication.logs=$CRAFTER_APPLICATION_LOGS"
 export TOMCAT_HTTP_PORT=@TOMCAT_HTTP_PORT@
 
 # Profile variables
@@ -40,8 +40,13 @@ export MONGODB_HOME="$CRAFTER_HOME/mongodb"
 export MONGODB_PID="$CRAFTER_DATA_DIR/mongodb/mongod.lock"
 export MONGODB_DATA_DIR="$CRAFTER_DATA_DIR/mongodb"
 export MONGODB_LOGS_DIR="$CRAFTER_LOGS_DIR/mongodb"
+
+# MariaDB variables
 export MYSQL_DATA="$CRAFTER_DATA_DIR/db"
 export MARIADB_PORT=@MARIADB_PORT@
+
+# Git variables
+export GIT_CONFIG_NOSYSTEM=true
 
 case "$(uname -s)" in
    Darwin)
