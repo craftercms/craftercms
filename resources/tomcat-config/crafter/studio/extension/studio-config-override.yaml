@@ -71,30 +71,6 @@ studio.db.socket: ${sys:java.io.tmpdir}/MariaDB4j.@MARIADB_PORT@.sock
 # studio.security.cipher.salt: TDEsDF8vx3gV4c7G
 # Key for encrypting
 # studio.security.cipher.key: AoCcBdnsTa9R3DdG
-
-# LDAP Server url
-# studio.security.ldap.serverUrl: ldap://localhost:389
-# LDAP bind DN (user)
-# studio.security.ldap.bindDN: cn=Manager,dc=my-domain,dc=com
-# LDAP bind password
-# studio.security.ldap.bindPassword: secret
-# LDAP base context (directory root)
-# studio.security.ldap.baseContext: dc=my-domain,dc=com
-
-# Authentication via headers enabled
-# studio.authentication.headers.enabled: false
-# Authentication header for username
-# studio.authentication.headers.username: username
-# Authentication header for first name
-# studio.authentication.headers.firstName: firstname
-# Authentication header for last name
-# studio.authentication.headers.lastName: lastname
-# Authentication header for email
-# studio.authentication.headers.email: email
-# Authentication header for groups: comma separated list of groups
-#   Example:
-#   site_author,site_xyz_developer
-# studio.authentication.headers.groups: groups
 # Enable/disable logout for headers authenticated users (SSO)
 # studio.authentication.headers.logout.enabled: false
 # If logout is enabled for headers authenticated users (SSO), set the endpoint of the SP or IdP logout, which should
@@ -237,6 +213,5 @@ studio.mail.port: @SMTP_PORT@
 # studio.cors.credentials: true
 # Value for the Access-Control-Max-Age header
 # studio.cors.maxage: -1
-
 # The active environment for multi environment configuration, e.g. qa, prod, dev
 # studio.configuration.environment.active: ENV
