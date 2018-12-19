@@ -174,22 +174,19 @@ studio.mail.port: @SMTP_PORT@
 # Cluster member registration, this registers *this* server into the pool
 # Cluster node registration data, remember to uncomment the next line
 # studio.clustering.node.registration:
-#  cluster member local address (reachable to other cluster members)
+#  this server's local address (reachable to other cluster members)
 #  localAddress: 10.1.1.150
-#  authentication type to access local repository
+#  authentication type to access this server's local repository
 #  possible values
 #   - none (no authentication needed)
 #   - basic (username/password authentication)
-#   - token (authentication with security token)
 #   - key (ssh authentication)
 #  authenticationType: none
-#  username to access local repository
+#  username to access this server's local repository
 #  username: user
-#  password to access local repository
+#  password to access this server's local repository
 #  password: SuperSecurePassword
-#  security token to access local repository
-#  token: token
-#  private key to access local repository (multiline string)
+#  private key to access this server's local repository (multiline string)
 #  privateKey: |
 #    -----BEGIN PRIVATE KEY-----
 #    privateKey
