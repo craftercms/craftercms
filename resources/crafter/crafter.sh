@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 if [ "$(whoami)" == "root" ]; then
-	echo -e "\033[38;5;196m"
-	echo -e "Crafter CMS cowardly refuses to run as root."
-    echo -e "Running as root is dangerous and is not supported."
-    echo -e "\033[0m"
-	exit 1
+  echo -e "\033[38;5;196m"
+  echo -e "Crafter CMS cowardly refuses to run as root."
+  echo -e "Running as root is dangerous and is not supported."
+  echo -e "\033[0m"
+  exit 1
 fi
 
 OSARCH=$(getconf LONG_BIT)
@@ -52,14 +52,13 @@ function help() {
   exit 2;
 }
 
-
 function version(){
- echo "Copyright (C) 2007-2018 Crafter Software Corporation. All rights reserved."
- echo "Version @VERSION@-@GIT_BUILD_ID@"
+  echo "Copyright (C) 2007-2018 Crafter Software Corporation. All rights reserved."
+  echo "Version @VERSION@-@GIT_BUILD_ID@"
 }
 
 function manPages(){
-    man "$CRAFTER_HOME/crafter.sh.1"
+  man "$CRAFTER_HOME/crafter.sh.1"
 }
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
@@ -233,82 +232,96 @@ function stopSolr() {
 function startTomcat() {
   cd $CRAFTER_HOME
   if [[ ! -d "$CRAFTER_HOME/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
+    echo "------------------------------------------------------------"
+    echo "Starting Tomcat"
+    echo "------------------------------------------------------------"
+    if [ ! -d $CATALINA_LOGS_DIR ]; then
+      mkdir -p $CATALINA_LOGS_DIR;
+    fi
+    if [ ! -d $CATALINA_TMPDIR ]; then
+      mkdir -p $CATALINA_TMPDIR;
+    fi
+    # Step 1, does the CATALINA_PID exist and is valid
+    if [ ! -s "$CATALINA_PID" ]; then
+      ## Before run check if the port is available.
+      possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
-      echo "------------------------------------------------------------"
-      echo "Starting Tomcat"
-      echo "------------------------------------------------------------"
-      if [ ! -d $CATALINA_LOGS_DIR ]; then
-        mkdir -p $CATALINA_LOGS_DIR;
-      fi
-      # Step 1, does the CATALINA_PID exist and is valid
-      if [ ! -s "$CATALINA_PID" ]; then
-        ## Before run check if the port is available.
-        possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
-
-        if  [ -z "$possiblePID" ];  then
-          $CRAFTER_HOME/apache-tomcat/bin/catalina.sh start -security
-        else
-          echo $possiblePID > $CATALINA_PID
-          echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
-          echo "Hijacking PID and saving into $CATALINA_PID"
-          exit
-        fi
+      if  [ -z "$possiblePID" ];  then
+        $CRAFTER_HOME/apache-tomcat/bin/startup.sh
       else
-        # Is it really up?
-        if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
-          exit 4
-        fi
-        if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
-        then
-          echo "Tomcat Pid file is not ok, forcing startup"
-          rm "$CATALINA_PID"
-          startTomcat
-        fi
-        echo "Tomcat already started"
+        echo $possiblePID > $CATALINA_PID
+        echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
+        echo "Hijacking PID and saving into $CATALINA_PID"
+        exit
       fi
-      else
-       echo ""
-       echo "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(pidOf "$MARIADB_PORT")."
-       echo "This might be because of a prior unsuccessful or incomplete shut down."
-       echo "Please terminate that process before attempting to start Crafter CMS."
-       read -t 10 #Time out for the read, (if gradle start)
-       exit -7
+    else
+      # Is it really up?
+      if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
+        exit 4
+      fi
+      if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
+      then
+        echo "Tomcat Pid file is not ok, forcing startup"
+        rm "$CATALINA_PID"
+        startTomcat
+      fi
+      echo "Tomcat already started"
+    fi
+  else
+    echo ""
+    echo "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(pidOf "$MARIADB_PORT")."
+    echo "This might be because of a prior unsuccessful or incomplete shut down."
+    echo "Please terminate that process before attempting to start Crafter CMS."
+    read -t 10 #Time out for the read, (if gradle start)
+    exit -7
   fi
 }
 
 function debugTomcat() {
   cd $CRAFTER_HOME
-  echo "------------------------------------------------------------"
-  echo "Starting Tomcat"
-  echo "------------------------------------------------------------"
-  if [ ! -d $CATALINA_LOGS_DIR ]; then
-    mkdir -p $CATALINA_LOGS_DIR;
-  fi
-  # Step 1, does the CATALINA_PID exist and is valid
-  if [ ! -s "$CATALINA_PID" ]; then
-    # Before run check if the port is available.
-    possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
+  if [[ ! -d "$CRAFTER_HOME/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
+    echo "------------------------------------------------------------"
+    echo "Starting Tomcat"
+    echo "------------------------------------------------------------"
+    if [ ! -d $CATALINA_LOGS_DIR ]; then
+      mkdir -p $CATALINA_LOGS_DIR;
+    fi
+    if [ ! -d $CATALINA_TMPDIR ]; then
+      mkdir -p $CATALINA_TMPDIR;
+    fi
+    # Step 1, does the CATALINA_PID exist and is valid
+    if [ ! -s "$CATALINA_PID" ]; then
+      ## Before run check if the port is available.
+      possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
-    if  [ -z "$possiblePID" ];  then
-      $CRAFTER_HOME/apache-tomcat/bin/catalina.sh jpda start -security
+      if  [ -z "$possiblePID" ];  then
+        $CRAFTER_HOME/apache-tomcat/bin/catalina.sh jpda start
+      else
+        echo $possiblePID > $CATALINA_PID
+        echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
+        echo "Hijacking PID and saving into $CATALINA_PID"
+        exit
+      fi
     else
-      echo $possiblePID > $CATALINA_PID
-      echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
-      echo "Hijacking PID and saving into $CATALINA_PID"
-      exit
+      # Is it really up?
+      if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
+        exit 4
+      fi
+      if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
+      then
+        echo "Tomcat Pid file is not ok, forcing startup"
+        rm "$CATALINA_PID"
+        startTomcat
+      fi
+      echo "Tomcat already started"
     fi
   else
-    # Is it really up?
-    if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
-      exit 4
-    fi
-    if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
-    then
-      echo "Tomcat Pid file is not ok, forcing startup"
-      rm "$CATALINA_PID"
-      debugTomcat
-    fi
-    echo "Tomcat already started"
+    echo ""
+    echo "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(pidOf "$MARIADB_PORT")."
+    echo "This might be because of a prior unsuccessful or incomplete shut down."
+    echo "Please terminate that process before attempting to start Crafter CMS."
+    read -t 10 #Time out for the read, (if gradle start)
+    exit -7
   fi
 }
 
@@ -392,11 +405,11 @@ function startMongoDB(){
 
 
 function isMongoNeeded() {
-   if [ -z "$1" ]; then
+  if [ -z "$1" ]; then
     test -s $PROFILE_WAR_PATH || test -d $PROFILE_DEPLOY_WAR_PATH
-   else
-      test "$1" = "forceMongo"
-   fi
+  else
+    test "$1" = "forceMongo"
+  fi
 }
 
 function stopMongoDB(){
@@ -432,7 +445,6 @@ function stopMongoDB(){
   fi
 }
 
-
 function solrStatus(){
   echo "------------------------------------------------------------"
   echo "SOLR status                                                 "
@@ -467,9 +479,9 @@ function deployerStatus(){
     echo "$deployerStatusOut"  | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
     deployerVersion=$(curl --silent  -f  "http://localhost:$DEPLOYER_PORT/api/1/monitor/version")
     if [ $? -eq 0 ]; then
-        echo -e  "Version:\t"
-        printf $(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')
-        echo "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
+      echo -e  "Version:\t"
+      printf $(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')
+      echo "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
     fi
   else
     echo -e "\033[38;5;196m"
@@ -493,9 +505,9 @@ function studioStatus(){
     echo "$studioStatusOut" | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
     deployerVersion=$(curl --silent  -f  "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/version.json")
     if [ $? -eq 0 ]; then
-        echo -e  "Version:\t"
-        printf "$(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')"
-        echo  "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
+      echo -e  "Version:\t"
+      printf "$(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')"
+      echo  "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
     fi
   else
     echo -e "\033[38;5;196m"
@@ -520,18 +532,18 @@ function mongoDbStatus(){
   echo "------------------------------------------------------------"
   echo "MongoDB status                                              "
   echo "------------------------------------------------------------"
- if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
-      if [ -e "$MONGODB_PID" ]; then
-        echo -e "MongoDB PID"
-        echo $(cat $MONGODB_PID)
-      else
-        echo -e "\033[38;5;196m"
-        echo " MongoDB is not running"
-        echo -e "\033[0m"
-      fi
- elif [ ! -d "$MONGODB_HOME" ]; then
+  if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
+    if [ -e "$MONGODB_PID" ]; then
+      echo -e "MongoDB PID"
+      echo $(cat $MONGODB_PID)
+    else
+      echo -e "\033[38;5;196m"
+      echo " MongoDB is not running"
+      echo -e "\033[0m"
+    fi
+  elif [ ! -d "$MONGODB_HOME" ]; then
     echo "MongoDB is not installed."
- else
+  else
     echo "MongoDB is not running"
   fi
 }
@@ -539,9 +551,9 @@ function mongoDbStatus(){
 function start() {
   startDeployer
   startSolr
- if isMongoNeeded $1; then
+  if isMongoNeeded $1; then
     startMongoDB
- fi
+  fi
   startTomcat
   printTailInfo
 }
@@ -559,7 +571,7 @@ function debug() {
 function stop() {
   stopTomcat
   if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
-     stopMongoDB
+    stopMongoDB
   fi
   stopSolr
   stopDeployer
@@ -652,9 +664,9 @@ function doRestore() {
   export TEMP_FOLDER="$CRAFTER_ROOT/temp/backup"
 
   read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the \
-existing sites and associated database and replace everything with the restored data. If you \
-care about the existing state of the system then stop this process, backup the system, and then \
-attempt the restore. Are you sure you want to proceed? (yes/no) "
+  existing sites and associated database and replace everything with the restored data. If you \
+  care about the existing state of the system then stop this process, backup the system, and then \
+  attempt the restore. Are you sure you want to proceed? (yes/no) "
   if [ "$REPLY" != "yes" ]; then
     echo "Canceling restore"
     exit 0
@@ -786,31 +798,31 @@ case $1 in
   status
   ;;
   backup)
-    doBackup $2
+  doBackup $2
   ;;
   restore)
-    doRestore $2
+  doRestore $2
   ;;
   status_tomcat)
-    studioStatus
+  studioStatus
   ;;
   status_deployer)
-    deployerStatus
+  deployerStatus
   ;;
   status_solr)
-    solrStatus
+  solrStatus
   ;;
   status_mongodb)
-    mongoDbStatus
+  mongoDbStatus
   ;;
   status_mariadb)
-    mariadbStatus
+  mariadbStatus
   ;;
   --v | --version)
-    version
+  version
   ;;
   man)
-    manPages
+  manPages
   ;;
   *)
   help

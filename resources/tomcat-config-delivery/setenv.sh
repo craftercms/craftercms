@@ -6,5 +6,5 @@ if [ "$(whoami)" == "root" ]; then
     echo -e "\033[0m"
 	exit 1
 fi
-JAVA_OPTS="$JAVA_OPTS -server -Xss1024K -Xms1G -Xmx3G -Djava.net.preferIPv4Stack=true"
+CLASSPATH="$CATALINA_HOME/bin/pro-grade.jar"
 UMASK=$(umask)
