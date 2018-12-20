@@ -10,4 +10,4 @@ REM Executes the upgrade from the bundle
 call %UNZIPPED_BUNDLE%\bin\upgrade\upgrade-target.bat {{full_upgrade}} %TARGET_INST_PATH%
 
 echo.
-echo If the upgrade was completed successfully, please delete the upgrade temp directory (rmdir /Q /S %SCRIPT_DIR%)
+echo If the upgrade was completed successfully, please delete the upgrade temp\upgrade directory (rmdir /Q /S %SCRIPT_DIR%)

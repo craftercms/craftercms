@@ -76,12 +76,18 @@ IF /i "%start_mongo%"=="true" (
   IF NOT EXIST "%MONGODB_LOGS_DIR%" mkdir "%MONGODB_LOGS_DIR%"
   start "" "%mongoDir%\bin\mongod" --dbpath="%MONGODB_DATA_DIR%" --directoryperdb --journal --logpath="%MONGODB_LOGS_DIR%\mongod.log" --port %MONGODB_PORT%
 )
+
+IF NOT EXIST "%DEPLOYER_LOGS_DIR%" mkdir "%DEPLOYER_LOGS_DIR%"
 start "" "%DEPLOYER_HOME%\%DEPLOYER_STARTUP%"
-IF NOT EXIST "%CRAFTER_DATA_DIR%\indexes" mkdir "%CRAFTER_DATA_DIR%\indexes"
+
+IF NOT EXIST "%SOLR_INDEXES_DIR%" mkdir "%SOLR_INDEXES_DIR%"
+IF NOT EXIST "%SOLR_LOGS_DIR%" mkdir "%SOLR_LOGS_DIR%"
 call "%CRAFTER_HOME%\solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_DATA_DIR%\indexes"
-pushd "%CRAFTER_HOME%"
+
+IF NOT EXIST "%CATALINA_LOGS_DIR%" mkdir "%CATALINA_LOGS_DIR%"
+IF NOT EXIST "%CATALINA_TMPDIR%" mkdir "%CATALINA_TMPDIR%"
 call "%CATALINA_HOME%\bin\startup.bat"
-popd
+
 @rem Windows keep variables live until terminal dies.
 set start_mongo=false
 goto :eof
@@ -104,10 +110,18 @@ IF /i "%start_mongo%"=="true" (
   IF NOT EXIST "%MONGODB_LOGS_DIR%" mkdir "%MONGODB_LOGS_DIR%"
   start "" "%mongoDir%\bin\mongod" --dbpath="%MONGODB_DATA_DIR%" --directoryperdb --journal --logpath="%MONGODB_LOGS_DIR%\mongod.log" --port %MONGODB_PORT%
 )
+
+IF NOT EXIST "%DEPLOYER_LOGS_DIR%" mkdir "%DEPLOYER_LOGS_DIR%"
 start "" "%DEPLOYER_HOME%\%DEPLOYER_DEBUG%"
-IF NOT EXIST "%CRAFTER_DATA_DIR%\indexes" mkdir "%CRAFTER_DATA_DIR%\indexes"
+
+IF NOT EXIST "%SOLR_INDEXES_DIR%" mkdir "%SOLR_INDEXES_DIR%"
+IF NOT EXIST "%SOLR_LOGS_DIR%" mkdir "%SOLR_LOGS_DIR%"
 call "%CRAFTER_HOME%\solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_DATA_DIR%\indexes" -a "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=%SOLR_DEBUG_PORT%
+
+IF NOT EXIST "%CATALINA_LOGS_DIR%" mkdir "%CATALINA_LOGS_DIR%"
+IF NOT EXIST "%CATALINA_TMPDIR%" mkdir "%CATALINA_TMPDIR%"
 call "%CATALINA_HOME%\bin\catalina.bat" jpda start
+
 @rem Windows keep variables live until terminal dies.
 set start_mongo=false
 goto cleanOnExit
@@ -135,13 +149,13 @@ md "%CRAFTER_ROOT%\backups"
 
 REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
-	IF EXIST "%CRAFTER_HOME%\dbms\bin\mysqldump.exe" (
-		echo "Adding MySQL dump"
-		start /w "MySQL Dump" "%CRAFTER_HOME%\dbms\bin\mysqldump.exe" --databases crafter --port=%MARIADB_PORT% --protocol=tcp --user=root --result-file="%TEMP_FOLDER%\crafter.sql"
-		echo SET GLOBAL innodb_large_prefix = TRUE ; SET GLOBAL innodb_file_format = 'BARRACUDA' ; SET GLOBAL innodb_file_format_max = 'BARRACUDA' ; SET GLOBAL innodb_file_per_table = TRUE ; > "%TEMP_FOLDER%\temp.txt"
-		type "%TEMP_FOLDER%\crafter.sql" >> "%TEMP_FOLDER%\temp.txt"
-		move /y "%TEMP_FOLDER%\temp.txt" "%TEMP_FOLDER%\crafter.sql"
-	)
+  IF EXIST "%CRAFTER_HOME%\dbms\bin\mysqldump.exe" (
+    echo "Adding MySQL dump"
+    start /w "MySQL Dump" "%CRAFTER_HOME%\dbms\bin\mysqldump.exe" --databases crafter --port=%MARIADB_PORT% --protocol=tcp --user=root --result-file="%TEMP_FOLDER%\crafter.sql"
+    echo SET GLOBAL innodb_large_prefix = TRUE ; SET GLOBAL innodb_file_format = 'BARRACUDA' ; SET GLOBAL innodb_file_format_max = 'BARRACUDA' ; SET GLOBAL innodb_file_per_table = TRUE ; > "%TEMP_FOLDER%\temp.txt"
+    type "%TEMP_FOLDER%\crafter.sql" >> "%TEMP_FOLDER%\temp.txt"
+    move /y "%TEMP_FOLDER%\temp.txt" "%TEMP_FOLDER%\crafter.sql"
+  )
 )
 
 REM MongoDB Dump
