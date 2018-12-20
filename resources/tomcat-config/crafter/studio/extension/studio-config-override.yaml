@@ -36,18 +36,14 @@ studio.preview.search.deleteUrl: http://localhost:@TOMCAT_HTTP_PORT@/crafter-sea
 ##################################################
 ##                   Database                   ##
 ##################################################
-
+# Crafter Studio uses an embedded MariaDB while running unclustered
 # Format:
 # jdbc:DATABASE_PLATFORM;databaseName=DATABASE_NAME;create=true;user=DATABASE_USERNAME;password=DATABASE_USER_PASSWORD
 # Note that a relative path is not suitable for a production deployment
 studio.db.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@/crafter?user=crafter&password=crafter
-# External MariaDB database connection string
-# studio.db.url: jdbc:mariadb://192.168.1.1:3306/crafter?user=crafter&password=crafter
 
-# Connection string used to initialize database
+# Connection string used to initialize database. This creates the `crafter` schema, user or upgrades the database
 studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&password=
-# External MariaDB database connection string used to initialize database
-# studio.db.initializer.url: jdbc:mariadb://192.168.1.1:3306/crafter?user=root&password=
 # Port number for the embedded database (note this must match what's in the connection URLs in this config file)
 studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
@@ -75,30 +71,6 @@ studio.db.socket: ${sys:java.io.tmpdir}/MariaDB4j.@MARIADB_PORT@.sock
 # studio.security.cipher.salt: TDEsDF8vx3gV4c7G
 # Key for encrypting
 # studio.security.cipher.key: AoCcBdnsTa9R3DdG
-
-# LDAP Server url
-# studio.security.ldap.serverUrl: ldap://localhost:389
-# LDAP bind DN (user)
-# studio.security.ldap.bindDN: cn=Manager,dc=my-domain,dc=com
-# LDAP bind password
-# studio.security.ldap.bindPassword: secret
-# LDAP base context (directory root)
-# studio.security.ldap.baseContext: dc=my-domain,dc=com
-
-# Authentication via headers enabled
-# studio.authentication.headers.enabled: false
-# Authentication header for username
-# studio.authentication.headers.username: username
-# Authentication header for first name
-# studio.authentication.headers.firstName: firstname
-# Authentication header for last name
-# studio.authentication.headers.lastName: lastname
-# Authentication header for email
-# studio.authentication.headers.email: email
-# Authentication header for groups: comma separated list of groups
-#   Example:
-#   site_author,site_xyz_developer
-# studio.authentication.headers.groups: groups
 # Enable/disable logout for headers authenticated users (SSO)
 # studio.authentication.headers.logout.enabled: false
 # If logout is enabled for headers authenticated users (SSO), set the endpoint of the SP or IdP logout, which should
@@ -184,28 +156,37 @@ studio.mail.port: @SMTP_PORT@
 ##################################################
 ##                 Clustering                   ##
 ##################################################
-# Sandbox Sync Job interval
-# studio.clustering.sandboxSyncJob.interval: 5000
-# Published Sync Job interval
+# Clustering requires an external (not embedded) database, configure it below
+# External MariaDB database connection string
+# studio.db.url: jdbc:mariadb://192.168.1.1:3306/crafter?user=crafter&password=crafter
+# External MariaDB database connection string used to initialize database
+# If using a database with an already created schema and user (like AWS RDS):
+# studio.db.initializer.url: jdbc:mariadb://192.168.1.1:3306/crafter?user=USER&password=PASS
+# If using a an empty database with root access to it:
+# studio.db.initializer.url: jdbc:mariadb://192.168.1.1:3306?user=root&password=
+
+# Cluster Syncers
+# Sandbox Sync Job interval which is how often to sync the work-area
+# studio.clustering.sandboxSyncJob.interval: 2000
+# Published Sync Job interval which is how often to sync the published repos
 # studio.clustering.publishedSyncJob.interval: 60000
-# Cluster node registration data
+
+# Cluster member registration, this registers *this* server into the pool
+# Cluster node registration data, remember to uncomment the next line
 # studio.clustering.node.registration:
-#  cluster member local IP (reachable to other cluster members)
-#  localIp: 10.1.1.150
-#  authentication type to access local repository
+#  this server's local address (reachable to other cluster members)
+#  localAddress: 10.1.1.150
+#  authentication type to access this server's local repository
 #  possible values
 #   - none (no authentication needed)
 #   - basic (username/password authentication)
-#   - token (authentication with security token)
 #   - key (ssh authentication)
 #  authenticationType: none
-#  username to access local repository
+#  username to access this server's local repository
 #  username: user
-#  password to access local repository
+#  password to access this server's local repository
 #  password: SuperSecurePassword
-#  security token to access local repository
-#  token: token
-#  private key to access local repository (multiline string)
+#  private key to access this server's local repository (multiline string)
 #  privateKey: |
 #    -----BEGIN PRIVATE KEY-----
 #    privateKey
@@ -229,6 +210,5 @@ studio.mail.port: @SMTP_PORT@
 # studio.cors.credentials: true
 # Value for the Access-Control-Max-Age header
 # studio.cors.maxage: -1
-
 # The active environment for multi environment configuration, e.g. qa, prod, dev
 # studio.configuration.environment.active: ENV
