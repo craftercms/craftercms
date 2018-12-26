@@ -49,7 +49,7 @@ studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
 studio.db.dataPath: ${sys:crafter.data.dir}/db
 # Socket path for the embedded database
-studio.db.socket: ${sys:java.io.tmpdir}/MariaDB4j.@MARIADB_PORT@.sock
+studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 
 ##################################################
 ##                   Security                   ##
