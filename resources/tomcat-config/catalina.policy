@@ -211,6 +211,8 @@ grant {
     permission java.lang.RuntimePermission "accessDeclaredMembers";
     permission java.lang.RuntimePermission "accessUserInformation";
     permission java.lang.RuntimePermission "setFactory";
+    permission java.lang.RuntimePermission "reflectionFactoryAccess";
+    permission java.io.SerializablePermission "enableSubclassImplementation";
     permission java.lang.management.ManagementPermission "monitor";
     permission java.nio.file.LinkPermission "hard";
     permission java.nio.file.LinkPermission "symbolic";
@@ -219,6 +221,10 @@ grant {
     permission java.sql.SQLPermission "*";
     permission java.net.NetPermission "*";
     permission java.net.SocketPermission "*", "accept,connect,listen";
+    permission java.net.URLPermission "http:*", "*";
+    permission java.net.URLPermission "https:*", "*";
+    permission java.net.URLPermission "file:*", "*";
+    permission javax.management.MBeanServerPermission "*";
     permission java.io.FilePermission "${crafter.root}/-", "read, write, delete, execute, readlink";
     permission java.io.FilePermission "${java.home}/-", "read";
     permission java.io.FilePermission "${user.home}/-", "read";
