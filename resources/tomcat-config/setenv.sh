@@ -6,5 +6,4 @@ if [ "$(whoami)" == "root" ]; then
     echo -e "\033[0m"
 	exit 1
 fi
-CLASSPATH="$CATALINA_HOME/bin/pro-grade.jar"
 UMASK=$(umask)

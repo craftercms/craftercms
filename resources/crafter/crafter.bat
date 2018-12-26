@@ -86,7 +86,7 @@ call "%CRAFTER_HOME%\solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcraf
 
 IF NOT EXIST "%CATALINA_LOGS_DIR%" mkdir "%CATALINA_LOGS_DIR%"
 IF NOT EXIST "%CATALINA_TMPDIR%" mkdir "%CATALINA_TMPDIR%"
-call "%CATALINA_HOME%\bin\startup.bat"
+call "%CATALINA_HOME%\bin\catalina.bat" start
 
 @rem Windows keep variables live until terminal dies.
 set start_mongo=false

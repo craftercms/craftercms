@@ -1,7 +1,7 @@
 
 REM Locations variables
-IF NOT DEFINED CRAFTER_LOGS_DIR SET "CRAFTER_LOGS_DIR=%CRAFTER_ROOT%\logs"
-IF NOT DEFINED CRAFTER_DATA_DIR SET "CRAFTER_DATA_DIR=%CRAFTER_ROOT%\data"
+IF NOT DEFINED CRAFTER_LOGS_DIR SET CRAFTER_LOGS_DIR="%CRAFTER_ROOT%\logs"
+IF NOT DEFINED CRAFTER_DATA_DIR SET"CRAFTER_DATA_DIR="%CRAFTER_ROOT%\data"
 
 SET "DEPLOYER_HOME=%CRAFTER_HOME%\crafter-deployer"
 SET "CATALINA_HOME=%CRAFTER_HOME%\apache-tomcat"
@@ -10,7 +10,7 @@ SET "CATALINA_LOGS_DIR=%CRAFTER_LOGS_DIR%\tomcat"
 SET "CATALINA_OUT=%CATALINA_LOGS_DIR%\catalina.out"
 SET "CATALINA_TMPDIR=%CRAFTER_ROOT%\temp\tomcat"
 SET "CRAFTER_APPLICATION_LOGS=%CATALINA_LOGS_DIR%"
-SET CATALINA_OPTS=-Djava.security.manager="net.sourceforge.prograde.sm.ProGradeJSM" -Djava.security.policy=="%CATALINA_HOME%/conf/catalina.policy" -Dcrafter.root="%CRAFTER_ROOT%" -Dcrafter.home="%CRAFTER_HOME%" -Dcrafter.data.dir="%CRAFTER_DATA_DIR%" -Dcrafter.logs.dir="%CRAFTER_LOGS_DIR%" -Dcatalina.logs="%CATALINA_LOGS_DIR%" -server -Xss1024K -Xms1G -Xmx4G -Djava.net.preferIPv4Stack=true -Dapplication.logs="%CRAFTER_APPLICATION_LOGS%"
+SET CATALINA_OPTS=-Dcrafter.root="%CRAFTER_ROOT%" -Dcrafter.home="%CRAFTER_HOME%" -Dcrafter.data.dir="%CRAFTER_DATA_DIR%" -Dcrafter.logs.dir="%CRAFTER_LOGS_DIR%" -Dcatalina.logs="%CATALINA_LOGS_DIR%" -server -Xss1024K -Xms1G -Xmx4G -Djava.net.preferIPv4Stack=true -Dapplication.logs="%CRAFTER_APPLICATION_LOGS%"
 SET SOLR_PORT=@SOLR_PORT@
 SET SOLR_DEBUG_PORT=@SOLR_PORT_D@
 SET "SOLR_INDEXES_DIR=%CRAFTER_DATA_DIR%\indexes"
