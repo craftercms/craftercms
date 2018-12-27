@@ -225,7 +225,12 @@ grant {
     permission java.net.URLPermission "https:*", "*";
     permission java.net.URLPermission "file:*", "*";
     permission javax.management.MBeanServerPermission "*";
-    permission java.io.FilePermission "${crafter.root}/-", "read, write, delete, execute, readlink";
+    permission java.io.FilePermission "${crafter.home}", "read";
+    permission java.io.FilePermission "${crafter.home}/-", "read, write, delete, execute, readlink";
+    permission java.io.FilePermission "${crafter.data.dir}", "read";
+    permission java.io.FilePermission "${crafter.data.dir}/-", "read, write, delete, execute, readlink";
+    permission java.io.FilePermission "${crafter.logs.dir}", "read";
+    permission java.io.FilePermission "${crafter.logs.dir}/-", "read, write, delete";
     permission java.io.FilePermission "${java.home}/-", "read";
     permission java.io.FilePermission "${user.home}/-", "read";
     permission java.io.FilePermission "${user.home}/.groovy/-", "read, write, delete";
