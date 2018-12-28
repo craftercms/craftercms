@@ -143,25 +143,6 @@ task downloadMariaDB4j {
   }
 }
 
-task downloadProGrade() {
-    description = "Downloads and checks pro-grade.jar integrity"
-    doFirst{
-        download {
-            src "http://artifacts.codice.org/content/repositories/releases/org/codice/pro-grade/pro-grade/${progradeVersion}/pro-grade-${progradeVersion}.jar"
-            overwrite false
-            dest file("${downloadDir}/pro-grade-${progradeVersion}.jar")
-        }
-        download {
-            src "http://artifacts.codice.org/content/repositories/releases/org/codice/pro-grade/pro-grade/${progradeVersion}/pro-grade-${progradeVersion}.jar.sha1"
-            dest file("${downloadDir}/pro-grade-${progradeVersion}.jar.sha1")
-            overwrite false
-        }
-    }
-    doLast{
-        assert sha1(new File(downloadDir, "pro-grade-${progradeVersion}.jar")) ==  new File(downloadDir, "pro-grade-${progradeVersion}.jar.sha1").getText('UTF-8')
-    }
-}
-
 def messageDigest(file, alg) {
   MessageDigest md = MessageDigest.getInstance(alg);
   FileInputStream fis = new FileInputStream(file.path);

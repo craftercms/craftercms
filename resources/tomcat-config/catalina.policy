@@ -224,6 +224,7 @@ grant {
     permission java.net.URLPermission "http:*", "*";
     permission java.net.URLPermission "https:*", "*";
     permission java.net.URLPermission "file:*", "*";
+    permission javax.management.MBeanPermission "*";
     permission javax.management.MBeanServerPermission "*";
     permission java.io.FilePermission "${crafter.home}", "read";
     permission java.io.FilePermission "${crafter.home}/-", "read, write, delete, execute, readlink";
@@ -234,6 +235,7 @@ grant {
     permission java.io.FilePermission "${java.home}/-", "read";
     permission java.io.FilePermission "${user.home}/-", "read";
     permission java.io.FilePermission "${user.home}/.groovy/-", "read, write, delete";
+    permission java.io.FilePermission "${java.io.tmpdir}/-", "read, write, delete";
     permission java.io.FilePermission "/tmp/-", "read, write, delete";
     permission groovy.security.GroovyCodeSourcePermission "*";
 };
