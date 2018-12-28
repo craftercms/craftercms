@@ -1,5 +1,6 @@
 import groovy.transform.Field
 
+import java.io.File
 import java.nio.file.Paths
 import org.apache.tools.ant.filters.ReplaceTokens
 
@@ -72,6 +73,7 @@ task("authoringPostEnvironment") {
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort),
                                            SOLR_PORT        : String.valueOf(authSolrPort),
                                            SOLR_PORT_D      : String.valueOf(authSolrDebugPort),
+                                           ES_PORT          : String.valueOf(authElasticSearchPort),
                                            DEPLOYER_D_PORT  : String.valueOf(authDeployerDebugPort),
                                            DEPLOYER_PORT    : String.valueOf(authDeployerPort),
                                            DEPLOYMENT_DIR   : String.valueOf(authDeploymentDir),
@@ -127,6 +129,7 @@ task("authoringPostEnvironment") {
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${authEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${authEnv}/bin/solr/server/solr/solr.xml")
+        updateElasticSearchConf("${authEnv}/bin/elasticsearch/config/elasticsearch.yml")
         downloadGrapes("${authEnv}/bin", "upgrade/start-upgrade.groovy")
         downloadGrapes("${authEnv}/bin", "upgrade/upgrade-target.groovy")
     }
@@ -143,6 +146,7 @@ task("deliveryPostEnvironment") {
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
                                            SOLR_PORT        : String.valueOf(deliverySolrPort),
                                            SOLR_PORT_D      : String.valueOf(deliverySolrDebugPort),
+                                           SEARCH_URL       : getSearchUrl(deliveryElasticSearchPort,deliverySolrPort),
                                            DEPLOYER_D_PORT  : String.valueOf(deliveryDeployerDebugPort),
                                            DEPLOYER_PORT    : String.valueOf(deliveryDeployerPort),
                                            TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
@@ -180,6 +184,7 @@ task("deliveryPostEnvironment") {
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
                                            SOLR_PORT        : String.valueOf(deliverySolrPort),
                                            SOLR_PORT_D      : String.valueOf(deliverySolrDebugPort),
+                                           ES_PORT          : String.valueOf(deliveryElasticSearchPort),
                                            DEPLOYER_D_PORT  : String.valueOf(deliveryDeployerDebugPort),
                                            DEPLOYER_PORT    : String.valueOf(deliveryDeployerPort),
                                            DEPLOYMENT_DIR   : String.valueOf(deliveryDeploymentDir),
@@ -221,6 +226,7 @@ task("deliveryPostEnvironment") {
         updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
+        updateElasticSearchConf("${deliveryEnv}/bin/elasticsearch/config/elasticsearch.yml")
         downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
         downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
         downloadGrapes("${deliveryEnv}/bin", "upgrade/start-upgrade.groovy")
@@ -267,12 +273,6 @@ envs.each { env ->
                 }
                 file("${path}/bin/solr-${solrVersion}").renameTo(file("${path}/bin/solr"))
             }
-
-            copy {
-                from "$downloadDir/mariaDB4j-app-${mariadb4jVersion}.jar"
-                into "${path}/bin/"
-            }
-            file("${path}/bin/mariaDB4j-app-${mariadb4jVersion}.jar").renameTo(file("${path}/bin/mariaDB4j-app.jar"))
             
             copy {
                 from "./src/search/crafter-search-provider/solr/configsets"
@@ -283,6 +283,20 @@ envs.each { env ->
                     }
                 }
             }
+            
+            if (!file("${path}/bin/elasticsearch").exists()) {
+                copy {
+                    from zipTree(downloadDir + "/elasticsearch-${elasticSearchVersion}.zip")
+                    into "${path}/bin"
+                }
+                file("${path}/bin/elasticsearch-${elasticSearchVersion}").renameTo(file("${path}/bin/elasticsearch"))
+            }
+
+            copy {
+              from "$downloadDir/mariaDB4j-app-${mariadb4jVersion}.jar"
+              into "${path}/bin/"
+            }
+            file("${path}/bin/mariaDB4j-app-${mariadb4jVersion}.jar").renameTo(file("${path}/bin/mariaDB4j-app.jar"))
 
             /** Remove Non util stuff **/
             def webapps = file("${path}/bin/apache-tomcat/webapps/")
@@ -387,6 +401,15 @@ def updateCatalinaLogging(loggingPropertiesFile) {
     engineServerProps.setProperty("4host-manager.org.apache.juli.AsyncFileHandler.directory", '${catalina.logs}')
     def output = new FileOutputStream(loggingPropertiesFile)
     engineServerProps.store(output, "")
+}
+
+def updateElasticSearchConf(configFile) {
+  def file = new File(configFile)
+  def content = file.text
+  content = content.replace("#path.data: /path/to/data", 'path.data: ${ES_INDEXES_DIR}')
+  content = content.replace("#path.logs: /path/to/logs", 'path.logs: ${ES_LOGS_DIR}')
+  content = content.replace("#http.port: 9200", 'http.port: ${ES_PORT}')
+  file.write(content)
 }
 
 def addSolrIndexHome(solrServerConfig) {
