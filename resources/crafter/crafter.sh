@@ -158,7 +158,7 @@ function startSolr() {
     if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
       exit 6
     fi
-    if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
+    if ! pgrep -u $(whoami) -F "$SOLR_PID" >/dev/null
     then
       echo "Solr Pid file is not ok, forcing startup"
       rm "$SOLR_PID"
@@ -198,7 +198,7 @@ function debugSolr() {
     if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
       exit 6
     fi
-    if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
+    if ! pgrep -u $(whoami) -F "$SOLR_PID" >/dev/null
     then
       echo "Solr Pid file is not ok, forcing startup"
       rm "$SOLR_PID"
@@ -261,7 +261,7 @@ function startElasticSearch() {
     if ! checkPortForRunning $ES_PORT $(cat "$ES_PID");then
       exit 6
     fi
-    if ! pgrep -u `whoami` -F "$ES_PID" >/dev/null
+    if ! pgrep -u $(whoami) -F "$ES_PID" >/dev/null
     then
       echo "ElasticSearch Pid file is not ok, forcing startup"
       rm "$ES_PID"
@@ -300,7 +300,7 @@ function debugElasticSearch() {
     if ! checkPortForRunning $ES_PORT $(cat "$ES_PID");then
       exit 6
     fi
-    if ! pgrep -u `whoami` -F "$ES_PID" >/dev/null
+    if ! pgrep -u $(whoami) -F "$ES_PID" >/dev/null
     then
       echo "ElasticSearch Pid file is not ok, forcing startup"
       rm "$ES_PID"
@@ -339,7 +339,7 @@ function elasticSearchStatus(){
   esStatusOut=$(curl --silent  -f "http://localhost:$ES_PORT/_cat/nodes?h=uptime,version")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
-    echo `cat "$ES_PID"`
+    echo $(cat "$ES_PID")
     echo -e  "uptime:\t"
     echo "$esStatusOut" | awk '{print $1}'
     echo -e  "ElasticSearch Version:\t"
@@ -381,7 +381,7 @@ function startTomcat() {
       if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
         exit 4
       fi
-      if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
+      if ! pgrep -u $(whoami) -F "$CATALINA_PID" >/dev/null
       then
         echo "Tomcat Pid file is not ok, forcing startup"
         rm "$CATALINA_PID"
@@ -429,7 +429,7 @@ function debugTomcat() {
       if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
         exit 4
       fi
-      if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
+      if ! pgrep -u $(whoami) -F "$CATALINA_PID" >/dev/null
       then
         echo "Tomcat Pid file is not ok, forcing startup"
         rm "$CATALINA_PID"
@@ -514,7 +514,7 @@ function startMongoDB(){
       exit 7
     fi
 
-    if ! pgrep -u `whoami` -F "$MONGODB_PID" >/dev/null
+    if ! pgrep -u $(whoami) -F "$MONGODB_PID" >/dev/null
     then
       echo "Mongo Pid file is not ok, forcing startup"
       rm "$MONGODB_PID"
@@ -593,7 +593,7 @@ function solrStatus(){
   solrStatusOut=$(curl --silent  -f "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
-    echo `cat "$CRAFTER_ROOT/bin/solr/bin/solr-$SOLR_PORT.pid"`
+    echo $(cat "$CRAFTER_ROOT/bin/solr/bin/solr-$SOLR_PORT.pid")
     echo -e  "uptime (in minutes):\t"
     echo "$solrStatusOut"  | python -m json.tool | grep upTimeMS | awk -F"[,|:]" '{print $2}'| awk '{print ($1/1000)/60}'| bc
     echo -e  "Solr Version:\t"
@@ -612,7 +612,7 @@ function deployerStatus(){
   deployerStatusOut=$(curl --silent  -f  "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
-    echo `cat "$DEPLOYER_PID"`
+    echo $(cat "$DEPLOYER_PID")
     echo -e  "uptime:\t"
     echo "$deployerStatusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
     echo -e  "Status:\t"
@@ -638,7 +638,7 @@ function studioStatus(){
   "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/status.json")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
-    echo `cat "$CATALINA_PID"`
+    echo $(cat "$CATALINA_PID")
     echo -e  "uptime:\t"
     echo "$studioStatusOut" | python -m json.tool | grep uptime | awk -F"[,|:]" '{print $2}'
     echo -e  "Status:\t"
@@ -662,7 +662,7 @@ function mariadbStatus(){
   echo "------------------------------------------------------------"
   if [ -s "$MYSQL_DATA/$MYSQL_PID_FILE_NAME" ]; then
     echo -e "PID \t"
-    echo `cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
+    echo $(cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME")
   else
     echo "MariaDB is not running."
   fi
