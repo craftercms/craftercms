@@ -19,4 +19,4 @@ TARGET_INST_PATH=$( cd "$SCRIPT_DIR/../.." && pwd )
 $UNZIPPED_BUNDLE/bin/upgrade/upgrade-target.sh {{full_upgrade}} $TARGET_INST_PATH
 
 echo ""
-echo "If the upgrade was completed successfully, please delete the upgrade temp directory (rm -rf $SCRIPT_DIR)"
+echo "If the upgrade was completed successfully, please delete the upgrade temp/upgrade directory (rm -rf $SCRIPT_DIR)"
