@@ -1,89 +1,91 @@
+/*
+ * Copyright (C) 2007-2018 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.craftercms.bundle.utils.actions;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.nio.file.Paths;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.craftercms.bundle.utils.Action;
+
+import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.craftercms.bundle.utils.Action;
-
 /**
- * Created by cortiz on 4/27/17.
+ * Unzips a zip file into a destination folder.
+ *
+ * @author avasquez
+ * @author cortiz
  */
-public class Unzip implements Action{
+public class Unzip implements Action {
 
-    private static PrintStream out = System.out;
-
-    private static final int BUFFER = 1024;
-
-    @Override
     public void execute(final String[] args) {
         if (args.length <= 0){
             help();
-        } else{
+        } else {
             String file = args[0];
-            String location = ".";
-            boolean stripRootFolder = false;
-            if (args.length >=2 ) {
-                location = args[1];
-                new File(location).mkdirs();
-            }
-            if (args.length >= 3){
-                stripRootFolder = Boolean.parseBoolean(args[2].toLowerCase());
-            }
+            String dest = args.length >= 2 ? args[1] : ".";
+            boolean ignoreRoot = args.length >= 3;
 
-            try (ZipInputStream zipFile = new ZipInputStream(
-                new BufferedInputStream(
-                    new FileInputStream(new File(file))))) {
-                ZipEntry entry = zipFile.getNextEntry();
-                byte[] readBuffer = new byte[BUFFER];
-                out.println("Extracting Files");
-                while (entry != null){
-                    String entryName = entry.getName().replace('/', File.separatorChar);
-                    File entryFile = Paths.get(location, stripRootFolder? new File(entryName).getName(): entryName)
-                        .toFile();
-                    if (entry.isDirectory()) {
-                        if (!entryFile.exists()) {
-                            entryFile.mkdirs();
-                        }
-                    } else{
-                        if (!entryFile.getParentFile().exists()){
-                            entryFile.getParentFile().mkdirs();
-                        }
-                        try (BufferedOutputStream entryOut = new BufferedOutputStream(new FileOutputStream(entryFile))) {
-                            int n;
-                            while ((n = zipFile.read(readBuffer)) > 0) {
-                                entryOut.write(readBuffer, 0, n);
+            System.out.println("[ZIP] Unzipping file " + file);
+
+            try (ZipInputStream zin = new ZipInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+                ZipEntry entry = zin.getNextEntry();
+
+                while (entry != null) {
+                    String filename = ignoreRoot ? removeRootFolder(entry.getName()) : entry.getName();
+                    if (StringUtils.isNotEmpty(filename)) {
+                        System.out.println("[ZIP] Extracting " + filename);
+
+                        File entryFile = new File(dest, filename.replace('/', File.separatorChar));
+
+                        if (entry.isDirectory()) {
+                            if (!entryFile.exists()) {
+                                entryFile.mkdirs();
                             }
-                        } catch (IOException e){
-                            e.printStackTrace();
+                        } else {
+                            try {
+                                FileUtils.copyToFile(zin, entryFile);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
-                    out.println(entryFile.getAbsolutePath());
-                    entry = zipFile.getNextEntry();
+
+                    entry = zin.getNextEntry();
                 }
             } catch (FileNotFoundException e) {
-                out.printf("File %n not found", file);
+                System.out.println("Zip file not found: " + file);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    @Override
     public void help() {
-        out.println("Unzip a file");
-        out.println("Usage unzip {file} {location} {stripFolder}");
-        out.println("\t file: File to Unzip");
-        out.println("\t location: Where the zip content will be place");
-        out.println("\t stripFolder: Should unzip remove all folders for the file (plain fails)");
-        out.println();
+        System.out.println("Unzip a file");
+        System.out.println("Usage unzip {file} {dest} [ignore-root]");
+        System.out.println("\t file: File to unzip");
+        System.out.println("\t dest: Where to unzip the content");
+        System.out.println("\t ignore-root: if the root folder should be ignored when extracting");
     }
+
+    private String removeRootFolder(String zipPath) {
+        return StringUtils.substringAfter(StringUtils.stripStart(zipPath, "/"), "/");
+    }
+
 }
