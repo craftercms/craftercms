@@ -41,18 +41,19 @@ echo "-d debug, Impli  eds start, Start crafter deployer in debug mode"
 exit /b 0
 
 :installMongo
- mkdir "%CRAFTER_HOME%\mongodb"
- cd "%CRAFTER_HOME%\mongodb"
- java -jar "%CRAFTER_HOME%\craftercms-utils.jar" download mongodbmsi
- msiexec.exe /i mongodb.msi /passive INSTALLLOCATION="%CRAFTER_HOME%\mongodb\" /l*v "%CRAFTER_HOME%\mongodb\mongodb.log" /norestart
- SET MONGODB_BIN_DIR= "%CRAFTER_HOME%\mongodb\bin\mongod.exe"
- IF NOT EXIST "%MONGODB_BIN_DIR%" (
-     echo "Mongodb bin path not found trying download the zip %MONGODB_BIN_DIR%"
-     java -jar "%CRAFTER_HOME%\craftercms-utils.jar" download mongodb
-     java -jar  "%CRAFTER_HOME%\craftercms-utils.jar" unzip mongodb.zip "%CRAFTER_HOME%"
-     move "%CRAFTER_HOME%\mongodb-*" "%CRAFTER_HOME%\mongodb"
- )
- cd "%CRAFTER_HOME%"
+mkdir "%CRAFTER_HOME%\mongodb"
+cd "%CRAFTER_HOME%\mongodb"
+java -jar "%CRAFTER_HOME%\craftercms-utils.jar" download mongodbmsi
+msiexec.exe /i mongodb.msi /passive INSTALLLOCATION="%CRAFTER_HOME%\mongodb\" /l*v "%CRAFTER_HOME%\mongodb\mongodb.log" /norestart
+SET MONGODB_BIN_DIR= "%CRAFTER_HOME%\mongodb\bin\mongod.exe"
+IF NOT EXIST "%MONGODB_BIN_DIR%" (
+  echo "Mongodb bin path not found trying download the zip %MONGODB_BIN_DIR%"
+  rmdir /Q /S "%CRAFTER_HOME%\mongodb"
+  mkdir "%CRAFTER_HOME%\mongodb"
+  java -jar "%CRAFTER_HOME%\craftercms-utils.jar" download mongodb
+  java -jar  "%CRAFTER_HOME%\craftercms-utils.jar" unzip mongodb.zip "%CRAFTER_HOME%\mongodb" true
+)
+cd "%CRAFTER_HOME%"
 goto :init
 
 :initWithOutExit
