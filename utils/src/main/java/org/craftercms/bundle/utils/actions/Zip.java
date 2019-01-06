@@ -1,12 +1,30 @@
+/*
+ * Copyright (C) 2007-2018 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.craftercms.bundle.utils.actions;
 
-import java.io.BufferedInputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.craftercms.bundle.utils.Action;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,78 +34,80 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.craftercms.bundle.utils.Action;
-
 /**
- * Created by joseross on 7/18/17.
+ * Zips a folder into a specified path, excluding files with .DS_Store, .lock and .pid extensions.
+ *
+ * @author avasquez
+ * @author jross
  */
 public class Zip implements Action {
 
-    private static List<String> excludedExtensions = Arrays.asList("lock", "DS_Store", "pid");
+    private static List<String> excludedExtensions = Arrays.asList("DS_Store", "lock", "pid");
 
     @Override
     public void execute(final String[] args) {
-        if(args.length < 2) {
+        if (args.length < 2) {
             help();
         } else {
             Path folder = Paths.get(args[0]);
             Path output = Paths.get(args[1]);
-            boolean useCompression = args.length != 3;
-            System.out.println("Writing file: " + output);
-            try(ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(output.toFile()))) {
-                if(!useCompression) {
+            boolean useCompression = args.length < 3;
+
+            try (ZipOutputStream zout = new ZipOutputStream(FileUtils.openOutputStream(output.toFile()))) {
+                if (!useCompression) {
                     zout.setLevel(ZipOutputStream.STORED);
+
+                    System.out.println("[ZIP] Creating zip file " + output + " (no compression)");
+                } else {
+                    System.out.println("[ZIP] Creating zip file " + output);
                 }
+
+
                 try (Stream<Path> files = Files.walk(folder)) {
                     files
-                        .filter(file -> !Files.isDirectory(file))
-                        .filter(file -> {
-                            try {
-                                String name = file.getFileName().toString();
-                                int index = name.lastIndexOf(".");
-                                if (index != -1) {
-                                    String ext = name.substring(index + 1);
-                                    if(excludedExtensions.contains(ext)) {
-                                        System.out.println("Skipping file " + file);
+                            .filter(file -> {
+                                try {
+                                    String ext = FilenameUtils.getExtension(file.getFileName().toString());
+                                    if (StringUtils.isNotEmpty(ext) && excludedExtensions.contains(ext)) {
+                                        String filename = file.toString().replace(File.separatorChar, '/');
+                                        System.out.println("[ZIP] Skipping " + filename);
+
                                         return false;
                                     }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            return true;
-                        })
-                        .forEach(file -> {
-                            try {
-                                System.out.println("Adding " + file);
-                                zout.putNextEntry(new ZipEntry(file.toString().replace(File.separatorChar, '/')));
-                                copy(zout, file.toFile());
-                                zout.closeEntry();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
+
+                                return true;
+                            })
+                            .forEach(file -> {
+                                try {
+                                    if (Files.isDirectory(file)) {
+                                        String filename = file.toString().replace(File.separatorChar, '/') + "/";
+
+                                        System.out.println("[ZIP] Adding " + filename);
+
+                                        zout.putNextEntry(new ZipEntry(filename));
+                                        zout.closeEntry();
+                                    } else {
+                                        String filename = file.toString().replace(File.separatorChar, '/');
+
+                                        System.out.println("[ZIP] Adding " + filename);
+
+                                        zout.putNextEntry(new ZipEntry(filename));
+                                        IOUtils.copy(Files.newInputStream(file), zout);
+                                        zout.closeEntry();
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            });
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-        }
-    }
-
-    protected void copy(OutputStream out, File file) {
-        try(BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
-            byte[] buffer = new byte[1024];
-            int len;
-            while((len = bis.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found: " + file);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
