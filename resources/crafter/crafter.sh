@@ -750,7 +750,9 @@ function doBackup() {
   export TARGET_FILE="$TARGET_FOLDER/$TARGET_NAME.$CURRENT_DATE.zip"
   export TEMP_FOLDER="$CRAFTER_ROOT/temp/backup"
 
+  echo "------------------------------------------------------------------------"
   echo "Starting backup into $TARGET_FILE"
+  echo "------------------------------------------------------------------------"
   mkdir -p "$TEMP_FOLDER"
   mkdir -p "$TARGET_FOLDER"
   if [ -f "$TARGET_FILE" ]; then
@@ -761,7 +763,9 @@ function doBackup() {
   if [ -d "$MYSQL_DATA" ]; then
     if [ -x "$CRAFTER_HOME/dbms/bin/mysqldump" ]; then
       #Do dump
-      echo "Adding mysql dump"
+      echo "------------------------------------------------------------------------"
+      echo "Backing up mysql"
+      echo "------------------------------------------------------------------------"
       $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=$MARIADB_PORT --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
       echo -e "SET GLOBAL innodb_large_prefix = TRUE ;\nSET GLOBAL innodb_file_format = 'BARRACUDA' ;\nSET GLOBAL innodb_file_format_max = 'BARRACUDA' ;\nSET GLOBAL innodb_file_per_table = TRUE ;\n$(cat $TEMP_FOLDER/crafter.sql)" > $TEMP_FOLDER/crafter.sql
     fi
@@ -770,7 +774,9 @@ function doBackup() {
   # MongoDB Dump
   if [ -d "$MONGODB_DATA_DIR" ]; then
     if [ -x "$CRAFTER_HOME/mongodb/bin/mongodump" ]; then
-      echo "Adding mongodb dump"
+      echo "------------------------------------------------------------------------"
+      echo "Backing up mongodb"
+      echo "------------------------------------------------------------------------"
       $CRAFTER_HOME/mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
       cd "$TEMP_FOLDER/mongodb"
       java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
@@ -781,26 +787,41 @@ function doBackup() {
   fi
 
   # ZIP git repos
-  echo "Adding git repos"
+  echo "------------------------------------------------------------------------"
+  echo "Backing up git repos"
+  echo "------------------------------------------------------------------------"
   cd "$CRAFTER_DATA_DIR/repos"
   java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/repos.zip"
+
   # ZIP solr indexes
+  echo "------------------------------------------------------------------------"
+  echo "Backing up solr indexes"
+  echo "------------------------------------------------------------------------"
   if [ -d "$SOLR_INDEXES_DIR" ]; then
     echo "Adding solr indexes"
     cd "$SOLR_INDEXES_DIR"
     java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
   fi
   # ZIP elasticsearch indexes
+  echo "------------------------------------------------------------------------"
+  echo "Backing up elasticsearch indexes"
+  echo "------------------------------------------------------------------------"
   if [ -d "$ES_INDEXES_DIR" ]; then
     echo "Adding elasticsearch indexes"
     cd "$ES_INDEXES_DIR"
     java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes-es.zip"
   fi
   # ZIP deployer data
-  echo "Adding deployer data"
+  echo "------------------------------------------------------------------------"
+  echo "Backing up deployer data"
+  echo "------------------------------------------------------------------------"
   cd "$DEPLOYER_DATA_DIR"
   java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/deployer.zip"
+
   # ZIP everything (without compression)
+  echo "------------------------------------------------------------------------"
+  echo "Packaging everything"
+  echo "------------------------------------------------------------------------"
   cd "$TEMP_FOLDER"
   java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TARGET_FILE" true
 
@@ -822,19 +843,23 @@ function doRestore() {
   fi
   export TEMP_FOLDER="$CRAFTER_ROOT/temp/backup"
 
-  read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the \
-  existing sites and associated database and replace everything with the restored data. If you \
-  care about the existing state of the system then stop this process, backup the system, and then \
+  read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the\
+  existing sites and associated database and replace everything with the restored data. If you\
+  care about the existing state of the system then stop this process, backup the system, and then\
   attempt the restore. Are you sure you want to proceed? (yes/no) "
-  if [ "$REPLY" != "yes" ]; then
+  if [ "$REPLY" != "yes" ] && [ "$REPLY" != "y" ]; then
     echo "Canceling restore"
     exit 0
   fi
 
+  echo "------------------------------------------------------------------------"
   echo "Clearing all existing data"
+  echo "------------------------------------------------------------------------"
   rm -rf $CRAFTER_DATA_DIR/*
 
+  echo "------------------------------------------------------------------------"
   echo "Starting restore from $SOURCE_FILE"
+  echo "------------------------------------------------------------------------"
   mkdir -p "$TEMP_FOLDER"
 
   # UNZIP everything
@@ -842,48 +867,66 @@ function doRestore() {
 
   # MongoDB Dump
   if [ -f "$TEMP_FOLDER/mongodb.zip" ]; then
+    echo "------------------------------------------------------------------------"
     echo "Restoring MongoDB"
+    echo "------------------------------------------------------------------------"
     startMongoDB
     java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
     $CRAFTER_HOME/mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
   fi
 
   # UNZIP git repos
-  echo "Restoring git repos"
-  rm -rf "$CRAFTER_DATA_DIR/repos/*"
-  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_DATA_DIR/repos"
+  if [ -f "$TEMP_FOLDER/repos.zip" ]; then
+    echo "------------------------------------------------------------------------"
+    echo "Restoring git repos"
+    echo "------------------------------------------------------------------------"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_DATA_DIR/repos"
+  fi
 
   # UNZIP solr indexes
   if [ -f "$TEMP_FOLDER/indexes.zip" ]; then
+    echo "------------------------------------------------------------------------"
     echo "Restoring solr indexes"
+    echo "------------------------------------------------------------------------"
     rm -rf "$SOLR_INDEXES_DIR/*"
     java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
   fi
   
   # UNZIP elasticsearch indexes
   if [ -f "$TEMP_FOLDER/indexes-es.zip" ]; then
+    echo "------------------------------------------------------------------------"
     echo "Restoring elasticsearch indexes"
+    echo "------------------------------------------------------------------------"
     rm -rf "$ES_INDEXES_DIR/*"
     java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes-es.zip" "$ES_INDEXES_DIR"
   fi
 
   # UNZIP deployer data
-  echo "Restoring deployer data"
-  rm -rf "$DEPLOYER_DATA_DIR/*"
-  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
+  if [ -f "$TEMP_FOLDER/deployer.zip" ]; then
+    echo "------------------------------------------------------------------------"
+    echo "Restoring deployer data"
+    echo "------------------------------------------------------------------------"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
+  fi
 
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
     mkdir "$MYSQL_DATA"
     #Start DB
+    echo "------------------------------------------------------------------------"
     echo "Starting DB"
+    echo "------------------------------------------------------------------------"
     java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_HOME/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_HOME/mariaDB4j-app.jar &
     sleep 30
     # Import
+    echo "------------------------------------------------------------------------"
     echo "Restoring DB"
+    echo "------------------------------------------------------------------------"
     $CRAFTER_HOME/dbms/bin/mysql --user=root --port=$MARIADB_PORT --protocol=TCP --binary-mode < "$TEMP_FOLDER/crafter.sql"
     # Stop DB
+    echo "------------------------------------------------------------------------"
     echo "Stopping DB"
+    echo "------------------------------------------------------------------------"
     kill $(cat mariadb4j.pid)
     sleep 10
   fi
