@@ -170,6 +170,10 @@ studio.mail.port: @SMTP_PORT@
 # studio.clustering.sandboxSyncJob.interval: 2000
 # Published Sync Job interval which is how often to sync the published repos
 # studio.clustering.publishedSyncJob.interval: 60000
+# Cluster member after heartbeat stale for amount of minutes will be declared inactive
+# studio.clustering.heartbeatStale.timeLimit: 5
+# Cluster member after being inactive for amount of minutes will be removed from cluster
+# studio.clustering.incativity.timeLimit: 5
 
 # Cluster member registration, this registers *this* server into the pool
 # Cluster node registration data, remember to uncomment the next line
