@@ -1,8 +1,8 @@
 ##################################################
 ##              Content Repository              ##
 ##################################################
-# Absolute or relative path to repository base (all actual repositories will be under this)
-studio.repo.basePath: ../data/repos
+# Absolute path to repository base (all actual repositories will be under this)
+studio.repo.basePath: ${sys:crafter.data.dir}/repos
 # Sandbox git repository branch for every site
 # studio.repo.siteSandboxBranch: master
 # If not using environment-config.xml, environments are configured here
@@ -24,7 +24,7 @@ studio.preview.deleteTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/de
 # URL to the preview Crafter Engine
 studio.preview.engineUrl: http://localhost:@TOMCAT_HTTP_PORT@
 # URL to the preview repository (aka Sandbox) where authors save work-in-progress
-studio.preview.repoUrl: ../data/repos/sites/{siteName}/sandbox
+studio.preview.repoUrl: ${sys:crafter.data.dir}/repos/sites/{siteName}/sandbox
 
 ############################################################
 ##                   Preview Search                       ##
@@ -47,7 +47,7 @@ studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&pas
 # Port number for the embedded database (note this must match what's in the connection URLs in this config file)
 studio.db.port: @MARIADB_PORT@
 # Data folder for the embedded database
-studio.db.dataPath: ../data/db
+studio.db.dataPath: ${sys:crafter.data.dir}/db
 # Socket path for the embedded database
 studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 
@@ -147,3 +147,22 @@ studio.mail.port: @SMTP_PORT@
 # studio.mail.smtp.ehlo: true
 # Enable/disable (value true/false) debug mode for email service. Enabling debug mode allows tracking/debugging communication between email service and SMTP server.
 # studio.mail.debug: false
+
+################################################################
+##                             CORS                           ##
+################################################################
+# This is configured as permissive by default for ease of deployment
+# Remember to tighten this up for production
+
+# Disable CORS headers completely
+# studio.cors.disable: false
+# Value for the Access-Control-Allow-Origin header
+# studio.cors.origins: '*'
+# Value for the Access-Control-Allow-Headers header
+# studio.cors.headers: '*'
+# Value for the Access-Control-Allow-Methods header
+# studio.cors.methods: '*'
+# Value for the Access-Control-Allow-Credentials header
+# studio.cors.credentials: true
+# Value for the Access-Control-Max-Age header
+# studio.cors.maxage: -1

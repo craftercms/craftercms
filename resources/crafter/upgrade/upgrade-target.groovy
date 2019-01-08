@@ -106,6 +106,11 @@ def shutdownCrafter(binFolder) {
   }
 
   executeCommand([SystemUtils.IS_OS_WINDOWS ? "shutdown.bat" : "./shutdown.sh"], binFolder, setupCallback)
+
+  if (SystemUtils.IS_OS_WINDOWS) {
+    print 'Please make sure Crafter has stopped and all Crafter process windows are closed, then press enter to continue '
+    System.in.read()
+  }
 }
 
 /**
@@ -258,8 +263,8 @@ def upgrade(targetFolder, fullUpgrade, environmentName) {
   def backupsFolder = targetFolder.resolve("backups")
   def newBinFolder = getCrafterBinFolder()
 
-  backupData(binFolder, dataFolder)
   shutdownCrafter(binFolder)
+  backupData(binFolder, dataFolder)
   backupBin(binFolder, backupsFolder, environmentName)
   doUpgrade(binFolder, newBinFolder, fullUpgrade)
   startCrafter(binFolder)
