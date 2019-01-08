@@ -479,28 +479,28 @@ function deployerStatus(){
   fi
 }
 
-function studioStatus(){
+function tomcatStatus(){
   echo "------------------------------------------------------------"
-  echo "Crafter Studio status                                       "
+  echo "Crafter Engine status                                       "
   echo "------------------------------------------------------------"
-  studioStatusOut=$(curl --silent  -f \
-  "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/status.json")
+  engineStatusOut=$(curl --silent  -f \
+  "http://localhost:$TOMCAT_HTTP_PORT/api/1/monitoring/status.json")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$CATALINA_PID"`
     echo -e  "uptime:\t"
-    echo "$studioStatusOut" | python -m json.tool | grep uptime | awk -F"[,|:]" '{print $2}'
+    echo "$engineStatusOut" | python -m json.tool | grep uptime | awk -F"[,|:]" '{print $2}'
     echo -e  "Status:\t"
-    echo "$studioStatusOut" | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
-    deployerVersion=$(curl --silent  -f  "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/version.json")
+    echo "$engineStatusOut" | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
+    engineVersion=$(curl --silent  -f  "http://localhost:$TOMCAT_HTTP_PORT/api/1/monitoring/version.json")
     if [ $? -eq 0 ]; then
         echo -e  "Version:\t"
-        printf "$(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')"
-        echo  "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
+        printf "$(echo "$engineVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')"
+        echo  "$engineVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
     fi
   else
     echo -e "\033[38;5;196m"
-    echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTTP_PORT"
+    echo "Crafter Engine is not running or is unreachable on port $TOMCAT_HTTP_PORT"
     echo -e "\033[0m"
   fi
 }
@@ -569,7 +569,7 @@ function stop() {
 function status(){
   solrStatus
   deployerStatus
-  studioStatus
+  tomcatStatus
   mariadbStatus
   mongoDbStatus
 }
@@ -793,7 +793,7 @@ case $1 in
     doRestore $2
   ;;
   status_tomcat)
-    studioStatus
+    tomcatStatus
   ;;
   status_deployer)
     deployerStatus
