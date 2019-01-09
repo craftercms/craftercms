@@ -20,7 +20,7 @@ studio.preview.defaultPreviewDeployerUrl: http://localhost:@DEPLOYER_PORT@/api/1
 # Default preview create target URL (can be overridden per site)
 studio.preview.createTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/upsert
 # Default preview create target URL (can be overridden per site)
-studio.preview.deleteTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/delete/{siteEnv}/{siteName}
+studio.preview.deleteTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/delete-if-exists/{siteEnv}/{siteName}
 # URL to the preview Crafter Engine
 studio.preview.engineUrl: http://localhost:@TOMCAT_HTTP_PORT@
 # URL to the preview repository (aka Sandbox) where authors save work-in-progress
