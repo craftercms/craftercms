@@ -68,7 +68,7 @@ IF %ERRORLEVEL% equ 0 (
 )
 
 IF EXIST "%PROFILE_WAR_PATH%" set start_mongo=true
-IF /i "%FORCE_MONGO%"=="forceMongo" set start_mongo=true
+IF /i "%FORCE_MONGO%"=="true" set start_mongo=true
 
 IF /i "%start_mongo%"=="true" (
   set mongoDir=%CRAFTER_HOME%\mongodb
@@ -82,14 +82,20 @@ IF /i "%start_mongo%"=="true" (
 IF NOT EXIST "%DEPLOYER_LOGS_DIR%" mkdir "%DEPLOYER_LOGS_DIR%"
 start "" "%DEPLOYER_HOME%\%DEPLOYER_STARTUP%"
 
-IF NOT EXIST "%SOLR_INDEXES_DIR%" mkdir "%SOLR_INDEXES_DIR%"
-IF NOT EXIST "%SOLR_LOGS_DIR%" mkdir "%SOLR_LOGS_DIR%"
-call "%CRAFTER_HOME%\solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%CRAFTER_DATA_DIR%\indexes"
+IF "%WITH_SOLR%"=="true" (
+  IF NOT EXIST "%SOLR_INDEXES_DIR%" mkdir "%SOLR_INDEXES_DIR%"
+  IF NOT EXIST "%SOLR_LOGS_DIR%" mkdir "%SOLR_LOGS_DIR%"
+  call "%CRAFTER_HOME%\solr\bin\solr" start -p %SOLR_PORT% -s "%SOLR_HOME%" -Dcrafter.solr.index="%SOLR_INDEXES_DIR%"
+)
+
+IF NOT "%SKIP_ELASTICSEARCH%"=="true" (
+  IF NOT EXIST "%ES_INDEXES_DIR%" mkdir "%ES_INDEXES_DIR%"
+  start "ElasticSearch" cmd /c call "%CRAFTER_HOME%\elasticsearch\bin\elasticsearch" -d
+)
 
 IF NOT EXIST "%CATALINA_LOGS_DIR%" mkdir "%CATALINA_LOGS_DIR%"
 IF NOT EXIST "%CATALINA_TMPDIR%" mkdir "%CATALINA_TMPDIR%"
 call "%CATALINA_HOME%\bin\catalina.bat" start
-
 @rem Windows keep variables live until terminal dies.
 set start_mongo=false
 goto :eof
@@ -186,11 +192,22 @@ cd "%CRAFTER_DATA_DIR%\repos"
 java -jar "%CRAFTER_HOME%\craftercms-utils.jar" zip . "%TEMP_FOLDER%\repos.zip"
 
 REM ZIP solr indexes
-echo "------------------------------------------------------------------------"
-echo "Backing up solr indexes"
-echo "------------------------------------------------------------------------"
-cd "%SOLR_INDEXES_DIR%"
-java -jar "%CRAFTER_HOME%\craftercms-utils.jar" zip . "%TEMP_FOLDER%\indexes.zip"
+IF EXIST "%SOLR_INDEXES_DIR%" (
+  echo "------------------------------------------------------------------------"
+  echo "Backing up solr indexes"
+  echo "------------------------------------------------------------------------"
+  cd "%SOLR_INDEXES_DIR%"
+  java -jar "%CRAFTER_HOME%\craftercms-utils.jar" zip . "%TEMP_FOLDER%\indexes.zip"
+)
+
+REM ZIP elasticsearch indexes
+IF EXIST "%ES_INDEXES_DIR%" (
+  echo "------------------------------------------------------------------------"
+  echo "Backing up elasticsearch indexes"
+  echo "------------------------------------------------------------------------"
+  cd "%ES_INDEXES_DIR%"
+  java -jar "%CRAFTER_HOME%\craftercms-utils.jar" zip . "%TEMP_FOLDER%\indexes-es.zip"
+)
 
 REM ZIP deployer data
 echo "------------------------------------------------------------------------"
@@ -273,12 +290,20 @@ java -jar "%CRAFTER_HOME%\craftercms-utils.jar" unzip "%TEMP_FOLDER%\repos.zip" 
 :skipRepos
 
 REM UNZIP solr indexes
-IF NOT EXIST "%TEMP_FOLDER%\indexes.zip" ( goto skipIndexes )
+IF NOT EXIST "%TEMP_FOLDER%\indexes.zip" ( goto skipSolr )
 echo "------------------------------------------------------------------------"
 echo "Restoring solr indexes"
 echo "------------------------------------------------------------------------"
 java -jar "%CRAFTER_HOME%\craftercms-utils.jar" unzip "%TEMP_FOLDER%\indexes.zip" "%SOLR_INDEXES_DIR%"
-:skipIndexes
+:skipSolr
+
+REM UNZIP elasticsearch indexes
+IF NOT EXIST "%TEMP_FOLDER%\indexes-es.zip" ( goto skipElasticSearch )
+echo "------------------------------------------------------------------------"
+echo "Restoring elasticsearch indexes"
+echo "------------------------------------------------------------------------"
+java -jar "%CRAFTER_HOME%\craftercms-utils.jar" unzip "%TEMP_FOLDER%\indexes-es.zip" "%ES_INDEXES_DIR%"
+:skipElasticSearch
 
 REM UNZIP deployer data
 IF NOT EXIST "%TEMP_FOLDER%\deployer.zip" ( goto skipDeployer )
@@ -318,7 +343,14 @@ goto cleanOnExitKeepTermAlive
 
 
 :skill
-call "%CRAFTER_HOME%\solr\bin\solr" stop -p %SOLR_PORT%
+IF "%WITH_SOLR%"=="true" (
+  call "%CRAFTER_HOME%\solr\bin\solr" stop -p %SOLR_PORT%
+)
+
+IF NOT "%SKIP_ELASTICSEARCH%"=="true" (
+  taskkill /fi "WINDOWTITLE eq ElasticSearch"
+)
+
 @rem Windows does not support Or in the If soo...
 
 netstat -o -n -a | findstr  "0.0.0.0:%MONGODB_PORT%"

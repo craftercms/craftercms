@@ -70,6 +70,25 @@ task downloadSolr() {
     }
 }
 
+task downloadElasticSearch() {
+  description = "Downdloads and checks ElasticSearch integrity"
+  doFirst {
+    download {
+      src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticSearchVersion}.zip"
+      overwrite false
+      dest file("${downloadDir}/elasticsearch-${elasticSearchVersion}.zip")
+    }
+    download {
+        src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticSearchVersion}.zip.sha512"
+        dest file("${downloadDir}/elasticsearch-${elasticSearchVersion}.zip.sha512")
+        overwrite false
+    }
+  }
+  doLast {
+    assert sha512(new File(downloadDir, "elasticsearch-${elasticSearchVersion}.zip")) == new File(downloadDir, "elasticsearch-${elasticSearchVersion}.zip.sha512").getText('UTF-8').split(" ")[0]
+  }
+}
+
 task downloadIEDriver {
     doFirst{
         download{
@@ -166,6 +185,10 @@ def sha1(file) {
 
 def sha256(file) {
   messageDigest(file, "SHA-256");
+}
+
+def sha512(file) {
+  messageDigest(file, "SHA-512")
 }
 
 def getWindowsBuildNumber(){

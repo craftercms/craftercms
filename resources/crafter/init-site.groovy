@@ -63,6 +63,7 @@ def buildCli(cli) {
 			'passphrase protected)')
 	cli.a(longOpt: 'notification-addresses', args: 1, argName: 'addresses', 'A comma-separated list of email ' +
 			'addresses that should receive deployment notifications')
+	cli.s(longOpt: 'crafter-search', 'Use Crafter Search instead of ElasticSearch')
 }
 
 /**
@@ -89,29 +90,6 @@ def printHelp(cli) {
 	println ' Init a site that is in a remote SSH repo with public/private key authentication (specific private key path '
 	println ' with passphrase)'
 	println '     init-site -k ~/.ssh/jdoe_key -f jdoe123 mysite ssh://myserver/opt/crater/sites/mysite'
-}
-
-/**
- * Calls the Search API to create the Solr Core.
- */
-def createSolrCore(siteName) {
-	println 'Creating Solr Core...'
-
-	def httpClient = configure {
-		request.uri = getTomcatUrl()
-	}
-
-	httpClient.post {
-		request.uri.path = '/crafter-search/api/2/admin/index/create'
-		request.contentType = 'application/json'
-		request.body = [ id: siteName ]
-		response.success { fs ->
-			println "Core created successfully"
-		}
-		response.failure { fs, body ->
-			println "Error while creating Core: ${body.message}"
-		}
-	}
 }
 
 /**
@@ -160,7 +138,6 @@ def createDeployerTarget(siteName, repoPath, targetParams) {
  * Initializes the delivery site
  */
 def initSite(siteName, repoPath, targetParams) {
-	createSolrCore(siteName)
 	createDeployerTarget(siteName, repoPath, targetParams)
 }
 
@@ -199,6 +176,10 @@ if (options) {
 			repo_branch: 'live',
 			engine_url: getTomcatUrl()
 		];
+
+		if(options.'crafter-search') {
+			targetParams.search_engine = 'CrafterSearch'
+		}
 
 		if (options.branch) {
 			targetParams.repo_branch = options.branch
