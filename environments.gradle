@@ -28,7 +28,7 @@ task("authoringPostEnvironment") {
                                            TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
                                            MONGODB_PORT     : String.valueOf(authMongoDBPort),
                                            ENV              : "authoring",
-                                           SMTP_PORT        : String.valueOf(authSMTPPort)
+                                           SMTP_PORT        : String.valueOf(authSMTPPort),
             ])
             eachFile {
                 if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
@@ -82,7 +82,6 @@ task("authoringPostEnvironment") {
                                            VERSION          : project.version,
                                            GIT_BUILD_ID     : gitRevisionId,
                                            SMTP_PORT        : String.valueOf(authSMTPPort)
-
             ])
         }
 

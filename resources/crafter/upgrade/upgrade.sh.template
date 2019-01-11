@@ -16,7 +16,7 @@ UNZIPPED_BUNDLE=$( cd "$SCRIPT_DIR/crafter" && pwd )
 TARGET_INST_PATH=$( cd "$SCRIPT_DIR/../.." && pwd )
 
 # Executes the upgrade from the bundle
-$UNZIPPED_BUNDLE/bin/upgrade/upgrade-target.sh {{full_upgrade}} $TARGET_INST_PATH
+$UNZIPPED_BUNDLE/bin/upgrade/upgrade-target.sh $TARGET_INST_PATH
 
 echo ""
 echo "If the upgrade was completed successfully, please delete the upgrade temp/upgrade directory (rm -rf $SCRIPT_DIR)"
