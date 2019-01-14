@@ -57,7 +57,7 @@ function help() {
 }
 
 function version(){
-  echo "Copyright (C) 2007-2018 Crafter Software Corporation. All rights reserved."
+  echo "Copyright (C) 2007-2019 Crafter Software Corporation. All rights reserved."
   echo "Version @VERSION@-@GIT_BUILD_ID@"
 }
 
