@@ -11,11 +11,11 @@ if [ "$(whoami)" == "root" ]; then
 fi
 
 export UPGRADE_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-export CRAFTER_HOME=$( cd "$UPGRADE_HOME/.." && pwd )
-export CRAFTER_ROOT=$( cd "$CRAFTER_HOME/.." && pwd )
+export CRAFTER_BIN_DIR=$( cd "$UPGRADE_HOME/.." && pwd )
+export CRAFTER_HOME=$( cd "$CRAFTER_BIN_DIR/.." && pwd )
 export ENVIRONMENT_NAME="@ENV@"
 
-. "$CRAFTER_HOME/crafter-setenv.sh"
+. "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
 # Execute Groovy scripts
-"$CRAFTER_HOME/groovy/bin/groovy" -cp "$CRAFTER_HOME" -Dgrape.root="$CRAFTER_HOME" "$UPGRADE_HOME/upgrade-target.groovy" "$@"
+"$CRAFTER_BIN_DIR/groovy/bin/groovy" -cp "$CRAFTER_BIN_DIR" -Dgrape.root="$CRAFTER_BIN_DIR" "$UPGRADE_HOME/upgrade-target.groovy" "$@"

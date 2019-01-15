@@ -17,11 +17,11 @@ if [[ $OSARCH -eq "32" ]]; then
   exit 5
 fi
 
-export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
-export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
-export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
+export CRAFTER_BIN_DIR=${CRAFTER_BIN_DIR:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
+export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
+export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_BIN_DIR/crafter-deployer}
 
-. "$CRAFTER_HOME/crafter-setenv.sh"
+. "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
 function help() {
   echo $(basename $BASH_SOURCE)
@@ -58,7 +58,7 @@ function version(){
 }
 
 function manPages(){
-  man "$CRAFTER_HOME/crafter.sh.1"
+  man "$CRAFTER_BIN_DIR/crafter.sh.1"
 }
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
@@ -126,7 +126,7 @@ function stopDeployer() {
 }
 
 function startSolr() {
-  cd $CRAFTER_HOME
+  cd $CRAFTER_BIN_DIR
   echo "------------------------------------------------------------"
   echo "Starting Solr"
   echo "------------------------------------------------------------"
@@ -141,7 +141,7 @@ function startSolr() {
     ## Before run check if the port is available.
     possiblePID=$(pidOf $SOLR_PORT)
     if  [ -z "$possiblePID" ];  then
-      $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -s $SOLR_HOME -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS"
+      $CRAFTER_BIN_DIR/solr/bin/solr start -p $SOLR_PORT -s $SOLR_HOME -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS"
       echo $(pidOf $SOLR_PORT) > $SOLR_PID
     else
       echo $possiblePID > $SOLR_PID
@@ -165,7 +165,7 @@ function startSolr() {
 }
 
 function debugSolr() {
-  cd $CRAFTER_HOME
+  cd $CRAFTER_BIN_DIR
   echo "------------------------------------------------------------"
   echo "Starting Solr"
   echo "------------------------------------------------------------"
@@ -180,7 +180,7 @@ function debugSolr() {
     ## Before run check if the port is available.
     possiblePID=$(pidOf $SOLR_PORT)
     if  [ -z "$possiblePID" ];  then
-      $CRAFTER_HOME/solr/bin/solr start -p $SOLR_PORT -s $SOLR_HOME -Dcrafter.solr.index=$SOLR_INDEXES_DIR \
+      $CRAFTER_BIN_DIR/solr/bin/solr start -p $SOLR_PORT -s $SOLR_HOME -Dcrafter.solr.index=$SOLR_INDEXES_DIR \
       -a "$SOLR_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
       echo $(pidOf $SOLR_PORT) > $SOLR_PID
     else
@@ -205,12 +205,12 @@ function debugSolr() {
 }
 
 function stopSolr() {
-  cd $CRAFTER_HOME
+  cd $CRAFTER_BIN_DIR
   echo "------------------------------------------------------------"
   echo "Stopping Solr"
   echo "------------------------------------------------------------"
   if [ -s "$SOLR_PID" ]; then
-    $CRAFTER_HOME/solr/bin/solr stop
+    $CRAFTER_BIN_DIR/solr/bin/solr stop
     if pgrep -F "$SOLR_PID"
     then
       killPID $SOLR_PID
@@ -230,8 +230,8 @@ function stopSolr() {
 }
 
 function startTomcat() {
-  cd $CRAFTER_HOME
-  if [[ ! -d "$CRAFTER_HOME/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
+  cd $CRAFTER_BIN_DIR
+  if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
     echo "------------------------------------------------------------"
     echo "Starting Tomcat"
     echo "------------------------------------------------------------"
@@ -247,7 +247,7 @@ function startTomcat() {
       possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
       if  [ -z "$possiblePID" ];  then
-        $CRAFTER_HOME/apache-tomcat/bin/catalina.sh start -security
+        $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start -security
       else
         echo $possiblePID > $CATALINA_PID
         echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
@@ -278,8 +278,8 @@ function startTomcat() {
 }
 
 function debugTomcat() {
-  cd $CRAFTER_HOME
-  if [[ ! -d "$CRAFTER_HOME/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
+  cd $CRAFTER_BIN_DIR
+  if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
     echo "------------------------------------------------------------"
     echo "Starting Tomcat"
     echo "------------------------------------------------------------"
@@ -295,7 +295,7 @@ function debugTomcat() {
       possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
       if  [ -z "$possiblePID" ];  then
-        $CRAFTER_HOME/apache-tomcat/bin/catalina.sh jpda start -security
+        $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda start -security
       else
         echo $possiblePID > $CATALINA_PID
         echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
@@ -326,12 +326,12 @@ function debugTomcat() {
 }
 
 function stopTomcat() {
-  cd $CRAFTER_HOME
+  cd $CRAFTER_BIN_DIR
   echo "------------------------------------------------------------"
   echo "Stopping Tomcat"
   echo "------------------------------------------------------------"
   if [ -s "$CATALINA_PID" ]; then
-    $CRAFTER_HOME/apache-tomcat/bin/shutdown.sh -force
+    $CRAFTER_BIN_DIR/apache-tomcat/bin/shutdown.sh -force
     if [ -e "$CATALINA_PID" ]; then
       if pgrep -F "$CATALINA_PID"
       then
@@ -369,11 +369,11 @@ function startMongoDB(){
     fi
 
     if [ ! -d "$MONGODB_HOME" ]; then
-      cd $CRAFTER_HOME
+      cd $CRAFTER_BIN_DIR
       mkdir $MONGODB_HOME
       cd $MONGODB_HOME
       echo "MongoDB not found"
-      java -jar $CRAFTER_HOME/craftercms-utils.jar download mongodb
+      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar download mongodb
       tar xvf mongodb.tgz --strip 1
       rm mongodb.tgz
     fi
@@ -453,7 +453,7 @@ function solrStatus(){
   solrStatusOut=$(curl --silent  -f "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
-    echo `cat "$CRAFTER_ROOT/bin/solr/bin/solr-$SOLR_PORT.pid"`
+    echo `cat "$CRAFTER_HOME/bin/solr/bin/solr-$SOLR_PORT.pid"`
     echo -e  "uptime (in minutes):\t"
     echo "$solrStatusOut"  | python -m json.tool | grep upTimeMS | awk -F"[,|:]" '{print $2}'| awk '{print ($1/1000)/60}'| bc
     echo -e  "Solr Version:\t"
@@ -588,16 +588,16 @@ function status(){
 function doBackup() {
   export TARGET_NAME=$1
   if [ -z "$TARGET_NAME" ]; then
-    if [ -x "$CRAFTER_HOME/dbms/bin/mysqldump" ]; then
+    if [ -x "$CRAFTER_BIN_DIR/dbms/bin/mysqldump" ]; then
       export TARGET_NAME="crafter-authoring-backup"
     else
       export TARGET_NAME="crafter-delivery-backup"
     fi
   fi
   export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
-  export TARGET_FOLDER="$CRAFTER_ROOT/backups"
+  export TARGET_FOLDER="$CRAFTER_HOME/backups"
   export TARGET_FILE="$TARGET_FOLDER/$TARGET_NAME.$CURRENT_DATE.zip"
-  export TEMP_FOLDER="$CRAFTER_ROOT/temp/backup"
+  export TEMP_FOLDER="$CRAFTER_HOME/temp/backup"
 
   echo "------------------------------------------------------------------------"
   echo "Starting backup into $TARGET_FILE"
@@ -610,25 +610,25 @@ function doBackup() {
 
   # MySQL Dump
   if [ -d "$MYSQL_DATA" ]; then
-    if [ -x "$CRAFTER_HOME/dbms/bin/mysqldump" ]; then
+    if [ -x "$CRAFTER_BIN_DIR/dbms/bin/mysqldump" ]; then
       #Do dump
       echo "------------------------------------------------------------------------"
       echo "Backing up mysql"
       echo "------------------------------------------------------------------------"
-      $CRAFTER_HOME/dbms/bin/mysqldump --databases crafter --port=$MARIADB_PORT --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+      $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --port=$MARIADB_PORT --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
       echo -e "SET GLOBAL innodb_large_prefix = TRUE ;\nSET GLOBAL innodb_file_format = 'BARRACUDA' ;\nSET GLOBAL innodb_file_format_max = 'BARRACUDA' ;\nSET GLOBAL innodb_file_per_table = TRUE ;\n$(cat $TEMP_FOLDER/crafter.sql)" > $TEMP_FOLDER/crafter.sql
     fi
   fi
 
   # MongoDB Dump
   if [ -d "$MONGODB_DATA_DIR" ]; then
-    if [ -x "$CRAFTER_HOME/mongodb/bin/mongodump" ]; then
+    if [ -x "$CRAFTER_BIN_DIR/mongodb/bin/mongodump" ]; then
       echo "------------------------------------------------------------------------"
       echo "Backing up mongodb"
       echo "------------------------------------------------------------------------"
-      $CRAFTER_HOME/mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
+      $CRAFTER_BIN_DIR/mongodb/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb" --quiet
       cd "$TEMP_FOLDER/mongodb"
-      java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
+      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
       cd ..
       rm -r mongodb
       cd ..
@@ -640,28 +640,28 @@ function doBackup() {
   echo "Backing up git repos"
   echo "------------------------------------------------------------------------"
   cd "$CRAFTER_DATA_DIR/repos"
-  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/repos.zip"
+  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/repos.zip"
 
   # ZIP solr indexes
   echo "------------------------------------------------------------------------"
   echo "Backing up solr indexes"
   echo "------------------------------------------------------------------------"
   cd "$SOLR_INDEXES_DIR"
-  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
+  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
 
   # ZIP deployer data
   echo "------------------------------------------------------------------------"
   echo "Backing up deployer data"
   echo "------------------------------------------------------------------------"
   cd "$DEPLOYER_DATA_DIR"
-  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/deployer.zip"
+  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/deployer.zip"
 
   # ZIP everything (without compression)
   echo "------------------------------------------------------------------------"
   echo "Packaging everything"
   echo "------------------------------------------------------------------------"
   cd "$TEMP_FOLDER"
-  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TARGET_FILE" true
+  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TARGET_FILE" true
 
   rm -rf "$TEMP_FOLDER"
   echo "Backup completed"
@@ -679,7 +679,7 @@ function doRestore() {
     help
     exit 1
   fi
-  export TEMP_FOLDER="$CRAFTER_ROOT/temp/backup"
+  export TEMP_FOLDER="$CRAFTER_HOME/temp/backup"
 
   read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the\
   existing sites and associated database and replace everything with the restored data. If you\
@@ -701,7 +701,7 @@ function doRestore() {
   mkdir -p "$TEMP_FOLDER"
 
   # UNZIP everything
-  java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$SOURCE_FILE" "$TEMP_FOLDER"
+  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$SOURCE_FILE" "$TEMP_FOLDER"
 
   # MongoDB Dump
   if [ -f "$TEMP_FOLDER/mongodb.zip" ]; then
@@ -709,8 +709,8 @@ function doRestore() {
     echo "Restoring MongoDB"
     echo "------------------------------------------------------------------------"
     startMongoDB
-    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
-    $CRAFTER_HOME/mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
+    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
+    $CRAFTER_BIN_DIR/mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb" --quiet
   fi
 
   # UNZIP git repos
@@ -718,7 +718,7 @@ function doRestore() {
     echo "------------------------------------------------------------------------"
     echo "Restoring git repos"
     echo "------------------------------------------------------------------------"
-    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_DATA_DIR/repos"
+    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_DATA_DIR/repos"
   fi
 
   # UNZIP solr indexes
@@ -726,7 +726,7 @@ function doRestore() {
     echo "------------------------------------------------------------------------"
     echo "Restoring solr indexes"
     echo "------------------------------------------------------------------------"
-    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
+    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
   fi
 
   # UNZIP deployer data
@@ -734,7 +734,7 @@ function doRestore() {
     echo "------------------------------------------------------------------------"
     echo "Restoring deployer data"
     echo "------------------------------------------------------------------------"
-    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
+    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
   fi
 
   # If it is an authoring env then sync the repos
@@ -744,13 +744,13 @@ function doRestore() {
     echo "------------------------------------------------------------------------"
     echo "Starting DB"
     echo "------------------------------------------------------------------------"
-    java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_HOME/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_HOME/mariaDB4j-app.jar &
+    java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
     sleep 30
     # Import
     echo "------------------------------------------------------------------------"
     echo "Restoring DB"
     echo "------------------------------------------------------------------------"
-    $CRAFTER_HOME/dbms/bin/mysql --user=root --port=$MARIADB_PORT --protocol=TCP --binary-mode < "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_BIN_DIR/dbms/bin/mysql --user=root --port=$MARIADB_PORT --protocol=TCP --binary-mode < "$TEMP_FOLDER/crafter.sql"
     # Stop DB
     echo "------------------------------------------------------------------------"
     echo "Stopping DB"

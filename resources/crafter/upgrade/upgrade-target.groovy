@@ -25,6 +25,7 @@ import static utils.ScriptUtils.*
  */
 def buildCli(cli) {
     cli.h(longOpt: 'help', 'Show usage information')
+    cli.f(longOpt: 'full', 'Deprecated option. Since 3.0.19, a full upgrade is always executed')
 }
 
 /**
@@ -57,8 +58,8 @@ def backupData(binFolder, dataFolder) {
     if (Files.exists(dataFolder.resolve("repos"))) {
         def setupCallback = { pb ->
             def env = pb.environment()
-            env.remove("CRAFTER_ROOT")
             env.remove("CRAFTER_HOME")
+            env.remove("CRAFTER_BIN_DIR")
         }
 
         executeCommand([SystemUtils.IS_OS_WINDOWS ? "crafter.bat" : "./crafter.sh", "backup"], binFolder, setupCallback)
@@ -98,8 +99,8 @@ def shutdownCrafter(binFolder) {
 
     def setupCallback = { pb ->
         def env = pb.environment()
-        env.remove("CRAFTER_ROOT")
         env.remove("CRAFTER_HOME")
+        env.remove("CRAFTER_BIN_DIR")
     }
 
     executeCommand([SystemUtils.IS_OS_WINDOWS ? "shutdown.bat" : "./shutdown.sh"], binFolder, setupCallback)
@@ -187,9 +188,9 @@ def upgrade(targetFolder, environmentName) {
     def newBinFolder = getCrafterBinFolder()
 
     shutdownCrafter(binFolder)
-    backupData(binFolder, dataFolder)
     backupBin(binFolder, backupsFolder, environmentName)
     doUpgrade(binFolder, newBinFolder)
+    //backupData(binFolder, dataFolder)
 
     println "============================================================"
     println "Upgrade complete"
@@ -212,7 +213,7 @@ if (options) {
     }
 
     // Parse the options and arguments
-    def extraArguments = options.arguments();
+    def extraArguments = options.arguments()
     if (CollectionUtils.isNotEmpty(extraArguments)) {
         def targetPath = extraArguments[0]
         def targetFolder = Paths.get(targetPath)

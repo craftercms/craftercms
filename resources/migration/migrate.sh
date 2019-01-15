@@ -1,8 +1,8 @@
 #!/bin/bash
 
 export MIGRATION_TOOL_HOME=${MIGRATION_TOOL_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
-export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$MIGRATION_TOOL_HOME/.." && pwd )}
-export CRAFTER_ROOT=${CRAFTER_ROOT:=$( cd "$CRAFTER_HOME/.." && pwd )}
+export CRAFTER_BIN_DIR=${CRAFTER_BIN_DIR:=$( cd "$MIGRATION_TOOL_HOME/.." && pwd )}
+export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
 . "$MIGRATION_TOOL_HOME/setenv.sh"
 

@@ -227,8 +227,8 @@ grant {
     permission javax.management.MBeanPermission "*", "*";
     permission javax.management.MBeanServerPermission "*";
     permission javax.management.MBeanTrustPermission "register";
-    permission java.io.FilePermission "${crafter.home}", "read";
-    permission java.io.FilePermission "${crafter.home}/-", "read, write, delete, execute, readlink";
+    permission java.io.FilePermission "${crafter.bin.dir}", "read";
+    permission java.io.FilePermission "${crafter.bin.dir}/-", "read, write, delete, execute, readlink";
     permission java.io.FilePermission "${crafter.data.dir}", "read";
     permission java.io.FilePermission "${crafter.data.dir}/-", "read, write, delete, execute, readlink";
     permission java.io.FilePermission "${crafter.logs.dir}", "read";

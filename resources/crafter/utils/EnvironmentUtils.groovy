@@ -42,31 +42,31 @@ class EnvironmentUtils {
     }
 
     /**
-     * Returns the root folder for the Crafter installation.
+     * Returns the home folder for the Crafter installation.
      */
-    static Path getCrafterRootFolder() {
-        return Paths.get(getEnv("CRAFTER_ROOT"))
+    static Path getCrafterHomeFolder() {
+        return Paths.get(getEnv("CRAFTER_HOME"))
     }
 
     /**
      * Returns the bin folder for the Crafter installation.
      */
     static Path getCrafterBinFolder() {
-        return getCrafterRootFolder().resolve("bin")
+        return getCrafterHomeFolder().resolve("bin")
     }
 
     /**
      * Returns the data folder for the Crafter installation.
      */
     static Path getCrafterDataFolder() {
-        return getCrafterRootFolder().resolve("data")
+        return getCrafterHomeFolder().resolve("data")
     }
 
     /**
      * Returns the backups folder for the Crafter installation.
      */
     static Path getCrafterBackupsFolder() {
-        return getCrafterRootFolder().resolve("backups")
+        return getCrafterHomeFolder().resolve("backups")
     }
 
     /**
