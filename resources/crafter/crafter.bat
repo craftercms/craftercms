@@ -148,7 +148,7 @@ goto cleanOnExit
 :backup
 SET TARGET_NAME=%2
 IF NOT DEFINED TARGET_NAME (
-  IF EXIST "%CRAFTER_BIN_DIR%\dbms\bin\mysqldump.exe" (
+  IF EXIST "%CRAFTER_BIN_DIR%\apache-tomcat\webapps\studio.war" (
     SET TARGET_NAME=crafter-authoring-backup
   ) ELSE (
     SET TARGET_NAME=crafter-delivery-backup
@@ -165,38 +165,38 @@ SET TEMP_FOLDER="%CRAFTER_HOME%\temp\backup"
 echo ------------------------------------------------------------------------
 echo Starting backup into %TARGET_FILE%
 echo ------------------------------------------------------------------------
-md "%TEMP_FOLDER%"
-md "%CRAFTER_HOME%\backups"
+IF NOT EXIST "%TEMP_FOLDER%" md "%TEMP_FOLDER%"
+IF NOT EXIST "%CRAFTER_HOME%\backups" md "%CRAFTER_HOME%\backups"
 
 REM MySQL Dump
 IF EXIST "%MYSQL_DATA%" (
-  IF EXIST "%CRAFTER_BIN_DIR%\dbms\bin\mysqldump.exe" (
-    netstat -o -n -a | findstr  "0.0.0.0:%MARIADB_PORT%"
-    IF !ERRORLEVEL! neq 0 (
-      echo ------------------------------------------------------------------------
-      echo Starting DB
-      echo ------------------------------------------------------------------------
-      start java -jar -DmariaDB4j.port=%MARIADB_PORT% -DmariaDB4j.baseDir="%CRAFTER_BIN_DIR%\dbms" -DmariaDB4j.dataDir="%MYSQL_DATA%" "%CRAFTER_BIN_DIR%\mariaDB4j-app.jar"
-      timeout /nobreak /t 30
-      set start_db=true
-    )
+  netstat -o -n -a | findstr  "0.0.0.0:%MARIADB_PORT%"
+  IF !ERRORLEVEL! neq 0 (
+    IF NOT EXIST "%CRAFTER_BIN_DIR%\dbms" md "%CRAFTER_BIN_DIR%\dbms
 
     echo ------------------------------------------------------------------------
-    echo Backing up MySQL
+    echo Starting DB
     echo ------------------------------------------------------------------------
-    start /w "MySQL Dump" "%CRAFTER_BIN_DIR%\dbms\bin\mysqldump.exe" --databases crafter --port=%MARIADB_PORT% --protocol=tcp --user=root --result-file="%TEMP_FOLDER%\crafter.sql"
-    echo SET GLOBAL innodb_large_prefix = TRUE ; SET GLOBAL innodb_file_format = 'BARRACUDA' ; SET GLOBAL innodb_file_format_max = 'BARRACUDA' ; SET GLOBAL innodb_file_per_table = TRUE ; > "%TEMP_FOLDER%\temp.txt"
-    type "%TEMP_FOLDER%\crafter.sql" >> "%TEMP_FOLDER%\temp.txt"
-    move /y "%TEMP_FOLDER%\temp.txt" "%TEMP_FOLDER%\crafter.sql"
+    start java -jar -DmariaDB4j.port=%MARIADB_PORT% -DmariaDB4j.baseDir="%CRAFTER_BIN_DIR%\dbms" -DmariaDB4j.dataDir="%MYSQL_DATA%" "%CRAFTER_BIN_DIR%\mariaDB4j-app.jar"
+    timeout /nobreak /t 60
+    set start_db=true
+  )
 
-    IF /i "!start_db!"=="true" (
-      echo ------------------------------------------------------------------------
-      echo Stopping DB
-      echo ------------------------------------------------------------------------
-      set /p pid=<mariadb4j.pid
-      taskkill /pid !pid! /t /f
-      timeout /nobreak /t 5
-    )
+  echo ------------------------------------------------------------------------
+  echo Backing up MySQL
+  echo ------------------------------------------------------------------------
+  start /w "MySQL Dump" "%CRAFTER_BIN_DIR%\dbms\bin\mysqldump.exe" --databases crafter --port=%MARIADB_PORT% --protocol=tcp --user=root --result-file="%TEMP_FOLDER%\crafter.sql"
+  echo SET GLOBAL innodb_large_prefix = TRUE ; SET GLOBAL innodb_file_format = 'BARRACUDA' ; SET GLOBAL innodb_file_format_max = 'BARRACUDA' ; SET GLOBAL innodb_file_per_table = TRUE ; > "%TEMP_FOLDER%\temp.txt"
+  type "%TEMP_FOLDER%\crafter.sql" >> "%TEMP_FOLDER%\temp.txt"
+  move /y "%TEMP_FOLDER%\temp.txt" "%TEMP_FOLDER%\crafter.sql"
+
+  IF /i "!start_db!"=="true" (
+    echo ------------------------------------------------------------------------
+    echo Stopping DB
+    echo ------------------------------------------------------------------------
+    set /p pid=<mariadb4j.pid
+    taskkill /pid !pid! /t /f
+    timeout /nobreak /t 10
   )
 )
 
@@ -338,7 +338,7 @@ IF EXIST "%TEMP_FOLDER%\crafter.sql" (
   echo Starting DB
   echo ------------------------------------------------------------------------
   start java -jar -DmariaDB4j.port=%MARIADB_PORT% -DmariaDB4j.baseDir="%CRAFTER_BIN_DIR%\dbms" -DmariaDB4j.dataDir="%MYSQL_DATA%" "%CRAFTER_BIN_DIR%\mariaDB4j-app.jar"
-  timeout /nobreak /t 30
+  timeout /nobreak /t 60
   REM Import
   echo ------------------------------------------------------------------------
   echo Restoring DB
@@ -351,7 +351,7 @@ IF EXIST "%TEMP_FOLDER%\crafter.sql" (
   echo ------------------------------------------------------------------------
   set /p pid=<mariadb4j.pid
   taskkill /pid !pid! /t /f
-  timeout /nobreak /t 5
+  timeout /nobreak /t 10
 )
 
 rd /S /Q "%TEMP_FOLDER%"
