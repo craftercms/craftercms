@@ -603,7 +603,7 @@ function status(){
 function doBackup() {
   export TARGET_NAME=$1
   if [ -z "$TARGET_NAME" ]; then
-    if [ -x "$CRAFTER_BIN_DIR/dbms/bin/mysqldump" ]; then
+    if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/studio.war" ]; then
       export TARGET_NAME="crafter-authoring-backup"
     else
       export TARGET_NAME="crafter-delivery-backup"
@@ -619,39 +619,40 @@ function doBackup() {
   echo "------------------------------------------------------------------------"
   mkdir -p "$TEMP_FOLDER"
   mkdir -p "$TARGET_FOLDER"
+
   if [ -f "$TARGET_FILE" ]; then
     rm "$TARGET_FILE"
   fi
 
   # MySQL Dump
   if [ -d "$MYSQL_DATA" ]; then
-    if [ -x "$CRAFTER_BIN_DIR/dbms/bin/mysqldump" ]; then
-      # Start DB if necessary
-      DB_STARTED=false
-      if [ -z $(pidOf "$MARIADB_PORT") ]; then
-        echo "------------------------------------------------------------------------"
-        echo "Starting DB"
-        echo "------------------------------------------------------------------------"
-        java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-        sleep 30
-        DB_STARTED=true
-      fi
+    # Start DB if necessary
+    DB_STARTED=false
+    if [ -z $(pidOf "$MARIADB_PORT") ]; then
+      mkdir -p "$CRAFTER_BIN_DIR/dbms"
 
-      #Do dump
       echo "------------------------------------------------------------------------"
-      echo "Backing up mysql"
+      echo "Starting DB"
       echo "------------------------------------------------------------------------"
-      $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --port=$MARIADB_PORT --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
-      echo -e "SET GLOBAL innodb_large_prefix = TRUE ;\nSET GLOBAL innodb_file_format = 'BARRACUDA' ;\nSET GLOBAL innodb_file_format_max = 'BARRACUDA' ;\nSET GLOBAL innodb_file_per_table = TRUE ;\n$(cat $TEMP_FOLDER/crafter.sql)" > $TEMP_FOLDER/crafter.sql
+      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
+      sleep 60
+      DB_STARTED=true
+    fi
 
-      if [ "$DB_STARTED" = true ]; then
-        # Stop DB
-        echo "------------------------------------------------------------------------"
-        echo "Stopping DB"
-        echo "------------------------------------------------------------------------"
-        kill $(cat mariadb4j.pid)
-        sleep 10
-      fi
+    #Do dump
+    echo "------------------------------------------------------------------------"
+    echo "Backing up mysql"
+    echo "------------------------------------------------------------------------"
+    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --port=$MARIADB_PORT --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+    echo -e "SET GLOBAL innodb_large_prefix = TRUE ;\nSET GLOBAL innodb_file_format = 'BARRACUDA' ;\nSET GLOBAL innodb_file_format_max = 'BARRACUDA' ;\nSET GLOBAL innodb_file_per_table = TRUE ;\n$(cat $TEMP_FOLDER/crafter.sql)" > $TEMP_FOLDER/crafter.sql
+
+    if [ "$DB_STARTED" = true ]; then
+      # Stop DB
+      echo "------------------------------------------------------------------------"
+      echo "Stopping DB"
+      echo "------------------------------------------------------------------------"
+      kill $(cat mariadb4j.pid)
+      sleep 10
     fi
   fi
 
@@ -786,7 +787,7 @@ function doRestore() {
     echo "Starting DB"
     echo "------------------------------------------------------------------------"
     java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-    sleep 30
+    sleep 60
     # Import
     echo "------------------------------------------------------------------------"
     echo "Restoring DB"
