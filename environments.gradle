@@ -74,7 +74,6 @@ task("authoringPostEnvironment") {
                                            SOLR_PORT_D      : String.valueOf(authSolrDebugPort),
                                            DEPLOYER_D_PORT  : String.valueOf(authDeployerDebugPort),
                                            DEPLOYER_PORT    : String.valueOf(authDeployerPort),
-                                           DEPLOYMENT_DIR   : String.valueOf(authDeploymentDir),
                                            MARIADB_PORT     : String.valueOf(authMariaDbPort),
                                            TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
                                            MONGODB_PORT     : String.valueOf(authMongoDBPort),
@@ -82,7 +81,6 @@ task("authoringPostEnvironment") {
                                            VERSION          : project.version,
                                            GIT_BUILD_ID     : gitRevisionId,
                                            SMTP_PORT        : String.valueOf(authSMTPPort)
-
             ])
         }
 
@@ -182,7 +180,6 @@ task("deliveryPostEnvironment") {
                                            SOLR_PORT_D      : String.valueOf(deliverySolrDebugPort),
                                            DEPLOYER_D_PORT  : String.valueOf(deliveryDeployerDebugPort),
                                            DEPLOYER_PORT    : String.valueOf(deliveryDeployerPort),
-                                           DEPLOYMENT_DIR   : String.valueOf(deliveryDeploymentDir),
                                            TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
                                            MONGODB_PORT     : String.valueOf(deliveryMongoDBPort),
                                            ENV              : "delivery",
