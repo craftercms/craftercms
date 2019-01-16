@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import upgrade.hooks.UpgradeHooks
 
 @Grapes([
@@ -17,6 +34,7 @@ import org.apache.commons.lang3.SystemUtils
 import utils.NioUtils
 
 import static java.nio.file.StandardCopyOption.*
+import static upgrade.utils.UpgradeUtils.*
 import static utils.EnvironmentUtils.*
 import static utils.ScriptUtils.*
 
@@ -50,31 +68,30 @@ def exitWithError(cli, msg) {
 /**
  * Backups the data.
  */
-def backupData(binFolder, dataFolder) {
-    println "============================================================"
+def backupData(binFolder) {
+    println "========================================================================"
     println "Backing up data"
-    println "============================================================"
+    println "========================================================================"
 
-    if (Files.exists(dataFolder.resolve("repos"))) {
-        def setupCallback = { pb ->
-            def env = pb.environment()
+    def setupCallback = { pb ->
+        def env = pb.environment()
             env.remove("CRAFTER_HOME")
+            env.remove("DEPLOYER_HOME")
             env.remove("CRAFTER_BIN_DIR")
-        }
-
-        executeCommand([SystemUtils.IS_OS_WINDOWS ? "crafter.bat" : "./crafter.sh", "backup"], binFolder, setupCallback)
-    } else {
-        println "No repos folder found @ ${dataFolder}. Skipping data backup"
+            env.remove("CRAFTER_DATA_DIR")
+            env.remove("CRAFTER_LOGS_DIR")
     }
+
+    executeCommand([SystemUtils.IS_OS_WINDOWS ? "crafter.bat" : "./crafter.sh", "backup"], binFolder, setupCallback)
 }
 
 /**
  * Backups the bin folder.
  */
 def backupBin(binFolder, backupsFolder, environmentName) {
-    println "============================================================"
+    println "========================================================================"
     println "Backing up bin"
-    println "============================================================"
+    println "========================================================================"
 
     def timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())
 
@@ -93,14 +110,17 @@ def backupBin(binFolder, backupsFolder, environmentName) {
  * Shutdowns Crafter.
  */
 def shutdownCrafter(binFolder) {
-    println "============================================================"
+    println "========================================================================"
     println "Shutting down Crafter"
-    println "============================================================"
+    println "========================================================================"
 
     def setupCallback = { pb ->
         def env = pb.environment()
-        env.remove("CRAFTER_HOME")
-        env.remove("CRAFTER_BIN_DIR")
+            env.remove("CRAFTER_HOME")
+            env.remove("DEPLOYER_HOME")
+            env.remove("CRAFTER_BIN_DIR")
+            env.remove("CRAFTER_DATA_DIR")
+            env.remove("CRAFTER_LOGS_DIR")
     }
 
     executeCommand([SystemUtils.IS_OS_WINDOWS ? "shutdown.bat" : "./shutdown.sh"], binFolder, setupCallback)
@@ -114,13 +134,13 @@ def shutdownCrafter(binFolder) {
 /**
  * Does the actual upgrade
  */
-def doUpgrade(binFolder, newBinFolder) {
-    def upgradeHooks = new UpgradeHooks(binFolder, newBinFolder)
+def doUpgrade(binFolder, newBinFolder, previousVersion, upgradeVersion) {
+    def upgradeHooks = new UpgradeHooks(binFolder, newBinFolder, previousVersion, upgradeVersion)
         upgradeHooks.preUpgrade()
 
-    println "============================================================"
+    println "========================================================================"
     println "Upgrading Crafter"
-    println "============================================================"
+    println "========================================================================"
 
     def sharedFolder = binFolder.resolve("apache-tomcat/shared")
     def newSharedFolder = newBinFolder.resolve("apache-tomcat/shared")
@@ -183,20 +203,26 @@ def doUpgrade(binFolder, newBinFolder) {
  */
 def upgrade(targetFolder, environmentName) {
     def binFolder = targetFolder.resolve("bin")
-    def dataFolder = targetFolder.resolve("data")
     def backupsFolder = targetFolder.resolve("backups")
     def newBinFolder = getCrafterBinFolder()
+    def previousVersion = readVersionFile(binFolder)
+    def upgradeVersion = readVersionFile(newBinFolder)
 
-    shutdownCrafter(binFolder)
-    backupBin(binFolder, backupsFolder, environmentName)
-    doUpgrade(binFolder, newBinFolder)
-    //backupData(binFolder, dataFolder)
+    if (previousVersion != upgradeVersion) {
+        shutdownCrafter(binFolder)
+        backupBin(binFolder, backupsFolder, environmentName)
+        doUpgrade(binFolder, newBinFolder, previousVersion, upgradeVersion)
+        backupData(binFolder)
 
-    println "============================================================"
-    println "Upgrade complete"
-    println "============================================================"
-    println "Please read the release notes before starting Crafter again for any additional changes you need to " +
-            "manually apply"
+        println "========================================================================"
+        println "Upgrade complete"
+        println "========================================================================"
+        println "Please read the release notes before starting Crafter again for any additional changes you need to " +
+                "manually apply"
+    } else {
+        println "Trying to upgrade an installation in version ${previousVersion} to same version ${upgradeVersion}. " +
+                "Upgrade cancelled"
+    }
 }
 
 checkDownloadGrapesOnlyMode(getClass())

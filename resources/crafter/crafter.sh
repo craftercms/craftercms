@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+# Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 if [ "$(whoami)" == "root" ]; then
   echo -e "\033[38;5;196m"
   echo -e "Crafter CMS cowardly refuses to run as root."
@@ -611,12 +626,32 @@ function doBackup() {
   # MySQL Dump
   if [ -d "$MYSQL_DATA" ]; then
     if [ -x "$CRAFTER_BIN_DIR/dbms/bin/mysqldump" ]; then
+      # Start DB if necessary
+      DB_STARTED=false
+      if [ -z $(pidOf "$MARIADB_PORT") ]; then
+        echo "------------------------------------------------------------------------"
+        echo "Starting DB"
+        echo "------------------------------------------------------------------------"
+        java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
+        sleep 30
+        DB_STARTED=true
+      fi
+
       #Do dump
       echo "------------------------------------------------------------------------"
       echo "Backing up mysql"
       echo "------------------------------------------------------------------------"
       $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --port=$MARIADB_PORT --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
       echo -e "SET GLOBAL innodb_large_prefix = TRUE ;\nSET GLOBAL innodb_file_format = 'BARRACUDA' ;\nSET GLOBAL innodb_file_format_max = 'BARRACUDA' ;\nSET GLOBAL innodb_file_per_table = TRUE ;\n$(cat $TEMP_FOLDER/crafter.sql)" > $TEMP_FOLDER/crafter.sql
+
+      if [ "$DB_STARTED" = true ]; then
+        # Stop DB
+        echo "------------------------------------------------------------------------"
+        echo "Stopping DB"
+        echo "------------------------------------------------------------------------"
+        kill $(cat mariadb4j.pid)
+        sleep 10
+      fi
     fi
   fi
 
@@ -636,25 +671,31 @@ function doBackup() {
   fi
 
   # ZIP git repos
-  echo "------------------------------------------------------------------------"
-  echo "Backing up git repos"
-  echo "------------------------------------------------------------------------"
-  cd "$CRAFTER_DATA_DIR/repos"
-  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/repos.zip"
+  if [ -d "$CRAFTER_DATA_DIR/repos" ]; then
+   echo "------------------------------------------------------------------------"
+   echo "Backing up git repos"
+   echo "------------------------------------------------------------------------"
+   cd "$CRAFTER_DATA_DIR/repos"
+   java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/repos.zip"
+  fi
 
   # ZIP solr indexes
-  echo "------------------------------------------------------------------------"
-  echo "Backing up solr indexes"
-  echo "------------------------------------------------------------------------"
-  cd "$SOLR_INDEXES_DIR"
-  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
+  if [ -d "$SOLR_INDEXES_DIR" ]; then
+   echo "------------------------------------------------------------------------"
+   echo "Backing up solr indexes"
+   echo "------------------------------------------------------------------------"
+   cd "$SOLR_INDEXES_DIR"
+   java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
+  fi
 
   # ZIP deployer data
-  echo "------------------------------------------------------------------------"
-  echo "Backing up deployer data"
-  echo "------------------------------------------------------------------------"
-  cd "$DEPLOYER_DATA_DIR"
-  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/deployer.zip"
+  if [ -d "$DEPLOYER_DATA_DIR" ]; then
+   echo "------------------------------------------------------------------------"
+   echo "Backing up deployer data"
+   echo "------------------------------------------------------------------------"
+   cd "$DEPLOYER_DATA_DIR"
+   java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/deployer.zip"
+  fi
 
   # ZIP everything (without compression)
   echo "------------------------------------------------------------------------"
