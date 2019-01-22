@@ -275,7 +275,7 @@ envs.each { env ->
             }
             
             copy {
-                from "./src/search/crafter-search-provider/solr/configsets"
+                from "./src/search/crafter-search-solr-provider/solr/configsets"
                 into "${path}/bin/solr/server/solr/configsets"
                 eachFile {
                     if (it.relativePath.getFile(file("${path}/bin/solr/server/solr/configsets")).exists() && !forceDeploy) {

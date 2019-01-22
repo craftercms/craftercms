@@ -149,7 +149,7 @@ ext {
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
-            "search"  : "./src/search/crafter-search-server/target/crafter-search.war",
+            "search"  : "./src/search/crafter-search-solr-server/target/crafter-search.war",
             "profile" : "./src/profile/server/target/crafter-profile.war",
             "engine"  : "./src/engine/target/ROOT.war",
             "deployer": "./src/deployer/target/crafter-deployer-exec.jar",
@@ -229,7 +229,7 @@ buildModules.each { module ->
                 }
                 if (module.equalsIgnoreCase("search")) {
                     actualCommandLinePost.add("-pl")
-                    actualCommandLinePost.add("!crafter-search-itest")
+                    actualCommandLinePost.add("!crafter-search-solr-itest")
                 } else if (module.equalsIgnoreCase("profile")) {
                     actualCommandLinePost.add("-pl")
                     if (!includeProfile) {
