@@ -49,6 +49,7 @@ ext {
     groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.5.0"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.24"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.5.0"
+    elasticSearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.5.3"
     mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.2.7"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     /** Environment Building properties **/
@@ -79,6 +80,7 @@ ext {
     authMongoDBPort = project.hasProperty("authoring.mongo.port") ? project.property("authoring.mongo.port") : 27020
     authSolrPort = project.hasProperty("authoring.solr.port") ? project.property("authoring.solr.port") : 8694
     authSolrDebugPort = project.hasProperty("authoring.solr.debug.port") ? project.property("authoring.solr.debug.port") : 5005
+    authElasticSearchPort = project.hasProperty("authoring.elasticsearch.port") ? project.property("authoring.elasticsearch.port") : 9201
     authSMTPPort = project.hasProperty("authoring.studio.smtp.port") ? project.property("authoring.studio.smtp.port") : 25
     authMariaDbPort = project.hasProperty("authoring.mariadb.port") ? project.property("authoring.mariadb.port") : 33306
 
@@ -89,6 +91,8 @@ ext {
     // Delivery
     deliverySolrPort = project.hasProperty("delivery.solr.port") ? project.property("delivery.solr.port") : 8695
     deliverySolrDebugPort = project.hasProperty("delivery.solr.debug.port") ? project.property("delivery.solr.debug.port") : 5006
+
+    deliveryElasticSearchPort = project.hasProperty("delivery.elasticsearch.port") ? project.property("delivery.elasticsearch.port") : 9202
 
     deliveryDeployerPort = project.hasProperty("delivery.deployer.port") ? project.property("delivery.deployer.port") : 9192
     deliveryDeployerDebugPort = project.hasProperty("delivery.deployer.debug.port") ? project.property("delivery.deployer.debug.port") : 5001
@@ -133,6 +137,8 @@ ext {
                 ",src/test/resources/testng_StudioAPI2.xml"
 
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
+    withElasticSearch = project.hasProperty("withElasticSearch") ? project.property("withElasticSearch") : true
+    withSolr = project.hasProperty("withSolr") ? project.property("withSolr") : false
     silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent") : false
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
 
@@ -143,7 +149,7 @@ ext {
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
-            "search"  : "./src/search/crafter-search-server/target/crafter-search.war",
+            "search"  : "./src/search/crafter-search-solr-server/target/crafter-search.war",
             "profile" : "./src/profile/server/target/crafter-profile.war",
             "engine"  : "./src/engine/target/ROOT.war",
             "deployer": "./src/deployer/target/crafter-deployer-exec.jar",
@@ -223,7 +229,7 @@ buildModules.each { module ->
                 }
                 if (module.equalsIgnoreCase("search")) {
                     actualCommandLinePost.add("-pl")
-                    actualCommandLinePost.add("!crafter-search-itest")
+                    actualCommandLinePost.add("!crafter-search-solr-itest")
                 } else if (module.equalsIgnoreCase("profile")) {
                     actualCommandLinePost.add("-pl")
                     if (!includeProfile) {
@@ -318,6 +324,12 @@ envs.each { env ->
             def extraStartupParams = []
             if (startMongodb) {
                 extraStartupParams.add("forceMongo")
+            }
+            if (!withElasticSearch) {
+              extraStartupParams.add("skipElasticSearch")
+            }
+            if (withSolr) {
+              extraStartupParams.add("withSolr")
             }
             def path = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
             if (!file(path).exists()) {
@@ -677,7 +689,7 @@ dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
 dependsOnOrdered(init, initDeps)
 dependsOnOrdered(update, updateDeps)
-dependsOnOrdered(deploy, [preDeploy, downloadGroovy, downloadTomcat, downloadSolr, downloadMariaDB4j, utils] + envDepends + deliveryDeps)
+dependsOnOrdered(deploy, [preDeploy, downloadGroovy, downloadTomcat, downloadSolr, downloadElasticSearch, downloadMariaDB4j, utils] + envDepends + deliveryDeps)
 dependsOnOrdered(upgrade, [update, preUpgrade, build, deploy])
 
 // If delivery no test (for now)

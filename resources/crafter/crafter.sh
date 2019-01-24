@@ -25,15 +25,18 @@ export DEPLOYER_HOME=${DEPLOYER_HOME:=$CRAFTER_HOME/crafter-deployer}
 
 function help() {
   echo $(basename $BASH_SOURCE)
-  echo "    start [forceMongo], Starts Tomcat, Deployer and Solr, if forceMongo Mongodb will be run"
+  echo "    start [forceMongo] [withSolr] [skipElasticSearch], Starts Tomcat, Deployer and Solr, if forceMongo Mongodb will be run"
   echo "    stop  [forceMongo], Stops Tomcat, Deployer and Solr if forceMongo Mongodb will be run"
-  echo "    debug [forceMongo], Starts Tomcat, Deployer and Solr in debug mode if forceMongo Mongodb will be run"
+  echo "    debug [forceMongo] [withSolr] [skipElasticSearch], Starts Tomcat, Deployer and Solr in debug mode if forceMongo Mongodb will be run"
   echo "    start_deployer, Starts Deployer"
   echo "    stop_deployer, Stops Deployer"
   echo "    debug_deployer, Starts Deployer in debug mode"
   echo "    start_solr, Starts Solr"
   echo "    stop_solr, Stops Solr"
   echo "    debug_solr, Starts Solr in debug mode"
+  echo "    start_elasticsearch, Starts ElasticSearch"
+  echo "    stop_elasticsearch, Stops ElasticSearch"
+  echo "    debug_elasticsearch, Starts ElasticSearch in debug mode"
   echo "    start_tomcat, Starts Tomcat"
   echo "    stop_tomcat, Stops Tomcat"
   echo "    debug_tomcat, Starts Tomcat in debug mode"
@@ -43,6 +46,7 @@ function help() {
   echo "    status_tomcat,Status of Tomcat"
   echo "    status_deployer, Status of Deployer"
   echo "    status_solr, Status of Solr"
+  echo "    status_elasticsearch, Status of ElasticSearch"
   echo "    status_mariadb, Status of MariaDB"
   echo "    status_mongodb, Status of MonoDb"
   echo "    backup <name>, Perform a backup of all data"
@@ -53,7 +57,7 @@ function help() {
 }
 
 function version(){
-  echo "Copyright (C) 2007-2018 Crafter Software Corporation. All rights reserved."
+  echo "Copyright (C) 2007-2019 Crafter Software Corporation. All rights reserved."
   echo "Version @VERSION@-@GIT_BUILD_ID@"
 }
 
@@ -61,14 +65,14 @@ function manPages(){
   man "$CRAFTER_HOME/crafter.sh.1"
 }
 function pidOf(){
-  pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)
+  pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID | uniq)
   echo $pid
 }
 
 function killPID(){
   pkill -15 -F "$1"
   sleep 5 # % mississippis
-  if pgrep -F "$1"
+  if [ -s "$1" ] && pgrep -F "$1" > /dev/null
   then
     pkill -9 -F "$1" # force kill
   fi
@@ -154,7 +158,7 @@ function startSolr() {
     if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
       exit 6
     fi
-    if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
+    if ! pgrep -u $(whoami) -F "$SOLR_PID" >/dev/null
     then
       echo "Solr Pid file is not ok, forcing startup"
       rm "$SOLR_PID"
@@ -194,7 +198,7 @@ function debugSolr() {
     if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
       exit 6
     fi
-    if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
+    if ! pgrep -u $(whoami) -F "$SOLR_PID" >/dev/null
     then
       echo "Solr Pid file is not ok, forcing startup"
       rm "$SOLR_PID"
@@ -211,7 +215,7 @@ function stopSolr() {
   echo "------------------------------------------------------------"
   if [ -s "$SOLR_PID" ]; then
     $CRAFTER_HOME/solr/bin/solr stop
-    if pgrep -F "$SOLR_PID"
+    if pgrep -F "$SOLR_PID" > /dev/null
     then
       killPID $SOLR_PID
     fi
@@ -226,6 +230,124 @@ function stopSolr() {
       killPID $SOLR_PID
     fi
     echo "Solr already shutdown or pid $SOLR_PID file not found";
+  fi
+}
+
+function startElasticSearch() {
+  cd $CRAFTER_HOME
+  echo "------------------------------------------------------------"
+  echo "Starting ElasticSearch"
+  echo "------------------------------------------------------------"
+  if [ ! -d $ES_INDEXES_DIR ]; then
+    mkdir -p $ES_INDEXES_DIR;
+  fi
+  if [ ! -d $ES_LOGS_DIR ]; then
+    mkdir -p $ES_LOGS_DIR;
+  fi
+
+  if [ ! -s "$ES_PID" ]; then
+    ## Before run check if the port is available.
+    possiblePID=$(pidOf $ES_PORT)
+    if  [ -z "$possiblePID" ];  then
+      $CRAFTER_HOME/elasticsearch/bin/elasticsearch -d -p $ES_PID
+    else
+      echo $possiblePID > $ES_PID
+      echo "Process PID $possiblePID is listening port $ES_PORT"
+      echo "Hijacking PID and saving into $ES_PID"
+      exit 0
+    fi
+  else
+    # IS it really up ?
+    if ! checkPortForRunning $ES_PORT $(cat "$ES_PID");then
+      exit 6
+    fi
+    if ! pgrep -u $(whoami) -F "$ES_PID" >/dev/null
+    then
+      echo "ElasticSearch Pid file is not ok, forcing startup"
+      rm "$ES_PID"
+      startElasticSearch
+    fi
+    echo "ElasticSearch already started"
+  fi
+}
+
+function debugElasticSearch() {
+  cd $CRAFTER_HOME
+  echo "------------------------------------------------------------"
+  echo "Starting ElasticSearch"
+  echo "------------------------------------------------------------"
+  if [ ! -d $ES_INDEXES_DIR ]; then
+    mkdir -p $ES_INDEXES_DIR;
+  fi
+  if [ ! -d $ES_LOGS_DIR ]; then
+    mkdir -p $ES_LOGS_DIR;
+  fi
+
+  if [ ! -s "$ES_PID" ]; then
+    ## Before run check if the port is available.
+    possiblePID=$(pidOf $ES_PORT)
+    if  [ -z "$possiblePID" ];  then
+      export ES_JAVA_OPTS="$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045"
+      $CRAFTER_HOME/elasticsearch/bin/elasticsearch -d -p $ES_PID
+    else
+      echo $possiblePID > $ES_PID
+      echo "Process PID $possiblePID is listening port $ES_PORT"
+      echo "Hijacking PID and saving into $ES_PID"
+      exit 0
+    fi
+  else
+    # IS it really up ?
+    if ! checkPortForRunning $ES_PORT $(cat "$ES_PID");then
+      exit 6
+    fi
+    if ! pgrep -u $(whoami) -F "$ES_PID" >/dev/null
+    then
+      echo "ElasticSearch Pid file is not ok, forcing startup"
+      rm "$ES_PID"
+      startElasticSearch
+    fi
+    echo "ElasticSearch already started"
+  fi
+}
+
+function stopElasticSearch() {
+  cd $CRAFTER_HOME
+  echo "------------------------------------------------------------"
+  echo "Stopping ElasticSearch"
+  echo "------------------------------------------------------------"
+  if [ -s "$ES_PID" ]; then
+    if pgrep -F "$ES_PID" > /dev/null
+    then
+      killPID $ES_PID
+    fi
+  else
+    pid=$(pidOf $ES_PORT)
+    if [ ! -z $pid ]; then
+      echo "$pid" > $ES_PID
+      # No pid file but we found the process
+      killPID $ES_PID
+    fi
+    echo "ElasticSearch already shutdown or pid $ES_PID file not found";
+  fi
+}
+
+function elasticSearchStatus(){
+  echo "------------------------------------------------------------"
+  echo "ElasticSearch status                                        "
+  echo "------------------------------------------------------------"
+
+  esStatusOut=$(curl --silent  -f "http://localhost:$ES_PORT/_cat/nodes?h=uptime,version")
+  if [ $? -eq 0 ]; then
+    echo -e "PID\t"
+    echo $(cat "$ES_PID")
+    echo -e  "uptime:\t"
+    echo "$esStatusOut" | awk '{print $1}'
+    echo -e  "ElasticSearch Version:\t"
+    echo "$esStatusOut" | awk '{print $2}'
+  else
+    echo -e "\033[38;5;196m"
+    echo "Solr is not running or is unreachable on port $ES_PORT"
+    echo -e "\033[0m"
   fi
 }
 
@@ -259,7 +381,7 @@ function startTomcat() {
       if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
         exit 4
       fi
-      if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
+      if ! pgrep -u $(whoami) -F "$CATALINA_PID" >/dev/null
       then
         echo "Tomcat Pid file is not ok, forcing startup"
         rm "$CATALINA_PID"
@@ -307,7 +429,7 @@ function debugTomcat() {
       if ! checkPortForRunning $TOMCAT_HTTP_PORT $(cat "$CATALINA_PID");then
         exit 4
       fi
-      if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
+      if ! pgrep -u $(whoami) -F "$CATALINA_PID" >/dev/null
       then
         echo "Tomcat Pid file is not ok, forcing startup"
         rm "$CATALINA_PID"
@@ -333,7 +455,7 @@ function stopTomcat() {
   if [ -s "$CATALINA_PID" ]; then
     $CRAFTER_HOME/apache-tomcat/bin/shutdown.sh -force
     if [ -e "$CATALINA_PID" ]; then
-      if pgrep -F "$CATALINA_PID"
+      if pgrep -F "$CATALINA_PID" > /dev/null
       then
         killPID $CATALINA_PID
       fi
@@ -392,7 +514,7 @@ function startMongoDB(){
       exit 7
     fi
 
-    if ! pgrep -u `whoami` -F "$MONGODB_PID" >/dev/null
+    if ! pgrep -u $(whoami) -F "$MONGODB_PID" >/dev/null
     then
       echo "Mongo Pid file is not ok, forcing startup"
       rm "$MONGODB_PID"
@@ -403,13 +525,13 @@ function startMongoDB(){
   fi
 }
 
-
 function isMongoNeeded() {
-  if [ -z "$1" ]; then
-    test -s $PROFILE_WAR_PATH || test -d $PROFILE_DEPLOY_WAR_PATH
-  else
-    test "$1" = "forceMongo"
-  fi
+  for o in "$@"; do
+    if [ $o = "forceMongo" ]; then
+      return 0
+    fi
+  done
+  test -s $PROFILE_WAR_PATH || test -d $PROFILE_DEPLOY_WAR_PATH
 }
 
 function stopMongoDB(){
@@ -424,7 +546,7 @@ function stopMongoDB(){
       *)
       pkill -3 -F "$MONGODB_PID"
       sleep 5 # % mississippis
-      if pgrep -F "$MONGODB_PID"
+      if pgrep -F "$MONGODB_PID" > /dev/null
       then
         pkill -9 -F "$MONGODB_PID" # force kill
       fi
@@ -445,6 +567,24 @@ function stopMongoDB(){
   fi
 }
 
+function skipElasticSearch() {
+  for o in "$@"; do
+    if [ $o = "skipElasticSearch" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+function isSolrNeeded() {
+  for o in "$@"; do
+    if [ $o = "withSolr" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 function solrStatus(){
   echo "------------------------------------------------------------"
   echo "SOLR status                                                 "
@@ -453,7 +593,7 @@ function solrStatus(){
   solrStatusOut=$(curl --silent  -f "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
-    echo `cat "$CRAFTER_ROOT/bin/solr/bin/solr-$SOLR_PORT.pid"`
+    echo $(cat "$CRAFTER_ROOT/bin/solr/bin/solr-$SOLR_PORT.pid")
     echo -e  "uptime (in minutes):\t"
     echo "$solrStatusOut"  | python -m json.tool | grep upTimeMS | awk -F"[,|:]" '{print $2}'| awk '{print ($1/1000)/60}'| bc
     echo -e  "Solr Version:\t"
@@ -472,7 +612,7 @@ function deployerStatus(){
   deployerStatusOut=$(curl --silent  -f  "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
-    echo `cat "$DEPLOYER_PID"`
+    echo $(cat "$DEPLOYER_PID")
     echo -e  "uptime:\t"
     echo "$deployerStatusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
     echo -e  "Status:\t"
@@ -498,7 +638,7 @@ function studioStatus(){
   "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/status.json")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
-    echo `cat "$CATALINA_PID"`
+    echo $(cat "$CATALINA_PID")
     echo -e  "uptime:\t"
     echo "$studioStatusOut" | python -m json.tool | grep uptime | awk -F"[,|:]" '{print $2}'
     echo -e  "Status:\t"
@@ -522,7 +662,7 @@ function mariadbStatus(){
   echo "------------------------------------------------------------"
   if [ -s "$MYSQL_DATA/$MYSQL_PID_FILE_NAME" ]; then
     echo -e "PID \t"
-    echo `cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
+    echo $(cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME")
   else
     echo "MariaDB is not running."
   fi
@@ -532,16 +672,16 @@ function mongoDbStatus(){
   echo "------------------------------------------------------------"
   echo "MongoDB status                                              "
   echo "------------------------------------------------------------"
-  if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
-    if [ -e "$MONGODB_PID" ]; then
-      echo -e "MongoDB PID"
-      echo $(cat $MONGODB_PID)
-    else
-      echo -e "\033[38;5;196m"
-      echo " MongoDB is not running"
-      echo -e "\033[0m"
-    fi
-  elif [ ! -d "$MONGODB_HOME" ]; then
+ if $(isMongoNeeded "$@") || [ ! -z $(pidOf $MONGODB_PORT) ]; then
+      if [ -e "$MONGODB_PID" ]; then
+        echo -e "MongoDB PID"
+        echo $(cat $MONGODB_PID)
+      else
+        echo -e "\033[38;5;196m"
+        echo " MongoDB is not running"
+        echo -e "\033[0m"
+      fi
+ elif [ ! -d "$MONGODB_HOME" ]; then
     echo "MongoDB is not installed."
   else
     echo "MongoDB is not running"
@@ -550,8 +690,13 @@ function mongoDbStatus(){
 
 function start() {
   startDeployer
-  startSolr
-  if isMongoNeeded $1; then
+  if ! skipElasticSearch "$@"; then
+    startElasticSearch
+  fi
+  if isSolrNeeded "$@"; then
+    startSolr
+  fi
+  if isMongoNeeded "$@"; then
     startMongoDB
   fi
   startTomcat
@@ -560,8 +705,11 @@ function start() {
 
 function debug() {
   debugDeployer
-  debugSolr
-  if isMongoNeeded $1; then
+  debugElasticSearch
+  if isSolrNeeded "$@"; then
+    debugSolr
+  fi
+  if isMongoNeeded "$@"; then
     startMongoDB
   fi
   debugTomcat
@@ -570,11 +718,14 @@ function debug() {
 
 function stop() {
   stopTomcat
-  if $(isMongoNeeded $1) || [ ! -z $(pidOf $MONGODB_PORT) ]; then
-    stopMongoDB
+  if $(isMongoNeeded "$@") || [ ! -z $(pidOf $MONGODB_PORT) ]; then
+     stopMongoDB
   fi
-  stopSolr
   stopDeployer
+  stopElasticSearch
+  if $(isSolrNeeded "$@") || [ ! -z $(pidOf $SOLR_PORT) ]; then
+    stopSolr
+  fi
 }
 
 function status(){
@@ -646,9 +797,20 @@ function doBackup() {
   echo "------------------------------------------------------------------------"
   echo "Backing up solr indexes"
   echo "------------------------------------------------------------------------"
-  cd "$SOLR_INDEXES_DIR"
-  java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
-
+  if [ -d "$SOLR_INDEXES_DIR" ]; then
+    echo "Adding solr indexes"
+    cd "$SOLR_INDEXES_DIR"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
+  fi
+  # ZIP elasticsearch indexes
+  echo "------------------------------------------------------------------------"
+  echo "Backing up elasticsearch indexes"
+  echo "------------------------------------------------------------------------"
+  if [ -d "$ES_INDEXES_DIR" ]; then
+    echo "Adding elasticsearch indexes"
+    cd "$ES_INDEXES_DIR"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes-es.zip"
+  fi
   # ZIP deployer data
   echo "------------------------------------------------------------------------"
   echo "Backing up deployer data"
@@ -726,7 +888,17 @@ function doRestore() {
     echo "------------------------------------------------------------------------"
     echo "Restoring solr indexes"
     echo "------------------------------------------------------------------------"
+    rm -rf "$SOLR_INDEXES_DIR/*"
     java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
+  fi
+  
+  # UNZIP elasticsearch indexes
+  if [ -f "$TEMP_FOLDER/indexes-es.zip" ]; then
+    echo "------------------------------------------------------------------------"
+    echo "Restoring elasticsearch indexes"
+    echo "------------------------------------------------------------------------"
+    rm -rf "$ES_INDEXES_DIR/*"
+    java -jar $CRAFTER_HOME/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes-es.zip" "$ES_INDEXES_DIR"
   fi
 
   # UNZIP deployer data
@@ -813,6 +985,18 @@ case $1 in
   logo
   stopSolr
   ;;
+  start_elasticsearch)
+  logo
+  startElasticSearch
+  ;;
+  debug_elasticsearch)
+  logo
+  debugElasticSearch
+  ;;
+  stopElasticSearch)
+  logo
+  stop_elasticsearch
+  ;;
   debug_tomcat)
   logo
   debugTomcat
@@ -847,6 +1031,9 @@ case $1 in
   ;;
   status_deployer)
   deployerStatus
+  ;;
+  status_elasticsearch)
+    elasticSearchStatus
   ;;
   status_solr)
   solrStatus
