@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 if [ "$(whoami)" == "root" ]; then
 	echo -e "\033[38;5;196m"
 	echo -e "Crafter CMS cowardly refuses to run as root."
