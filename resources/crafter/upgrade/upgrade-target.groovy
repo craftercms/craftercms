@@ -1,14 +1,32 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import upgrade.hooks.UpgradeHooks
+
 @Grapes([
-    @Grab(group='org.slf4j', module='slf4j-nop', version='1.7.25'),
-    @Grab(group='org.apache.commons', module='commons-lang3', version='3.7'),
-    @Grab(group='org.apache.commons', module='commons-collections4', version='4.1'),
-    @Grab(group='commons-io', module='commons-io', version='2.6'),
+        @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.25'),
+        @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.7'),
+        @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.1'),
+        @Grab(group = 'commons-io', module = 'commons-io', version = '2.6'),
 ])
 
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
-import java.util.Date
 
 import org.apache.commons.collections4.CollectionUtils
 import org.apache.commons.lang3.SystemUtils
@@ -16,6 +34,7 @@ import org.apache.commons.lang3.SystemUtils
 import utils.NioUtils
 
 import static java.nio.file.StandardCopyOption.*
+import static upgrade.utils.UpgradeUtils.*
 import static utils.EnvironmentUtils.*
 import static utils.ScriptUtils.*
 
@@ -23,104 +42,105 @@ import static utils.ScriptUtils.*
  * Builds the CLI and adds the possible options
  */
 def buildCli(cli) {
-  cli.h(longOpt: 'help', 'Show usage information')
-  cli.f(longOpt: 'full', 'Perform a full upgrade. During a non-full upgrade, only the Tomcat wars and the ' +
-                         'Deployer jar are upgraded. During a full upgrade, the entire bin directory is upgraded, ' +
-                         'keeping only Tomcat\'s shared folder, Tomcat\'s conf folder, the Crafter Solr config, ' +
-                         'the Deployer config folder, and the crafter-setenv scripts')
+    cli.h(longOpt: 'help', 'Show usage information')
+    cli.f(longOpt: 'full', 'Deprecated option. Since 3.0.19, a full upgrade is always executed')
 }
 
 /**
  * Prints the help info
  */
 def printHelp(cli) {
-  cli.usage()
+    cli.usage()
 }
 
 /**
  * Exits the script with an error message, the usage and an error status.
  */
 def exitWithError(cli, msg) {
-  println msg
-  println ''
+    println msg
+    println ''
 
-  printHelp(cli)
+    printHelp(cli)
 
-  System.exit(1)
+    System.exit(1)
 }
 
 /**
  * Backups the data.
  */
-def backupData(binFolder, dataFolder) {
-  println "============================================================"
-  println "Backing up data"
-  println "============================================================"
+def backupData(binFolder) {
+    println "========================================================================"
+    println "Backing up data"
+    println "========================================================================"
 
-  if (Files.exists(dataFolder.resolve("repos"))) {
     def setupCallback = { pb ->
-      def env = pb.environment()
-          env.remove("CRAFTER_ROOT")
-          env.remove("CRAFTER_HOME")
+        def env = pb.environment()
+            env.remove("CRAFTER_HOME")
+            env.remove("DEPLOYER_HOME")
+            env.remove("CRAFTER_BIN_DIR")
+            env.remove("CRAFTER_DATA_DIR")
+            env.remove("CRAFTER_LOGS_DIR")
     }
 
     executeCommand([SystemUtils.IS_OS_WINDOWS ? "crafter.bat" : "./crafter.sh", "backup"], binFolder, setupCallback)
-  } else {
-    println "No repos folder found @ ${dataFolder}. Skipping data backup"
-  }
 }
 
 /**
  * Backups the bin folder.
  */
 def backupBin(binFolder, backupsFolder, environmentName) {
-  println "============================================================"
-  println "Backing up bin"
-  println "============================================================"
+    println "========================================================================"
+    println "Backing up bin"
+    println "========================================================================"
 
-  def timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())
+    def timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())
 
-  if (!Files.exists(backupsFolder)) {
-    Files.createDirectories(backupsFolder)
-  }
+    if (!Files.exists(backupsFolder)) {
+        Files.createDirectories(backupsFolder)
+    }
 
-  def backupBinFolder = backupsFolder.resolve("crafter-${environmentName}-bin.${timestamp}")
+    def backupBinFolder = backupsFolder.resolve("crafter-${environmentName}-bin.${timestamp}")
 
-  println "Backing up bin directory to ${backupBinFolder}"
+    println "Backing up bin directory to ${backupBinFolder}"
 
-  NioUtils.copyDirectory(binFolder, backupBinFolder)
+    NioUtils.copyDirectory(binFolder, backupBinFolder)
 }
 
 /**
  * Shutdowns Crafter.
  */
 def shutdownCrafter(binFolder) {
-  println "============================================================"
-  println "Shutting down Crafter"
-  println "============================================================"
+    println "========================================================================"
+    println "Shutting down Crafter"
+    println "========================================================================"
 
-  def setupCallback = { pb ->
-    def env = pb.environment()
-        env.remove("CRAFTER_ROOT")
-        env.remove("CRAFTER_HOME")
-  }
+    def setupCallback = { pb ->
+        def env = pb.environment()
+            env.remove("CRAFTER_HOME")
+            env.remove("DEPLOYER_HOME")
+            env.remove("CRAFTER_BIN_DIR")
+            env.remove("CRAFTER_DATA_DIR")
+            env.remove("CRAFTER_LOGS_DIR")
+    }
 
-  executeCommand([SystemUtils.IS_OS_WINDOWS ? "shutdown.bat" : "./shutdown.sh"], binFolder, setupCallback)
+    executeCommand([SystemUtils.IS_OS_WINDOWS ? "shutdown.bat" : "./shutdown.sh"], binFolder, setupCallback)
 
-  if (SystemUtils.IS_OS_WINDOWS) {
-    print 'Please make sure Crafter has stopped and all Crafter process windows are closed, then press enter to continue '
-    System.in.read()
-  }
+    if (SystemUtils.IS_OS_WINDOWS) {
+        print 'Please make sure Crafter has stopped and all Crafter process windows are closed, then press enter to continue '
+        System.in.read()
+    }
 }
 
 /**
  * Does the actual upgrade
  */
-def doUpgrade(binFolder, newBinFolder, fullUpgrade) {
-  if (fullUpgrade) {
-    println "============================================================"
-    println "Upgrading Crafter (full upgrade)"
-    println "============================================================"
+def doUpgrade(binFolder, newBinFolder, previousVersion, upgradeVersion) {
+    def upgradeHooks = new UpgradeHooks(binFolder, newBinFolder, previousVersion, upgradeVersion)
+        upgradeHooks.preUpgrade()
+
+    println "========================================================================"
+    println "Upgrading Crafter"
+    println "========================================================================"
 
     def sharedFolder = binFolder.resolve("apache-tomcat/shared")
     def newSharedFolder = newBinFolder.resolve("apache-tomcat/shared")
@@ -174,104 +194,35 @@ def doUpgrade(binFolder, newBinFolder, fullUpgrade) {
 
     NioUtils.deleteDirectory(binFolder)
     NioUtils.copyDirectory(newBinFolder, binFolder)
-  } else {
-    println "============================================================"
-    println "Upgrading Crafter (copying war/jar and upgrade scripts)"
-    println "============================================================"
 
-    def webappsFolder = binFolder.resolve("apache-tomcat/webapps")
-    def newWebappsFolder = newBinFolder.resolve("apache-tomcat/webapps")
-
-    println "Copying ${newWebappsFolder} to ${webappsFolder}..."
-
-    NioUtils.deleteDirectory(webappsFolder)
-    NioUtils.copyDirectory(newWebappsFolder, webappsFolder)
-
-    def deployerJar = binFolder.resolve("crafter-deployer/crafter-deployer.jar")
-    def newDeployerJar = newBinFolder.resolve("crafter-deployer/crafter-deployer.jar")
-
-    println "Copying ${newDeployerJar} to ${deployerJar}..."
-
-    Files.delete(deployerJar)
-    Files.copy(newDeployerJar, deployerJar)
-
-    def groovyFolder = binFolder.resolve("groovy")
-    def newGroovyFolder = newBinFolder.resolve("groovy")
-
-    println "Copying ${newGroovyFolder} to ${groovyFolder}..."
-
-    NioUtils.deleteDirectory(groovyFolder)
-    NioUtils.copyDirectory(newGroovyFolder, groovyFolder)
-
-    def grapesFolder = binFolder.resolve("grapes")
-    def newGrapesFolder = newBinFolder.resolve("grapes")
-
-    println "Copying ${newGrapesFolder} to ${grapesFolder}..."
-
-    NioUtils.deleteDirectory(grapesFolder)
-    NioUtils.copyDirectory(newGrapesFolder, grapesFolder)
-
-    def grapeConfigFile = binFolder.resolve("grapeConfig.xml")
-    def newGrapeConfigFile = newBinFolder.resolve("grapeConfig.xml")
-
-    println "Copying ${newGrapeConfigFile} to ${grapeConfigFile}..."
-
-    Files.deleteIfExists(grapeConfigFile)
-    Files.copy(newGrapeConfigFile, grapeConfigFile)
-
-    def utilsFolder = binFolder.resolve("utils")
-    def newUtilsFolder = newBinFolder.resolve("utils")
-
-    println "Copying ${newUtilsFolder} to ${utilsFolder}..."
-
-    NioUtils.deleteDirectory(utilsFolder)
-    NioUtils.copyDirectory(newUtilsFolder, utilsFolder)
-
-    def upgradeFolder = binFolder.resolve("upgrade")
-    def newUpgradeFolder = newBinFolder.resolve("upgrade")
-
-    println "Copying ${newUpgradeFolder} to ${upgradeFolder}..."
-
-    NioUtils.deleteDirectory(upgradeFolder)
-    NioUtils.copyDirectory(newUpgradeFolder, upgradeFolder)
-  }
-}
-
-/**
- * Starts Crafter.
- */
-def startCrafter(binFolder) {
-  println "============================================================"
-  println "Starting Crafter"
-  println "============================================================"
-
-  def setupCallback = { pb ->
-    def env = pb.environment()
-        env.remove("CRAFTER_ROOT")
-        env.remove("CRAFTER_HOME")
-  }
-
-  executeCommand([SystemUtils.IS_OS_WINDOWS ? "startup.bat" : "./startup.sh"], binFolder, setupCallback)
+    upgradeHooks.postUpgrade()
 }
 
 /**
  * Executes the upgrade.
  */
-def upgrade(targetFolder, fullUpgrade, environmentName) {
-  def binFolder = targetFolder.resolve("bin")
-  def dataFolder = targetFolder.resolve("data")
-  def backupsFolder = targetFolder.resolve("backups")
-  def newBinFolder = getCrafterBinFolder()
+def upgrade(targetFolder, environmentName) {
+    def binFolder = targetFolder.resolve("bin")
+    def backupsFolder = targetFolder.resolve("backups")
+    def newBinFolder = getCrafterBinFolder()
+    def previousVersion = readVersionFile(binFolder)
+    def upgradeVersion = readVersionFile(newBinFolder)
 
-  shutdownCrafter(binFolder)
-  backupData(binFolder, dataFolder)
-  backupBin(binFolder, backupsFolder, environmentName)
-  doUpgrade(binFolder, newBinFolder, fullUpgrade)
-  startCrafter(binFolder)
+    if (previousVersion != upgradeVersion) {
+        shutdownCrafter(binFolder)
+        backupBin(binFolder, backupsFolder, environmentName)
+        doUpgrade(binFolder, newBinFolder, previousVersion, upgradeVersion)
+        backupData(binFolder)
 
-  println "============================================================"
-  println "Upgrade complete"
-  println "============================================================"
+        println "========================================================================"
+        println "Upgrade complete"
+        println "========================================================================"
+        println "Please read the release notes before starting Crafter again for any additional changes you need to " +
+                "manually apply"
+    } else {
+        println "Trying to upgrade an installation in version ${previousVersion} to same version ${upgradeVersion}. " +
+                "Upgrade cancelled"
+    }
 }
 
 checkDownloadGrapesOnlyMode(getClass())
@@ -281,20 +232,20 @@ buildCli(cli)
 
 def options = cli.parse(args)
 if (options) {
-  // Show usage text when -h or --help option is used.
-  if (options.help) {
-    printHelp(cli)
-    return
-  }
+    // Show usage text when -h or --help option is used.
+    if (options.help) {
+        printHelp(cli)
+        return
+    }
 
-  // Parse the options and arguments
-  def extraArguments = options.arguments();
-  if (CollectionUtils.isNotEmpty(extraArguments)) {
-    def targetPath = extraArguments[0]
-    def targetFolder = Paths.get(targetPath)
+    // Parse the options and arguments
+    def extraArguments = options.arguments()
+    if (CollectionUtils.isNotEmpty(extraArguments)) {
+        def targetPath = extraArguments[0]
+        def targetFolder = Paths.get(targetPath)
 
-    upgrade(targetFolder, options.full, getEnvironmentName())
-  } else {
-    exitWithError(cli, 'No <target-installation-path> was specified')
-  }
+        upgrade(targetFolder, getEnvironmentName())
+    } else {
+        exitWithError(cli, 'No <target-installation-path> was specified')
+    }
 }
