@@ -218,7 +218,6 @@ grant {
     permission java.nio.file.LinkPermission "symbolic";
     permission java.lang.reflect.ReflectPermission "*";
     permission java.util.PropertyPermission "*", "read, write";
-    permission java.sql.SQLPermission "*";
     permission java.net.NetPermission "*";
     permission java.net.SocketPermission "*", "accept,connect,listen";
     permission java.net.URLPermission "http:*", "*";
@@ -241,40 +240,16 @@ grant {
     permission groovy.security.GroovyCodeSourcePermission "*";
 };
 
-
-// The Manager application needs access to the following packages to support the
-// session display functionality. It also requires the custom Tomcat
-// DeployXmlPermission to enable the use of META-INF/context.xml
-// These settings support the following configurations:
-// - default CATALINA_HOME == CATALINA_BASE
-// - CATALINA_HOME != CATALINA_BASE, per instance Manager in CATALINA_BASE
-// - CATALINA_HOME != CATALINA_BASE, shared Manager in CATALINA_HOME
-grant codeBase "file:${catalina.base}/webapps/manager/-" {
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.ha.session";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.manager";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.manager.util";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.util";
-    permission org.apache.catalina.security.DeployXmlPermission "manager";
-};
-grant codeBase "file:${catalina.home}/webapps/manager/-" {
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.ha.session";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.manager";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.manager.util";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.util";
-    permission org.apache.catalina.security.DeployXmlPermission "manager";
-};
-
-// The Host Manager application needs the custom Tomcat DeployXmlPermission to
-// enable the use of META-INF/context.xml
-// These settings support the following configurations:
-// - default CATALINA_HOME == CATALINA_BASE
-// - CATALINA_HOME != CATALINA_BASE, per instance Host Manager in CATALINA_BASE
-// - CATALINA_HOME != CATALINA_BASE, shared Host Manager in CATALINA_HOME
-grant codeBase "file:${catalina.base}/webapps/host-manager/-" {
-    permission org.apache.catalina.security.DeployXmlPermission "host-manager";
-};
-grant codeBase "file:${catalina.home}/webapps/host-manager/-" {
-    permission org.apache.catalina.security.DeployXmlPermission "host-manager";
+// Crafter Studio specific permissions
+grant codeBase "file:${catalina.home}/webapps/studio/-" {
+    permission java.lang.RuntimePermission "loadLibrary.*";
+    permission java.sql.SQLPermission "*";
+    permission java.io.FilePermission "/lib", "read";
+    permission java.io.FilePermission "/lib/-", "read";
+    permission java.io.FilePermission "/lib64", "read";
+    permission java.io.FilePermission "/lib64/-", "read";
+    permission java.io.FilePermission "/usr/lib", "read";
+    permission java.io.FilePermission "/usr/lib/-", "read";
+    permission java.io.FilePermission "/usr/lib64", "read";
+    permission java.io.FilePermission "/usr/lib64/-", "read";
 };

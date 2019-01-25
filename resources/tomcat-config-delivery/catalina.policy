@@ -31,23 +31,23 @@
 
 // These permissions apply to javac
 grant codeBase "file:${java.home}/lib/-" {
-        permission java.security.AllPermission;
+    permission java.security.AllPermission;
 };
 
 // These permissions apply to all shared system extensions
 grant codeBase "file:${java.home}/jre/lib/ext/-" {
-        permission java.security.AllPermission;
+    permission java.security.AllPermission;
 };
 
 // These permissions apply to javac when ${java.home] points at $JAVA_HOME/jre
 grant codeBase "file:${java.home}/../lib/-" {
-        permission java.security.AllPermission;
+    permission java.security.AllPermission;
 };
 
 // These permissions apply to all shared system extensions when
 // ${java.home} points at $JAVA_HOME/jre
 grant codeBase "file:${java.home}/lib/ext/-" {
-        permission java.security.AllPermission;
+    permission java.security.AllPermission;
 };
 
 
@@ -56,7 +56,7 @@ grant codeBase "file:${java.home}/lib/ext/-" {
 
 // These permissions apply to the daemon code
 grant codeBase "file:${catalina.home}/bin/commons-daemon.jar" {
-        permission java.security.AllPermission;
+    permission java.security.AllPermission;
 };
 
 // These permissions apply to the logging API
@@ -64,52 +64,52 @@ grant codeBase "file:${catalina.home}/bin/commons-daemon.jar" {
 // update this section accordingly.
 //  grant codeBase "file:${catalina.base}/bin/tomcat-juli.jar" {..}
 grant codeBase "file:${catalina.home}/bin/tomcat-juli.jar" {
-        permission java.io.FilePermission
-         "${java.home}${file.separator}lib${file.separator}logging.properties", "read";
+    permission java.io.FilePermission
+     "${java.home}${file.separator}lib${file.separator}logging.properties", "read";
 
-        permission java.io.FilePermission
-         "${catalina.base}${file.separator}conf${file.separator}logging.properties", "read";
-        permission java.io.FilePermission
-         "${catalina.base}${file.separator}logs", "read, write";
-        permission java.io.FilePermission
-         "${catalina.base}${file.separator}logs${file.separator}*", "read, write, delete";
+    permission java.io.FilePermission
+     "${catalina.base}${file.separator}conf${file.separator}logging.properties", "read";
+    permission java.io.FilePermission
+     "${catalina.base}${file.separator}logs", "read, write";
+    permission java.io.FilePermission
+     "${catalina.base}${file.separator}logs${file.separator}*", "read, write, delete";
 
-        permission java.lang.RuntimePermission "shutdownHooks";
-        permission java.lang.RuntimePermission "getClassLoader";
-        permission java.lang.RuntimePermission "setContextClassLoader";
+    permission java.lang.RuntimePermission "shutdownHooks";
+    permission java.lang.RuntimePermission "getClassLoader";
+    permission java.lang.RuntimePermission "setContextClassLoader";
 
-        permission java.lang.management.ManagementPermission "monitor";
+    permission java.lang.management.ManagementPermission "monitor";
 
-        permission java.util.logging.LoggingPermission "control";
+    permission java.util.logging.LoggingPermission "control";
 
-        permission java.util.PropertyPermission "java.util.logging.config.class", "read";
-        permission java.util.PropertyPermission "java.util.logging.config.file", "read";
-        permission java.util.PropertyPermission "org.apache.juli.AsyncLoggerPollInterval", "read";
-        permission java.util.PropertyPermission "org.apache.juli.AsyncMaxRecordCount", "read";
-        permission java.util.PropertyPermission "org.apache.juli.AsyncOverflowDropType", "read";
-        permission java.util.PropertyPermission "org.apache.juli.ClassLoaderLogManager.debug", "read";
-        permission java.util.PropertyPermission "catalina.base", "read";
+    permission java.util.PropertyPermission "java.util.logging.config.class", "read";
+    permission java.util.PropertyPermission "java.util.logging.config.file", "read";
+    permission java.util.PropertyPermission "org.apache.juli.AsyncLoggerPollInterval", "read";
+    permission java.util.PropertyPermission "org.apache.juli.AsyncMaxRecordCount", "read";
+    permission java.util.PropertyPermission "org.apache.juli.AsyncOverflowDropType", "read";
+    permission java.util.PropertyPermission "org.apache.juli.ClassLoaderLogManager.debug", "read";
+    permission java.util.PropertyPermission "catalina.base", "read";
 
-        // Note: To enable per context logging configuration, permit read access to
-        // the appropriate file. Be sure that the logging configuration is
-        // secure before enabling such access.
-        // E.g. for the examples web application (uncomment and unwrap
-        // the following to be on a single line):
-        // permission java.io.FilePermission "${catalina.base}${file.separator}
-        //  webapps${file.separator}examples${file.separator}WEB-INF
-        //  ${file.separator}classes${file.separator}logging.properties", "read";
+    // Note: To enable per context logging configuration, permit read access to
+    // the appropriate file. Be sure that the logging configuration is
+    // secure before enabling such access.
+    // E.g. for the examples web application (uncomment and unwrap
+    // the following to be on a single line):
+    // permission java.io.FilePermission "${catalina.base}${file.separator}
+    //  webapps${file.separator}examples${file.separator}WEB-INF
+    //  ${file.separator}classes${file.separator}logging.properties", "read";
 };
 
 // These permissions apply to the server startup code
 grant codeBase "file:${catalina.home}/bin/bootstrap.jar" {
-        permission java.security.AllPermission;
+    permission java.security.AllPermission;
 };
 
 // These permissions apply to the servlet API classes
 // and those that are shared across all class loaders
 // located in the "lib" directory
 grant codeBase "file:${catalina.home}/lib/-" {
-        permission java.security.AllPermission;
+    permission java.security.AllPermission;
 };
 
 
@@ -218,7 +218,6 @@ grant {
     permission java.nio.file.LinkPermission "symbolic";
     permission java.lang.reflect.ReflectPermission "*";
     permission java.util.PropertyPermission "*", "read, write";
-    permission java.sql.SQLPermission "*";
     permission java.net.NetPermission "*";
     permission java.net.SocketPermission "*", "accept,connect,listen";
     permission java.net.URLPermission "http:*", "*";
@@ -239,42 +238,4 @@ grant {
     permission java.io.FilePermission "${java.io.tmpdir}/-", "read, write, delete";
     permission java.io.FilePermission "/tmp/-", "read, write, delete";
     permission groovy.security.GroovyCodeSourcePermission "*";
-};
-
-
-// The Manager application needs access to the following packages to support the
-// session display functionality. It also requires the custom Tomcat
-// DeployXmlPermission to enable the use of META-INF/context.xml
-// These settings support the following configurations:
-// - default CATALINA_HOME == CATALINA_BASE
-// - CATALINA_HOME != CATALINA_BASE, per instance Manager in CATALINA_BASE
-// - CATALINA_HOME != CATALINA_BASE, shared Manager in CATALINA_HOME
-grant codeBase "file:${catalina.base}/webapps/manager/-" {
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.ha.session";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.manager";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.manager.util";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.util";
-    permission org.apache.catalina.security.DeployXmlPermission "manager";
-};
-grant codeBase "file:${catalina.home}/webapps/manager/-" {
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.ha.session";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.manager";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.manager.util";
-    permission java.lang.RuntimePermission "accessClassInPackage.org.apache.catalina.util";
-    permission org.apache.catalina.security.DeployXmlPermission "manager";
-};
-
-// The Host Manager application needs the custom Tomcat DeployXmlPermission to
-// enable the use of META-INF/context.xml
-// These settings support the following configurations:
-// - default CATALINA_HOME == CATALINA_BASE
-// - CATALINA_HOME != CATALINA_BASE, per instance Host Manager in CATALINA_BASE
-// - CATALINA_HOME != CATALINA_BASE, shared Host Manager in CATALINA_HOME
-grant codeBase "file:${catalina.base}/webapps/host-manager/-" {
-    permission org.apache.catalina.security.DeployXmlPermission "host-manager";
-};
-grant codeBase "file:${catalina.home}/webapps/host-manager/-" {
-    permission org.apache.catalina.security.DeployXmlPermission "host-manager";
 };
