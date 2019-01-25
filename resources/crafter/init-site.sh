@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Script to create the Solr core & Deployer target for a delivery environment.
 
