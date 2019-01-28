@@ -216,3 +216,9 @@ studio.mail.port: @SMTP_PORT@
 # studio.cors.maxage: -1
 # The active environment for multi environment configuration, e.g. qa, prod, dev
 # studio.configuration.environment.active: ENV
+
+################################################################
+##                           Search                           ##
+################################################################
+# URLs to connect to ElasticSearch
+studio.search.urls: http://localhost:@ES_PORT@
