@@ -20,17 +20,17 @@ task("authoringPostEnvironment") {
         copy {
             from "./resources/tomcat-config/crafter"
             into "${authEnv}/bin/apache-tomcat/shared/classes/crafter"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort),
-                                           SOLR_PORT        : String.valueOf(authSolrPort),
-                                           SOLR_PORT_D      : String.valueOf(authSolrDebugPort),
-                                           ES_PORT          : String.valueOf(authElasticSearchPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(authDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(authDeployerPort),
-                                           MARIADB_PORT     : String.valueOf(authMariaDbPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
-                                           MONGODB_PORT     : String.valueOf(authMongoDBPort),
-                                           ENV              : "authoring",
-                                           SMTP_PORT        : String.valueOf(authSMTPPort)
+            filter(ReplaceTokens, tokens: [TOMCAT_PORT          : String.valueOf(authTomcatPort),
+                                           TOMCAT_DEBUG_PORT    : String.valueOf(authTomcatDebug),
+                                           SOLR_PORT            : String.valueOf(authSolrPort),
+                                           SOLR_DEBUG_PORT      : String.valueOf(authSolrDebugPort),
+                                           ES_PORT              : String.valueOf(authElasticSearchPort),
+                                           DEPLOYER_PORT        : String.valueOf(authDeployerPort),
+                                           DEPLOYER_DEBUG_PORT  : String.valueOf(authDeployerDebugPort),
+                                           MARIADB_PORT         : String.valueOf(authMariaDbPort),
+                                           MONGODB_PORT         : String.valueOf(authMongoDBPort),
+                                           ENV                  : "authoring",
+                                           SMTP_PORT            : String.valueOf(authSMTPPort)
             ])
             eachFile {
                 if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
@@ -42,17 +42,17 @@ task("authoringPostEnvironment") {
         copy {
             from "./resources/deployer/"
             into "${authEnv}/bin/crafter-deployer"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort),
-                                           SOLR_PORT        : String.valueOf(authSolrPort),
-                                           SOLR_PORT_D      : String.valueOf(authSolrDebugPort),
-                                           ES_PORT          : String.valueOf(authElasticSearchPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(authDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(authDeployerPort),
-                                           MARIADB_PORT     : String.valueOf(authMariaDbPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
-                                           MONGODB_PORT     : String.valueOf(authMongoDBPort),
-                                           ENV              : "authoring",
-                                           SMTP_PORT        : String.valueOf(authSMTPPort)
+            filter(ReplaceTokens, tokens: [TOMCAT_PORT          : String.valueOf(authTomcatPort),
+                                           TOMCAT_DEBUG_PORT    : String.valueOf(authTomcatDebug),
+                                           SOLR_PORT            : String.valueOf(authSolrPort),
+                                           SOLR_DEBUG_PORT      : String.valueOf(authSolrDebugPort),
+                                           ES_PORT              : String.valueOf(authElasticSearchPort),
+                                           DEPLOYER_PORT        : String.valueOf(authDeployerPort),
+                                           DEPLOYER_DEBUG_PORT  : String.valueOf(authDeployerDebugPort),
+                                           MARIADB_PORT         : String.valueOf(authMariaDbPort),
+                                           MONGODB_PORT         : String.valueOf(authMongoDBPort),
+                                           ENV                  : "authoring",
+                                           SMTP_PORT            : String.valueOf(authSMTPPort)
             ])
             eachFile {
                 if (it.relativePath.getFile(file("${authEnv}/bin/crafter-deployer")).exists() && !forceDeploy) {
@@ -72,20 +72,20 @@ task("authoringPostEnvironment") {
                 }
             }
             into "${authEnv}/bin/"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort),
-                                           SOLR_PORT        : String.valueOf(authSolrPort),
-                                           SOLR_PORT_D      : String.valueOf(authSolrDebugPort),
-                                           ES_PORT          : String.valueOf(authElasticSearchPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(authDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(authDeployerPort),
-                                           DEPLOYMENT_DIR   : String.valueOf(authDeploymentDir),
-                                           MARIADB_PORT     : String.valueOf(authMariaDbPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
-                                           MONGODB_PORT     : String.valueOf(authMongoDBPort),
-                                           ENV              : "authoring",
-                                           VERSION          : project.version,
-                                           GIT_BUILD_ID     : gitRevisionId,
-                                           SMTP_PORT        : String.valueOf(authSMTPPort)
+            filter(ReplaceTokens, tokens: [TOMCAT_PORT          : String.valueOf(authTomcatPort),
+                                           TOMCAT_DEBUG_PORT    : String.valueOf(authTomcatDebug),
+                                           SOLR_PORT            : String.valueOf(authSolrPort),
+                                           SOLR_DEBUG_PORT      : String.valueOf(authSolrDebugPort),
+                                           ES_PORT              : String.valueOf(authElasticSearchPort),
+                                           DEPLOYER_PORT        : String.valueOf(authDeployerPort),
+                                           DEPLOYER_DEBUG_PORT  : String.valueOf(authDeployerDebugPort),
+                                           DEPLOYMENT_DIR       : String.valueOf(authDeploymentDir),
+                                           MARIADB_PORT         : String.valueOf(authMariaDbPort),
+                                           MONGODB_PORT         : String.valueOf(authMongoDBPort),
+                                           ENV                  : "authoring",
+                                           VERSION              : project.version,
+                                           GIT_BUILD_ID         : gitRevisionId,
+                                           SMTP_PORT            : String.valueOf(authSMTPPort)
 
             ])
         }
@@ -93,7 +93,7 @@ task("authoringPostEnvironment") {
         copy {
             from "./resources/migration"
             into "${authEnv}/bin/migration"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort)])
+            filter(ReplaceTokens, tokens: [TOMCAT_PORT : String.valueOf(authTomcatPort)])
             eachFile {
                 if (it.relativePath.getFile(file("${authEnv}/bin/migration")).exists() && !forceDeploy) {
                     it.exclude()
@@ -145,15 +145,15 @@ task("deliveryPostEnvironment") {
         copy {
             from "./resources/tomcat-config-delivery/crafter"
             into "${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
-                                           SOLR_PORT        : String.valueOf(deliverySolrPort),
-                                           SOLR_PORT_D      : String.valueOf(deliverySolrDebugPort),
-                                           ES_PORT          : String.valueOf(deliveryElasticSearchPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(deliveryDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(deliveryDeployerPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT     : String.valueOf(deliveryMongoDBPort),
-                                           ENV              : "delivery"
+            filter(ReplaceTokens, tokens: [TOMCAT_PORT          : String.valueOf(deliveryTomcatPort),
+                                           TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPort),
+                                           SOLR_PORT            : String.valueOf(deliverySolrPort),
+                                           SOLR_DEBUG_PORT      : String.valueOf(deliverySolrDebugPort),
+                                           ES_PORT              : String.valueOf(deliveryElasticSearchPort),
+                                           DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
+                                           DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
+                                           MONGODB_PORT         : String.valueOf(deliveryMongoDBPort),
+                                           ENV                  : "delivery"
             ])
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
@@ -165,15 +165,15 @@ task("deliveryPostEnvironment") {
         copy {
             from "./resources/deployer/"
             into "${deliveryEnv}/bin/crafter-deployer"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
-                                           SOLR_PORT        : String.valueOf(deliverySolrPort),
-                                           SOLR_PORT_D      : String.valueOf(deliverySolrDebugPort),
-                                           ES_PORT          : String.valueOf(deliveryElasticSearchPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(deliveryDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(deliveryDeployerPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT     : String.valueOf(deliveryMongoDBPort),
-                                           ENV              : "delivery"
+            filter(ReplaceTokens, tokens: [TOMCAT_PORT          : String.valueOf(deliveryTomcatPort),
+                                           TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPort),
+                                           SOLR_PORT            : String.valueOf(deliverySolrPort),
+                                           SOLR_DEBUG_PORT      : String.valueOf(deliverySolrDebugPort),
+                                           ES_PORT              : String.valueOf(deliveryElasticSearchPort),
+                                           DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
+                                           DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
+                                           MONGODB_PORT         : String.valueOf(deliveryMongoDBPort),
+                                           ENV                  : "delivery"
             ])
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/crafter-deployer")).exists() && !forceDeploy) {
@@ -184,18 +184,18 @@ task("deliveryPostEnvironment") {
         copy {
             from "./resources/crafter/"
             into "${deliveryEnv}/bin/"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
-                                           SOLR_PORT        : String.valueOf(deliverySolrPort),
-                                           SOLR_PORT_D      : String.valueOf(deliverySolrDebugPort),
-                                           ES_PORT          : String.valueOf(deliveryElasticSearchPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(deliveryDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(deliveryDeployerPort),
-                                           DEPLOYMENT_DIR   : String.valueOf(deliveryDeploymentDir),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT     : String.valueOf(deliveryMongoDBPort),
-                                           ENV              : "delivery",
-                                           VERSION          : project.version,
-                                           GIT_BUILD_ID     : gitRevisionId
+            filter(ReplaceTokens, tokens: [TOMCAT_PORT          : String.valueOf(deliveryTomcatPort),
+                                           TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPort),
+                                           SOLR_PORT            : String.valueOf(deliverySolrPort),
+                                           SOLR_DEBUG_PORT      : String.valueOf(deliverySolrDebugPort),
+                                           ES_PORT              : String.valueOf(deliveryElasticSearchPort),
+                                           DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
+                                           DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
+                                           DEPLOYMENT_DIR       : String.valueOf(deliveryDeploymentDir),
+                                           MONGODB_PORT         : String.valueOf(deliveryMongoDBPort),
+                                           ENV                  : "delivery",
+                                           VERSION              : project.version,
+                                           GIT_BUILD_ID         : gitRevisionId
             ])
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/")).exists() && !forceDeploy) {
@@ -276,7 +276,7 @@ envs.each { env ->
                 }
                 file("${path}/bin/solr-${solrVersion}").renameTo(file("${path}/bin/solr"))
             }
-            
+
             copy {
                 from "./src/search/crafter-search-solr-provider/solr/configsets"
                 into "${path}/bin/solr/server/solr/configsets"
@@ -286,7 +286,7 @@ envs.each { env ->
                     }
                 }
             }
-            
+
             if (!file("${path}/bin/elasticsearch").exists()) {
                 copy {
                     from zipTree(downloadDir + "/elasticsearch-${elasticSearchVersion}.zip")

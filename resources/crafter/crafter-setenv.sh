@@ -19,39 +19,28 @@
 export CRAFTER_LOGS_DIR=${CRAFTER_LOGS_DIR:="$CRAFTER_HOME/logs"}
 export CRAFTER_DATA_DIR=${CRAFTER_DATA_DIR:="$CRAFTER_HOME/data"}
 
-# Tomcat variables
-export CATALINA_HOME="$CRAFTER_BIN_DIR/apache-tomcat"
-export CATALINA_PID=$CATALINA_HOME/tomcat.pid
-export CATALINA_LOGS_DIR="$CRAFTER_LOGS_DIR/tomcat"
-export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
-export CATALINA_TMPDIR=$CRAFTER_HOME/temp/tomcat
-export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
-export CATALINA_OPTS="-Dcrafter.home=$CRAFTER_HOME -Dcrafter.bin.dir=$CRAFTER_BIN_DIR -Dcrafter.data.dir=$CRAFTER_DATA_DIR -Dcrafter.logs.dir=$CRAFTER_LOGS_DIR -Dcatalina.logs=$CATALINA_LOGS_DIR -Djava.net.preferIPv4Stack=true -server -Xss1024K -Xms1G -Xmx4G -Dapplication.logs=$CRAFTER_APPLICATION_LOGS"
-export TOMCAT_HTTP_PORT=@TOMCAT_HTTP_PORT@
-
-# Profile variables
-export PROFILE_DEPLOY_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile"
-export PROFILE_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile.war"
-
 # Solr variables
+export SOLR_HOST=${SOLR_HOST:="localhost"}
+export SOLR_PORT=${SOLR_PORT:="@SOLR_PORT@"}
 export SOLR_HOME=$CRAFTER_BIN_DIR/solr/server/solr
-export SOLR_PORT=@SOLR_PORT@
 export SOLR_INDEXES_DIR=$CRAFTER_DATA_DIR/indexes
 export SOLR_LOGS_DIR="$CRAFTER_LOGS_DIR/solr"
 export SOLR_PID=$SOLR_INDEXES_DIR/solr.pid
 export SOLR_JAVA_OPTS="-server -Xss1024K -Xmx1G"
 
 # ElasticSearch variables
+export ES_HOST=${ES_HOST:="localhost"}
+export ES_PORT=${ES_PORT:="@ES_PORT@"}
 export ES_HOME=$CRAFTER_BIN_DIR/elasticsearch/bin
-export ES_PORT=@ES_PORT@
 export ES_INDEXES_DIR=$CRAFTER_DATA_DIR/indexes-es
 export ES_LOGS_DIR="$CRAFTER_LOGS_DIR/elasticsearch"
 export ES_PID=$ES_HOME/elasticsearch.pid
 export ES_JAVA_OPTS="-server -Xss1024K -Xmx1G"
 
 # Deployer variables
+export DEPLOYER_HOST=${DEPLOYER_HOST:="localhost"}
+export DEPLOYER_PORT=${DEPLOYER_PORT:="@DEPLOYER_PORT@"}
 export DEPLOYER_HOME=$CRAFTER_BIN_DIR/crafter-deployer
-export DEPLOYER_PORT=@DEPLOYER_PORT@
 export DEPLOYER_DATA_DIR=$CRAFTER_DATA_DIR/deployer
 export DEPLOYER_LOGS_DIR=$CRAFTER_LOGS_DIR/deployer
 export DEPLOYER_DEPLOYMENTS_DIR=$CRAFTER_DATA_DIR/repos/sites
@@ -60,24 +49,51 @@ export DEPLOYER_JAVA_OPTS="-server -Xss1024K -Xmx1G"
 export DEPLOYER_PID=$DEPLOYER_HOME/crafter-deployer.pid
 
 # MongoDB variables
-export MONGODB_PORT=@MONGODB_PORT@
+export MONGODB_HOST=${MONGODB_HOST:="localhost"}
+export MONGODB_PORT=${MONGODB_PORT:="@MONGODB_PORT@"}
 export MONGODB_HOME="$CRAFTER_BIN_DIR/mongodb"
 export MONGODB_PID="$CRAFTER_DATA_DIR/mongodb/mongod.lock"
 export MONGODB_DATA_DIR="$CRAFTER_DATA_DIR/mongodb"
 export MONGODB_LOGS_DIR="$CRAFTER_LOGS_DIR/mongodb"
 
 # MariaDB variables
+export MARIADB_HOST=${MARIADB_HOST:="localhost"}
+export MARIADB_PORT=${MARIADB_PORT:="@MARIADB_PORT@"}
 export MYSQL_DATA="$CRAFTER_DATA_DIR/db"
-export MARIADB_PORT=@MARIADB_PORT@
 
 case "$(uname -s)" in
-   Darwin)
+  Darwin)
     export MYSQL_PID_FILE_NAME="$(echo "$HOSTNAME" | awk -F'.' '{print $1}' ).pid"
-     ;;
-    *)
+  ;;
+  *)
     export MYSQL_PID_FILE_NAME="$HOSTNAME.pid"
-    ;;
+  ;;
 esac
+
+# Tomcat variables
+export TOMCAT_HOST=${TOMCAT_HOST:="locahost"}
+export TOMCAT_HTTP_PORT=${TOMCAT_HTTP_PORT:="@TOMCAT_HTTP_PORT@"}
+export TOMCAT_HTTPS_PORT=${TOMCAT_HTTPS_PORT:="@TOMCAT_HTTPS_PORT@"}
+export TOMCAT_AJP_PORT=${TOMCAT_AJP_PORT:="@TOMCAT_AJP_PORT@"}
+export TOMCAT_SHUTDOWN_PORT=${TOMCAT_SHUTDOWN_PORT:="@TOMCAT_SHUTDOWN_PORT@"}
+export CATALINA_HOME="$CRAFTER_BIN_DIR/apache-tomcat"
+export CATALINA_PID=$CATALINA_HOME/tomcat.pid
+export CATALINA_LOGS_DIR="$CRAFTER_LOGS_DIR/tomcat"
+export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
+export CATALINA_TMPDIR=$CRAFTER_HOME/temp/tomcat
+export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
+export CATALINA_OPTS="-Dtomcat.host=$TOMCAT_HOST -Dtomcat.http.port=$TOMCAT_HTTP_PORT \
+  -Dtomcat.https.port=$TOMCAT_HTTPS_PORT -Dtomcat.ajp.port=$TOMCAT_AJP_PORT \
+  -Dtomcat.shutdown.port=$TOMCAT_SHUTDOWN_PORT -Dsolr.host=$SOLR_HOST -Dsolr.port=$SOLR_PORT \
+  -Des.host=$ES_HOST -Des.port=$ES_PORT -Ddeployer.host=$DEPLOYER_HOST -Ddeployer.port=$DEPLOYER_PORT \
+  -Dmariadb.host=$MARIADB_HOST -Dmariadb.port=$MARIADB_PORT -Dcrafter.home=$CRAFTER_HOME \
+  -Dcrafter.bin.dir=$CRAFTER_BIN_DIR -Dcrafter.data.dir=$CRAFTER_DATA_DIR -Dcrafter.logs.dir=$CRAFTER_LOGS_DIR \
+  -Dcatalina.logs=$CATALINA_LOGS_DIR -Djava.net.preferIPv4Stack=true -server -Xss1024K -Xms1G -Xmx4G \
+  -Dapplication.logs=$CRAFTER_APPLICATION_LOGS"
+
+# Profile variables
+export PROFILE_DEPLOY_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile"
+export PROFILE_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile.war"
 
 # Git variables
 export GIT_CONFIG_NOSYSTEM=true
