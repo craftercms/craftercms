@@ -3,6 +3,7 @@ FROM openjdk:8-jdk-alpine
 # Install dependencies
 RUN apk update && \
     apk upgrade && \
+    apk add shadow && \
     apk add bash && \
     apk add curl
 
@@ -23,16 +24,17 @@ RUN rm -rf ./bin/crafter-deployer; \
     rm -rf ./bin/solr; \
     rm -rf ./bin/apache-tomcat/webapps/crafter-search*; \
     rm ./bin/init-site*; \
-    rm ./bin/remove-site*
+    rm ./bin/remove-site*; \
+    find . -name "*.pid" -type f -delete
 
 # Add the Crafter user. This user will be used onwards to setup the image and when running the container
-RUN addgroup -S crafter && adduser -S -G crafter crafter
+RUN groupadd -r crafter && useradd -r -u 1001 -g crafter crafter
 RUN chown -R crafter:crafter .
 USER crafter
 
 # Expose port
-EXPOSE 8080
+EXPOSE 9080
 
 # Main startup command
-CMD ["./bin/crafter.sh", "start_tomcat"]
+CMD ["./bin/crafter.sh", "run_tomcat"]
 
