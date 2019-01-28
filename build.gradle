@@ -145,7 +145,7 @@ ext {
     /** Cloneable Artifacts **/
     VALID_MODULES =
       ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite",
-      "plugin-maker", "studio-ui-ng"]
+      "plugin-maker", "studio-ui-ng", "video-center-blueprint"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -210,47 +210,52 @@ if (project.hasProperty("moduleName")) {
 buildModules.each { module ->
 
     // Creates the Clean Task
-    if (!tasks.findByPath("${module}_clean")) {
-        task "${module}_clean" doLast({
-            def array = commandLinePrefix + ["mvn", "clean"]
-            executeProcess(array, "./src/${module}".toString())
-        })
-    } else {
-        logger.debug("Task ${module}_build already exists")
-    }
+	if (module != "video-center-blueprint") {
+	    if (!tasks.findByPath("${module}_clean")) {
+	        task "${module}_clean" doLast({
+	            def array = commandLinePrefix + ["mvn", "clean"]
+	            executeProcess(array, "./src/${module}".toString())
+	        })
+	    } else {
+	        logger.debug("Task ${module}_build already exists")
+	    }
+	}
 
     // Creates the Build Tasks
-    if (!tasks.findByPath("${module}_build")) {
-        if (!module.equalsIgnoreCase("test-suite")) {
-            task "${module}_build" doLast({
-                def actualCommandLinePost = [];
-                if (!testArtifacts) {
-                    actualCommandLinePost.add("-Dmaven.test.skip=true")
-                }
-                if (module.equalsIgnoreCase("search")) {
-                    actualCommandLinePost.add("-pl")
-                    actualCommandLinePost.add("!crafter-search-solr-itest")
-                } else if (module.equalsIgnoreCase("profile")) {
-                    actualCommandLinePost.add("-pl")
-                    if (!includeProfile) {
-                        actualCommandLinePost.add("!admin-console,!integration-tests,!server")
-                    } else {
-                        actualCommandLinePost.add("!integration-tests")
-                    }
-                }
-                if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
-                    actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
-                    actualCommandLinePost.add("-Dstudio.ui.alpha.path=../studio-ui-ng")
-                    actualCommandLinePost.add("-Dexec.skip=true")
-                }
-                def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
-                executeProcess(array, "./src/${module}".toString())
-            })
-            // Creates the Dependencies Array
-            def buildTask = tasks.findByName("${module}_build")
-            buildTask.description "Builds and installs locally ${module} module"
-            buildDeps.add(buildTask)
-        }
+	if (module != "video-center-blueprint") {
+	    if (!tasks.findByPath("${module}_build")) {
+	        if (!module.equalsIgnoreCase("test-suite")) {
+	            task "${module}_build" doLast({
+	                def actualCommandLinePost = [];
+	                if (!testArtifacts) {
+	                    actualCommandLinePost.add("-Dmaven.test.skip=true")
+	                }
+	                if (module.equalsIgnoreCase("search")) {
+	                    actualCommandLinePost.add("-pl")
+	                    actualCommandLinePost.add("!crafter-search-solr-itest")
+	                } else if (module.equalsIgnoreCase("profile")) {
+	                    actualCommandLinePost.add("-pl")
+	                    if (!includeProfile) {
+	                        actualCommandLinePost.add("!admin-console,!integration-tests,!server")
+	                    } else {
+	                        actualCommandLinePost.add("!integration-tests")
+	                    }
+	                }
+	                if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
+	                    actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
+	                    actualCommandLinePost.add("-Dstudio.ui.alpha.path=../studio-ui-ng")
+						actualCommandLinePost.add("-Dstudio.videoCenter.path=../video-center-blueprint")
+	                    actualCommandLinePost.add("-Dexec.skip=true")
+	                }
+	                def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
+	                executeProcess(array, "./src/${module}".toString())
+	            })
+	            // Creates the Dependencies Array
+	            def buildTask = tasks.findByName("${module}_build")
+	            buildTask.description "Builds and installs locally ${module} module"
+	            buildDeps.add(buildTask)
+	        }
+		}
         // Create init tasks
         task "${module}_init" doLast {
             def finalUrl = "${gitURLTemplate}${module}.git".toString()
@@ -261,6 +266,9 @@ buildModules.each { module ->
                 gitCloneCmd.add("1")
             }
             def arry = commandLinePrefix + gitCloneCmd + ["-b", gitSourceBranch, finalUrl, path]
+			if (module == "video-center-blueprint") {
+				arry = commandLinePrefix + gitCloneCmd + ["-b", "master", finalUrl, path]
+			}
             if (file(path).exists()) {
                 logger.lifecycle("Module ${module} has already been initialized, please use " +
                         "'update' to update it.")
@@ -275,6 +283,9 @@ buildModules.each { module ->
                 throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'update' to initialize it.")
             } else {
                 def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
+				if (module == "video-center-blueprint") {
+					arry = commandLinePrefix + ["git", "pull", gitRepo, "master"]
+				}
                 executeProcess(arry, "./src/${module}".toString())
             }
         }
