@@ -76,7 +76,7 @@ ext {
     authTomcatShutdownPort = project.hasProperty("authoring.tomcat.shutdown.port") ? project.property("authoring.tomcat.shutdown.port") : 8005
     authTomcatAJPPort = project.hasProperty("authoring.tomcat.ajp.port") ? project.property("authoring.tomcat.ajp.port") : 8009
     authTomcatSSLPort = project.hasProperty("authoring.tomcat.https.port") ? project.property("authoring.tomcat.https.port") : 8443
-    authTomcatDebug = project.hasProperty("authoring.tomcat.debug.port") ? project.property("authoring.tomcat.debug.port") : 8000
+    authTomcatDebugPort = project.hasProperty("authoring.tomcat.debug.port") ? project.property("authoring.tomcat.debug.port") : 8000
     authMongoDBPort = project.hasProperty("authoring.mongo.port") ? project.property("authoring.mongo.port") : 27020
     authSolrPort = project.hasProperty("authoring.solr.port") ? project.property("authoring.solr.port") : 8694
     authSolrDebugPort = project.hasProperty("authoring.solr.debug.port") ? project.property("authoring.solr.debug.port") : 5005
