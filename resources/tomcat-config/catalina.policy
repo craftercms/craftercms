@@ -238,6 +238,8 @@ grant {
     permission java.io.FilePermission "${java.io.tmpdir}/-", "read, write, delete";
     permission java.io.FilePermission "/tmp/-", "read, write, delete";
     permission groovy.security.GroovyCodeSourcePermission "*";
+    permission java.security.SecurityPermission "putProviderProperty.BC";
+    permission java.security.SecurityPermission "insertProvider.BC";
 };
 
 // Crafter Studio specific permissions
