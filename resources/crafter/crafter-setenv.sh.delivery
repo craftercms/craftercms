@@ -19,6 +19,10 @@
 export CRAFTER_LOGS_DIR=${CRAFTER_LOGS_DIR:="$CRAFTER_HOME/logs"}
 export CRAFTER_DATA_DIR=${CRAFTER_DATA_DIR:="$CRAFTER_HOME/data"}
 
+# Mail server variables
+export MAIL_HOST=${MAIL_HOST:="localhost"}
+export MAIL_PORT=${MAIL_PORT:="@SMTP_PORT@"}
+
 # Solr variables
 export SOLR_HOST=${SOLR_HOST:="localhost"}
 export SOLR_PORT=${SOLR_PORT:="@SOLR_PORT@"}
@@ -45,7 +49,8 @@ export DEPLOYER_DATA_DIR=$CRAFTER_DATA_DIR/deployer
 export DEPLOYER_LOGS_DIR=$CRAFTER_LOGS_DIR/deployer
 export DEPLOYER_DEPLOYMENTS_DIR=$CRAFTER_DATA_DIR/repos/sites
 export DEPLOYER_SDOUT=$DEPLOYER_LOGS_DIR/crafter-deployer.out
-export DEPLOYER_JAVA_OPTS="-server -Xss1024K -Xmx1G"
+export DEPLOYER_JAVA_OPTS="-Dtomcat.host=$TOMCAT_HTTP_PORT -Dtomcat.http.port=$TOMCAT_HTTP_PORT -Des.host=$ES_HOST \
+  -Des.port=$ES_PORT -Dmail.host=$MAIL_HOST -Dmail.port=$MAIL_PORT -server -Xss1024K -Xmx1G"
 export DEPLOYER_PID=$DEPLOYER_HOME/crafter-deployer.pid
 
 # MongoDB variables
@@ -56,22 +61,8 @@ export MONGODB_PID="$CRAFTER_DATA_DIR/mongodb/mongod.lock"
 export MONGODB_DATA_DIR="$CRAFTER_DATA_DIR/mongodb"
 export MONGODB_LOGS_DIR="$CRAFTER_LOGS_DIR/mongodb"
 
-# MariaDB variables
-export MARIADB_HOST=${MARIADB_HOST:="localhost"}
-export MARIADB_PORT=${MARIADB_PORT:="@MARIADB_PORT@"}
-export MYSQL_DATA="$CRAFTER_DATA_DIR/db"
-
-case "$(uname -s)" in
-  Darwin)
-    export MYSQL_PID_FILE_NAME="$(echo "$HOSTNAME" | awk -F'.' '{print $1}' ).pid"
-  ;;
-  *)
-    export MYSQL_PID_FILE_NAME="$HOSTNAME.pid"
-  ;;
-esac
-
 # Tomcat variables
-export TOMCAT_HOST=${TOMCAT_HOST:="locahost"}
+export TOMCAT_HOST=${TOMCAT_HOST:="localhost"}
 export TOMCAT_HTTP_PORT=${TOMCAT_HTTP_PORT:="@TOMCAT_HTTP_PORT@"}
 export TOMCAT_HTTPS_PORT=${TOMCAT_HTTPS_PORT:="@TOMCAT_HTTPS_PORT@"}
 export TOMCAT_AJP_PORT=${TOMCAT_AJP_PORT:="@TOMCAT_AJP_PORT@"}
@@ -82,14 +73,16 @@ export CATALINA_LOGS_DIR="$CRAFTER_LOGS_DIR/tomcat"
 export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
 export CATALINA_TMPDIR=$CRAFTER_HOME/temp/tomcat
 export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
+# Opts used in both Tomcat start and stop
+export JAVA_OPTS="-Dtomcat.shutdown.port=$TOMCAT_SHUTDOWN_PORT"
+# Opts used only in Tomcat start
 export CATALINA_OPTS="-Dtomcat.host=$TOMCAT_HOST -Dtomcat.http.port=$TOMCAT_HTTP_PORT \
-  -Dtomcat.https.port=$TOMCAT_HTTPS_PORT -Dtomcat.ajp.port=$TOMCAT_AJP_PORT \
-  -Dtomcat.shutdown.port=$TOMCAT_SHUTDOWN_PORT -Dsolr.host=$SOLR_HOST -Dsolr.port=$SOLR_PORT \
-  -Des.host=$ES_HOST -Des.port=$ES_PORT -Ddeployer.host=$DEPLOYER_HOST -Ddeployer.port=$DEPLOYER_PORT \
-  -Dmariadb.host=$MARIADB_HOST -Dmariadb.port=$MARIADB_PORT -Dcrafter.home=$CRAFTER_HOME \
-  -Dcrafter.bin.dir=$CRAFTER_BIN_DIR -Dcrafter.data.dir=$CRAFTER_DATA_DIR -Dcrafter.logs.dir=$CRAFTER_LOGS_DIR \
-  -Dcatalina.logs=$CATALINA_LOGS_DIR -Djava.net.preferIPv4Stack=true -server -Xss1024K -Xms1G -Xmx4G \
-  -Dapplication.logs=$CRAFTER_APPLICATION_LOGS"
+  -Dtomcat.https.port=$TOMCAT_HTTPS_PORT -Dtomcat.ajp.port=$TOMCAT_AJP_PORT -Dsolr.host=$SOLR_HOST \
+  -Dsolr.port=$SOLR_PORT -Des.host=$ES_HOST -Des.port=$ES_PORT -Ddeployer.host=$DEPLOYER_HOST \
+  -Ddeployer.port=$DEPLOYER_PORT -Dmongodb.host=$MONGODB_HOST -Dmongodb.port=$MONGODB_PORT -Dmail.host=$MAIL_HOST \
+  -Dmail.port=$MAIL_PORT -Dcrafter.home=$CRAFTER_HOME -Dcrafter.bin.dir=$CRAFTER_BIN_DIR \
+  -Dcrafter.data.dir=$CRAFTER_DATA_DIR -Dcrafter.logs.dir=$CRAFTER_LOGS_DIR -Dcatalina.logs=$CATALINA_LOGS_DIR \
+  -Djava.net.preferIPv4Stack=true -server -Xss1024K -Xms1G -Xmx4G -Dapplication.logs=$CRAFTER_APPLICATION_LOGS"
 
 # Profile variables
 export PROFILE_DEPLOY_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile"

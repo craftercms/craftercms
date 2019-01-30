@@ -1,6 +1,12 @@
 target:
   localRepoPath: ${deployer.main.deployments.folderPath}/${target.siteName}
+  engineUrl: http://${tomcat.host}:${tomcat.http.port}
   search:
-    serverUrl: http://localhost:@TOMCAT_HTTP_PORT@/crafter-search
+    serverUrl: http://${tomcat.host}:${tomcat.http.port}/crafter-search
     elasticSearch:
-      urls: http://localhost:@ES_PORT@
+      urls: http://${es.host}:${es.port}
+  notifications:
+    mail:
+      server:
+        host: ${mail.host}
+        port: ${mail.port}

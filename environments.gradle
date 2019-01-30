@@ -45,7 +45,8 @@ def deliveryTokens = [
   MONGODB_PORT         : String.valueOf(deliveryMongoDBPort),
   ENV                  : "delivery",
   VERSION              : project.version,
-  GIT_BUILD_ID         : gitRevisionId
+  GIT_BUILD_ID         : gitRevisionId,
+  SMTP_PORT            : String.valueOf(deliverySMTPPort)
 ]
 
 /**
@@ -56,7 +57,23 @@ task("authoringPostEnvironment") {
 
     doLast {
         copy {
-            from "./resources/tomcat-config/crafter"
+            from "./resources/tomcat-config-authoring/setenv.sh"
+            from "./resources/tomcat-config-authoring/setenv.bat"
+            into "${authEnv}/bin/apache-tomcat/bin"
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
+        }
+
+        copy {
+            from "./resources/tomcat-config-authoring/catalina.policy"
+            into "${authEnv}/bin/apache-tomcat/conf/"
+        }
+
+        copy {
+            from "./resources/tomcat-config-authoring/crafter"
             into "${authEnv}/bin/apache-tomcat/shared/classes/crafter"
             filter(ReplaceTokens, tokens: authTokens)
             eachFile {
@@ -78,17 +95,18 @@ task("authoringPostEnvironment") {
         }
 
         copy {
-            from("./resources/crafter/") {
-                exclude "**/init-site.*"
-                exclude "**/remove-site.*"
-                eachFile {
-                    if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
-                        it.exclude()
-                    }
+            from "./resources/crafter/"
+            into "${authEnv}/bin/"
+            exclude "**/init-site.*"
+            exclude "**/remove-site.*"
+            exclude "**/*.delivery"
+            rename '(.*).authoring', '$1'
+            filter(ReplaceTokens, tokens: authTokens)
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
+                    it.exclude()
                 }
             }
-            into "${authEnv}/bin/"
-            filter(ReplaceTokens, tokens: authTokens)
         }
 
         copy {
@@ -142,6 +160,22 @@ task("deliveryPostEnvironment") {
 
     doLast {
         copy {
+            from "./resources/tomcat-config-delivery/setenv.sh"
+            from "./resources/tomcat-config-delivery/setenv.bat"
+            into "${deliveryEnv}/bin/apache-tomcat/bin"
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
+        }
+
+        copy {
+            from "./resources/tomcat-config-delivery/catalina.policy"
+            into "${deliveryEnv}/bin/apache-tomcat/conf/"
+        }
+
+        copy {
             from "./resources/tomcat-config-delivery/crafter"
             into "${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter"
             filter(ReplaceTokens, tokens: deliveryTokens)
@@ -165,6 +199,8 @@ task("deliveryPostEnvironment") {
         copy {
             from "./resources/crafter/"
             into "${deliveryEnv}/bin/"
+            exclude "**/*.authoring"
+            rename '(.*).delivery', '$1'
             filter(ReplaceTokens, tokens: deliveryTokens)
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/")).exists() && !forceDeploy) {
@@ -273,22 +309,6 @@ envs.each { env ->
             def webapps = file("${path}/bin/apache-tomcat/webapps/")
             if (!webapps.exists()) {
                 webapps.mkdir()
-            }
-
-            copy {
-                from "./resources/tomcat-config/setenv.sh"
-                from "./resources/tomcat-config/setenv.bat"
-                into "${path}/bin/apache-tomcat/bin"
-                eachFile {
-                    if (it.relativePath.getFile(file("${path}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
-                        it.exclude()
-                    }
-                }
-            }
-
-            copy {
-                from "./resources/tomcat-config/catalina.policy"
-                into "${path}/bin/apache-tomcat/conf/"
             }
 
             copy {
