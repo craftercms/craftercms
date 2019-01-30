@@ -78,6 +78,7 @@ function version(){
 function manPages(){
   man "$CRAFTER_BIN_DIR/crafter.sh.1"
 }
+
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID | uniq)
   echo $pid
