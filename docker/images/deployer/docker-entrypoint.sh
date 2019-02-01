@@ -20,4 +20,5 @@ export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
+cd $DEPLOYER_HOME
 $CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
