@@ -12,26 +12,32 @@ studio.repo.basePath: ${sys:crafter.data.dir}/repos
 # studio.repo.published.staging: staging
 
 ############################################################
+##                   Site Configuration                   ##
+############################################################
+# Destroy site context url for preview engine
+studio.configuration.site.preview.destroy.context.url: http://${sys:tomcat.host}:${sys:tomcat.http.port}/api/1/site/context/destroy.json?crafterSite={siteName}
+# Default preview URL
+studio.configuration.site.defaultPreviewUrl: ^https?://${sys:tomcat.host}:${sys:tomcat.http.port}/?
+# Default authoring URL
+studio.configuration.site.defaultAuthoringUrl: ^https?://${sys:tomcat.host}:${sys:tomcat.http.port}/studio/?
+
+############################################################
 ##                    Preview Deployer                    ##
 ############################################################
-
 # Default preview deployer URL (can be overridden per site)
-studio.preview.defaultPreviewDeployerUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/deploy/{siteEnv}/{siteName}
+studio.preview.defaultPreviewDeployerUrl: http://${sys:deployer.host}:${sys:deployer.port}/api/1/target/deploy/{siteEnv}/{siteName}
 # Default preview create target URL (can be overridden per site)
-studio.preview.createTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/upsert
+studio.preview.createTargetUrl: http://${sys:deployer.host}:${sys:deployer.port}/api/1/target/upsert
 # Default preview create target URL (can be overridden per site)
-studio.preview.deleteTargetUrl: http://localhost:@DEPLOYER_PORT@/api/1/target/delete-if-exists/{siteEnv}/{siteName}
-# URL to the preview Crafter Engine
-studio.preview.engineUrl: http://localhost:@TOMCAT_HTTP_PORT@
+studio.preview.deleteTargetUrl: http://${sys:deployer.host}:${sys:deployer.port}/api/1/target/delete-if-exists/{siteEnv}/{siteName}
 # URL to the preview repository (aka Sandbox) where authors save work-in-progress
 studio.preview.repoUrl: ${sys:crafter.data.dir}/repos/sites/{siteName}/sandbox
 
 ############################################################
 ##                   Preview Search                       ##
 ############################################################
-
-studio.preview.search.createUrl: http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/create
-studio.preview.search.deleteUrl: http://localhost:@TOMCAT_HTTP_PORT@/crafter-search/api/2/admin/index/delete/{siteName}
+studio.preview.search.createUrl: http://${sys:tomcat.host}:${sys:tomcat.http.port}/crafter-search/api/2/admin/index/create
+studio.preview.search.deleteUrl: http://${sys:tomcat.host}:${sys:tomcat.http.port}/crafter-search/api/2/admin/index/delete/{siteName}
 
 ##################################################
 ##                   Database                   ##
@@ -40,16 +46,15 @@ studio.preview.search.deleteUrl: http://localhost:@TOMCAT_HTTP_PORT@/crafter-sea
 # Format:
 # jdbc:DATABASE_PLATFORM;databaseName=DATABASE_NAME;create=true;user=DATABASE_USERNAME;password=DATABASE_USER_PASSWORD
 # Note that a relative path is not suitable for a production deployment
-studio.db.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@/crafter?user=crafter&password=crafter
-
+studio.db.url: jdbc:mariadb://${sys:mariadb.host}:${sys:mariadb.port}/crafter?user=crafter&password=crafter
 # Connection string used to initialize database. This creates the `crafter` schema, user or upgrades the database
-studio.db.initializer.url: jdbc:mariadb://127.0.0.1:@MARIADB_PORT@?user=root&password=
+studio.db.initializer.url: jdbc:mariadb://${sys:mariadb.host}:${sys:mariadb.port}?user=root&password=
 # Port number for the embedded database (note this must match what's in the connection URLs in this config file)
-studio.db.port: @MARIADB_PORT@
+studio.db.port: ${sys:mariadb.port}
 # Data folder for the embedded database
 studio.db.dataPath: ${sys:crafter.data.dir}/db
 # Socket path for the embedded database
-studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
+studio.db.socket: /tmp/MariaDB4j.${sys:mariadb.port}.sock
 
 ##################################################
 ##                   Security                   ##
@@ -137,9 +142,9 @@ studio.db.socket: /tmp/MariaDB4j.@MARIADB_PORT@.sock
 # Default value for from header when sending emails.
 # studio.mail.from.default: admin@example.com
 # SMTP server name to send emails.
-# studio.mail.host: localhost
+studio.mail.host: ${sys:mail.host}
 # SMTP port number to send emails.
-studio.mail.port: @SMTP_PORT@
+studio.mail.port: ${sys:mail.port}
 # SMTP username for authenticated access when sending emails.
 # studio.mail.username:
 # SMTP password for authenticated access when sending emails.
@@ -216,3 +221,9 @@ studio.mail.port: @SMTP_PORT@
 # studio.cors.maxage: -1
 # The active environment for multi environment configuration, e.g. qa, prod, dev
 # studio.configuration.environment.active: ENV
+
+################################################################
+##                           Search                           ##
+################################################################
+# URLs to connect to ElasticSearch
+studio.search.urls: http://localhost:@ES_PORT@

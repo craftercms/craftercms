@@ -10,6 +10,45 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 @Field def commandLinePrefix = isWin ? ["cmd", "/c"] : []
 
+def authTokens = [
+  TOMCAT_HTTP_PORT     : String.valueOf(authTomcatPort),
+  TOMCAT_HTTPS_PORT    : String.valueOf(authTomcatSSLPort),
+  TOMCAT_AJP_PORT      : String.valueOf(authTomcatAJPPort),
+  TOMCAT_SHUTDOWN_PORT : String.valueOf(authTomcatShutdownPort),
+  TOMCAT_DEBUG_PORT    : String.valueOf(authTomcatDebugPort),
+  SOLR_PORT            : String.valueOf(authSolrPort),
+  SOLR_DEBUG_PORT      : String.valueOf(authSolrDebugPort),
+  ES_PORT              : String.valueOf(authElasticSearchPort),
+  DEPLOYER_PORT        : String.valueOf(authDeployerPort),
+  DEPLOYER_DEBUG_PORT  : String.valueOf(authDeployerDebugPort),
+  DEPLOYMENT_DIR       : String.valueOf(authDeploymentDir),
+  MARIADB_PORT         : String.valueOf(authMariaDbPort),
+  MONGODB_PORT         : String.valueOf(authMongoDBPort),
+  ENV                  : "authoring",
+  VERSION              : project.version,
+  GIT_BUILD_ID         : gitRevisionId,
+  SMTP_PORT            : String.valueOf(authSMTPPort)
+]
+
+def deliveryTokens = [
+  TOMCAT_HTTP_PORT     : String.valueOf(deliveryTomcatPort),
+  TOMCAT_HTTPS_PORT    : String.valueOf(deliveryTomcatSSLPort),
+  TOMCAT_AJP_PORT      : String.valueOf(deliveryTomcatAJPPort),
+  TOMCAT_SHUTDOWN_PORT : String.valueOf(deliveryTomcatShutdownPort),
+  TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPort),
+  SOLR_PORT            : String.valueOf(deliverySolrPort),
+  SOLR_DEBUG_PORT      : String.valueOf(deliverySolrDebugPort),
+  ES_PORT              : String.valueOf(deliveryElasticSearchPort),
+  DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
+  DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
+  DEPLOYMENT_DIR       : String.valueOf(deliveryDeploymentDir),
+  MONGODB_PORT         : String.valueOf(deliveryMongoDBPort),
+  ENV                  : "delivery",
+  VERSION              : project.version,
+  GIT_BUILD_ID         : gitRevisionId,
+  SMTP_PORT            : String.valueOf(deliverySMTPPort)
+]
+
 /**
  Setup environment
  **/
@@ -18,19 +57,25 @@ task("authoringPostEnvironment") {
 
     doLast {
         copy {
-            from "./resources/tomcat-config/crafter"
+            from "./resources/tomcat-config-authoring/setenv.sh"
+            from "./resources/tomcat-config-authoring/setenv.bat"
+            into "${authEnv}/bin/apache-tomcat/bin"
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
+        }
+
+        copy {
+            from "./resources/tomcat-config-authoring/catalina.policy"
+            into "${authEnv}/bin/apache-tomcat/conf/"
+        }
+
+        copy {
+            from "./resources/tomcat-config-authoring/crafter"
             into "${authEnv}/bin/apache-tomcat/shared/classes/crafter"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort),
-                                           SOLR_PORT        : String.valueOf(authSolrPort),
-                                           SOLR_PORT_D      : String.valueOf(authSolrDebugPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(authDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(authDeployerPort),
-                                           MARIADB_PORT     : String.valueOf(authMariaDbPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
-                                           MONGODB_PORT     : String.valueOf(authMongoDBPort),
-                                           ENV              : "authoring",
-                                           SMTP_PORT        : String.valueOf(authSMTPPort)
-            ])
+            filter(ReplaceTokens, tokens: authTokens)
             eachFile {
                 if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
                     it.exclude()
@@ -41,17 +86,7 @@ task("authoringPostEnvironment") {
         copy {
             from "./resources/deployer/"
             into "${authEnv}/bin/crafter-deployer"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort),
-                                           SOLR_PORT        : String.valueOf(authSolrPort),
-                                           SOLR_PORT_D      : String.valueOf(authSolrDebugPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(authDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(authDeployerPort),
-                                           MARIADB_PORT     : String.valueOf(authMariaDbPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
-                                           MONGODB_PORT     : String.valueOf(authMongoDBPort),
-                                           ENV              : "authoring",
-                                           SMTP_PORT        : String.valueOf(authSMTPPort)
-            ])
+            filter(ReplaceTokens, tokens: authTokens)
             eachFile {
                 if (it.relativePath.getFile(file("${authEnv}/bin/crafter-deployer")).exists() && !forceDeploy) {
                     it.exclude()
@@ -60,38 +95,24 @@ task("authoringPostEnvironment") {
         }
 
         copy {
-            from("./resources/crafter/") {
-                exclude "**/init-site.*"
-                exclude "**/remove-site.*"
-                eachFile {
-                    if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
-                        it.exclude()
-                    }
+            from "./resources/crafter/"
+            into "${authEnv}/bin/"
+            exclude "**/init-site.*"
+            exclude "**/remove-site.*"
+            exclude "**/*.delivery"
+            rename '(.*).authoring', '$1'
+            filter(ReplaceTokens, tokens: authTokens)
+            eachFile {
+                if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
+                    it.exclude()
                 }
             }
-            into "${authEnv}/bin/"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort),
-                                           SOLR_PORT        : String.valueOf(authSolrPort),
-                                           SOLR_PORT_D      : String.valueOf(authSolrDebugPort),
-                                           ES_PORT          : String.valueOf(authElasticSearchPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(authDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(authDeployerPort),
-                                           DEPLOYMENT_DIR   : String.valueOf(authDeploymentDir),
-                                           MARIADB_PORT     : String.valueOf(authMariaDbPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(authTomcatDebug),
-                                           MONGODB_PORT     : String.valueOf(authMongoDBPort),
-                                           ENV              : "authoring",
-                                           VERSION          : project.version,
-                                           GIT_BUILD_ID     : gitRevisionId,
-                                           SMTP_PORT        : String.valueOf(authSMTPPort)
-
-            ])
         }
 
         copy {
             from "./resources/migration"
             into "${authEnv}/bin/migration"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort)])
+            filter(ReplaceTokens, tokens: authTokens)
             eachFile {
                 if (it.relativePath.getFile(file("${authEnv}/bin/migration")).exists() && !forceDeploy) {
                     it.exclude()
@@ -124,8 +145,7 @@ task("authoringPostEnvironment") {
         }
 
         updateCatalinaSettings(authEnv);
-        updateTomcatPorts("${authEnv}/bin/apache-tomcat/conf/server.xml", authTomcatPort, authTomcatAJPPort,
-                          authTomcatShutdownPort, authTomcatSSLPort)
+        updateTomcatPorts("${authEnv}/bin/apache-tomcat/conf/server.xml")
         updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${authEnv}/bin/apache-tomcat/conf/logging.properties")
         addSolrIndexHome("${authEnv}/bin/solr/server/solr/solr.xml")
@@ -139,19 +159,26 @@ task("deliveryPostEnvironment") {
     description "Setup the Crafter CMS delivery environment"
 
     doLast {
+        copy {
+            from "./resources/tomcat-config-delivery/setenv.sh"
+            from "./resources/tomcat-config-delivery/setenv.bat"
+            into "${deliveryEnv}/bin/apache-tomcat/bin"
+            eachFile {
+                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
+                    it.exclude()
+                }
+            }
+        }
+
+        copy {
+            from "./resources/tomcat-config-delivery/catalina.policy"
+            into "${deliveryEnv}/bin/apache-tomcat/conf/"
+        }
 
         copy {
             from "./resources/tomcat-config-delivery/crafter"
             into "${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
-                                           SOLR_PORT        : String.valueOf(deliverySolrPort),
-                                           SOLR_PORT_D      : String.valueOf(deliverySolrDebugPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(deliveryDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(deliveryDeployerPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT     : String.valueOf(deliveryMongoDBPort),
-                                           ENV              : "delivery"
-            ])
+            filter(ReplaceTokens, tokens: deliveryTokens)
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
                     it.exclude()
@@ -162,16 +189,7 @@ task("deliveryPostEnvironment") {
         copy {
             from "./resources/deployer/"
             into "${deliveryEnv}/bin/crafter-deployer"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
-                                           SOLR_PORT        : String.valueOf(deliverySolrPort),
-                                           SOLR_PORT_D      : String.valueOf(deliverySolrDebugPort),
-                                           ES_PORT          : String.valueOf(deliveryElasticSearchPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(deliveryDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(deliveryDeployerPort),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT     : String.valueOf(deliveryMongoDBPort),
-                                           ENV              : "delivery"
-            ])
+            filter(ReplaceTokens, tokens: deliveryTokens)
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/crafter-deployer")).exists() && !forceDeploy) {
                     it.exclude()
@@ -181,19 +199,9 @@ task("deliveryPostEnvironment") {
         copy {
             from "./resources/crafter/"
             into "${deliveryEnv}/bin/"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
-                                           SOLR_PORT        : String.valueOf(deliverySolrPort),
-                                           SOLR_PORT_D      : String.valueOf(deliverySolrDebugPort),
-                                           ES_PORT          : String.valueOf(deliveryElasticSearchPort),
-                                           DEPLOYER_D_PORT  : String.valueOf(deliveryDeployerDebugPort),
-                                           DEPLOYER_PORT    : String.valueOf(deliveryDeployerPort),
-                                           DEPLOYMENT_DIR   : String.valueOf(deliveryDeploymentDir),
-                                           TOMCAT_DEBUG_PORT: String.valueOf(deliveryTomcatDebugPort),
-                                           MONGODB_PORT     : String.valueOf(deliveryMongoDBPort),
-                                           ENV              : "delivery",
-                                           VERSION          : project.version,
-                                           GIT_BUILD_ID     : gitRevisionId
-            ])
+            exclude "**/*.authoring"
+            rename '(.*).delivery', '$1'
+            filter(ReplaceTokens, tokens: deliveryTokens)
             eachFile {
                 if (it.relativePath.getFile(file("${deliveryEnv}/bin/")).exists() && !forceDeploy) {
                     it.exclude()
@@ -220,8 +228,7 @@ task("deliveryPostEnvironment") {
             }
         }
 
-        updateTomcatPorts("${deliveryEnv}/bin/apache-tomcat/conf/server.xml", deliveryTomcatPort, deliveryTomcatAJPPort,
-                          deliveryTomcatShutdownPort, deliveryTomcatSSLPort)
+        updateTomcatPorts("${deliveryEnv}/bin/apache-tomcat/conf/server.xml")
         updateCatalinaSettings(deliveryEnv)
         updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
         updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
@@ -273,7 +280,7 @@ envs.each { env ->
                 }
                 file("${path}/bin/solr-${solrVersion}").renameTo(file("${path}/bin/solr"))
             }
-            
+
             copy {
                 from "./src/search/crafter-search-solr-provider/solr/configsets"
                 into "${path}/bin/solr/server/solr/configsets"
@@ -283,7 +290,7 @@ envs.each { env ->
                     }
                 }
             }
-            
+
             if (!file("${path}/bin/elasticsearch").exists()) {
                 copy {
                     from zipTree(downloadDir + "/elasticsearch-${elasticSearchVersion}.zip")
@@ -302,22 +309,6 @@ envs.each { env ->
             def webapps = file("${path}/bin/apache-tomcat/webapps/")
             if (!webapps.exists()) {
                 webapps.mkdir()
-            }
-
-            copy {
-                from "./resources/tomcat-config/setenv.sh"
-                from "./resources/tomcat-config/setenv.bat"
-                into "${path}/bin/apache-tomcat/bin"
-                eachFile {
-                    if (it.relativePath.getFile(file("${path}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
-                        it.exclude()
-                    }
-                }
-            }
-
-            copy {
-                from "./resources/tomcat-config/catalina.policy"
-                into "${path}/bin/apache-tomcat/conf/"
             }
 
             copy {
@@ -356,17 +347,17 @@ envs.each { env ->
     tasks.findByName("${env}Environment").finalizedBy("${env}PostEnvironment")
 }
 
-def updateTomcatPorts(serverConfigFile, http, ajp, shutdown, ssl) {
+def updateTomcatPorts(serverConfigFile) {
     def serverConfig = new XmlParser().parse(serverConfigFile)
-    serverConfig.@port = shutdown
+    serverConfig.@port = '${tomcat.shutdown.port}'
     serverConfig.Service.Connector.each {
         if (it.@protocol.equalsIgnoreCase("HTTP/1.1")) {
-            it.@port = http
-            it.@redirectPort = ssl
+            it.@port = '${tomcat.http.port}'
+            it.@redirectPort = '${tomcat.https.port}'
             it.@URIEncoding = "UTF-8"
         } else if (it.@protocol.equalsIgnoreCase("AJP/1.3")) {
-            it.@port = ajp
-            it.@redirectPort = ssl
+            it.@port = '${tomcat.ajp.port}'
+            it.@redirectPort = '${tomcat.https.port}'
             it.@URIEncoding = "UTF-8"
         }
     }

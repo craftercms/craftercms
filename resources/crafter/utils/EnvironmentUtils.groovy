@@ -35,8 +35,9 @@ class EnvironmentUtils {
      * Returns the URL of the Tomcat.
      */
     static String getTomcatUrl() {
+        def host = getEnv('TOMCAT_HOST')
         def port = getEnv('TOMCAT_HTTP_PORT')
-        def url = "http://localhost:${port}"
+        def url = "http://${host}:${port}"
 
         return url
     }
@@ -45,8 +46,9 @@ class EnvironmentUtils {
      * Returns the URL of the Deployer.
      */
     static String getDeployerUrl() {
+        def host = getEnv('DEPLOYER_HOST')
         def port = getEnv('DEPLOYER_PORT')
-        def url = "http://localhost:${port}"
+        def url = "http://${host}:${port}"
 
         return url
     }
