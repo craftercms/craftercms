@@ -78,7 +78,6 @@ function version(){
 function manPages(){
   man "$CRAFTER_BIN_DIR/crafter.sh.1"
 }
-
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID | uniq)
   echo $pid
@@ -384,7 +383,7 @@ function startTomcat() {
       possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
       if  [ -z "$possiblePID" ];  then
-        $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh $1 -security
+        $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start -security
       else
         echo $possiblePID > $CATALINA_PID
         echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
@@ -991,111 +990,107 @@ function logo() {
 
 case $1 in
   debug)
-    logo
-    debug $2
+  logo
+  debug $2
   ;;
   start)
-    logo
-    start $2
+  logo
+  start $2
   ;;
   stop)
-    logo
-    stop $2
+  logo
+  stop $2
   ;;
   debug_deployer)
-    logo
-    debugDeployer
+  logo
+  debugDeployer
   ;;
   start_deployer)
-    logo
-    startDeployer
+  logo
+  startDeployer
   ;;
   stop_deployer)
-    logo
-    stopDeployer
+  logo
+  stopDeployer
   ;;
   debug_solr)
-    logo
-    debugSolr
+  logo
+  debugSolr
   ;;
   start_solr)
-    logo
-    startSolr
+  logo
+  startSolr
   ;;
   stop_solr)
-    logo
-    stopSolr
+  logo
+  stopSolr
   ;;
   start_elasticsearch)
-    logo
-    startElasticSearch
+  logo
+  startElasticSearch
   ;;
   debug_elasticsearch)
-    logo
-    debugElasticSearch
+  logo
+  debugElasticSearch
   ;;
   stopElasticSearch)
-    logo
-    stop_elasticsearch
+  logo
+  stop_elasticsearch
   ;;
   debug_tomcat)
-    logo
-    debugTomcat
+  logo
+  debugTomcat
   ;;
   start_tomcat)
-    logo
-    startTomcat start
-  ;;
-  run_tomcat)
-    logo
-    startTomcat run
+  logo
+  startTomcat
   ;;
   stop_tomcat)
-    logo
-    stopTomcat
+  logo
+  stopTomcat
   ;;
   start_mongodb)
-    logo
-    startMongoDB
+  logo
+  startMongoDB
   ;;
   stop_mongodb)
-    logo
-    stopMongoDB
+  logo
+  stopMongoDB
   ;;
   status)
-    status
+  status
   ;;
   backup)
-    doBackup $2
+  doBackup $2
   ;;
   restore)
-    doRestore $2
+  doRestore $2
   ;;
   status_tomcat)
-    studioStatus
+  studioStatus
   ;;
   status_deployer)
-    deployerStatus
+  deployerStatus
   ;;
   status_elasticsearch)
-    elasticSearchStatus
+  elasticSearchStatus
   ;;
   status_solr)
-    solrStatus
+  solrStatus
   ;;
   status_mongodb)
-    mongoDbStatus
+  mongoDbStatus
   ;;
   status_mariadb)
-    mariadbStatus
+  mariadbStatus
   ;;
   --v | --version)
-    version
+  version
   ;;
   man)
-    manPages
+  manPages
   ;;
   *)
-    help
+  help
   ;;
 esac

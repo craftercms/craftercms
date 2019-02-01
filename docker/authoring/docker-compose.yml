@@ -1,6 +1,0 @@
-version: '3'
-services:
-volumes:
-  - /var/crafter/authoring/data:/opt/crafter/data
-  - /var/crafter/authoring/logs:/opt/crafter/logs
-  - /var/crafter/authoring/temp:/opt/crafter/temp

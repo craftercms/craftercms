@@ -67,12 +67,11 @@ export TOMCAT_HTTP_PORT=${TOMCAT_HTTP_PORT:="@TOMCAT_HTTP_PORT@"}
 export TOMCAT_HTTPS_PORT=${TOMCAT_HTTPS_PORT:="@TOMCAT_HTTPS_PORT@"}
 export TOMCAT_AJP_PORT=${TOMCAT_AJP_PORT:="@TOMCAT_AJP_PORT@"}
 export TOMCAT_SHUTDOWN_PORT=${TOMCAT_SHUTDOWN_PORT:="@TOMCAT_SHUTDOWN_PORT@"}
-export CATALINA_HOME="$CRAFTER_BIN_DIR/apache-tomcat"
+export CATALINA_HOME=${CATALINA_HOME:="$CRAFTER_BIN_DIR/apache-tomcat"}
 export CATALINA_PID=$CATALINA_HOME/tomcat.pid
 export CATALINA_LOGS_DIR="$CRAFTER_LOGS_DIR/tomcat"
 export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
 export CATALINA_TMPDIR=$CRAFTER_HOME/temp/tomcat
-export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
 # Opts used in both Tomcat start and stop
 export JAVA_OPTS="-Dtomcat.shutdown.port=$TOMCAT_SHUTDOWN_PORT"
 # Opts used only in Tomcat start
@@ -82,7 +81,7 @@ export CATALINA_OPTS="-Dtomcat.host=$TOMCAT_HOST -Dtomcat.http.port=$TOMCAT_HTTP
   -Ddeployer.port=$DEPLOYER_PORT -Dmongodb.host=$MONGODB_HOST -Dmongodb.port=$MONGODB_PORT -Dmail.host=$MAIL_HOST \
   -Dmail.port=$MAIL_PORT -Dcrafter.home=$CRAFTER_HOME -Dcrafter.bin.dir=$CRAFTER_BIN_DIR \
   -Dcrafter.data.dir=$CRAFTER_DATA_DIR -Dcrafter.logs.dir=$CRAFTER_LOGS_DIR -Dcatalina.logs=$CATALINA_LOGS_DIR \
-  -Djava.net.preferIPv4Stack=true -server -Xss1024K -Xms1G -Xmx4G -Dapplication.logs=$CRAFTER_APPLICATION_LOGS"
+  -Dapplication.logs=$CATALINA_LOGS_DIR -Djava.net.preferIPv4Stack=true -server -Xss1024K -Xms1G -Xmx4G"
 
 # Profile variables
 export PROFILE_DEPLOY_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile"
