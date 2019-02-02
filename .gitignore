@@ -30,7 +30,7 @@ crafter-auth-env/
 !src/.gitkeep
 src/
 bundles/
-crafter-delivery-env/
+docker/images/build/
 crafter-authoring
 crafter-delivery
 downloads/

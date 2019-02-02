@@ -79,6 +79,10 @@ function start() {
   fi
 }
 
+function run() {
+  java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"
+}
+
 function stop() {
   if [ -s "$PID" ]; then
     killPID $PID
@@ -103,6 +107,9 @@ case $1 in
   ;;
   start)
   start
+  ;;
+  run)
+  run
   ;;
   stop)
   stop
