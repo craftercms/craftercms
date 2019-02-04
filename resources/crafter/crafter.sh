@@ -383,7 +383,7 @@ function startTomcat() {
       possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
       if  [ -z "$possiblePID" ];  then
-        $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh $1 -security
+        $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start -security
       else
         echo $possiblePID > $CATALINA_PID
         echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
@@ -1044,10 +1044,6 @@ case $1 in
   start_tomcat)
     logo
     startTomcat start
-  ;;
-  run_tomcat)
-    logo
-    startTomcat run
   ;;
   stop_tomcat)
     logo
