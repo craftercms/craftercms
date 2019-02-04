@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 CRAFTER_STOP_HOME=${CRAFTER_STOP_HOME:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 
 if [[ -s  "$CRAFTER_STOP_HOME/crafter.sh" ]]; then

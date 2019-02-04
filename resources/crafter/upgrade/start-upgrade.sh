@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
 #
