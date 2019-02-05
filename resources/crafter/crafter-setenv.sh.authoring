@@ -58,7 +58,7 @@ export DEPLOYER_DATA_DIR=$CRAFTER_DATA_DIR/deployer
 export DEPLOYER_LOGS_DIR=$CRAFTER_LOGS_DIR/deployer
 export DEPLOYER_DEPLOYMENTS_DIR=$CRAFTER_DATA_DIR/repos/sites
 export DEPLOYER_SDOUT=$DEPLOYER_LOGS_DIR/crafter-deployer.out
-export DEPLOYER_JAVA_OPTS="-Dtomcat.host=$TOMCAT_HTTP_PORT -Dtomcat.http.port=$TOMCAT_HTTP_PORT -Des.host=$ES_HOST \
+export DEPLOYER_JAVA_OPTS="-Dtomcat.host=$TOMCAT_HOST -Dtomcat.http.port=$TOMCAT_HTTP_PORT -Des.host=$ES_HOST \
   -Des.port=$ES_PORT -Dmail.host=$MAIL_HOST -Dmail.port=$MAIL_PORT -server -Xss1024K -Xmx1G"
 export DEPLOYER_PID=$DEPLOYER_HOME/crafter-deployer.pid
 
