@@ -138,8 +138,8 @@ ext {
                 ",src/test/resources/testng_StudioAPI2.xml"
 
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
-    withElasticSearch = project.hasProperty("withElasticSearch") ? project.property("withElasticSearch") : true
-    withSolr = project.hasProperty("withSolr") ? project.property("withSolr") : false
+    withElasticSearch = project.hasProperty("withElasticSearch") ? project.property("withElasticSearch").toBoolean() : true
+    withSolr = project.hasProperty("withSolr") ? project.property("withSolr").toBoolean() : false
     silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent") : false
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
 
