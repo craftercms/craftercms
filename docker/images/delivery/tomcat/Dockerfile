@@ -5,12 +5,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Install dependencies
 RUN apt-get update; \
     apt-get install -y --no-install-recommends lsof; \
-    apt-get install -y --no-install-recommends curl
-
-# Create main installation folder and bin folder. Current dir change to that one
-RUN mkdir -p /opt/crafter && mkdir /opt/crafter/bin
-WORKDIR /opt/crafter
-
+    apt-get install -y --no-install-recommends curl;
 
 # Create folder and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
@@ -30,8 +25,7 @@ COPY --chown=crafter:crafter ./bin ./bin/
 COPY --chown=crafter:crafter docker-entrypoint.sh .
 
 # Expose port
-ENV DEPLOYER_PORT 9191
-EXPOSE 9191
+EXPOSE 9080
 
 # Make sure docker-entrypoint.sh is executable
 RUN chmod +x docker-entrypoint.sh
