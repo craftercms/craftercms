@@ -20,9 +20,11 @@ export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
-if [ ! -d $DEPLOYER_LOGS_DIR ]; then
-    mkdir -p $DEPLOYER_LOGS_DIR;
+if [ ! -d $CATALINA_LOGS_DIR ]; then
+    mkdir -p $CATALINA_LOGS_DIR;
+fi
+if [ ! -d $CATALINA_TMPDIR ]; then
+    mkdir -p $CATALINA_TMPDIR;
 fi
 
-cd $DEPLOYER_HOME
-$CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
+$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run -security
