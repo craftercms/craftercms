@@ -30,7 +30,6 @@ crafter-auth-env/
 !src/.gitkeep
 src/
 bundles/
-docker/images/build/
 crafter-authoring
 crafter-delivery
 downloads/
@@ -41,3 +40,7 @@ utils/target
 .vscode/
 selftest-env/*
 plugins
+
+# Docker
+docker/images/build/
+.env

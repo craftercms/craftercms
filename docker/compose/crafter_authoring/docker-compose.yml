@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 services:
   mariadb:
     image: mariadb:10.1.37
@@ -19,10 +19,10 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - es_data:/usr/share/elasticsearch/data
-      - es_logs:/usr/share/elasticsearch/logs   
+      - elasticsearch_data:/usr/share/elasticsearch/data
+      - elasticsearch_logs:/usr/share/elasticsearch/logs   
   tomcat:
-    image: craftercms/authoring/tomcat
+    image: craftercms/authoring_tomcat
     depends_on:
       - mariadb
     ports:
@@ -53,8 +53,14 @@ services:
       - ES_PORT=9200
 volumes:
   mariadb_data:
-  es_data:
-  es_logs:
+    name: crafter_authoring_data_mariadb
+  elasticsearch_data:
+    name: crafter_authoring_data_elasticsearch
+  elasticsearch_logs:
+    name: crafter_authoring_logs_elasticsearch
   crafter_data:
+    name: crafter_authoring_data
   crafter_logs:
+    name: crafter_authoring_logs
   crafter_temp:
+    name: crafter_authoring_temp

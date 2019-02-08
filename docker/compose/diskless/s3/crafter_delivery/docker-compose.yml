@@ -1,0 +1,24 @@
+version: '3'
+services:
+  tomcat:
+    image: craftercms/diskless_s3_delivery_tomcat
+    ports:
+      - 9080:9080
+    volumes:
+      - crafter_data:/opt/crafter/data
+      - crafter_logs:/opt/crafter/logs
+      - crafter_temp:/opt/crafter/temp
+    environment:
+      # Please specify the following env variables in your shell or in CURRENT_DIR/.env
+      - AWS_ACCESS_KEY
+      - AWS_SECRET_KEY
+      - AWS_REGION
+      - AWS_ELASTIC_SEARCH_URL
+      - S3_BASE_PATH
+volumes:
+  crafter_data:
+    name: diskless_s3_crafter_delivery_data
+  crafter_logs:
+    name: diskless_s3_crafter_delivery_logs
+  crafter_temp:
+    name: diskless_s3_crafter_delivery_temp

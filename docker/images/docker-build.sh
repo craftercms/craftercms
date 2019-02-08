@@ -32,7 +32,7 @@ function buildAuthoringTomcat() {
     rm -rf $AUTHORING_TOMCAT_BUILD_DIR/bin/apache-tomcat/webapps/studio
     find $AUTHORING_TOMCAT_BUILD_DIR/bin -name "*.pid" -type f -delete
 
-    docker build -t craftercms/authoring/tomcat $AUTHORING_TOMCAT_BUILD_DIR
+    docker build -t craftercms/authoring_tomcat $AUTHORING_TOMCAT_BUILD_DIR
 }
 
 function buildDeliveryTomcat() {
@@ -62,7 +62,17 @@ function buildDeliveryTomcat() {
     rm $DELIVERY_TOMCAT_BUILD_DIR/bin/remove-site*
     find $DELIVERY_TOMCAT_BUILD_DIR/bin -name "*.pid" -type f -delete
 
-    docker build -t craftercms/delivery/tomcat $DELIVERY_TOMCAT_BUILD_DIR
+    docker build -t craftercms/delivery_tomcat $DELIVERY_TOMCAT_BUILD_DIR
+}
+
+function buildDisklessS3DeliveryTomcat() {
+    buildDeliveryTomcat
+
+    echo "------------------------------------------------------------------------"
+    echo "Building Diskless S3 Delivery Tomcat Image"
+    echo "------------------------------------------------------------------------" 
+
+    docker build -t craftercms/diskless_s3_delivery_tomcat $DOCKER_IMAGE_DIR/diskless/s3/delivery/tomcat
 }
 
 function buildDeployer() {
@@ -89,22 +99,30 @@ function buildDeployer() {
     docker build -t craftercms/deployer $DEPLOYER_BUILD_DIR
 }
 
+function buildDisklessS3Deployer() {
+    buildDeployer
+
+    echo "------------------------------------------------------------------------"
+    echo "Building Diskless S3 Deployer Image"
+    echo "------------------------------------------------------------------------" 
+
+    docker build -t craftercms/diskless_s3_deployer $DOCKER_IMAGE_DIR/diskless/s3/deployer
+}
+
 case $1 in
     authoring)
     buildAuthoringTomcat
     buildDeployer
     ;;
+    diskless_s3_authoring)
+    buildAuthoringTomcat
+    buildDisklessS3Deployer
+    ;;   
     delivery)
     buildDeliveryTomcat
     buildDeployer
     ;;    
-    authoring-tomcat)
-    buildAuthoringTomcat
-    ;;
-    delivery-tomcat)
-    buildDeliveryTomcat
+    diskless_s3_delivery)
+    buildDisklessS3DeliveryTomcat
     ;;   
-    deployer)
-    buildDeployer
-    ;;
 esac
