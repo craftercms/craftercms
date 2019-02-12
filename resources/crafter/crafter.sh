@@ -1039,9 +1039,9 @@ case $1 in
     logo
     debugElasticSearch
   ;;
-  stopElasticSearch)
+  stop_elasticsearch)
     logo
-    stop_elasticsearch
+    stopElasticSearch
   ;;
   debug_tomcat)
     logo
