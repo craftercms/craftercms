@@ -99,6 +99,16 @@ function buildDeployer() {
     docker build -t craftercms/deployer $DEPLOYER_BUILD_DIR
 }
 
+function buildDisklessS3Deployer() {
+    buildDeployer
+
+    echo "------------------------------------------------------------------------"
+    echo "Building Diskless S3 Deployer Image"
+    echo "------------------------------------------------------------------------" 
+
+    docker build -t craftercms/diskless_s3_deployer $DOCKER_IMAGE_DIR/diskless/s3/deployer
+}
+
 case $1 in
     authoring)
     buildAuthoringTomcat
