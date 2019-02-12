@@ -1,11 +1,11 @@
-version: '3.4'
+version: '3.7'
 services:
   mariadb:
     image: mariadb:10.1.37
     volumes:
       - mariadb_data:/var/lib/mysql
     environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes   
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
     ports:
@@ -64,3 +64,6 @@ volumes:
     name: crafter_authoring_logs
   crafter_temp:
     name: crafter_authoring_temp
+networks:
+  default:
+    name: crafter_authoring_net

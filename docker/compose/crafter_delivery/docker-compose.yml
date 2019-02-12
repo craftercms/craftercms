@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.7'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
@@ -54,3 +54,6 @@ volumes:
     name: crafter_delivery_temp
   crafter_authoring_data:
     external: true
+networks:
+  default:
+    name: crafter_delivery_net

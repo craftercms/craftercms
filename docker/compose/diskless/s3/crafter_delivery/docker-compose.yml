@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   tomcat:
     image: craftercms/diskless_s3_delivery_tomcat
@@ -22,3 +22,6 @@ volumes:
     name: diskless_s3_crafter_delivery_logs
   crafter_temp:
     name: diskless_s3_crafter_delivery_temp
+networks:
+  default:
+    name: crafter_delivery_net
