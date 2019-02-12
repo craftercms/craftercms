@@ -23,7 +23,7 @@ USER crafter
 
 # Copy bin folder and entrypoint script
 COPY --chown=crafter:crafter ./bin ./bin/
-COPY --chown=crafter:crafter docker-entrypoint.sh .
+COPY --chown=crafter:crafter ./docker-entrypoint.sh .
 
 # Expose port
 EXPOSE 8080

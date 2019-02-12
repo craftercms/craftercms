@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
@@ -13,20 +13,18 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - es_data:/usr/share/elasticsearch/data
-      - es_logs:/usr/share/elasticsearch/logs   
+      - elasticsearch_data:/usr/share/elasticsearch/data
+      - elasticsearch_logs:/usr/share/elasticsearch/logs   
   tomcat:
-    image: craftercms/delivery/tomcat
+    image: craftercms/delivery_tomcat
     ports:
       - 9080:9080
     volumes:
       - crafter_data:/opt/crafter/data
       - crafter_logs:/opt/crafter/logs
       - crafter_temp:/opt/crafter/temp
-      - crafter_authoring_crafter_data:/data/authoring
-    environment:  
-      - DEPLOYER_HOST=deployer
-      - DEPLOYER_PORT=9191
+      - crafter_authoring_data:/data/authoring
+    environment:
       - ES_HOST=elasticsearch
       - ES_PORT=9200
   deployer:
@@ -37,17 +35,25 @@ services:
       - crafter_data:/opt/crafter/data
       - crafter_logs:/opt/crafter/logs
       - crafter_temp:/opt/crafter/temp
-      - crafter_authoring_crafter_data:/data/authoring
+      - crafter_authoring_data:/data/authoring
     environment:
       - TOMCAT_HOST=tomcat
       - TOMCAT_HTTP_PORT=9080
       - ES_HOST=elasticsearch
       - ES_PORT=9200
 volumes:
-  es_data:
-  es_logs:
+  elasticsearch_data:
+    name: crafter_delivery_data_elasticsearch
+  elasticsearch_logs:
+    name: crafter_delivery_logs_elasticsearch
   crafter_data:
+    name: crafter_delivery_data
   crafter_logs:
+    name: crafter_delivery_logs
   crafter_temp:
-  crafter_authoring_crafter_data:
+    name: crafter_delivery_temp
+  crafter_authoring_data:
     external: true
+networks:
+  default:
+    name: crafter_delivery_net
