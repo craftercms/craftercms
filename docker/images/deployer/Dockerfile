@@ -29,8 +29,17 @@ USER crafter
 COPY --chown=crafter:crafter ./bin ./bin/
 COPY --chown=crafter:crafter ./docker-entrypoint.sh .
 
+# Replace ports for default ones
+RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9202/9200/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9192/9191/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/28020/27017/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9080/8080/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9443/8443/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9009/8009/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9005/8005/g' ./bin/crafter-setenv.sh;
+
 # Expose port
-ENV DEPLOYER_PORT 9191
 EXPOSE 9191
 
 # Make sure docker-entrypoint.sh is executable

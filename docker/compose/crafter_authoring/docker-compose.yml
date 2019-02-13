@@ -2,14 +2,18 @@ version: '3.7'
 services:
   mariadb:
     image: mariadb:10.1.37
+    ports:
+      # Match Crafter Authoring port
+      - 33306:3306    
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes     
     volumes:
       - mariadb_data:/var/lib/mysql
-    environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
     ports:
-      - 9201:9201
+      # Match Crafter Authoring port
+      - 9201:9200
     environment:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
@@ -26,6 +30,7 @@ services:
     depends_on:
       - mariadb
     ports:
+      # Match Crafter Authoring port
       - 8080:8080
     volumes:
       - crafter_data:/opt/crafter/data
@@ -41,6 +46,7 @@ services:
   deployer:
     image: craftercms/deployer
     ports:
+      # Match Crafter Authoring port
       - 9191:9191
     volumes:
       - crafter_data:/opt/crafter/data
