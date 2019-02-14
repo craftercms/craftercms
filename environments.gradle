@@ -1,14 +1,6 @@
-import groovy.transform.Field
-
 import java.io.File
 import java.nio.file.Paths
 import org.apache.tools.ant.filters.ReplaceTokens
-
-@Field final isWin = System.getProperty('os.name').toLowerCase().contains('windows')
-@Field final isOSX = System.getProperty('os.name').toLowerCase().contains('mac')
-@Field final isNix = (System.getProperty('os.name').toLowerCase().contains('nix') || System.getProperty('os.name').toLowerCase().contains('aix') || System.getProperty('os.name').toLowerCase().contains('nux'))
-
-@Field def commandLinePrefix = isWin ? ["cmd", "/c"] : []
 
 def authTokens = [
   TOMCAT_HTTP_PORT     : String.valueOf(authTomcatPort),
@@ -59,9 +51,9 @@ task("authoringPostEnvironment") {
         copy {
             from "./resources/tomcat-config-authoring/setenv.sh"
             from "./resources/tomcat-config-authoring/setenv.bat"
-            into "${authEnv}/bin/apache-tomcat/bin"
+            into "${authEnvDir}/bin/apache-tomcat/bin"
             eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${authEnvDir}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -69,15 +61,15 @@ task("authoringPostEnvironment") {
 
         copy {
             from "./resources/tomcat-config-authoring/catalina.policy"
-            into "${authEnv}/bin/apache-tomcat/conf/"
+            into "${authEnvDir}/bin/apache-tomcat/conf/"
         }
 
         copy {
             from "./resources/tomcat-config-authoring/crafter"
-            into "${authEnv}/bin/apache-tomcat/shared/classes/crafter"
+            into "${authEnvDir}/bin/apache-tomcat/shared/classes/crafter"
             filter(ReplaceTokens, tokens: authTokens)
             eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${authEnvDir}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -85,10 +77,10 @@ task("authoringPostEnvironment") {
 
         copy {
             from "./resources/deployer/"
-            into "${authEnv}/bin/crafter-deployer"
+            into "${authEnvDir}/bin/crafter-deployer"
             filter(ReplaceTokens, tokens: authTokens)
             eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/crafter-deployer")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${authEnvDir}/bin/crafter-deployer")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -96,14 +88,14 @@ task("authoringPostEnvironment") {
 
         copy {
             from "./resources/crafter/"
-            into "${authEnv}/bin/"
+            into "${authEnvDir}/bin/"
             exclude "**/init-site.*"
             exclude "**/remove-site.*"
             exclude "**/*.delivery"
             rename '(.*).authoring', '$1'
             filter(ReplaceTokens, tokens: authTokens)
             eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${authEnvDir}/bin/")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -111,10 +103,10 @@ task("authoringPostEnvironment") {
 
         copy {
             from "./resources/migration"
-            into "${authEnv}/bin/migration"
+            into "${authEnvDir}/bin/migration"
             filter(ReplaceTokens, tokens: authTokens)
             eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/migration")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${authEnvDir}/bin/migration")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -122,36 +114,36 @@ task("authoringPostEnvironment") {
 
         if (!isWin) {
             exec {
-                workingDir "${authEnv}/bin/apache-tomcat/bin/"
+                workingDir "${authEnvDir}/bin/apache-tomcat/bin/"
                 commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", "daemon.sh",
                                                  "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh",
                                                  "version.sh"]
             }
             exec {
-                workingDir "${authEnv}/bin/crafter-deployer/"
+                workingDir "${authEnvDir}/bin/crafter-deployer/"
                 commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh", "startup.sh", "shutdown.sh"]
             }
             exec {
-                workingDir "${authEnv}/bin/migration"
+                workingDir "${authEnvDir}/bin/migration"
                 commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh",
                                                  "import-bg.sh", "setenv.sh"]
             }
             exec {
-                workingDir "${authEnv}/bin"
+                workingDir "${authEnvDir}/bin"
                 commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
                                                  "crafter-setenv.sh", "upgrade/start-upgrade.sh",
                                                  "upgrade/upgrade-target.sh"]
             }
         }
 
-        updateCatalinaSettings(authEnv);
-        updateTomcatPorts("${authEnv}/bin/apache-tomcat/conf/server.xml")
-        updateTomcatContext("${authEnv}/bin/apache-tomcat/conf/context.xml")
-        updateCatalinaLogging("${authEnv}/bin/apache-tomcat/conf/logging.properties")
-        addSolrIndexHome("${authEnv}/bin/solr/server/solr/solr.xml")
-        updateElasticSearchConf("${authEnv}/bin/elasticsearch/config/elasticsearch.yml")
-        downloadGrapes("${authEnv}/bin", "upgrade/start-upgrade.groovy")
-        downloadGrapes("${authEnv}/bin", "upgrade/upgrade-target.groovy")
+        updateCatalinaSettings(authEnvDir);
+        updateTomcatPorts("${authEnvDir}/bin/apache-tomcat/conf/server.xml")
+        updateTomcatContext("${authEnvDir}/bin/apache-tomcat/conf/context.xml")
+        updateCatalinaLogging("${authEnvDir}/bin/apache-tomcat/conf/logging.properties")
+        addSolrIndexHome("${authEnvDir}/bin/solr/server/solr/solr.xml")
+        updateElasticSearchConf("${authEnvDir}/bin/elasticsearch/config/elasticsearch.yml")
+        downloadGrapes("${authEnvDir}/bin", "upgrade/start-upgrade.groovy")
+        downloadGrapes("${authEnvDir}/bin", "upgrade/upgrade-target.groovy")
     }
 }
 
@@ -162,9 +154,9 @@ task("deliveryPostEnvironment") {
         copy {
             from "./resources/tomcat-config-delivery/setenv.sh"
             from "./resources/tomcat-config-delivery/setenv.bat"
-            into "${deliveryEnv}/bin/apache-tomcat/bin"
+            into "${deliveryEnvDir}/bin/apache-tomcat/bin"
             eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${deliveryEnvDir}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -172,15 +164,15 @@ task("deliveryPostEnvironment") {
 
         copy {
             from "./resources/tomcat-config-delivery/catalina.policy"
-            into "${deliveryEnv}/bin/apache-tomcat/conf/"
+            into "${deliveryEnvDir}/bin/apache-tomcat/conf/"
         }
 
         copy {
             from "./resources/tomcat-config-delivery/crafter"
-            into "${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter"
+            into "${deliveryEnvDir}/bin/apache-tomcat/shared/classes/crafter"
             filter(ReplaceTokens, tokens: deliveryTokens)
             eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${deliveryEnvDir}/bin/apache-tomcat/shared/classes/crafter")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -188,22 +180,23 @@ task("deliveryPostEnvironment") {
 
         copy {
             from "./resources/deployer/"
-            into "${deliveryEnv}/bin/crafter-deployer"
+            into "${deliveryEnvDir}/bin/crafter-deployer"
             filter(ReplaceTokens, tokens: deliveryTokens)
             eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/crafter-deployer")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${deliveryEnvDir}/bin/crafter-deployer")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
         }
+        
         copy {
             from "./resources/crafter/"
-            into "${deliveryEnv}/bin/"
+            into "${deliveryEnvDir}/bin/"
             exclude "**/*.authoring"
             rename '(.*).delivery', '$1'
             filter(ReplaceTokens, tokens: deliveryTokens)
             eachFile {
-                if (it.relativePath.getFile(file("${deliveryEnv}/bin/")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${deliveryEnvDir}/bin/")).exists() && !forceDeploy) {
                     it.exclude()
                 }
             }
@@ -211,33 +204,33 @@ task("deliveryPostEnvironment") {
 
         if (!isWin) {
             exec {
-                workingDir "${deliveryEnv}/bin/apache-tomcat/bin/"
+                workingDir "${deliveryEnvDir}/bin/apache-tomcat/bin/"
                 commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", "daemon.sh",
                                                  "digest.sh", "setclasspath.sh", "shutdown.sh", "startup.sh", "tool-wrapper.sh",
                                                  "version.sh"]
             }
             exec {
-                workingDir "${deliveryEnv}/bin/crafter-deployer/"
+                workingDir "${deliveryEnvDir}/bin/crafter-deployer/"
                 commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh", "startup.sh", "shutdown.sh"]
             }
             exec {
-                workingDir "${deliveryEnv}/bin"
+                workingDir "${deliveryEnvDir}/bin"
                 commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
                                                  "crafter-setenv.sh", "init-site.sh", "remove-site.sh",
                                                  "upgrade/start-upgrade.sh", "upgrade/upgrade-target.sh"]
             }
         }
 
-        updateTomcatPorts("${deliveryEnv}/bin/apache-tomcat/conf/server.xml")
-        updateCatalinaSettings(deliveryEnv)
-        updateTomcatContext("${deliveryEnv}/bin/apache-tomcat/conf/context.xml")
-        updateCatalinaLogging("${deliveryEnv}/bin/apache-tomcat/conf/logging.properties")
-        addSolrIndexHome("${deliveryEnv}/bin/solr/server/solr/solr.xml")
-        updateElasticSearchConf("${deliveryEnv}/bin/elasticsearch/config/elasticsearch.yml")
-        downloadGrapes("${deliveryEnv}/bin", "init-site.groovy")
-        downloadGrapes("${deliveryEnv}/bin", "remove-site.groovy")
-        downloadGrapes("${deliveryEnv}/bin", "upgrade/start-upgrade.groovy")
-        downloadGrapes("${deliveryEnv}/bin", "upgrade/upgrade-target.groovy")
+        updateTomcatPorts("${deliveryEnvDir}/bin/apache-tomcat/conf/server.xml")
+        updateCatalinaSettings(deliveryEnvDir)
+        updateTomcatContext("${deliveryEnvDir}/bin/apache-tomcat/conf/context.xml")
+        updateCatalinaLogging("${deliveryEnvDir}/bin/apache-tomcat/conf/logging.properties")
+        addSolrIndexHome("${deliveryEnvDir}/bin/solr/server/solr/solr.xml")
+        updateElasticSearchConf("${deliveryEnvDir}/bin/elasticsearch/config/elasticsearch.yml")
+        downloadGrapes("${deliveryEnvDir}/bin", "init-site.groovy")
+        downloadGrapes("${deliveryEnvDir}/bin", "remove-site.groovy")
+        downloadGrapes("${deliveryEnvDir}/bin", "upgrade/start-upgrade.groovy")
+        downloadGrapes("${deliveryEnvDir}/bin", "upgrade/upgrade-target.groovy")
     }
 }
 
@@ -253,7 +246,7 @@ envs.each { env ->
     if (!tasks.findByName("${env}Environment")) {
         task "${env}Environment" doLast {
             description "Setup the Crafter ${env} environment"
-            def path = env.equalsIgnoreCase("authoring") ? "${authEnv}" : "${deliveryEnv}"
+            def path = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
 
             if (!file("${path}/bin/groovy").exists()) {
                 copy {
