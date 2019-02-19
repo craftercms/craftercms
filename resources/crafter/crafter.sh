@@ -39,9 +39,13 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
 function help() {
   echo $(basename $BASH_SOURCE)
-  echo "    start [forceMongo] [withSolr] [skipElasticSearch], Starts Tomcat, Deployer and Solr, if forceMongo Mongodb will be run"
-  echo "    stop  [forceMongo], Stops Tomcat, Deployer and Solr if forceMongo Mongodb will be run"
-  echo "    debug [forceMongo] [withSolr] [skipElasticSearch], Starts Tomcat, Deployer and Solr in debug mode if forceMongo Mongodb will be run"
+  echo "    start [forceMongo] [withSolr] [skipElasticSearch], Starts Tomcat, Deployer and ElasticSearch. If \
+  forceMongo is present MongoDB will be started, if withSolr is present Solr will be started, if skipElasticSearch is \
+  present ElasticSearch will not be started"
+  echo "    stop  [forceMongo], Stops Tomcat, Deployer, ElasticSearch and Solr if forceMongo Mongodb will be run"
+  echo "    debug [forceMongo] [withSolr] [skipElasticSearch], Starts Tomcat, Deployer and ElasticSearch in debug \
+  mode. If forceMongo is present MongoDB will be started, if withSolr is present Solr will be started, if \
+  skipElasticSearch is present ElasticSearch will not be started"
   echo "    start_deployer, Starts Deployer"
   echo "    stop_deployer, Stops Deployer"
   echo "    debug_deployer, Starts Deployer in debug mode"
@@ -720,7 +724,9 @@ function start() {
 
 function debug() {
   debugDeployer
-  debugElasticSearch
+  if ! skipElasticSearch "$@"; then
+    debugElasticSearch
+  fi
   if isSolrNeeded "$@"; then
     debugSolr
   fi
@@ -991,11 +997,11 @@ function logo() {
 case $1 in
   debug)
     logo
-    debug $2
+    debug "$@"
   ;;
   start)
     logo
-    start $2
+    start "$@"
   ;;
   stop)
     logo
@@ -1033,9 +1039,9 @@ case $1 in
     logo
     debugElasticSearch
   ;;
-  stopElasticSearch)
+  stop_elasticsearch)
     logo
-    stop_elasticsearch
+    stopElasticSearch
   ;;
   debug_tomcat)
     logo

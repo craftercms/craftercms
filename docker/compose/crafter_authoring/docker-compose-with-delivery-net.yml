@@ -1,0 +1,9 @@
+version: '3.7'
+services:
+  deployer:
+    networks:
+      - default
+      - crafter_delivery_net
+networks:
+  crafter_delivery_net:
+    external: true

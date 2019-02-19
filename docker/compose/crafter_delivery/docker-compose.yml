@@ -1,0 +1,62 @@
+version: '3.7'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+    ports:
+      # Match Crafter Delivery port
+      - 9202:9200
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xss1024K -Xmx1G"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+      - elasticsearch_logs:/usr/share/elasticsearch/logs   
+  tomcat:
+    image: craftercms/delivery_tomcat
+    ports:
+      # Match Crafter Delivery port
+      - 9080:8080
+    volumes:
+      - crafter_data:/opt/crafter/data
+      - crafter_logs:/opt/crafter/logs
+      - crafter_temp:/opt/crafter/temp
+      - crafter_authoring_data:/data/authoring
+    environment:
+      - ES_HOST=elasticsearch
+      - ES_PORT=9200
+  deployer:
+    image: craftercms/deployer
+    ports:
+      # Match Crafter Delivery port
+      - 9192:9191
+    volumes:
+      - crafter_data:/opt/crafter/data
+      - crafter_logs:/opt/crafter/logs
+      - crafter_temp:/opt/crafter/temp
+      - crafter_authoring_data:/data/authoring
+    environment:
+      - TOMCAT_HOST=tomcat
+      - TOMCAT_HTTP_PORT=8080
+      - ES_HOST=elasticsearch
+      - ES_PORT=9200
+volumes:
+  elasticsearch_data:
+    name: crafter_delivery_data_elasticsearch
+  elasticsearch_logs:
+    name: crafter_delivery_logs_elasticsearch
+  crafter_data:
+    name: crafter_delivery_data
+  crafter_logs:
+    name: crafter_delivery_logs
+  crafter_temp:
+    name: crafter_delivery_temp
+  crafter_authoring_data:
+    external: true
+networks:
+  default:
+    name: crafter_delivery_net
