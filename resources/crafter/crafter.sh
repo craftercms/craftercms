@@ -505,6 +505,32 @@ function deployerStatus(){
   fi
 }
 
+function engineStatus(){
+  echo "------------------------------------------------------------"
+  echo "Crafter Engine status                                       "
+  echo "------------------------------------------------------------"
+  engineStatusOut=$(curl --silent  -f \
+  "http://localhost:$TOMCAT_HTTP_PORT/api/1/monitoring/status.json")
+  if [ $? -eq 0 ]; then
+    echo -e "PID\t"
+    echo `cat "$CATALINA_PID"`
+    echo -e  "uptime:\t"
+    echo "$engineStatusOut" | python -m json.tool | grep uptime | awk -F"[,|:]" '{print $2}'
+    echo -e  "Status:\t"
+    echo "$engineStatusOut" | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
+    engineVersion=$(curl --silent  -f  "http://localhost:$TOMCAT_HTTP_PORT/api/1/monitoring/version.json")
+    if [ $? -eq 0 ]; then
+      echo -e  "Version:\t"
+      printf "$(echo "$engineVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')"
+      echo  "$engineVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
+    fi
+  else
+    echo -e "\033[38;5;196m"
+    echo "Crafter Engine is not running or is unreachable on port $TOMCAT_HTTP_PORT"
+    echo -e "\033[0m"
+  fi
+}
+
 function studioStatus(){
   echo "------------------------------------------------------------"
   echo "Crafter Studio status                                       "
@@ -595,8 +621,11 @@ function stop() {
 function status(){
   solrStatus
   deployerStatus
-  studioStatus
-  mariadbStatus
+  engineStatus
+  if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/studio.war" ]; then
+    studioStatus
+    mariadbStatus
+  fi
   mongoDbStatus
 }
 
@@ -884,8 +913,11 @@ case $1 in
   restore)
   doRestore $2
   ;;
-  status_tomcat)
-  studioStatus
+  status_engine)
+    engineStatus
+  ;;
+  status_studio)
+    studioStatus
   ;;
   status_deployer)
   deployerStatus
