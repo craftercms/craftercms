@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   tomcat:
-    image: craftercms/diskless_s3_delivery_tomcat
+    image: craftercms/serverless_s3_delivery_tomcat
     ports:
       # Match Crafter Delivery port
       - 9080:8080
@@ -18,11 +18,11 @@ services:
       - S3_BASE_PATH
 volumes:
   crafter_data:
-    name: diskless_s3_crafter_delivery_data
+    name: serverless_s3_crafter_delivery_data
   crafter_logs:
-    name: diskless_s3_crafter_delivery_logs
+    name: serverless_s3_crafter_delivery_logs
   crafter_temp:
-    name: diskless_s3_crafter_delivery_temp
+    name: serverless_s3_crafter_delivery_temp
 networks:
   default:
     name: crafter_delivery_net
