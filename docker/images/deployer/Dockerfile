@@ -1,17 +1,5 @@
 FROM openjdk:8-slim
 
-ARG DEBIAN_FRONTEND=noninteractive
-
-# Install dependencies
-RUN apt-get update; \
-    apt-get install -y --no-install-recommends lsof; \
-    apt-get install -y --no-install-recommends curl
-
-# Create main installation folder and bin folder. Current dir change to that one
-RUN mkdir -p /opt/crafter && mkdir /opt/crafter/bin
-WORKDIR /opt/crafter
-
-
 # Create folder and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
     mkdir /opt/crafter/bin; \

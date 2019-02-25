@@ -73,7 +73,7 @@ task buildDeliveryTomcatDocker {
     }
 }
 
-task buildserverlessS3DeliveryTomcat {
+task buildServerlessS3DeliveryTomcat {
     dependsOn 'buildDeliveryTomcatDocker'
 
     doLast {
@@ -122,5 +122,5 @@ task buildAuthoringDockers {
 task buildDeliveryDockers {
     dependsOn 'buildDeployerDocker'
     dependsOn 'buildDeliveryTomcatDocker'
-    dependsOn 'buildserverlessS3DeliveryTomcat'
+    dependsOn 'buildServerlessS3DeliveryTomcat'
 }

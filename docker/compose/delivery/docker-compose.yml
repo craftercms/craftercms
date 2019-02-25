@@ -15,9 +15,15 @@ services:
         hard: -1
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
-      - elasticsearch_logs:/usr/share/elasticsearch/logs   
+      - elasticsearch_logs:/usr/share/elasticsearch/logs
+    networks:
+      crafter:
+        aliases:
+          - delivery-elasticsearch   
   tomcat:
     image: craftercms/delivery_tomcat
+    depends_on:
+      - elasticsearch
     ports:
       # Match Crafter Delivery port
       - 9080:8080
@@ -27,10 +33,16 @@ services:
       - crafter_temp:/opt/crafter/temp
       - crafter_authoring_data:/data/authoring
     environment:
-      - ES_HOST=elasticsearch
+      - ES_HOST=delivery-elasticsearch
       - ES_PORT=9200
+    networks:
+      crafter:
+        aliases:
+          - delivery-tomcat
   deployer:
     image: craftercms/deployer
+    depends_on:
+      - elasticsearch
     ports:
       # Match Crafter Delivery port
       - 9192:9191
@@ -40,10 +52,14 @@ services:
       - crafter_temp:/opt/crafter/temp
       - crafter_authoring_data:/data/authoring
     environment:
-      - TOMCAT_HOST=tomcat
+      - TOMCAT_HOST=delivery-tomcat
       - TOMCAT_HTTP_PORT=8080
-      - ES_HOST=elasticsearch
+      - ES_HOST=delivery-elasticsearch
       - ES_PORT=9200
+    networks:
+      crafter:
+        aliases:
+          - delivery-deployer  
 volumes:
   elasticsearch_data:
     name: crafter_delivery_data_elasticsearch
@@ -58,5 +74,5 @@ volumes:
   crafter_authoring_data:
     external: true
 networks:
-  default:
-    name: crafter_delivery_net
+  crafter:
+    name: crafter

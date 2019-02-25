@@ -3,16 +3,18 @@ services:
   mariadb:
     image: mariadb:10.1.37
     ports:
-      # Match Crafter Authoring port
       - 33306:3306    
     environment:
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes     
     volumes:
       - mariadb_data:/var/lib/mysql
+    networks:
+      crafter:
+        aliases:
+          - authoring-mariadb
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
     ports:
-      # Match Crafter Authoring port
       - 9201:9200
     environment:
       - discovery.type=single-node
@@ -24,39 +26,53 @@ services:
         hard: -1
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
-      - elasticsearch_logs:/usr/share/elasticsearch/logs   
+      - elasticsearch_logs:/usr/share/elasticsearch/logs
+    networks:
+      crafter:
+        aliases:
+          - authoring-elasticsearch  
   tomcat:
     image: craftercms/authoring_tomcat
     depends_on:
       - mariadb
+      - elasticsearch
+      - deployer
     ports:
-      # Match Crafter Authoring port
       - 8080:8080
     volumes:
       - crafter_data:/opt/crafter/data
       - crafter_logs:/opt/crafter/logs
       - crafter_temp:/opt/crafter/temp
     environment:
-      - MARIADB_HOST=mariadb
+      - MARIADB_HOST=authoring-mariadb
       - MARIADB_PORT=3306      
-      - DEPLOYER_HOST=deployer
+      - DEPLOYER_HOST=authoring-deployer
       - DEPLOYER_PORT=9191
-      - ES_HOST=elasticsearch
+      - ES_HOST=authoring-elasticsearch
       - ES_PORT=9200
+    networks:
+      crafter:
+        aliases:
+          - authoring-tomcat
   deployer:
     image: craftercms/deployer
+    depends_on:
+      - elasticsearch  
     ports:
-      # Match Crafter Authoring port
       - 9191:9191
     volumes:
       - crafter_data:/opt/crafter/data
       - crafter_logs:/opt/crafter/logs
       - crafter_temp:/opt/crafter/temp
     environment:
-      - TOMCAT_HOST=tomcat
+      - TOMCAT_HOST=authoring-tomcat
       - TOMCAT_HTTP_PORT=8080
-      - ES_HOST=elasticsearch
+      - ES_HOST=authoring-elasticsearch
       - ES_PORT=9200
+    networks:
+      crafter:
+        aliases:
+          - authoring-deployer
 volumes:
   mariadb_data:
     name: crafter_authoring_data_mariadb
@@ -71,5 +87,5 @@ volumes:
   crafter_temp:
     name: crafter_authoring_temp
 networks:
-  default:
-    name: crafter_authoring_net
+  crafter:
+    name: crafter
