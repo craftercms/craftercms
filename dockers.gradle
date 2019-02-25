@@ -73,17 +73,6 @@ task buildDeliveryTomcatDocker {
     }
 }
 
-task buildServerlessS3DeliveryTomcat {
-    dependsOn 'buildDeliveryTomcatDocker'
-
-    doLast {
-        exec {
-            commandLine commandLinePrefix + ['docker', 'build', '-t', 'craftercms/serverless_s3_delivery_tomcat', 
-                "${dockerImageDir}/serverless/s3/delivery/tomcat"]
-        }
-    }
-}
-
 task buildDeployerDocker {
     def buildDir = "${dockerImageBuildDir}/deployer"
 
@@ -122,5 +111,4 @@ task buildAuthoringDockers {
 task buildDeliveryDockers {
     dependsOn 'buildDeployerDocker'
     dependsOn 'buildDeliveryTomcatDocker'
-    dependsOn 'buildServerlessS3DeliveryTomcat'
 }
