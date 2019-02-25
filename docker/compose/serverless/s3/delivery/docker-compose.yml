@@ -12,7 +12,7 @@ services:
       # Please specify a server-config.properties based on the provided server-config.properties.example (replace <> placeholders)
       - ./config/engine/server-config.properties:/opt/crafter/bin/apache-tomcat/shared/classes/crafter/engine/extension/server-config.properties
     networks:
-      crafter:
+      craftercms:
         aliases:
           - delivery-tomcat
 volumes:
@@ -23,5 +23,5 @@ volumes:
   crafter_temp:
     name: crafter_serverless_s3_delivery_temp
 networks:
-  crafter:
-    name: crafter
+  craftercms:
+    name: craftercms

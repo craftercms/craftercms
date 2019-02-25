@@ -9,7 +9,7 @@ services:
     volumes:
       - mariadb_data:/var/lib/mysql
     networks:
-      crafter:
+      craftercms:
         aliases:
           - authoring-mariadb
   elasticsearch:
@@ -28,7 +28,7 @@ services:
       - elasticsearch_data:/usr/share/elasticsearch/data
       - elasticsearch_logs:/usr/share/elasticsearch/logs
     networks:
-      crafter:
+      craftercms:
         aliases:
           - authoring-elasticsearch  
   tomcat:
@@ -51,7 +51,7 @@ services:
       - ES_HOST=authoring-elasticsearch
       - ES_PORT=9200
     networks:
-      crafter:
+      craftercms:
         aliases:
           - authoring-tomcat
   deployer:
@@ -70,7 +70,7 @@ services:
       - ES_HOST=authoring-elasticsearch
       - ES_PORT=9200
     networks:
-      crafter:
+      craftercms:
         aliases:
           - authoring-deployer
 volumes:
@@ -87,5 +87,5 @@ volumes:
   crafter_temp:
     name: crafter_authoring_temp
 networks:
-  crafter:
-    name: crafter
+  craftercms:
+    name: craftercms

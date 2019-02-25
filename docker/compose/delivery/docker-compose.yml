@@ -17,7 +17,7 @@ services:
       - elasticsearch_data:/usr/share/elasticsearch/data
       - elasticsearch_logs:/usr/share/elasticsearch/logs
     networks:
-      crafter:
+      craftercms:
         aliases:
           - delivery-elasticsearch   
   tomcat:
@@ -36,7 +36,7 @@ services:
       - ES_HOST=delivery-elasticsearch
       - ES_PORT=9200
     networks:
-      crafter:
+      craftercms:
         aliases:
           - delivery-tomcat
   deployer:
@@ -57,7 +57,7 @@ services:
       - ES_HOST=delivery-elasticsearch
       - ES_PORT=9200
     networks:
-      crafter:
+      craftercms:
         aliases:
           - delivery-deployer  
 volumes:
@@ -74,5 +74,5 @@ volumes:
   crafter_authoring_data:
     external: true
 networks:
-  crafter:
-    name: crafter
+  craftercms:
+    name: craftercms
