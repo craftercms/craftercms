@@ -1,9 +1,22 @@
+# Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 version: '3.7'
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
     ports:
-      # Match Crafter Delivery port
       - 9202:9200
     environment:
       - discovery.type=single-node
@@ -15,11 +28,16 @@ services:
         hard: -1
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
-      - elasticsearch_logs:/usr/share/elasticsearch/logs   
+      - elasticsearch_logs:/usr/share/elasticsearch/logs
+    networks:
+      craftercms:
+        aliases:
+          - delivery-elasticsearch   
   tomcat:
     image: craftercms/delivery_tomcat
+    depends_on:
+      - elasticsearch
     ports:
-      # Match Crafter Delivery port
       - 9080:8080
     volumes:
       - crafter_data:/opt/crafter/data
@@ -27,12 +45,17 @@ services:
       - crafter_temp:/opt/crafter/temp
       - crafter_authoring_data:/data/authoring
     environment:
-      - ES_HOST=elasticsearch
+      - ES_HOST=delivery-elasticsearch
       - ES_PORT=9200
+    networks:
+      craftercms:
+        aliases:
+          - delivery-tomcat
   deployer:
     image: craftercms/deployer
+    depends_on:
+      - elasticsearch
     ports:
-      # Match Crafter Delivery port
       - 9192:9191
     volumes:
       - crafter_data:/opt/crafter/data
@@ -40,10 +63,14 @@ services:
       - crafter_temp:/opt/crafter/temp
       - crafter_authoring_data:/data/authoring
     environment:
-      - TOMCAT_HOST=tomcat
+      - TOMCAT_HOST=delivery-tomcat
       - TOMCAT_HTTP_PORT=8080
-      - ES_HOST=elasticsearch
+      - ES_HOST=delivery-elasticsearch
       - ES_PORT=9200
+    networks:
+      craftercms:
+        aliases:
+          - delivery-deployer  
 volumes:
   elasticsearch_data:
     name: crafter_delivery_data_elasticsearch
@@ -58,5 +85,5 @@ volumes:
   crafter_authoring_data:
     external: true
 networks:
-  default:
-    name: crafter_delivery_net
+  craftercms:
+    name: craftercms

@@ -1,0 +1,5 @@
+crafter.engine.site.default.rootFolder.path=s3://<BUCKET_NAME>/<SITES_BASE_PATH>/{siteName}
+crafter.engine.s3.region=<AWS_REGION>
+crafter.engine.s3.accessKey=<AWS_ACCESS_KEY>
+crafter.engine.s3.secretKey=<AWS_SECRET_KEY>
+crafter.engine.elasticsearch.urls=<AWS_ELASTIC_SEARCH_URL>
