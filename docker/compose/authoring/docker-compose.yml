@@ -1,0 +1,105 @@
+# Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+version: '3.7'
+services:
+  mariadb:
+    image: mariadb:10.1.37
+    ports:
+      - 33306:3306    
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes     
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      craftercms:
+        aliases:
+          - authoring-mariadb
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
+    ports:
+      - 9201:9200
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xss1024K -Xmx1G"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+      - elasticsearch_logs:/usr/share/elasticsearch/logs
+    networks:
+      craftercms:
+        aliases:
+          - authoring-elasticsearch  
+  tomcat:
+    image: craftercms/authoring_tomcat
+    depends_on:
+      - mariadb
+      - elasticsearch
+      - deployer
+    ports:
+      - 8080:8080
+    volumes:
+      - crafter_data:/opt/crafter/data
+      - crafter_logs:/opt/crafter/logs
+      - crafter_temp:/opt/crafter/temp
+    environment:
+      - MARIADB_HOST=authoring-mariadb
+      - MARIADB_PORT=3306      
+      - DEPLOYER_HOST=authoring-deployer
+      - DEPLOYER_PORT=9191
+      - ES_HOST=authoring-elasticsearch
+      - ES_PORT=9200
+    networks:
+      craftercms:
+        aliases:
+          - authoring-tomcat
+  deployer:
+    image: craftercms/deployer
+    depends_on:
+      - elasticsearch  
+    ports:
+      - 9191:9191
+    volumes:
+      - crafter_data:/opt/crafter/data
+      - crafter_logs:/opt/crafter/logs
+      - crafter_temp:/opt/crafter/temp
+    environment:
+      - TOMCAT_HOST=authoring-tomcat
+      - TOMCAT_HTTP_PORT=8080
+      - ES_HOST=authoring-elasticsearch
+      - ES_PORT=9200
+    networks:
+      craftercms:
+        aliases:
+          - authoring-deployer
+volumes:
+  mariadb_data:
+    name: crafter_authoring_data_mariadb
+  elasticsearch_data:
+    name: crafter_authoring_data_elasticsearch
+  elasticsearch_logs:
+    name: crafter_authoring_logs_elasticsearch
+  crafter_data:
+    name: crafter_authoring_data
+  crafter_logs:
+    name: crafter_authoring_logs
+  crafter_temp:
+    name: crafter_authoring_temp
+networks:
+  craftercms:
+    name: craftercms
