@@ -1,0 +1,41 @@
+# Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+version: '3.7'
+services:
+  tomcat:
+    image: craftercms/delivery_tomcat
+    ports:
+      - 9080:8080
+    volumes:
+      - crafter_data:/opt/crafter/data
+      - crafter_logs:/opt/crafter/logs
+      - crafter_temp:/opt/crafter/temp
+      - ./config/engine/services-context.xml:/opt/crafter/bin/apache-tomcat/shared/classes/crafter/engine/extension/services-context.xml
+      # Please specify a server-config.properties based on the provided server-config.properties.example (replace <> placeholders)
+      - ./config/engine/server-config.properties:/opt/crafter/bin/apache-tomcat/shared/classes/crafter/engine/extension/server-config.properties
+    networks:
+      craftercms:
+        aliases:
+          - delivery-tomcat
+volumes:
+  crafter_data:
+    name: crafter_serverless_s3_delivery_data
+  crafter_logs:
+    name: crafter_serverless_s3_delivery_logs
+  crafter_temp:
+    name: crafter_serverless_s3_delivery_temp
+networks:
+  craftercms:
+    name: craftercms

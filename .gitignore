@@ -43,4 +43,5 @@ plugins
 
 # Docker
 docker/images/build/
+docker/compose/serverless/s3/delivery/config/engine/server-config.properties
 .env
