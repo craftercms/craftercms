@@ -14,7 +14,7 @@ IF NOT DEFINED DEPLOYER_WIN_TITLE (SET DEPLOYER_WIN_TITLE="Crafter Deployer @ENV
 
 SET DEPLOYER_PID_FILE=%CRAFTER_HOME%\crafter-deployer.pid
 
-SET DEPLOYER_JAVA_OPTS=-Dserver.port=%DEPLOYER_PORT% -Dlogging.config="%DEPLOYER_HOME%\log4j2.xml" -Dlogs.dir="%DEPLOYER_LOGS_DIR%" -Ddeployments.dir="%DEPLOYER_DEPLOYMENTS_DIR%" -Dtargets.dir="%DEPLOYER_TARGET_DIR%" -DprocessedCommits.dir="%DEPLOYER_PRODCESSED_COMMITS_DIR%" -Dloader.path="%DEPLOYER_HOME%\lib"
+SET DEPLOYER_JAVA_OPTS=-Dserver.port=%DEPLOYER_PORT% -Dlogging.config="%DEPLOYER_HOME%\logging.xml" -Dlogs.dir="%DEPLOYER_LOGS_DIR%" -Ddeployments.dir="%DEPLOYER_DEPLOYMENTS_DIR%" -Dtargets.dir="%DEPLOYER_TARGET_DIR%" -DprocessedCommits.dir="%DEPLOYER_PRODCESSED_COMMITS_DIR%" -Dloader.path="%DEPLOYER_HOME%\lib"
 
 title=%DEPLOYER_WIN_TITLE%
 echo "Starting Crafter Deployer"
