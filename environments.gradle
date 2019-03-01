@@ -393,13 +393,15 @@ def updateElasticSearchConf(configFile) {
   content = content.replace("#path.data: /path/to/data", 'path.data: ${ES_INDEXES_DIR}')
   content = content.replace("#path.logs: /path/to/logs", 'path.logs: ${ES_LOGS_DIR}')
   content = content.replace("#http.port: 9200", 'http.port: ${ES_PORT}')
-  content = content.replace(
-    '#discovery.zen.ping.unicast.hosts',
-    System.lineSeparator() + 
-    '# Disable cluster discovery' + System.lineSeparator() +
-    'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
-    '#discovery.zen.ping.unicast.hosts'
-  )
+  if(!content.contains('discovery.type')) {
+    content = content.replace(
+      '#discovery.zen.ping.unicast.hosts',
+      System.lineSeparator() + 
+      '# Disable cluster discovery' + System.lineSeparator() +
+      'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
+      '#discovery.zen.ping.unicast.hosts'
+    )
+  }
   file.write(content)
 }
 
