@@ -33,7 +33,7 @@ task buildAuthoringTomcatDocker {
         }
 
         exec {
-            commandLine commandLinePrefix + ['docker', 'build', '-t', 'craftercms/authoring_tomcat', buildDir]
+            commandLine commandLinePrefix + ['docker', 'build', '-t', "craftercms/authoring_tomcat:${project.version}", buildDir]
         }
     }
 }
@@ -68,7 +68,7 @@ task buildDeliveryTomcatDocker {
         }
 
         exec {
-            commandLine commandLinePrefix + ['docker', 'build', '-t', 'craftercms/delivery_tomcat', buildDir]
+            commandLine commandLinePrefix + ['docker', 'build', '-t', "craftercms/delivery_tomcat:${project.version}", buildDir]
         }
     }
 }
@@ -99,7 +99,7 @@ task buildDeployerDocker {
         }
 
         exec {
-            commandLine commandLinePrefix + ['docker', 'build', '-t', 'craftercms/deployer', buildDir]
+            commandLine commandLinePrefix + ['docker', 'build', '-t', "craftercms/deployer:${project.version}", buildDir]
         }
     }
 }
