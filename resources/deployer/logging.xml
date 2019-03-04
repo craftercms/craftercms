@@ -15,7 +15,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-<Configuration>
+<Configuration status="warn" monitorInterval="30">
     <Properties>
         <Property name="LOG_PATTERN">
             %d{yyyy-MM-dd HH:mm:ss.SSS} %5p %pid{ } --- [%t] %-40.40c{39} : %m%n%ex
@@ -26,8 +26,9 @@
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
         <RollingFile name="FileAppender" fileName="${sys:logs.dir}/crafter-deployer.log"
-                     filePattern="${sys:logs.dir}/crafter-deployer-%d.log.gz">
+                     filePattern="${sys:logs.dir}/crafter-deployer-%i.log.gz">
             <PatternLayout pattern="${LOG_PATTERN}"/>
+            <DefaultRolloverStrategy max="10"/>
             <SizeBasedTriggeringPolicy size="10MB"/>
         </RollingFile>
         <Routing name="RoutingAppender">
@@ -35,9 +36,10 @@
                 <Route>
                     <RollingFile name="File-${ctx:targetId:-deployer-general}"
                                  fileName="${sys:logs.dir}/${ctx:targetId:-deployer-general}.log"
-                                 filePattern="${sys:logs.dir}/${ctx:targetId:-deployer-general}-%d.log.gz">
+                                 filePattern="${sys:logs.dir}/${ctx:targetId:-deployer-general}-%i.log.gz">
                         <PatternLayout pattern="${LOG_PATTERN}"/>
-                        <SizeBasedTriggeringPolicy size="10 MB" />
+                        <DefaultRolloverStrategy max="10"/>
+                        <SizeBasedTriggeringPolicy size="10MB" />
                     </RollingFile>
                 </Route>
             </Routes>
