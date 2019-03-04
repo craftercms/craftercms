@@ -60,13 +60,13 @@ task downloadSolr() {
             dest file("${downloadDir}/solr-${solrVersion}.zip")
         }
         download {
-            src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip.sha1"
-            dest file("${downloadDir}/solr-${solrVersion}.zip.sha1")
+            src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip.sha512"
+            dest file("${downloadDir}/solr-${solrVersion}.zip.sha512")
             overwrite false
         }
     }
     doLast{
-        assert sha1(new File(downloadDir, "solr-${solrVersion}.zip")) == new File(downloadDir, "solr-${solrVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
+        assert sha512(new File(downloadDir, "solr-${solrVersion}.zip")) == new File(downloadDir, "solr-${solrVersion}.zip.sha512").getText('UTF-8').split(" ")[0]
     }
 }
 
@@ -162,6 +162,10 @@ def messageDigest(file, alg) {
 
 def sha1(file) {
   messageDigest(file, "SHA1");
+}
+
+def sha512(file) {
+  messageDigest(file, "SHA-512");
 }
 
 def sha256(file) {
