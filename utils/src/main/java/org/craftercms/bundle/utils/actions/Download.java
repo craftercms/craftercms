@@ -29,7 +29,7 @@ import org.craftercms.bundle.utils.Action;
 /**
  * Created by cortiz on 4/27/17.
  */
-public class Download implements Action{
+public class Download implements Action {
     private static final int BUFFER_SIZE = 1024;
     /**
      * Output.
@@ -38,10 +38,10 @@ public class Download implements Action{
 
     @Override
     public void execute(final String[] args) {
-        if (args.length <=0 ) {
+        if (args.length <= 0) {
             help();
-        } else{
-            switch (args[0].toLowerCase()){
+        } else {
+            switch (args[0].toLowerCase()) {
                 case "mongodb":
                     new DownloadMongoDB().execute(args);
                     break;
@@ -54,7 +54,7 @@ public class Download implements Action{
                         downloadUrl = new URL((args[0]));
                         downloadUrl(downloadUrl, Paths.get(".", downloadUrl.getFile()));
                     } catch (MalformedURLException e) {
-                        System.out.println(args[0]+ " is not a valid url");
+                        System.out.println(args[0] + " is not a valid url");
                     }
                     break;
             }
@@ -62,26 +62,27 @@ public class Download implements Action{
     }
 
 
-    protected void downloadUrl(final URL downloadUrl, final Path saveTo){
-            try {
-                URLConnection connection = downloadUrl.openConnection();
-                InputStream input = connection.getInputStream();
-                OutputStream out = new FileOutputStream(saveTo.toFile());
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int n;
-                long total = 0;
-                System.out.println("Downloading "+downloadUrl.toString()+" please wait.");
-                while ((n = input.read(buffer)) != -1) {
-                    out.write(buffer, 0, n);
-                    total += n;
-                }
-                out.flush();
-                out.close();
-                input.close();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+    protected void downloadUrl(final URL downloadUrl, final Path saveTo) {
+        try {
+            URLConnection connection = downloadUrl.openConnection();
+            InputStream input = connection.getInputStream();
+            OutputStream out = new FileOutputStream(saveTo.toFile());
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int n;
+            long total = 0;
+            System.out.println("Downloading " + downloadUrl.toString() + " please wait.");
+            while ((n = input.read(buffer)) != -1) {
+                out.write(buffer, 0, n);
+                total += n;
             }
+            out.flush();
+            out.close();
+            input.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
+
     @Override
     public void help() {
         out.println("Downloads a System Dependant Module");
