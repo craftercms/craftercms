@@ -18,12 +18,10 @@
 package org.craftercms.bundle.utils;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import org.craftercms.bundle.utils.actions.ApiPost;
-import org.craftercms.bundle.utils.actions.Download;
-import org.craftercms.bundle.utils.actions.Unzip;
-import org.craftercms.bundle.utils.actions.Zip;
+import org.craftercms.bundle.utils.actions.*;
 
 /**
  * Created by cortiz on 4/27/17.
@@ -33,13 +31,13 @@ public class BundleUtils {
     /**
      * Registered Actions.
      */
-    private static HashMap<String, Action> action = new HashMap<>();
+    private static Map<String, Action> actions = new LinkedHashMap<>();
 
     static {
-        action.put("download", new Download());
-        action.put("unzip", new Unzip());
-        action.put("zip", new Zip());
-        action.put("post", new ApiPost());
+        actions.put("download", new Download());
+        actions.put("unzip", new Unzip());
+        actions.put("zip", new Zip());
+        actions.put("post", new ApiPost());
     }
 
     /**
@@ -54,13 +52,13 @@ public class BundleUtils {
         String actionToDo = args[0].toLowerCase();
         if ("help".equals(actionToDo) && args.length >= 1) {
             String actionToHelp = args[1].toLowerCase();
-            if (action.containsKey(actionToHelp)) {
-                action.get(actionToHelp).help();
+            if (actions.containsKey(actionToHelp)) {
+                actions.get(actionToHelp).help();
             } else {
                 helpAndExit();
             }
-        } else if (action.containsKey(actionToDo)) {
-            action.get(actionToDo).execute(Arrays.copyOfRange(args, 1, args.length));
+        } else if (actions.containsKey(actionToDo)) {
+            actions.get(actionToDo).execute(Arrays.copyOfRange(args, 1, args.length));
         } else {
             helpAndExit(); //NOPMD
         }
@@ -78,11 +76,12 @@ public class BundleUtils {
      * Print the error message.
      */
     private static void help() {
-        System.out.printf("Crafter CMS bundle Utils %s-%s \n", org.craftercms.bundle.utils.Version.BUILD, org
-            .craftercms.bundle.utils.Version.BUILD_ID.substring(0, 6));
-        System.out.println("Usage: java -jar craftercms-utils.jar {Action} {Action Params}");
-        System.out.println("Current actions: download help unzip");
-        System.out.println("Use help {Action} for more info about the action");
+        System.out.printf("Crafter CMS Bundle Utils %s-%s \n",
+                          org.craftercms.bundle.utils.Version.BUILD,
+                          org.craftercms.bundle.utils.Version.BUILD_ID.substring(0, 6));
+        System.out.println("Usage: java -jar craftercms-utils.jar {action} {params}");
+        System.out.println("Current actions: " + actions.keySet());
+        System.out.println("Use help {action} for more info about the action");
         System.out.println();
     }
 
