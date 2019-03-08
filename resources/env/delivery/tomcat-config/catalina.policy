@@ -243,3 +243,8 @@ grant {
     permission java.security.SecurityPermission "putProviderProperty.BC";
     permission java.security.SecurityPermission "insertProvider.BC";
 };
+
+// Groovy Grapes specific permissions
+grant codeBase "file:${catalina.home}/webapps/ROOT/WEB-INF/lib/groovy-all-2.4.15.jar" {
+    permission java.lang.RuntimePermission "createSecurityManager";
+};
