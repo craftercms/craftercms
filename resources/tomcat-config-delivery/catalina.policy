@@ -243,6 +243,10 @@ grant {
     permission java.security.SecurityPermission "insertProvider.BC";
 };
 
+// Groovy Grapes specific permissions
+grant codeBase "file:${catalina.home}/webapps/ROOT/WEB-INF/lib/groovy-all-2.4.10.jar" {
+    permission java.lang.RuntimePermission "createSecurityManager";
+};
 
 // The Manager application needs access to the following packages to support the
 // session display functionality. It also requires the custom Tomcat
