@@ -20,6 +20,7 @@ gradle-app.setting
 .tags1
 .tags
 .gradle
+.gradle.log
 *.idea
 *.iml
 dependency-reduced-pom.xml

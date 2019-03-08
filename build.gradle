@@ -54,6 +54,8 @@ ext {
     /** Environment Building properties **/
     authEnvDir = project.hasProperty("authoring.root") ? project.property("authoring.root") : "./crafter-authoring/"
     deliveryEnvDir = project.hasProperty("delivery.root") ? project.property("delivery.root") : "./crafter-delivery/"
+    authProcessedResourcesDir = "./tmp/crafter-authoring"
+    deliveryProcessedResourcesDir = "./tmp/crafter-delivery"
     includeProfile = project.hasProperty("crafter.profile") ? project.property("crafter.profile") : false
     includeSocial = project.hasProperty("crafter.social") ? project.property("crafter.social") : false
 
@@ -99,8 +101,7 @@ ext {
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
     shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone") : false
     studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo") : false
-    forceDeploy = project.hasProperty("forceDeploy") ? project.property("forceDeploy") : false
-    keepBin = project.hasProperty("keepBin") ? project.property("keepBin") : false
+    overwriteConfig = project.hasProperty("overwriteConfig") ? project.property("overwriteConfig") : false
 
     /** Testing **/
     testingPlatform = project.hasProperty("crafter.testing.platform") ? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ", "-")
@@ -164,7 +165,7 @@ apply from: "downloads.gradle"
 apply from: "environments.gradle"
 apply from: "dockers.gradle"
 
-def deliveryDeps = []
+def deployDepends = []
 def cleanDeps = []
 def buildDeps = []
 def initDeps = []
@@ -310,7 +311,7 @@ envs.each { env ->
                 })
                 def deployTask = tasks.findByName("${module}_${env}_deploy")
                 deployTask.description "Deploy ${module} in the ${env} enviroment"
-                deliveryDeps.add(deployTask)
+                deployDepends.add(deployTask)
             } else {
                 logger.debug("Task ${module}_deploy already exists")
             }
@@ -435,13 +436,13 @@ cleanDeps.removeAll([
 
 if (!includeSocial) {
     buildDeps.removeAll([tasks.findByName('social_build')] as Task[])
-    deliveryDeps.removeIf({
+    deployDepends.removeIf({
         it.name.contains("social")
     })
 }
 
 if (!includeProfile) {
-    deliveryDeps.removeIf({
+    deployDepends.removeIf({
         it.name.contains("profile")
     })
 }
@@ -500,8 +501,8 @@ task status(dependsOn: statusDeps) {
     description "Gets the status configured Crafter enviroments.."
 }
 
-task utils() {
-    description "Builds and deploys Crafter Utililty tools jar file."
+task buildUtils() {
+    description "Builds and deploys Crafter CMS Bundle Utility tools jar file."
     doLast {
         def array = commandLinePrefix + ["mvn", "clean", "package"]
         executeProcess(array, "./utils/")
@@ -511,53 +512,6 @@ task utils() {
                 from "./utils/target/craftercms-utils.jar"
                 into "${path}/bin"
             }
-        }
-    }
-}
-
-task preUpgrade {
-    def enviroments = []
-    doFirst {
-        switch (getEnv()) {
-            case "all":
-                enviroments.addAll([new File("${authEnvDir}"), new File("${deliveryEnvDir}")])
-                break
-            case "authoring":
-                enviroments.add(new File("${authEnvDir}"))
-                break
-            case "delivery":
-                enviroments.add(new File("${deliveryEnvDir}"))
-                break
-            default:
-                throw new InvalidUserDataException("'${env}' is not a valid environment, please use 'authoring' or 'delivery'.")
-        }
-    }
-
-    doLast {
-        enviroments.each { envFolder ->
-            if (envFolder.exists()) {
-                envFolder.eachFile { dir ->
-                    if (!dir.getName().equalsIgnoreCase("data")) {
-                        if (!dir.isFile()) {
-                            dir.deleteDir()
-                        } else {
-                            dir.delete()
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-task preDeploy {
-    doLast {
-        if (getEnv().equalsIgnoreCase("all")) {
-            checkOrCreateCheck("${authEnvDir}")
-            checkOrCreateCheck("${deliveryEnvDir}")
-        } else {
-            def path = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
-            checkOrCreateCheck(path)
         }
     }
 }
@@ -708,8 +662,8 @@ dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
 dependsOnOrdered(init, initDeps)
 dependsOnOrdered(update, updateDeps)
-dependsOnOrdered(deploy, [preDeploy, downloadGroovy, downloadTomcat, downloadSolr, downloadElasticSearch, downloadMariaDB4j, utils] + envDepends + deliveryDeps)
-dependsOnOrdered(upgrade, [update, preUpgrade, build, deploy])
+dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, downloadElasticSearch, downloadMariaDB4j] + envDepends + deployDepends + [buildUtils])
+dependsOnOrdered(upgrade, [update, build, deploy])
 dependsOnOrdered(dockers, dockerDepends)
 
 // If delivery no test (for now)
@@ -761,15 +715,6 @@ def executeProcess(command, workingDir) {
     log.delete()
     if (proc.exitValue() != 0) {
         throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
-    }
-}
-
-def checkOrCreateCheck(path) {
-    def ddir = file(path)
-    if (!ddir.exists() || forceDeploy) {
-        ddir.mkdir()
-        def deployerDir = file("${path}/bin/crafter-deployer")
-        deployerDir.mkdir()
     }
 }
 

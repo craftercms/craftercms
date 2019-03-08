@@ -63,6 +63,9 @@ function help() {
   echo "    status, Status of all CrafterCms subsystems"
   echo "    status_engine, Status of Crafter Engine"
   echo "    status_studio, Status of Crafter Studio"
+  echo "    status_profile, Status of Crafter Profile"
+  echo "    status_social, Status of Crafter Social"
+  echo "    status_search, Status of Crafter Search"
   echo "    status_deployer, Status of Deployer"
   echo "    status_solr, Status of Solr"
   echo "    status_elasticsearch, Status of ElasticSearch"
@@ -605,6 +608,29 @@ function isSolrNeeded() {
   return 1
 }
 
+function getStatus() {
+  echo "------------------------------------------------------------"
+  echo "$1 status"
+  echo "------------------------------------------------------------"
+  statusOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/status")
+  if [ $? -eq 0 ]; then
+    echo -e "PID\t"
+    echo `cat "$5"`
+    echo -e  "Uptime (in seconds):\t"
+    echo "$statusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
+    versionOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/version")
+    if [ $? -eq 0 ]; then
+      echo -e  "Version:\t"
+      printf $(echo "$versionOut"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')
+      echo "$versionOut"| python -m json.tool | grep -w packageBuild | awk -F"[,|:]" '{print $2}'
+    fi
+  else
+    echo -e "\033[38;5;196m"
+    echo "$1 is not running or is unreachable on port $2"
+    echo -e "\033[0m"
+  fi
+}
+
 function solrStatus(){
   echo "------------------------------------------------------------"
   echo "SOLR status                                                 "
@@ -614,7 +640,7 @@ function solrStatus(){
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$CRAFTER_HOME/bin/solr/bin/solr-$SOLR_PORT.pid"`
-    echo -e  "uptime (in minutes):\t"
+    echo -e  "Uptime (in minutes):\t"
     echo "$solrStatusOut"  | python -m json.tool | grep upTimeMS | awk -F"[,|:]" '{print $2}'| awk '{print ($1/1000)/60}'| bc
     echo -e  "Solr Version:\t"
     echo "$solrStatusOut"  | python -m json.tool | grep solr-spec-version | awk -F"[,|:]" '{print $2}'
@@ -626,81 +652,29 @@ function solrStatus(){
 }
 
 function deployerStatus(){
-  echo "------------------------------------------------------------"
-  echo "Crafter Deployer status                                     "
-  echo "------------------------------------------------------------"
-  deployerStatusOut=$(curl --silent  -f  "http://localhost:$DEPLOYER_PORT/api/1/monitor/status")
-  if [ $? -eq 0 ]; then
-    echo -e "PID\t"
-    echo `cat "$DEPLOYER_PID"`
-    echo -e  "uptime:\t"
-    echo "$deployerStatusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
-    echo -e  "Status:\t"
-    echo "$deployerStatusOut"  | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
-    deployerVersion=$(curl --silent  -f  "http://localhost:$DEPLOYER_PORT/api/1/monitor/version")
-    if [ $? -eq 0 ]; then
-      echo -e  "Version:\t"
-      printf $(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')
-      echo "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
-    fi
-  else
-    echo -e "\033[38;5;196m"
-    echo "Crafter Deployer is not running or is unreachable on port $DEPLOYER_PORT"
-    echo -e "\033[0m"
-  fi
+  getStatus "Crafter Deployer" $DEPLOYER_PORT "" "1" $DEPLOYER_PID
+}
+
+function searchStatus(){
+  getStatus "Crafter Search" $TOMCAT_HTTP_PORT "/crafter-search" "1" $CATALINA_PID
 }
 
 function engineStatus(){
-  echo "------------------------------------------------------------"
-  echo "Crafter Engine status                                       "
-  echo "------------------------------------------------------------"
-  engineStatusOut=$(curl --silent  -f \
-  "http://localhost:$TOMCAT_HTTP_PORT/api/1/monitoring/status.json")
-  if [ $? -eq 0 ]; then
-    echo -e "PID\t"
-    echo `cat "$CATALINA_PID"`
-    echo -e  "uptime:\t"
-    echo "$engineStatusOut" | python -m json.tool | grep uptime | awk -F"[,|:]" '{print $2}'
-    echo -e  "Status:\t"
-    echo "$engineStatusOut" | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
-    engineVersion=$(curl --silent  -f  "http://localhost:$TOMCAT_HTTP_PORT/api/1/monitoring/version.json")
-    if [ $? -eq 0 ]; then
-      echo -e  "Version:\t"
-      printf "$(echo "$engineVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')"
-      echo  "$engineVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
-    fi
-  else
-    echo -e "\033[38;5;196m"
-    echo "Crafter Engine is not running or is unreachable on port $TOMCAT_HTTP_PORT"
-    echo -e "\033[0m"
-  fi
+  getStatus "Crafter Engine" $TOMCAT_HTTP_PORT "" "1" $CATALINA_PID
 }
 
 function studioStatus(){
-  echo "------------------------------------------------------------"
-  echo "Crafter Studio status                                       "
-  echo "------------------------------------------------------------"
-  studioStatusOut=$(curl --silent  -f \
-  "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/status.json")
-  if [ $? -eq 0 ]; then
-    echo -e "PID\t"
-    echo `cat "$CATALINA_PID"`
-    echo -e  "uptime:\t"
-    echo "$studioStatusOut" | python -m json.tool | grep uptime | awk -F"[,|:]" '{print $2}'
-    echo -e  "Status:\t"
-    echo "$studioStatusOut" | python -m json.tool | grep status | awk -F"[,|:]" '{print $2}'
-    deployerVersion=$(curl --silent  -f  "http://localhost:$TOMCAT_HTTP_PORT/studio/api/1/services/api/1/monitor/version.json")
-    if [ $? -eq 0 ]; then
-      echo -e  "Version:\t"
-      printf "$(echo "$deployerVersion"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')"
-      echo  "$deployerVersion"| python -m json.tool | grep -w build | awk -F"[,|:]" '{print $2}'
-    fi
-  else
-    echo -e "\033[38;5;196m"
-    echo "Crafter Studio is not running or is unreachable on port $TOMCAT_HTTP_PORT"
-    echo -e "\033[0m"
-  fi
+  getStatus "Crafter Studio" $TOMCAT_HTTP_PORT "/studio" "2" $CATALINA_PID
 }
+
+function profileStatus(){
+  getStatus "Crafter Profile" $TOMCAT_HTTP_PORT "/crafter-profile" "1" $CATALINA_PID
+}
+
+function socialStatus(){
+  getStatus "Crafter Social" $TOMCAT_HTTP_PORT "/crafter-social" "3" $CATALINA_PID
+}
+
 
 function mariadbStatus(){
   echo "------------------------------------------------------------"
@@ -781,11 +755,19 @@ function status(){
   solrStatus
   deployerStatus
   engineStatus
+  searchStatus
   if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/studio.war" ]; then
     studioStatus
     mariadbStatus
   fi
-  mongoDbStatus
+  if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/crafter-profile.war" ]; then
+    mongoDbStatus
+    profileStatus
+    if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/crafter-social.war" ]; then
+      socialStatus
+    fi
+  fi
+  
 }
 
 function doBackup() {
@@ -1108,6 +1090,15 @@ case $1 in
   ;;
   status_studio)
     studioStatus
+  ;;
+  status_profile)
+    profileStatus
+  ;;
+  status_social)
+    socialStatus
+  ;;
+  status_search)
+    searchStatus
   ;;
   status_deployer)
     deployerStatus
