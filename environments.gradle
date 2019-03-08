@@ -230,14 +230,14 @@ envs.each { env ->
             copy {
                 from "./resources/bin"
                 into "${resourcesDestDir}/bin"
-                filter(ReplaceTokens, tokens: authTokens)
+                filter(ReplaceTokens, tokens: tokens)
             }
 
             // Copy env specific bin scripts
             copy {
                 from "./resources/env/${env}/bin"
                 into "${resourcesDestDir}/bin"
-                filter(ReplaceTokens, tokens: authTokens)
+                filter(ReplaceTokens, tokens: tokens)
             }
 
             // Copy Tomcat setenv
@@ -419,9 +419,13 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                     }
                 }
             } else {
+                println "Copying over ${filePath} from src to dest (non-config file)"
+
                 FileUtils.copyFile(srcFile, destFile)
             }
         } else {
+            println "Copying over ${filePath} from src to dest (new file)"
+
             FileUtils.copyFile(srcFile, destFile)
         }
     }

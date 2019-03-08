@@ -72,8 +72,6 @@ export CATALINA_PID=$CATALINA_HOME/tomcat.pid
 export CATALINA_LOGS_DIR="$CRAFTER_LOGS_DIR/tomcat"
 export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
 export CATALINA_TMPDIR=$CRAFTER_HOME/temp/tomcat
-# Opts used in both Tomcat start and stop
-export JAVA_OPTS="-Dtomcat.shutdown.port=$TOMCAT_SHUTDOWN_PORT"
 # Opts used only in Tomcat start
 export CATALINA_OPTS="-Dtomcat.host=$TOMCAT_HOST -Dtomcat.http.port=$TOMCAT_HTTP_PORT \
   -Dtomcat.https.port=$TOMCAT_HTTPS_PORT -Dtomcat.ajp.port=$TOMCAT_AJP_PORT -Dsolr.host=$SOLR_HOST \
