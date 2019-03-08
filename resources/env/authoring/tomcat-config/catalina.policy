@@ -257,3 +257,8 @@ grant codeBase "file:${catalina.home}/webapps/studio/-" {
     permission java.io.FilePermission "/usr/lib64", "read";
     permission java.io.FilePermission "/usr/lib64/-", "read";
 };
+
+// Groovy Grapes specific permissions
+grant codeBase "file:${catalina.home}/webapps/ROOT/WEB-INF/lib/groovy-all-2.4.15.jar" {
+    permission java.lang.RuntimePermission "createSecurityManager";
+};
