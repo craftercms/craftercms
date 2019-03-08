@@ -230,14 +230,14 @@ envs.each { env ->
             copy {
                 from "./resources/bin"
                 into "${resourcesDestDir}/bin"
-                filter(ReplaceTokens, tokens: authTokens)
+                filter(ReplaceTokens, tokens: tokens)
             }
 
             // Copy env specific bin scripts
             copy {
                 from "./resources/env/${env}/bin"
                 into "${resourcesDestDir}/bin"
-                filter(ReplaceTokens, tokens: authTokens)
+                filter(ReplaceTokens, tokens: tokens)
             }
 
             // Copy Tomcat setenv
