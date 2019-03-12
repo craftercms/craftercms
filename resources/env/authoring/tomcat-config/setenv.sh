@@ -6,4 +6,6 @@ if [ "$(whoami)" == "root" ]; then
     echo -e "\033[0m"
 	exit 1
 fi
+# Opts used in both Tomcat start and stop
+JAVA_OPTS="$JAVA_OPTS -Dtomcat.shutdown.port=$TOMCAT_SHUTDOWN_PORT"
 UMASK=$(umask)
