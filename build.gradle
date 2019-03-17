@@ -56,8 +56,8 @@ ext {
     deliveryEnvDir = project.hasProperty("delivery.root") ? project.property("delivery.root") : "./crafter-delivery/"
     authProcessedResourcesDir = "./tmp/crafter-authoring"
     deliveryProcessedResourcesDir = "./tmp/crafter-delivery"
-    includeProfile = project.hasProperty("crafter.profile") ? project.property("crafter.profile") : false
-    includeSocial = project.hasProperty("crafter.social") ? project.property("crafter.social") : false
+    includeProfile = project.hasProperty("crafter.profile") ? project.property("crafter.profile").toBoolean() : false
+    includeSocial = project.hasProperty("crafter.social") ? project.property("crafter.social").toBoolean() : false
 
     /** Social needs Profile **/
     if (includeSocial) {
@@ -65,49 +65,49 @@ ext {
     }
 
     //Authoring
-    authTomcatPort = project.hasProperty("authoring.tomcat.http.port") ? project.property("authoring.tomcat.http.port") : 8080
-    authTomcatShutdownPort = project.hasProperty("authoring.tomcat.shutdown.port") ? project.property("authoring.tomcat.shutdown.port") : 8005
-    authTomcatAJPPort = project.hasProperty("authoring.tomcat.ajp.port") ? project.property("authoring.tomcat.ajp.port") : 8009
-    authTomcatSSLPort = project.hasProperty("authoring.tomcat.https.port") ? project.property("authoring.tomcat.https.port") : 8443
-    authTomcatDebugPort = project.hasProperty("authoring.tomcat.debug.port") ? project.property("authoring.tomcat.debug.port") : 8000
-    authMongoDBPort = project.hasProperty("authoring.mongo.port") ? project.property("authoring.mongo.port") : 27020
-    authSolrPort = project.hasProperty("authoring.solr.port") ? project.property("authoring.solr.port") : 8694
-    authSolrDebugPort = project.hasProperty("authoring.solr.debug.port") ? project.property("authoring.solr.debug.port") : 5005
-    authElasticSearchPort = project.hasProperty("authoring.elasticsearch.port") ? project.property("authoring.elasticsearch.port") : 9201
-    authSMTPPort = project.hasProperty("authoring.studio.smtp.port") ? project.property("authoring.studio.smtp.port") : 25
-    authMariaDbPort = project.hasProperty("authoring.mariadb.port") ? project.property("authoring.mariadb.port") : 33306
-    authDeployerPort = project.hasProperty("authoring.deployer.port") ? project.property("authoring.deployer.port") : 9191
-    authDeployerDebugPort = project.hasProperty("authoring.deployer.debug.port") ? project.property("authoring.deployer.debug.port") : 5000
+    authTomcatPort = project.hasProperty("authoring.tomcat.http.port") ? project.property("authoring.tomcat.http.port").toInteger() : 8080
+    authTomcatShutdownPort = project.hasProperty("authoring.tomcat.shutdown.port") ? project.property("authoring.tomcat.shutdown.port").toInteger() : 8005
+    authTomcatAJPPort = project.hasProperty("authoring.tomcat.ajp.port") ? project.property("authoring.tomcat.ajp.port").toInteger() : 8009
+    authTomcatSSLPort = project.hasProperty("authoring.tomcat.https.port") ? project.property("authoring.tomcat.https.port").toInteger() : 8443
+    authTomcatDebugPort = project.hasProperty("authoring.tomcat.debug.port") ? project.property("authoring.tomcat.debug.port").toInteger() : 8000
+    authMongoDBPort = project.hasProperty("authoring.mongo.port") ? project.property("authoring.mongo.port").toInteger() : 27020
+    authSolrPort = project.hasProperty("authoring.solr.port") ? project.property("authoring.solr.port").toInteger() : 8694
+    authSolrDebugPort = project.hasProperty("authoring.solr.debug.port") ? project.property("authoring.solr.debug.port").toInteger() : 5005
+    authElasticSearchPort = project.hasProperty("authoring.elasticsearch.port") ? project.property("authoring.elasticsearch.port").toInteger() : 9201
+    authSMTPPort = project.hasProperty("authoring.studio.smtp.port") ? project.property("authoring.studio.smtp.port").toInteger() : 25
+    authMariaDbPort = project.hasProperty("authoring.mariadb.port") ? project.property("authoring.mariadb.port").toInteger() : 33306
+    authDeployerPort = project.hasProperty("authoring.deployer.port") ? project.property("authoring.deployer.port").toInteger() : 9191
+    authDeployerDebugPort = project.hasProperty("authoring.deployer.debug.port") ? project.property("authoring.deployer.debug.port").toInteger() : 5000
     authDeploymentDir = project.hasProperty("authoring.deployment.dir") ? project.property("authoring.deployment.dir") : "data/repos/sites"
 
     // Delivery
-    deliverySolrPort = project.hasProperty("delivery.solr.port") ? project.property("delivery.solr.port") : 8695
-    deliverySolrDebugPort = project.hasProperty("delivery.solr.debug.port") ? project.property("delivery.solr.debug.port") : 5006
-    deliveryElasticSearchPort = project.hasProperty("delivery.elasticsearch.port") ? project.property("delivery.elasticsearch.port") : 9202
-    deliveryDeployerPort = project.hasProperty("delivery.deployer.port") ? project.property("delivery.deployer.port") : 9192
-    deliveryDeployerDebugPort = project.hasProperty("delivery.deployer.debug.port") ? project.property("delivery.deployer.debug.port") : 5001
+    deliverySolrPort = project.hasProperty("delivery.solr.port") ? project.property("delivery.solr.port").toInteger() : 8695
+    deliverySolrDebugPort = project.hasProperty("delivery.solr.debug.port") ? project.property("delivery.solr.debug.port").toInteger() : 5006
+    deliveryElasticSearchPort = project.hasProperty("delivery.elasticsearch.port") ? project.property("delivery.elasticsearch.port").toInteger() : 9202
+    deliveryDeployerPort = project.hasProperty("delivery.deployer.port") ? project.property("delivery.deployer.port").toInteger() : 9192
+    deliveryDeployerDebugPort = project.hasProperty("delivery.deployer.debug.port") ? project.property("delivery.deployer.debug.port").toInteger() : 5001
     deliveryDeploymentDir = project.hasProperty("delivery.deployment.dir") ? project.property("delivery.deployment.dir") : "data/repos/sites"
-    deliveryTomcatPort = project.hasProperty("delivery.tomcat.http.port") ? project.property("delivery.tomcat.http.port") : 9080
-    deliveryTomcatShutdownPort = project.hasProperty("delivery.tomcat.shutdown.port") ? project.property("delivery.tomcat.shutdown.port") : 9005
-    deliveryTomcatAJPPort = project.hasProperty("delivery.tomcat.ajp.port") ? project.property("delivery.tomcat.ajp.port") : 9009
-    deliveryTomcatSSLPort = project.hasProperty("delivery.tomcat.https.port") ? project.property("delivery.tomcat.https.port") : 9443
-    deliveryTomcatDebugPort = project.hasProperty("delivery.tomcat.debug.port") ? project.property("delivery.tomcat.debug.port") : 9000
-    deliveryMongoDBPort = project.hasProperty("delivery.mongodb.port") ? project.property("delivery.mongodb.port") : 28020
-    deliverySMTPPort = project.hasProperty("delivery.studio.smtp.port") ? project.property("delivery.studio.smtp.port") : 25
+    deliveryTomcatPort = project.hasProperty("delivery.tomcat.http.port") ? project.property("delivery.tomcat.http.port").toInteger(): 9080
+    deliveryTomcatShutdownPort = project.hasProperty("delivery.tomcat.shutdown.port") ? project.property("delivery.tomcat.shutdown.port").toInteger() : 9005
+    deliveryTomcatAJPPort = project.hasProperty("delivery.tomcat.ajp.port") ? project.property("delivery.tomcat.ajp.port").toInteger() : 9009
+    deliveryTomcatSSLPort = project.hasProperty("delivery.tomcat.https.port") ? project.property("delivery.tomcat.https.port").toInteger() : 9443
+    deliveryTomcatDebugPort = project.hasProperty("delivery.tomcat.debug.port") ? project.property("delivery.tomcat.debug.port").toInteger() : 9000
+    deliveryMongoDBPort = project.hasProperty("delivery.mongodb.port") ? project.property("delivery.mongodb.port").toInteger() : 28020
+    deliverySMTPPort = project.hasProperty("delivery.studio.smtp.port") ? project.property("delivery.studio.smtp.port").toInteger() : 25
 
     /** Git properties **/
     gitURLTemplate = project.hasProperty("crafter.git.url") ? project.property("crafter.git.url") : "https://github.com/craftercms/"
     gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "develop" // craftercms branch flag
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
-    shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone") : false
-    studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo") : false
-    overwriteConfig = project.hasProperty("overwriteConfig") ? project.property("overwriteConfig") : false
+    shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone").toBoolean() : false
+    studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo").toBoolean() : false
+    overwriteConfig = project.hasProperty("overwriteConfig") ? project.property("overwriteConfig").toBoolean() : false
 
     /** Testing **/
     testingPlatform = project.hasProperty("crafter.testing.platform") ? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ", "-")
-    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : 2.42
+    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : "2.42"
     browserToTest = project.hasProperty("crafter.testing.browser") ? project.property("crafter.testing.browser") : "chrome"
-    testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
+    testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest").toBoolean() : false
 
     testingSuites = project.hasProperty("crafter.testing.suites") ? project.property("crafter.testing.suites") :
             "src/test/resources/testng_SanityTest.xml"+
@@ -126,10 +126,10 @@ ext {
                 ",src/test/resources/testng_StudioAPI.xml"+
                 ",src/test/resources/testng_StudioAPI2.xml"
 
-    startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
+    startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb").toBoolean() : false // Does not really.
     withElasticSearch = project.hasProperty("withElasticSearch") ? project.property("withElasticSearch").toBoolean() : true
     withSolr = project.hasProperty("withSolr") ? project.property("withSolr").toBoolean() : false
-    silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent") : false
+    silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent").toBoolean() : false
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
 
     /** Cloneable Artifacts **/
