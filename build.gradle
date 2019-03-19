@@ -201,16 +201,14 @@ if (project.hasProperty("moduleName")) {
 
 buildModules.each { module ->
     // Creates the Clean Task
-	if (module != "video-center-blueprint") {
-	    if (!tasks.findByPath("${module}_clean")) {
-	        task "${module}_clean" doLast({
-	            def array = commandLinePrefix + ["mvn", "clean"]
-	            executeProcess(array, "./src/${module}".toString())
-	        })
-	    } else {
-	        logger.debug("Task ${module}_build already exists")
-	    }
-	}
+    if (!tasks.findByPath("${module}_clean")) {
+        task "${module}_clean" doLast({
+            def array = commandLinePrefix + ["mvn", "clean"]
+            executeProcess(array, "./src/${module}".toString())
+        })
+    } else {
+        logger.debug("Task ${module}_build already exists")
+    }
 
     // Creates the Build Tasks
     if (!tasks.findByPath("${module}_build")) {
@@ -232,6 +230,7 @@ buildModules.each { module ->
                     }
                 }
                 if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
+                    actualCommandLinePost.add("-Dstudio.vcbp.path=../video-center-blueprint/".toString())				
                     actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
                     actualCommandLinePost.add("-Dstudio.ui.alpha.path=../studio-ui-ng")
                     actualCommandLinePost.add("-Dexec.skip=true")
@@ -255,9 +254,6 @@ buildModules.each { module ->
                 gitCloneCmd.add("1")
             }
             def arry = commandLinePrefix + gitCloneCmd + ["-b", gitSourceBranch, finalUrl, path]
-			if (module == "video-center-blueprint") {
-				arry = commandLinePrefix + gitCloneCmd + ["-b", "master", finalUrl, path]
-			}
             if (file(path).exists()) {
                 logger.lifecycle("Module ${module} has already been initialized, please use " +
                         "'update' to update it.")
@@ -273,9 +269,6 @@ buildModules.each { module ->
                 throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'update' to initialize it.")
             } else {
                 def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
-				if (module == "video-center-blueprint") {
-					arry = commandLinePrefix + ["git", "pull", gitRepo, "master"]
-				}
                 executeProcess(arry, "./src/${module}".toString())
             }
         }
@@ -424,14 +417,16 @@ envs.each { env ->
 buildDeps.removeAll([
   tasks.findByName("studio-ui_build"),
   tasks.findByName("plugin-maker_build"),
-  tasks.findByName("studio-ui-ng_build")
+  tasks.findByName("studio-ui-ng_build"),
+  tasks.findByName("video-center-blueprint_build")
 ] as Task[])
 
 cleanDeps.removeAll([
   tasks.findByName("studio-ui_clean"),
   tasks.findByName("plugin-maker_clean"),
   tasks.findByName("studio-ui-ng_clean"),
-  tasks.findByName("test-suite_build")
+  tasks.findByName("test-suite_build"),
+  tasks.findByName("video-center-blueprint_clean")
 ] as Task[])
 
 if (!includeSocial) {
