@@ -171,14 +171,14 @@ studio.mail.port: ${sys:mail.port}
 # studio.db.initializer.url: jdbc:mariadb://192.168.1.1:3306?user=root&password=
 
 # Cluster Syncers
-# Sandbox Sync Job interval which is how often to sync the work-area
+# Sandbox Sync Job interval in milliseconds which is how often to sync the work-area
 # studio.clustering.sandboxSyncJob.interval: 2000
-# Published Sync Job interval which is how often to sync the published repos
+# Published Sync Job interval in milliseconds which is how often to sync the published repos
 # studio.clustering.publishedSyncJob.interval: 60000
 # Cluster member after heartbeat stale for amount of minutes will be declared inactive
 # studio.clustering.heartbeatStale.timeLimit: 5
 # Cluster member after being inactive for amount of minutes will be removed from cluster
-# studio.clustering.incativity.timeLimit: 5
+# studio.clustering.inactivity.timeLimit: 5
 
 # Cluster member registration, this registers *this* server into the pool
 # Cluster node registration data, remember to uncomment the next line
