@@ -34,8 +34,9 @@ COPY --chown=crafter:crafter ./bin ./bin/
 # Delete the apache tomcat folder, we're going to link to the image's own Tomcat
 RUN rm -rf ./bin/apache-tomcat && ln -s /usr/local/tomcat ./bin/apache-tomcat
 
-# Copy Tomcat config, shared and webapps
+# Copy Tomcat setenv.sh, config, shared and webapps
 RUN rm -rf ./bin/apache-tomcat/conf/* && rm -rf ./bin/apache-tomcat/webapps/*
+COPY --chown=crafter:crafter ./bin/apache-tomcat/bin/setenv.sh ./bin/apache-tomcat/bin/
 COPY --chown=crafter:crafter ./bin/apache-tomcat/conf ./bin/apache-tomcat/conf/
 COPY --chown=crafter:crafter ./bin/apache-tomcat/webapps ./bin/apache-tomcat/webapps/
 

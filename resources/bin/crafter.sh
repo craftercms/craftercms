@@ -475,7 +475,7 @@ function stopTomcat() {
   echo "Stopping Tomcat"
   echo "------------------------------------------------------------"
   if [ -s "$CATALINA_PID" ]; then
-    $CRAFTER_BIN_DIR/apache-tomcat/bin/shutdown.sh -force
+    $CRAFTER_BIN_DIR/apache-tomcat/bin/shutdown.sh 10 -force
     if [ -e "$CATALINA_PID" ]; then
       if pgrep -F "$CATALINA_PID" > /dev/null
       then
