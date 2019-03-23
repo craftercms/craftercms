@@ -15,9 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# -------------------- Spring Profiles --------------------
+# Uncomment to enable an external DB for Studio (for clustering environments) 
+#export SPRING_PROFILES_ACTIVE=crafter.studio.externalDb
+
 # -------------------- Locations variables --------------------
 export CRAFTER_LOGS_DIR=${CRAFTER_LOGS_DIR:="$CRAFTER_HOME/logs"}
 export CRAFTER_DATA_DIR=${CRAFTER_DATA_DIR:="$CRAFTER_HOME/data"}
+export CRAFTER_TEMP_DIR=${CRAFTER_TEMP_DIR:="$CRAFTER_HOME/temp"}
 
 # -------------------- Hosts and ports --------------------
 export MAIL_HOST=${MAIL_HOST:="localhost"}
@@ -89,7 +94,7 @@ export CATALINA_HOME=$CRAFTER_BIN_DIR/apache-tomcat
 export CATALINA_PID=$CATALINA_HOME/tomcat.pid
 export CATALINA_LOGS_DIR="$CRAFTER_LOGS_DIR/tomcat"
 export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
-export CATALINA_TMPDIR=$CRAFTER_HOME/temp/tomcat
+export CATALINA_TMPDIR=$CRAFTER_TEMP_DIR/tomcat
 export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
 # Opts used only in Tomcat start
 export CATALINA_OPTS="$CATALINA_OPTS -Dtomcat.host=$TOMCAT_HOST -Dtomcat.http.port=$TOMCAT_HTTP_PORT \

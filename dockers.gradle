@@ -104,8 +104,29 @@ task buildDeployerDocker {
     }
 }
 
+task buildGitSshServerDocker {
+    def buildDir = "${dockerImageBuildDir}/git_ssh_server"
+
+    doFirst {
+        delete buildDir
+        mkdir buildDir 
+    }
+
+    doLast {
+        copy {
+            from "${dockerImageDir}/git_ssh_server/"
+            into buildDir
+        }
+
+        exec {
+            commandLine commandLinePrefix + ['docker', 'build', '-t', "craftercms/git_ssh_server:${project.version}", buildDir]
+        }
+    }    
+}
+
 task buildAuthoringDockers {
     dependsOn 'buildAuthoringTomcatDocker'
+    dependsOn 'buildGitSshServerDocker'
 }
 
 task buildDeliveryDockers {
