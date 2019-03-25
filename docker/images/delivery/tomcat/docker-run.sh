@@ -20,11 +20,37 @@ export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
-if [ ! -d $CATALINA_LOGS_DIR ]; then
-    mkdir -p $CATALINA_LOGS_DIR;
-fi
-if [ ! -d $CATALINA_TMPDIR ]; then
-    mkdir -p $CATALINA_TMPDIR;
+if [ ! -z "$CRAFTER_PASSWORD" ]; then
+    echo "$CRAFTER_PASSWORD" | passwd --stdin crafter
 fi
 
-$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run -security
+if [ ! -d $CATALINA_LOGS_DIR ]; then
+    mkdir -p $CATALINA_LOGS_DIR
+fi
+if [ ! -d $CATALINA_TMPDIR ]; then
+    mkdir -p $CATALINA_TMPDIR
+fi
+
+# Fix for volume permissions
+chown -R crafter:crafter "$CRAFTER_LOGS_DIR"
+chown -R crafter:crafter "$CRAFTER_DATA_DIR"
+chown -R crafter:crafter "$CRAFTER_TEMP_DIR"
+
+# Export the crafter HOME dir
+export HOME=/home/crafter
+
+# Fix for ssh key permissions
+MOUNTED_SSH_DIR=$CRAFTER_HOME/.ssh
+USER_HOME_SSH_DIR=$HOME/.ssh
+
+if [ -d $MOUNTED_SSH_DIR ]; then
+    mkdir -p $USER_HOME_SSH_DIR
+    cp -L $MOUNTED_SSH_DIR/* $USER_HOME_SSH_DIR
+
+    chown -R crafter:crafter "$USER_HOME_SSH_DIR" 
+    chmod 700 $USER_HOME_SSH_DIR
+    chmod 600 $USER_HOME_SSH_DIR/*
+    chmod 644 $USER_HOME_SSH_DIR/*.pub
+fi
+
+exec su-exec crafter $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run -security
