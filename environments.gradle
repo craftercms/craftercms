@@ -403,19 +403,24 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                 def destMd5 = DigestUtils.md5Hex(destFile.newInputStream())
 
                 if (srcMd5 != destMd5) {
-                    if (overwriteConfig) {
+                    if (backupAndReplaceConfig) {
                         def now = new Date()
                         def backupTimestamp = now.format("yyyyMMddHHmmss") 
                         def backupFile = new File(destDir, filePath + ".bak.${backupTimestamp}")
 
                         println "Config file ${filePath} is different in src and dest. Backing up dest file to " +
-                                "${backupFile.name} and copying over src file (overwriteConfig = true)"
+                                "${backupFile.name} and replacing it with src file (backupAndReplaceConfig = true)"
 
                         FileUtils.moveFile(destFile, backupFile)
                         FileUtils.copyFile(srcFile, destFile)
+                    } else if (overwriteConfig) {
+                        println "Config file ${filePath} is different in src and dest. Overwriting dest file with " +
+                                "src file (overwriteConfig = true)"
+
+                        FileUtils.copyFile(srcFile, destFile)
                     } else {
                         println "Config file ${filePath} is different in src and dest. Keeping file in dest " +
-                                "(overwriteConfig = false)"
+                                "(backupAndReplaceConfig = true && overwriteConfig = false)"
                     }
                 }
             } else {

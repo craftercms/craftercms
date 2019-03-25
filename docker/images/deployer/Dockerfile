@@ -12,24 +12,25 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM openjdk:8-slim
+FROM openjdk:8-alpine
 
-# Create folder and make CRAFTER_HOME the workdir
+# Install dependencies
+RUN apk add --no-cache bash shadow openssh-client git su-exec
+
+# Create folders and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
     mkdir /opt/crafter/bin; \
     mkdir /opt/crafter/data; \
     mkdir /opt/crafter/logs; \
     mkdir /opt/crafter/temp
+
 WORKDIR /opt/crafter
 
-# Add the Crafter user. This user will be used onwards to setup the image and when running the container
-RUN groupadd -g 1000 -r crafter && useradd -r -u 1000 -g crafter crafter
-RUN chown -R crafter:crafter .
-USER crafter
+# Create volumes
+VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
 
-# Copy bin folder and entrypoint script
-COPY --chown=crafter:crafter ./bin ./bin/
-COPY --chown=crafter:crafter ./docker-entrypoint.sh .
+# Copy bin folder
+COPY ./bin ./bin/
 
 # Replace ports for default ones
 RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
@@ -41,11 +42,16 @@ RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
     sed -i 's/9009/8009/g' ./bin/crafter-setenv.sh; \
     sed -i 's/9005/8005/g' ./bin/crafter-setenv.sh;
 
+# Copy entrypoint script and make it executable
+COPY ./docker-run.sh .
+RUN chmod +x docker-run.sh
+
+# Add the Crafter user
+RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
+    chown -R crafter:crafter .
+
 # Expose port
 EXPOSE 9191
 
-# Make sure docker-entrypoint.sh is executable
-RUN chmod +x docker-entrypoint.sh
-
 # Main startup command
-CMD [ "./docker-entrypoint.sh" ]
+CMD [ "./docker-run.sh" ]

@@ -161,13 +161,19 @@ studio.mail.port: ${sys:mail.port}
 ##################################################
 ##                 Clustering                   ##
 ##################################################
+#-----------------------------------------------------------------------------
+# IMPORTANT: When enabling clustering, please specify the environment variable 
+# SPRING_PROFILES_ACTIVE=crafter.studio.externalDb in your crafter-setenv.sh
+# (or Docker/Kubernetes env variables). This will stop studio from starting 
+# its embedded DB.
+# -----------------------------------------------------------------------------
 # Clustering requires an external (not embedded) database, configure it below
 # External MariaDB database connection string
 # studio.db.url: jdbc:mariadb://192.168.1.1:3306/crafter?user=crafter&password=crafter
 # External MariaDB database connection string used to initialize database
-# If using a database with an already created schema and user (like AWS RDS):
+# - If using a database with an already created schema and user (like AWS RDS):
 # studio.db.initializer.url: jdbc:mariadb://192.168.1.1:3306/crafter?user=USER&password=PASS
-# If using a an empty database with root access to it:
+# - If using a an empty database with root access to it:
 # studio.db.initializer.url: jdbc:mariadb://192.168.1.1:3306?user=root&password=
 
 # Cluster Syncers
@@ -226,4 +232,4 @@ studio.mail.port: ${sys:mail.port}
 ##                           Search                           ##
 ################################################################
 # URLs to connect to ElasticSearch
-studio.search.urls: http://localhost:@ES_PORT@
+studio.search.urls: http://${sys:es.host}:${sys:es.port}
