@@ -22,7 +22,7 @@ if [ ! -z "$CRAFTER_PASSWORD" ]; then
     echo "$CRAFTER_PASSWORD" | passwd --stdin crafter
 fi
 
-# Hack to fix ssh key permissions
+# Fix for ssh key permissions
 MOUNTED_SSH_DIR=/opt/crafter/.ssh
 USER_HOME_SSH_DIR=/home/crafter/.ssh
 

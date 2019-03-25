@@ -28,7 +28,7 @@ if [ ! -d $DEPLOYER_LOGS_DIR ]; then
     mkdir -p $DEPLOYER_LOGS_DIR;
 fi
 
-# Hack to fix volume permissions
+# Fix for volume permissions
 chown -R crafter:crafter "$CRAFTER_LOGS_DIR"
 chown -R crafter:crafter "$CRAFTER_DATA_DIR"
 chown -R crafter:crafter "$CRAFTER_TEMP_DIR"
@@ -36,7 +36,7 @@ chown -R crafter:crafter "$CRAFTER_TEMP_DIR"
 # Export the crafter HOME dir
 export HOME=/home/crafter
 
-# Hack to fix ssh key permissions
+# Fix for ssh key permissions
 MOUNTED_SSH_DIR=$CRAFTER_HOME/.ssh
 USER_HOME_SSH_DIR=$HOME/.ssh
 
