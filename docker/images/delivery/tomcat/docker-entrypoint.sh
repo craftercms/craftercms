@@ -65,7 +65,7 @@ elif [ "$1" = 'backup' ]; then
     exec gosu crafter $CRAFTER_BIN_DIR/crafter.sh backup
 elif [ "$1" = 'restore' ]; then
     if [ -z "$2" ]; then
-        echo "The backup zip parameter was not specified"
+        echo "The backup path parameter was not specified"
         exit 1
     fi
 
