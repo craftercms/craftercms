@@ -15,42 +15,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export CRAFTER_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
-
-. "$CRAFTER_BIN_DIR/crafter-setenv.sh"
+# Generate host keys (if not mounted)
+ssh-keygen -A
 
 if [ ! -z "$CRAFTER_PASSWORD" ]; then
     echo "$CRAFTER_PASSWORD" | passwd --stdin crafter
 fi
 
-if [ ! -d $CATALINA_LOGS_DIR ]; then
-    mkdir -p $CATALINA_LOGS_DIR
-fi
-if [ ! -d $CATALINA_TMPDIR ]; then
-    mkdir -p $CATALINA_TMPDIR
-fi
-
-# Fix for volume permissions
-chown -R crafter:crafter "$CRAFTER_LOGS_DIR"
-chown -R crafter:crafter "$CRAFTER_DATA_DIR"
-chown -R crafter:crafter "$CRAFTER_TEMP_DIR"
-
-# Export the crafter HOME dir
-export HOME=/home/crafter
-
 # Fix for ssh key permissions
-MOUNTED_SSH_DIR=$CRAFTER_HOME/.ssh
-USER_HOME_SSH_DIR=$HOME/.ssh
+MOUNTED_SSH_DIR=/opt/crafter/.ssh
+USER_HOME_SSH_DIR=/home/crafter/.ssh
 
 if [ -d $MOUNTED_SSH_DIR ]; then
     mkdir -p $USER_HOME_SSH_DIR
     cp -L $MOUNTED_SSH_DIR/* $USER_HOME_SSH_DIR
 
-    chown -R crafter:crafter "$USER_HOME_SSH_DIR" 
+    chown -R crafter:crafter "$USER_HOME_SSH_DIR"
     chmod 700 $USER_HOME_SSH_DIR
     chmod 600 $USER_HOME_SSH_DIR/*
     chmod 644 $USER_HOME_SSH_DIR/*.pub
 fi
 
-exec su-exec crafter $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run -security
+if [ "$1" = 'run' ]; then
+    # Do not detach, run in foreground (-D)
+    exec /usr/sbin/sshd -D
+else
+    exec "$@"
+fi
