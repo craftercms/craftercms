@@ -17,6 +17,7 @@
 
 export CRAFTER_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
+export CRAFTER_BACKUPS_DIR=$CRAFTER_HOME/backups
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
@@ -32,6 +33,10 @@ if [ ! -d $CATALINA_TMPDIR ]; then
 fi
 
 # Fix for volume permissions
+if [ -d $CRAFTER_BACKUPS_DIR ]; then
+    chown -R crafter:crafter "$CRAFTER_BACKUPS_DIR"
+fi
+
 chown -R crafter:crafter "$CRAFTER_LOGS_DIR"
 chown -R crafter:crafter "$CRAFTER_DATA_DIR"
 chown -R crafter:crafter "$CRAFTER_TEMP_DIR"
@@ -53,4 +58,18 @@ if [ -d $MOUNTED_SSH_DIR ]; then
     chmod 644 $USER_HOME_SSH_DIR/*.pub
 fi
 
-exec su-exec crafter $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run -security
+
+if [ "$1" = 'run' ]; then
+    exec gosu crafter $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run -security
+elif [ "$1" = 'backup' ]; then
+    exec gosu crafter $CRAFTER_BIN_DIR/crafter.sh backup
+elif [ "$1" = 'restore' ]; then
+    if [ -z "$2" ]; then
+        echo "The backup path parameter was not specified"
+        exit 1
+    fi
+
+    exec gosu crafter $CRAFTER_BIN_DIR/crafter.sh restore "$2"
+else
+    exec "$@"
+fi

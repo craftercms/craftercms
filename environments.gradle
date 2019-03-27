@@ -181,7 +181,7 @@ envs.each { env ->
 
                 // Copy MariabDB4j jar for backup/restore
                 copy {
-                    from "${downloadDir}/mariaDB4j-app-{mariadb4jVersion}.jar"
+                    from "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar"
                     into "${envDir}/bin"
                     rename "mariaDB4j-app-${mariadb4jVersion}.jar", 'mariaDB4j-app.jar'
                 }
