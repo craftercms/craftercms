@@ -58,30 +58,6 @@ def printHelp(cli) {
 	cli.usage()
 }
 
-
-/**
- * Calls the Search API to delete the Solr Core.
- */
-def deleteSolrCore(siteName) {
-	println 'Deleting Solr Core...'
-
-	def httpClient = configure {
-		request.uri = getTomcatUrl()
-	}
-
-	httpClient.post {
-		request.uri.path = "/crafter-search/api/2/admin/index/delete/${siteName}"
-		request.contentType = 'application/json'
-		request.body = [ delete_mode: 'ALL_DATA_AND_CONFIG' ]
-		response.success { fs ->
-			println "Core deleted successfully"
-		}
-		response.failure { fs, body ->
-			println "Error while deleting Core: ${body.message}"
-		}
-	}
-}
-
 /**
  * Calls the Deployer API to create the Deployer Target.
  */
@@ -121,7 +97,6 @@ def deleteRepoFolder(repoPath) {
  */
 def deleteSite(siteName, repoPath) {
 	deleteDeployerTarget(siteName)
-	deleteSolrCore(siteName)
 	deleteRepoFolder(repoPath)
 }
 
