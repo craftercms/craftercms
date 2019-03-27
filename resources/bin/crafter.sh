@@ -807,7 +807,7 @@ function doBackup() {
       echo "Starting DB"
       echo "------------------------------------------------------------------------"
       java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-      sleep 60
+      sleep 45
       DB_STARTED=true
     fi
 
@@ -924,6 +924,7 @@ function doRestore() {
   rm -rf "$SOLR_INDEXES_DIR/*"
   rm -rf "$ES_INDEXES_DIR/*"
   rm -rf "$DEPLOYER_DATA_DIR/*"
+  rm -rf "$MYSQL_DATA/*"
 
   echo "------------------------------------------------------------------------"
   echo "Starting restore from $SOURCE_FILE"
@@ -979,13 +980,13 @@ function doRestore() {
 
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
-    mkdir "$MYSQL_DATA"
+    mkdir -p "$MYSQL_DATA"
     #Start DB
     echo "------------------------------------------------------------------------"
     echo "Starting DB"
     echo "------------------------------------------------------------------------"
     java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-    sleep 60
+    sleep 45
     # Import
     echo "------------------------------------------------------------------------"
     echo "Restoring DB"
