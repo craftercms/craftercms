@@ -86,6 +86,7 @@ function version(){
 function manPages(){
   man "$CRAFTER_BIN_DIR/crafter.sh.1"
 }
+
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID | uniq)
   echo $pid
@@ -779,13 +780,14 @@ function doBackup() {
       export TARGET_NAME="crafter-delivery-backup"
     fi
   fi
+  
   export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
   export TARGET_FOLDER="$CRAFTER_HOME/backups"
   export TARGET_FILE="$TARGET_FOLDER/$TARGET_NAME.$CURRENT_DATE.zip"
   export TEMP_FOLDER="$CRAFTER_HOME/temp/backup"
 
   echo "------------------------------------------------------------------------"
-  echo "Starting backup into $TARGET_FILE"
+  echo "Starting backup"
   echo "------------------------------------------------------------------------"
   mkdir -p "$TEMP_FOLDER"
   mkdir -p "$TARGET_FOLDER"
@@ -805,7 +807,7 @@ function doBackup() {
       echo "Starting DB"
       echo "------------------------------------------------------------------------"
       java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-      sleep 60
+      sleep 45
       DB_STARTED=true
     fi
 
@@ -887,7 +889,8 @@ function doBackup() {
   java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TARGET_FILE" true
 
   rm -rf "$TEMP_FOLDER"
-  echo "Backup completed"
+  echo "------------------------------------------------------------------------"
+  echo "> Backup completed and saved to $TARGET_FILE"
 }
 
 function doRestore() {
@@ -916,7 +919,12 @@ function doRestore() {
   echo "------------------------------------------------------------------------"
   echo "Clearing all existing data"
   echo "------------------------------------------------------------------------"
-  rm -rf $CRAFTER_DATA_DIR/*
+  rm -rf "$MONGODB_DATA_DIR/*"
+  rm -rf "$CRAFTER_DATA_DIR/repos/*"
+  rm -rf "$SOLR_INDEXES_DIR/*"
+  rm -rf "$ES_INDEXES_DIR/*"
+  rm -rf "$DEPLOYER_DATA_DIR/*"
+  rm -rf "$MYSQL_DATA/*"
 
   echo "------------------------------------------------------------------------"
   echo "Starting restore from $SOURCE_FILE"
@@ -972,13 +980,13 @@ function doRestore() {
 
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
-    mkdir "$MYSQL_DATA"
+    mkdir -p "$MYSQL_DATA"
     #Start DB
     echo "------------------------------------------------------------------------"
     echo "Starting DB"
     echo "------------------------------------------------------------------------"
     java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-    sleep 60
+    sleep 45
     # Import
     echo "------------------------------------------------------------------------"
     echo "Restoring DB"
@@ -993,7 +1001,8 @@ function doRestore() {
   fi
 
   rm -r "$TEMP_FOLDER"
-  echo "Restore complete, you may now start the system"
+  echo "------------------------------------------------------------------------"
+  echo "> Restore complete, you may now start the system"
 }
 
 function logo() {

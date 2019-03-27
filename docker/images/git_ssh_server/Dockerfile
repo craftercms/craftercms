@@ -15,7 +15,7 @@
 FROM alpine:3.9
 
 # Install dependencies
-RUN apk add --no-cache bash shadow openssh git
+RUN apk add --no-cache bash shadow openssh git su-exec
 
 # Create folders for crafter user
 RUN mkdir -p /opt/crafter/data
@@ -29,8 +29,8 @@ RUN sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/ssh
     echo 'HostKeyAlgorithms ssh-rsa' >> /etc/ssh/sshd_config
 
 # Copy entrypoint script and make it is executable
-COPY docker-run.sh .
-RUN chmod +x docker-run.sh
+COPY docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
 
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
@@ -40,5 +40,6 @@ RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
 # Expose port
 EXPOSE 22
 
-# Main startup command
-CMD [ "./docker-run.sh" ]
+# Entrypoint and command (run by default)
+ENTRYPOINT [ "./docker-entrypoint.sh" ]
+CMD [ "run" ]

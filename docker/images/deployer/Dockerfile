@@ -12,10 +12,17 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM openjdk:8-alpine
+FROM openjdk:8-slim
 
 # Install dependencies
-RUN apk add --no-cache bash shadow openssh-client git su-exec
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y gosu; \
+    apt-get install -y --no-install-recommends openssh-client; \
+    apt-get install -y --no-install-recommends git; \
+    rm -rf /var/lib/apt/lists/*;
 
 # Create folders and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
@@ -43,8 +50,8 @@ RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
     sed -i 's/9005/8005/g' ./bin/crafter-setenv.sh;
 
 # Copy entrypoint script and make it executable
-COPY ./docker-run.sh .
-RUN chmod +x docker-run.sh
+COPY ./docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
 
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
@@ -53,5 +60,6 @@ RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
 # Expose port
 EXPOSE 9191
 
-# Main startup command
-CMD [ "./docker-run.sh" ]
+# Entrypoint and command (run by default)
+ENTRYPOINT [ "./docker-entrypoint.sh" ]
+CMD [ "run" ]
