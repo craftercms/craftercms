@@ -39,22 +39,22 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
 function help() {
   echo $(basename $BASH_SOURCE)
-  echo "    start [withMongo] [withSolr] [skipElasticSearch], Starts Tomcat, Deployer and ElasticSearch. If\
-  withMongo is present MongoDB will be started, if withSolr is present Solr will be started, if skipElasticSearch is\
-  present ElasticSearch will not be started"
-  echo "    stop, Stops Tomcat, Deployer, ElasticSearch (if started), Solr (if started) and Mongo (if started)"
-  echo "    debug [withMongo] [withSolr] [skipElasticSearch], Starts Tomcat, Deployer and ElasticSearch in debug\
+  echo "    start [withMongo] [withSolr] [skipElasticsearch], Starts Tomcat, Deployer and Elasticsearch. If\
+  withMongo is present MongoDB will be started, if withSolr is present Solr will be started, if skipElasticsearch is\
+  present Elasticsearch will not be started"
+  echo "    stop, Stops Tomcat, Deployer, Elasticsearch (if started), Solr (if started) and Mongo (if started)"
+  echo "    debug [withMongo] [withSolr] [skipElasticsearch], Starts Tomcat, Deployer and Elasticsearch in debug\
   mode. If withMongo is present MongoDB will be started, if withSolr is present Solr will be started, if\
-  skipElasticSearch is present ElasticSearch will not be started"
+  skipElasticsearch is present Elasticsearch will not be started"
   echo "    start_deployer, Starts Deployer"
   echo "    stop_deployer, Stops Deployer"
   echo "    debug_deployer, Starts Deployer in debug mode"
   echo "    start_solr, Starts Solr"
   echo "    stop_solr, Stops Solr"
   echo "    debug_solr, Starts Solr in debug mode"
-  echo "    start_elasticsearch, Starts ElasticSearch"
-  echo "    stop_elasticsearch, Stops ElasticSearch"
-  echo "    debug_elasticsearch, Starts ElasticSearch in debug mode"
+  echo "    start_elasticsearch, Starts Elasticsearch"
+  echo "    stop_elasticsearch, Stops Elasticsearch"
+  echo "    debug_elasticsearch, Starts Elasticsearch in debug mode"
   echo "    start_tomcat, Starts Tomcat"
   echo "    stop_tomcat, Stops Tomcat"
   echo "    debug_tomcat, Starts Tomcat in debug mode"
@@ -68,7 +68,7 @@ function help() {
   echo "    status_search, Status of Crafter Search"
   echo "    status_deployer, Status of Deployer"
   echo "    status_solr, Status of Solr"
-  echo "    status_elasticsearch, Status of ElasticSearch"
+  echo "    status_elasticsearch, Status of Elasticsearch"
   echo "    status_mariadb, Status of MariaDB"
   echo "    status_mongodb, Status of MonoDb"
   echo "    backup <name>, Perform a backup of all data"
@@ -256,10 +256,10 @@ function stopSolr() {
   fi
 }
 
-function startElasticSearch() {
+function startElasticsearch() {
   cd $CRAFTER_BIN_DIR
   echo "------------------------------------------------------------"
-  echo "Starting ElasticSearch"
+  echo "Starting Elasticsearch"
   echo "------------------------------------------------------------"
   if [ ! -d $ES_INDEXES_DIR ]; then
     mkdir -p $ES_INDEXES_DIR;
@@ -286,18 +286,18 @@ function startElasticSearch() {
     fi
     if ! pgrep -u `whoami` -F "$ES_PID" >/dev/null
     then
-      echo "ElasticSearch Pid file is not ok, forcing startup"
+      echo "Elasticsearch Pid file is not ok, forcing startup"
       rm "$ES_PID"
-      startElasticSearch
+      startElasticsearch
     fi
-    echo "ElasticSearch already started"
+    echo "Elasticsearch already started"
   fi
 }
 
-function debugElasticSearch() {
+function debugElasticsearch() {
   cd $CRAFTER_BIN_DIR
   echo "------------------------------------------------------------"
-  echo "Starting ElasticSearch"
+  echo "Starting Elasticsearch"
   echo "------------------------------------------------------------"
   if [ ! -d $ES_INDEXES_DIR ]; then
     mkdir -p $ES_INDEXES_DIR;
@@ -325,18 +325,18 @@ function debugElasticSearch() {
     fi
     if ! pgrep -u `whoami` -F "$ES_PID" >/dev/null
     then
-      echo "ElasticSearch Pid file is not ok, forcing startup"
+      echo "Elasticsearch Pid file is not ok, forcing startup"
       rm "$ES_PID"
-      startElasticSearch
+      startElasticsearch
     fi
-    echo "ElasticSearch already started"
+    echo "Elasticsearch already started"
   fi
 }
 
-function stopElasticSearch() {
+function stopElasticsearch() {
   cd $CRAFTER_BIN_DIR
   echo "------------------------------------------------------------"
-  echo "Stopping ElasticSearch"
+  echo "Stopping Elasticsearch"
   echo "------------------------------------------------------------"
   if [ -s "$ES_PID" ]; then
     if pgrep -F "$ES_PID" > /dev/null
@@ -350,13 +350,13 @@ function stopElasticSearch() {
       # No pid file but we found the process
       killPID $ES_PID
     fi
-    echo "ElasticSearch already shutdown or pid $ES_PID file not found";
+    echo "Elasticsearch already shutdown or pid $ES_PID file not found";
   fi
 }
 
-function elasticSearchStatus(){
+function elasticsearchStatus(){
   echo "------------------------------------------------------------"
-  echo "ElasticSearch status                                        "
+  echo "Elasticsearch status                                        "
   echo "------------------------------------------------------------"
 
   esStatusOut=$(curl --silent  -f "http://localhost:$ES_PORT/_cat/nodes?h=uptime,version")
@@ -365,11 +365,11 @@ function elasticSearchStatus(){
     echo `cat "$ES_PID"`
     echo -e  "uptime:\t"
     echo "$esStatusOut" | awk '{print $1}'
-    echo -e  "ElasticSearch Version:\t"
+    echo -e  "Elasticsearch Version:\t"
     echo "$esStatusOut" | awk '{print $2}'
   else
     echo -e "\033[38;5;196m"
-    echo "ElasticSearch is not running or is unreachable on port $ES_PORT"
+    echo "Elasticsearch is not running or is unreachable on port $ES_PORT"
     echo -e "\033[0m"
   fi
 }
@@ -591,9 +591,9 @@ function stopMongoDB(){
   fi
 }
 
-function skipElasticSearch() {
+function skipElasticsearch() {
   for o in "$@"; do
-    if [ $o = "skipElasticSearch" ]; then
+    if [ $o = "skipElasticsearch" ]; then
       return 0
     fi
   done
@@ -711,8 +711,8 @@ function mongoDbStatus(){
 
 function start() {
   startDeployer
-  if ! skipElasticSearch "$@"; then
-    startElasticSearch
+  if ! skipElasticsearch "$@"; then
+    startElasticsearch
   fi
   if isSolrNeeded "$@"; then
     startSolr
@@ -726,8 +726,8 @@ function start() {
 
 function debug() {
   debugDeployer
-  if ! skipElasticSearch "$@"; then
-    debugElasticSearch
+  if ! skipElasticsearch "$@"; then
+    debugElasticsearch
   fi
   if isSolrNeeded "$@"; then
     debugSolr
@@ -746,7 +746,7 @@ function stop() {
   fi
   stopDeployer
   if [ ! -z $(pidOf $ES_PORT) ]; then
-    stopElasticSearch
+    stopElasticsearch
   fi
   if [ ! -z $(pidOf $SOLR_PORT) ]; then
     stopSolr
@@ -754,7 +754,7 @@ function stop() {
 }
 
 function status(){
-  elasticSearchStatus
+  elasticsearchStatus
   solrStatus
   deployerStatus
   engineStatus
@@ -1057,15 +1057,15 @@ case $1 in
   ;;
   start_elasticsearch)
     logo
-    startElasticSearch
+    startElasticsearch
   ;;
   debug_elasticsearch)
     logo
-    debugElasticSearch
+    debugElasticsearch
   ;;
   stop_elasticsearch)
     logo
-    stopElasticSearch
+    stopElasticsearch
   ;;
   debug_tomcat)
     logo
@@ -1115,7 +1115,7 @@ case $1 in
     deployerStatus
   ;;
   status_elasticsearch)
-    elasticSearchStatus
+    elasticsearchStatus
   ;;
   status_solr)
     solrStatus

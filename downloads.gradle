@@ -89,26 +89,26 @@ task downloadSolr() {
     }
 }
 
-task downloadElasticSearch() {
-    description = "Downloads, checks ElasticSearch integrity and unzips it"
+task downloadElasticsearch() {
+    description = "Downloads, checks Elasticsearch integrity and unzips it"
     doFirst {
         download {
-            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticSearchVersion}.zip"
+            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}.zip"
             overwrite false
-            dest file("${downloadDir}/elasticsearch-${elasticSearchVersion}.zip")
+            dest file("${downloadDir}/elasticsearch-${elasticsearchVersion}.zip")
         }
         download {
-            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticSearchVersion}.zip.sha512"
-            dest file("${downloadDir}/elasticsearch-${elasticSearchVersion}.zip.sha512")
+            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}.zip.sha512"
+            dest file("${downloadDir}/elasticsearch-${elasticsearchVersion}.zip.sha512")
             overwrite false
         }
     }
     doLast {
-        assert sha512(new File(downloadDir, "elasticsearch-${elasticSearchVersion}.zip")) == new File(downloadDir, "elasticsearch-${elasticSearchVersion}.zip.sha512").getText('UTF-8').split(" ")[0]
+        assert sha512(new File(downloadDir, "elasticsearch-${elasticsearchVersion}.zip")) == new File(downloadDir, "elasticsearch-${elasticsearchVersion}.zip.sha512").getText('UTF-8').split(" ")[0]
 
-        if (!file("${downloadDir}/elasticsearch-${elasticSearchVersion}").exists()) {
+        if (!file("${downloadDir}/elasticsearch-${elasticsearchVersion}").exists()) {
             copy {
-                from zipTree("${downloadDir}/elasticsearch-${elasticSearchVersion}.zip")
+                from zipTree("${downloadDir}/elasticsearch-${elasticsearchVersion}.zip")
                 into "${downloadDir}"
             }
         }

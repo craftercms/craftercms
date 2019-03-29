@@ -47,7 +47,7 @@ ext {
     groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.5.0"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.24"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
-    elasticSearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.6.0"
+    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.6.0"
     mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.2.7"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     
@@ -73,7 +73,7 @@ ext {
     authMongoDBPort = project.hasProperty("authoring.mongo.port") ? project.property("authoring.mongo.port").toInteger() : 27020
     authSolrPort = project.hasProperty("authoring.solr.port") ? project.property("authoring.solr.port").toInteger() : 8694
     authSolrDebugPort = project.hasProperty("authoring.solr.debug.port") ? project.property("authoring.solr.debug.port").toInteger() : 5005
-    authElasticSearchPort = project.hasProperty("authoring.elasticsearch.port") ? project.property("authoring.elasticsearch.port").toInteger() : 9201
+    authElasticsearchPort = project.hasProperty("authoring.elasticsearch.port") ? project.property("authoring.elasticsearch.port").toInteger() : 9201
     authSMTPPort = project.hasProperty("authoring.studio.smtp.port") ? project.property("authoring.studio.smtp.port").toInteger() : 25
     authMariaDbPort = project.hasProperty("authoring.mariadb.port") ? project.property("authoring.mariadb.port").toInteger() : 33306
     authDeployerPort = project.hasProperty("authoring.deployer.port") ? project.property("authoring.deployer.port").toInteger() : 9191
@@ -83,7 +83,7 @@ ext {
     // Delivery
     deliverySolrPort = project.hasProperty("delivery.solr.port") ? project.property("delivery.solr.port").toInteger() : 8695
     deliverySolrDebugPort = project.hasProperty("delivery.solr.debug.port") ? project.property("delivery.solr.debug.port").toInteger() : 5006
-    deliveryElasticSearchPort = project.hasProperty("delivery.elasticsearch.port") ? project.property("delivery.elasticsearch.port").toInteger() : 9202
+    deliveryElasticsearchPort = project.hasProperty("delivery.elasticsearch.port") ? project.property("delivery.elasticsearch.port").toInteger() : 9202
     deliveryDeployerPort = project.hasProperty("delivery.deployer.port") ? project.property("delivery.deployer.port").toInteger() : 9192
     deliveryDeployerDebugPort = project.hasProperty("delivery.deployer.debug.port") ? project.property("delivery.deployer.debug.port").toInteger() : 5001
     deliveryDeploymentDir = project.hasProperty("delivery.deployment.dir") ? project.property("delivery.deployment.dir") : "data/repos/sites"
@@ -128,7 +128,7 @@ ext {
                 ",src/test/resources/testng_StudioAPI2.xml"
 
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb").toBoolean() : false // Does not really.
-    withElasticSearch = project.hasProperty("withElasticSearch") ? project.property("withElasticSearch").toBoolean() : true
+    withElasticsearch = project.hasProperty("withElasticsearch") ? project.property("withElasticsearch").toBoolean() : true
     withSolr = project.hasProperty("withSolr") ? project.property("withSolr").toBoolean() : false
     silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent").toBoolean() : false
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
@@ -319,8 +319,8 @@ envs.each { env ->
             if (startMongodb) {
                 extraStartupParams.add("forceMongo")
             }
-            if (!withElasticSearch) {
-              extraStartupParams.add("skipElasticSearch")
+            if (!withElasticsearch) {
+              extraStartupParams.add("skipElasticsearch")
             }
             if (withSolr) {
               extraStartupParams.add("withSolr")
@@ -658,7 +658,7 @@ dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
 dependsOnOrdered(init, initDeps)
 dependsOnOrdered(update, updateDeps)
-dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, downloadElasticSearch, downloadMariaDB4j] + envDepends + deployDepends + [buildUtils])
+dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, downloadElasticsearch, downloadMariaDB4j] + envDepends + deployDepends + [buildUtils])
 dependsOnOrdered(upgrade, [update, build, deploy])
 dependsOnOrdered(dockers, dockerDepends)
 

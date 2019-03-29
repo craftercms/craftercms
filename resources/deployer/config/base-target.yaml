@@ -3,7 +3,7 @@ target:
   engineUrl: http://${sys:tomcat.host}:${sys:tomcat.http.port}
   search:
     serverUrl: http://${sys:tomcat.host}:${sys:tomcat.http.port}/crafter-search
-    elasticSearch:
+    elasticsearch:
       urls:
         - http://${sys:es.host}:${sys:es.port}
   notifications:
