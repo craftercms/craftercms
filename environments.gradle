@@ -25,7 +25,7 @@ def authTokens = [
   TOMCAT_DEBUG_PORT    : String.valueOf(authTomcatDebugPort),
   SOLR_PORT            : String.valueOf(authSolrPort),
   SOLR_DEBUG_PORT      : String.valueOf(authSolrDebugPort),
-  ES_PORT              : String.valueOf(authElasticSearchPort),
+  ES_PORT              : String.valueOf(authElasticsearchPort),
   DEPLOYER_PORT        : String.valueOf(authDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(authDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(authDeploymentDir),
@@ -45,7 +45,7 @@ def deliveryTokens = [
   TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPort),
   SOLR_PORT            : String.valueOf(deliverySolrPort),
   SOLR_DEBUG_PORT      : String.valueOf(deliverySolrDebugPort),
-  ES_PORT              : String.valueOf(deliveryElasticSearchPort),
+  ES_PORT              : String.valueOf(deliveryElasticsearchPort),
   DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(deliveryDeploymentDir),
@@ -175,7 +175,7 @@ envs.each { env ->
 
                 // Copy Elastic Search binaries
                 copy {
-                    from "${downloadDir}/elasticsearch-${elasticSearchVersion}"
+                    from "${downloadDir}/elasticsearch-${elasticsearchVersion}"
                     into "${envDir}/bin/elasticsearch"
                 }
 
@@ -281,9 +281,9 @@ envs.each { env ->
                 into "${resourcesDestDir}/bin/solr/server/solr"
             } 
 
-            // Copy stock ElasticSearch config that needs to be updated
+            // Copy stock Elasticsearch config that needs to be updated
             copy {
-                from "${downloadDir}/elasticsearch-${elasticSearchVersion}/config/elasticsearch.yml"
+                from "${downloadDir}/elasticsearch-${elasticsearchVersion}/config/elasticsearch.yml"
                 into "${resourcesDestDir}/bin/elasticsearch/config"
             }                  
 
@@ -293,7 +293,7 @@ envs.each { env ->
             updateCatalinaProperties("${resourcesDestDir}/bin/apache-tomcat/conf/catalina.properties")
             updateCatalinaLogging("${resourcesDestDir}/bin/apache-tomcat/conf/logging.properties")
             updateSolrConf("${resourcesDestDir}/bin/solr/server/solr/solr.xml")
-            updateElasticSearchConf("${resourcesDestDir}/bin/elasticsearch/config/elasticsearch.yml")
+            updateElasticsearchConf("${resourcesDestDir}/bin/elasticsearch/config/elasticsearch.yml")
 
             // Only sync resource files if it's not a new env
             if (!newEnv) {
@@ -374,7 +374,7 @@ def updateSolrConf(configFile) {
     file.write(content)    
 }
 
-def updateElasticSearchConf(configFile) {
+def updateElasticsearchConf(configFile) {
     def file = new File(configFile)
 
     def content = file.text

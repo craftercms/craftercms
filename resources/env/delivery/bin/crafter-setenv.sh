@@ -49,7 +49,7 @@ export SOLR_INDEXES_DIR=$CRAFTER_DATA_DIR/indexes
 export SOLR_LOGS_DIR="$CRAFTER_LOGS_DIR/solr"
 export SOLR_PID=$SOLR_INDEXES_DIR/solr.pid
 
-# -------------------- ElasticSearch variables --------------------
+# -------------------- Elasticsearch variables --------------------
 export ES_HOME=$CRAFTER_BIN_DIR/elasticsearch/bin
 export ES_INDEXES_DIR=$CRAFTER_DATA_DIR/indexes-es
 export ES_LOGS_DIR="$CRAFTER_LOGS_DIR/elasticsearch"

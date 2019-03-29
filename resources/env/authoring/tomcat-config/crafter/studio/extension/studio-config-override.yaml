@@ -231,5 +231,5 @@ studio.mail.port: ${sys:mail.port}
 ################################################################
 ##                           Search                           ##
 ################################################################
-# URLs to connect to ElasticSearch
+# URLs to connect to Elasticsearch
 studio.search.urls: http://${sys:es.host}:${sys:es.port}
