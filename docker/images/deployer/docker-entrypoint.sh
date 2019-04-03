@@ -44,6 +44,7 @@ if [ -d $MOUNTED_SSH_DIR ]; then
     mkdir -p $USER_HOME_SSH_DIR
     cp -L $MOUNTED_SSH_DIR/* $USER_HOME_SSH_DIR
 
+    chown -R crafter:crafter "$USER_HOME_SSH_DIR" 
     chmod 700 $USER_HOME_SSH_DIR
     chmod 600 $USER_HOME_SSH_DIR/*
     chmod 644 $USER_HOME_SSH_DIR/*.pub
