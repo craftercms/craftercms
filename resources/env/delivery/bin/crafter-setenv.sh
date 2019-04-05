@@ -37,6 +37,12 @@ export TOMCAT_HTTPS_PORT=${TOMCAT_HTTPS_PORT:="@TOMCAT_HTTPS_PORT@"}
 export TOMCAT_AJP_PORT=${TOMCAT_AJP_PORT:="@TOMCAT_AJP_PORT@"}
 export TOMCAT_SHUTDOWN_PORT=${TOMCAT_SHUTDOWN_PORT:="@TOMCAT_SHUTDOWN_PORT@"}
 
+# -------------------- URLs --------------------
+export SOLR_URL=${SOLR_URL:="http://$SOLR_HOST:$SOLR_PORT/solr"}
+export ES_URL=${ES_URL:="http://$ES_HOST:$ES_PORT"}
+export DEPLOYER_URL=${DEPLOYER_URL:="http://$DEPLOYER_HOST:$DEPLOYER_PORT"}
+export TOMCAT_URL=${TOMCAT_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT"}
+
 # -------------------- Java opts --------------------
 export SOLR_JAVA_OPTS=${SOLR_JAVA_OPTS:="-server -Xss1024K -Xmx1G"}
 export ES_JAVA_OPTS=${ES_JAVA_OPTS:="-server -Xss1024K -Xmx1G"}
@@ -61,8 +67,6 @@ export DEPLOYER_DATA_DIR=$CRAFTER_DATA_DIR/deployer
 export DEPLOYER_LOGS_DIR=$CRAFTER_LOGS_DIR/deployer
 export DEPLOYER_DEPLOYMENTS_DIR=$CRAFTER_DATA_DIR/repos/sites
 export DEPLOYER_SDOUT=$DEPLOYER_LOGS_DIR/crafter-deployer.out
-export DEPLOYER_JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dtomcat.host=$TOMCAT_HOST -Dtomcat.http.port=$TOMCAT_HTTP_PORT \
-  -Des.host=$ES_HOST -Des.port=$ES_PORT -Dmail.host=$MAIL_HOST -Dmail.port=$MAIL_PORT"
 export DEPLOYER_PID=$DEPLOYER_HOME/crafter-deployer.pid
 
 # -------------------- MongoDB variables --------------------
@@ -77,13 +81,6 @@ export CATALINA_PID=$CATALINA_HOME/tomcat.pid
 export CATALINA_LOGS_DIR="$CRAFTER_LOGS_DIR/tomcat"
 export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
 export CATALINA_TMPDIR=$CRAFTER_TEMP_DIR/tomcat
-# Opts used only in Tomcat start
-export CATALINA_OPTS="$CATALINA_OPTS -Dtomcat.host=$TOMCAT_HOST -Dtomcat.http.port=$TOMCAT_HTTP_PORT \
-  -Dtomcat.https.port=$TOMCAT_HTTPS_PORT -Dtomcat.ajp.port=$TOMCAT_AJP_PORT -Dsolr.host=$SOLR_HOST \
-  -Dsolr.port=$SOLR_PORT -Des.host=$ES_HOST -Des.port=$ES_PORT -Dmongodb.host=$MONGODB_HOST \
-  -Dmongodb.port=$MONGODB_PORT -Dmail.host=$MAIL_HOST -Dmail.port=$MAIL_PORT -Dcrafter.home=$CRAFTER_HOME \
-  -Dcrafter.bin.dir=$CRAFTER_BIN_DIR -Dcrafter.data.dir=$CRAFTER_DATA_DIR -Dcrafter.logs.dir=$CRAFTER_LOGS_DIR \
-  -Dcatalina.logs=$CATALINA_LOGS_DIR -Dapplication.logs=$CATALINA_LOGS_DIR -Djava.net.preferIPv4Stack=true"
 
 # Profile variables
 export PROFILE_DEPLOY_WAR_PATH="$CATALINA_HOME/webapps/crafter-profile"

@@ -15,29 +15,29 @@ studio.repo.basePath: ${sys:crafter.data.dir}/repos
 ##                   Site Configuration                   ##
 ############################################################
 # Destroy site context url for preview engine
-studio.configuration.site.preview.destroy.context.url: http://${sys:tomcat.host}:${sys:tomcat.http.port}/api/1/site/context/destroy.json?crafterSite={siteName}
+studio.configuration.site.preview.destroy.context.url: http://localhost:${sys:tomcat.http.port}/api/1/site/context/destroy.json?crafterSite={siteName}
 # Default preview URL
-studio.configuration.site.defaultPreviewUrl: ^https?://${sys:tomcat.host}:${sys:tomcat.http.port}/?
+studio.configuration.site.defaultPreviewUrl: ^https?://localhost:8080/?
 # Default authoring URL
-studio.configuration.site.defaultAuthoringUrl: ^https?://${sys:tomcat.host}:${sys:tomcat.http.port}/studio/?
+studio.configuration.site.defaultAuthoringUrl: ^https?://localhost:8080/studio/?
 
 ############################################################
 ##                    Preview Deployer                    ##
 ############################################################
 # Default preview deployer URL (can be overridden per site)
-studio.preview.defaultPreviewDeployerUrl: http://${sys:deployer.host}:${sys:deployer.port}/api/1/target/deploy/{siteEnv}/{siteName}
+studio.preview.defaultPreviewDeployerUrl: ${sys:deployer.url}/api/1/target/deploy/{siteEnv}/{siteName}
 # Default preview create target URL (can be overridden per site)
-studio.preview.createTargetUrl: http://${sys:deployer.host}:${sys:deployer.port}/api/1/target/upsert
+studio.preview.createTargetUrl: ${sys:deployer.url}/api/1/target/upsert
 # Default preview create target URL (can be overridden per site)
-studio.preview.deleteTargetUrl: http://${sys:deployer.host}:${sys:deployer.port}/api/1/target/delete-if-exists/{siteEnv}/{siteName}
+studio.preview.deleteTargetUrl: ${sys:deployer.url}/api/1/target/delete-if-exists/{siteEnv}/{siteName}
 # URL to the preview repository (aka Sandbox) where authors save work-in-progress
 studio.preview.repoUrl: ${sys:crafter.data.dir}/repos/sites/{siteName}/sandbox
 
 ############################################################
 ##                   Preview Search                       ##
 ############################################################
-studio.preview.search.createUrl: http://${sys:tomcat.host}:${sys:tomcat.http.port}/crafter-search/api/2/admin/index/create
-studio.preview.search.deleteUrl: http://${sys:tomcat.host}:${sys:tomcat.http.port}/crafter-search/api/2/admin/index/delete/{siteName}
+studio.preview.search.createUrl: http://localhost:${sys:tomcat.http.port}/crafter-search/api/2/admin/index/create
+studio.preview.search.deleteUrl: http://localhost:${sys:tomcat.http.port}/crafter-search/api/2/admin/index/delete/{siteName}
 
 ##################################################
 ##                   Database                   ##
@@ -232,4 +232,4 @@ studio.mail.port: ${sys:mail.port}
 ##                           Search                           ##
 ################################################################
 # URLs to connect to Elasticsearch
-studio.search.urls: http://${sys:es.host}:${sys:es.port}
+studio.search.urls: ${sys:es.url}

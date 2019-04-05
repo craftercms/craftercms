@@ -555,7 +555,7 @@ function isMongoNeeded() {
       return 0
     fi
   done
-  test -s $PROFILE_WAR_PATH || test -d $PROFILE_DEPLOY_WAR_PATH
+  test -s "$CATALINA_HOME/webapps/crafter-profile.war" || test -d "$CATALINA_HOME/webapps/crafter-profile"
 }
 
 function stopMongoDB(){
