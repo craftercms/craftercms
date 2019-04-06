@@ -41,7 +41,10 @@ export TOMCAT_SHUTDOWN_PORT=${TOMCAT_SHUTDOWN_PORT:="@TOMCAT_SHUTDOWN_PORT@"}
 export SOLR_URL=${SOLR_URL:="http://$SOLR_HOST:$SOLR_PORT/solr"}
 export ES_URL=${ES_URL:="http://$ES_HOST:$ES_PORT"}
 export DEPLOYER_URL=${DEPLOYER_URL:="http://$DEPLOYER_HOST:$DEPLOYER_PORT"}
-export TOMCAT_URL=${TOMCAT_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT"}
+export ENGINE_URL=${ENGINE_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT"}
+export SEARCH_URL=${SEARCH_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/crafter-search"}
+export PROFILE_URL=${PROFILE_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/crafter-profile"}
+export SOCIAL_URL=${SOCIAL_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/crafter-social"}
 
 # -------------------- Java opts --------------------
 export SOLR_JAVA_OPTS=${SOLR_JAVA_OPTS:="-server -Xss1024K -Xmx1G"}
