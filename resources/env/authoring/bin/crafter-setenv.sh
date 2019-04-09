@@ -16,8 +16,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # -------------------- Spring Profiles --------------------
-# Uncomment to enable an external DB for Studio (for clustering environments) 
-#export SPRING_PROFILES_ACTIVE=crafter.studio.externalDb
+# Uncomment to enable an external DB for Studio and stoppeed the embedded DB
+# export SPRING_PROFILES_ACTIVE=crafter.studio.externalDb
 
 # -------------------- Locations variables --------------------
 export CRAFTER_LOGS_DIR=${CRAFTER_LOGS_DIR:="$CRAFTER_HOME/logs"}
@@ -81,21 +81,25 @@ export DEPLOYER_PID=$DEPLOYER_HOME/crafter-deployer.pid
 
 # -------------------- MongoDB variables --------------------
 export MONGODB_HOME="$CRAFTER_BIN_DIR/mongodb"
-export MONGODB_PID="$CRAFTER_DATA_DIR/mongodb/mongod.lock"
 export MONGODB_DATA_DIR="$CRAFTER_DATA_DIR/mongodb"
 export MONGODB_LOGS_DIR="$CRAFTER_LOGS_DIR/mongodb"
+export MONGODB_PID="$MONGODB_DATA_DIR/mongod.lock"
 
 # -------------------- MariaDB variables --------------------
-export MYSQL_DATA="$CRAFTER_DATA_DIR/db"
+export MARIADB_HOME="$CRAFTER_BIN_DIR/dbms"
+export MARIADB_DATA_DIR="$CRAFTER_DATA_DIR/db"
+export MARIADB_ROOT_PASSWD=
 
 case "$(uname -s)" in
   Darwin)
-    export MYSQL_PID_FILE_NAME="$(echo "$HOSTNAME" | awk -F'.' '{print $1}' ).pid"
+    MARIADB_PID_FILE_NAME="$(echo "$HOSTNAME" | awk -F'.' '{print $1}' ).pid"
   ;;
   *)
-    export MYSQL_PID_FILE_NAME="$HOSTNAME.pid"
+    MARIADB_PID_FILE_NAME="$HOSTNAME.pid"
   ;;
 esac
+
+export MARIADB_PID="$MARIADB_DATA_DIR/$MARIADB_PID_FILE_NAME"
 
 # -------------------- Tomcat variables --------------------
 export CATALINA_HOME=$CRAFTER_BIN_DIR/apache-tomcat

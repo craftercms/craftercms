@@ -1,13 +1,13 @@
 target:
   localRepoPath: ${deployer.main.deployments.folderPath}/${target.siteName}
-  engineUrl: ${sys:crafter.engine.url}
+  engineUrl: ${env:ENGINE_URL}
   search:
-    serverUrl: ${sys:crafter.search.url}
+    serverUrl: ${env:SEARCH_URL}
     elasticsearch:
       urls:
-        - ${sys:crafter.es.url}
+        - ${env:ES_URL}
   notifications:
     mail:
       server:
-        host: ${sys:mail.host}
-        port: ${sys:mail.port}
+        host: ${env:MAIL_HOST}
+        port: ${env:MAIL_PORT}
