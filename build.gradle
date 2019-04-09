@@ -64,7 +64,7 @@ ext {
         includeProfile = true
     }
 
-    //Authoring
+    // Authoring
     authTomcatPort = project.hasProperty("authoring.tomcat.http.port") ? project.property("authoring.tomcat.http.port").toInteger() : 8080
     authTomcatShutdownPort = project.hasProperty("authoring.tomcat.shutdown.port") ? project.property("authoring.tomcat.shutdown.port").toInteger() : 8005
     authTomcatAJPPort = project.hasProperty("authoring.tomcat.ajp.port") ? project.property("authoring.tomcat.ajp.port").toInteger() : 8009
@@ -101,6 +101,8 @@ ext {
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
     shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone").toBoolean() : false
     studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo").toBoolean() : false
+    
+    /** Other **/
     overwriteConfig = project.hasProperty("overwriteConfig") ? project.property("overwriteConfig").toBoolean() : false
     backupAndReplaceConfig = project.hasProperty("backupAndReplaceConfig") ? project.property("backupAndReplaceConfig").toBoolean() : false
 

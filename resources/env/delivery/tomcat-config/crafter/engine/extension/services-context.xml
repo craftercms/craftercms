@@ -4,5 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
   <import resource="classpath*:crafter/engine/mode/multi-tenant/simple/services-context.xml" />
+  <!-- S3 Serverless Mode -->
+  <!-- <import resource="classpath*:crafter/engine/mode/serverless/s3/services-context.xml" /> -->
 
 </beans>
