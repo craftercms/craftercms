@@ -17,7 +17,6 @@
 
 export CRAFTER_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
-export CRAFTER_DBMS_DIR=$CRAFTER_HOME/bin/dbms
 export CRAFTER_BACKUPS_DIR=$CRAFTER_HOME/backups
 
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
@@ -34,8 +33,8 @@ if [ ! -d $CATALINA_TMPDIR ]; then
 fi
 
 # Fix for volume permissions
-if [ -d $CRAFTER_DBMS_DIR ]; then
-    chown -R crafter:crafter "$CRAFTER_DBMS_DIR"
+if [ -d $MARIADB_HOME ]; then
+    chown -R crafter:crafter "$MARIADB_HOME"
 fi
 
 if [ -d $CRAFTER_BACKUPS_DIR ]; then

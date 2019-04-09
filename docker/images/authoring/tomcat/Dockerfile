@@ -41,6 +41,8 @@ VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
 # Copy bin folder
 COPY ./bin ./bin/
 
+# Delete the bin/dbms dir
+RUN rm -rf ./bin/dbms
 # Delete the apache tomcat folder, we're going to link to the image's own Tomcat
 RUN rm -rf ./bin/apache-tomcat && ln -s /usr/local/tomcat ./bin/apache-tomcat
 
