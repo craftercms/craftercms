@@ -684,7 +684,7 @@ function mariadbStatus(){
   echo "------------------------------------------------------------"
   if [ -s "$MARIADB_PID" ]; then
     echo -e "PID \t"
-    echo `cat "$MARIADB_PID"`
+    echo $(cat "$MARIADB_PID")
   else
     echo "MariaDB is not running."
   fi
