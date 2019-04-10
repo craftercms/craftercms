@@ -1,6 +1,13 @@
 # Crafter CMS
 
-Crafter CMS is a modern content management platform for building digital experience applications (React, Vue, Angular, HTML, AR/VR, Mobile, Headless, …).  You can learn more about Crafter here: http://docs.craftercms.org/en/3.1/index.html
+Crafter CMS is a modern content management platform for building digital experience applications using:
+
+* SPA frameworks like React, Vue and Angular
+* AR/VR applications using A-Frame
+* Native Mobile and Headless applications
+* HTML5 Websites using Bootstrap or other HTML frameworks
+
+ You can learn more about Crafter here: http://docs.craftercms.org/en/3.1/index.html
 
 This repository is the parent project that builds everything and helps you build one of two things:
 
