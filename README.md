@@ -1,6 +1,6 @@
 # Crafter CMS
 
-Crafter CMS is an open source content management platform for building digital experience applications (React, Vue, Angular, HTML, AR/VR, Mobile, Headless, …).  You can learn more about Crafter here: http://docs.craftercms.org/en/3.1/index.html
+Crafter CMS is a modern content management platform for building digital experience applications (React, Vue, Angular, HTML, AR/VR, Mobile, Headless, …).  You can learn more about Crafter here: http://docs.craftercms.org/en/3.1/index.html
 
 This repository is the parent project that builds everything and helps you build one of two things:
 
@@ -83,7 +83,7 @@ Replace {BRANCH} or {TAG NAME} or \<branch\> with the branch and tag you'd like 
 When using a tag-based build, you're essentially cloning a point in time to build that specific version of Crafter CMS. That implies that you won't be able to update/nor push changes back.
 
 # 3. Build a Developer's Environment
-Crafter CMS is built along a microservices based, serverless (Docker + Kubernetes), architecture, and as such, comprises a number of headless API-first (GraphQL, REST, in-process)  modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
+Crafter CMS is built along a microservices-based architecture, and as such, comprises a number of headless API-first (GraphQL, REST, in-process)  modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
 
 
 ## 3.1. Build, Start and Stop All 
