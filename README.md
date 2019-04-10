@@ -1,6 +1,13 @@
 # Crafter CMS
 
-Crafter CMS is an open source content management system for Web sites, mobile apps, VR and more. You can learn more about Crafter here: http://docs.craftercms.org/en/3.1/index.html
+Crafter CMS is a modern content management platform for building digital experience applications using:
+
+* SPA frameworks like React, Vue and Angular
+* AR/VR applications using A-Frame
+* Native Mobile and Headless applications
+* HTML5 Websites using Bootstrap or other HTML frameworks
+
+ You can learn more about Crafter here: http://docs.craftercms.org/en/3.1/index.html
 
 This repository is the parent project that builds everything and helps you build one of two things:
 
@@ -40,11 +47,11 @@ git clone https://github.com/craftercms/craftercms.git -b develop
 
 # 2. Build a Deployable Bundle
 
-To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.zip` and `.tar.gz` files ready to be deployed to any system.
+To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.tar.gz` files ready to be deployed to any system.
 
-Before using `bundle` task make sure that the enviroment have been created and deployed gradle tasks `build` and `deploy`
+Before using `bundle` task make sure that the enviroment has been created and deployed using gradle tasks `build` and `deploy`
 
-Archives will be named `crafter-cms-${environment}.tar.gz` and `crafter-cms-${environment}.zip` and can be found in the `bundles` folder.
+Archives will be named `crafter-cms-${environment}.tar.gz` and can be found in the `bundles` folder.
 
 ```bash
 ./gradlew init build deploy bundle
@@ -60,7 +67,7 @@ To build a bundle for a specific environment:
 ```bash
     ./gradlew bundle -Penv=authoring
 ```
-Archives will be named `crafter-cms-authoring.tar.gz` and `crafter-cms-authoring.zip` and can be found in the `bundles` folder.
+Archive will be named `crafter-cms-authoring.tar.gz` and can be found in the `bundles` folder.
 
 For the `delivery` environment, simply substitute the `env=authoring` with `env=delivery`.
 
@@ -70,7 +77,7 @@ To download, build and generate a bundle from a given tag or branch of the sourc
 
 1. Clone the branch/tag of craftercms that you want to work with
 ```bash
-    git clone -b<branch> https://github.com/craftercms/craftercms/
+    git clone -b <branch> https://github.com/craftercms/craftercms/
 ```
 2. Download, build and bundle the branch that you want to work with
 ```bash
@@ -83,7 +90,7 @@ Replace {BRANCH} or {TAG NAME} or \<branch\> with the branch and tag you'd like 
 When using a tag-based build, you're essentially cloning a point in time to build that specific version of Crafter CMS. That implies that you won't be able to update/nor push changes back.
 
 # 3. Build a Developer's Environment
-Crafter CMS is built along a microservices architecture, and as such, comprises a number of head-less, RESTful, modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
+Crafter CMS is built along a microservices-based architecture, and as such, comprises a number of headless API-first (GraphQL, REST, in-process)  modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
 
 
 ## 3.1. Build, Start and Stop All 
