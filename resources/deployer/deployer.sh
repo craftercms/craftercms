@@ -9,7 +9,12 @@ DEPLOYMENTS_DIR=${DEPLOYER_DEPLOYMENTS_DIR:="$CRAFTER_DATA_DIR/repos/sites"}
 TARGETS_DIR=$DATA_DIR/targets
 PROCESSED_COMMITS=$DATA_DIR/processed-commits
 PORT=${DEPLOYER_PORT:="9191"}
-JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HOME/logging.xml -Dlogs.dir=$LOGS_DIR -Ddeployments.dir=$DEPLOYMENTS_DIR -Dtargets.dir=$TARGETS_DIR -DprocessedCommits.dir=$PROCESSED_COMMITS -Dloader.path=$DEPLOYER_HOME/lib"
+ENGINE_URL=${ENGINE_URL:="http://localhost:8080"}
+SEARCH_URL=${SEARCH_URL:="http://localhost:8080/crafter-search"}
+ES_URL=${ES_URL:="http://localhost:9200"}
+JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HOME/logging.xml -Dlogs.dir=$LOGS_DIR \
+  -Ddeployments.dir=$DEPLOYMENTS_DIR -Dtargets.dir=$TARGETS_DIR -DprocessedCommits.dir=$PROCESSED_COMMITS \
+  -Dloader.path=$DEPLOYER_HOME/lib"
 PID=${DEPLOYER_PID:="$DATA_DIR/crafter-deployer.pid"}
 OUTPUT=${DEPLOYER_SDOUT:="$LOGS_DIR/crafter-deployer.out"}
 

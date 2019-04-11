@@ -522,6 +522,7 @@ function startMongoDB(){
       tar xvf mongodb.tgz --strip 1
       rm mongodb.tgz
     fi
+    
     # Before run check if the port is available.
     possiblePID=$(pidOf $MONGODB_PORT)
     if  [ -z $possiblePID ];  then
@@ -555,7 +556,7 @@ function isMongoNeeded() {
       return 0
     fi
   done
-  test -s $PROFILE_WAR_PATH || test -d $PROFILE_DEPLOY_WAR_PATH
+  test -s "$CATALINA_HOME/webapps/crafter-profile.war" || test -d "$CATALINA_HOME/webapps/crafter-profile"
 }
 
 function stopMongoDB(){
@@ -681,9 +682,9 @@ function mariadbStatus(){
   echo "------------------------------------------------------------"
   echo "MariaDB status                                              "
   echo "------------------------------------------------------------"
-  if [ -s "$MYSQL_DATA/$MYSQL_PID_FILE_NAME" ]; then
+  if [ -s "$MARIADB_PID" ]; then
     echo -e "PID \t"
-    echo `cat "$MYSQL_DATA/$MYSQL_PID_FILE_NAME"`
+    echo $(cat "$MARIADB_PID")
   else
     echo "MariaDB is not running."
   fi
@@ -799,7 +800,7 @@ function doBackup() {
   fi
 
   # MySQL Dump
-  if [ -d "$MYSQL_DATA" ]; then
+  if [ -d "$MARIADB_DATA_DIR" ]; then
     # Start DB if necessary
     DB_STARTED=false
     if [ -z $(pidOf "$MARIADB_PORT") ]; then
@@ -808,7 +809,7 @@ function doBackup() {
       echo "------------------------------------------------------------------------"
       echo "Starting DB"
       echo "------------------------------------------------------------------------"
-      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
+      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
       sleep 45
       DB_STARTED=true
     fi
@@ -926,7 +927,7 @@ function doRestore() {
   rm -rf "$SOLR_INDEXES_DIR/*"
   rm -rf "$ES_INDEXES_DIR/*"
   rm -rf "$DEPLOYER_DATA_DIR/*"
-  rm -rf "$MYSQL_DATA/*"
+  rm -rf "$MARIADB_DATA_DIR/*"
 
   echo "------------------------------------------------------------------------"
   echo "Starting restore from $SOURCE_FILE"
@@ -982,12 +983,12 @@ function doRestore() {
 
   # If it is an authoring env then sync the repos
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
-    mkdir -p "$MYSQL_DATA"
+    mkdir -p "$MARIADB_DATA_DIR"
     #Start DB
     echo "------------------------------------------------------------------------"
     echo "Starting DB"
     echo "------------------------------------------------------------------------"
-    java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MYSQL_DATA" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
+    java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
     sleep 45
     # Import
     echo "------------------------------------------------------------------------"
