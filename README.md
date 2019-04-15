@@ -12,8 +12,8 @@ Crafter CMS is a modern content management platform for building digital experie
 This repository is the parent project that builds everything and helps you build one of two things:
 
 1. Deployable Crafter CMS bundle
-
-2. Developer's environment so you can compile and contribute to Crafter CMS
+2. Docker images
+3. Developer's environment so you can compile and contribute to Crafter CMS
 
 # 1. Initial Setup
 You must have these prerequisites on your system before you begin:
