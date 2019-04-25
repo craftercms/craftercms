@@ -25,6 +25,7 @@ import org.craftercms.bundle.utils.Action;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -95,7 +96,9 @@ public class Zip implements Action {
                                         System.out.println("[ZIP] Adding " + filename);
 
                                         zout.putNextEntry(new ZipEntry(filename));
-                                        IOUtils.copy(Files.newInputStream(file), zout);
+                                        try (InputStream fileIn = Files.newInputStream(file)) {
+                                            IOUtils.copy(fileIn, zout);
+                                        }
                                         zout.closeEntry();
                                     }
                                 } catch (IOException e) {
