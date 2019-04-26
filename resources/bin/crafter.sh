@@ -922,12 +922,14 @@ function doRestore() {
   echo "------------------------------------------------------------------------"
   echo "Clearing all existing data"
   echo "------------------------------------------------------------------------"
-  rm -rf "$MONGODB_DATA_DIR/*"
-  rm -rf "$CRAFTER_DATA_DIR/repos/*"
-  rm -rf "$SOLR_INDEXES_DIR/*"
-  rm -rf "$ES_INDEXES_DIR/*"
-  rm -rf "$DEPLOYER_DATA_DIR/*"
-  rm -rf "$MARIADB_DATA_DIR/*"
+  # Can't delete folders, only contents, since they might be mounted (e.g Docker volumes)
+  # 2>/dev/null removes the warnings about refusing to remove '.' or '..'
+  rm -rf "$MONGODB_DATA_DIR"/* "$MONGODB_DATA_DIR"/.* 2>/dev/null
+  rm -rf "$CRAFTER_DATA_DIR/repos"/* "$CRAFTER_DATA_DIR/repos"/.* 2>/dev/null
+  rm -rf "$SOLR_INDEXES_DIR"/* "$SOLR_INDEXES_DIR"/.* 2>/dev/null
+  rm -rf "$ES_INDEXES_DIR"/* "$ES_INDEXES_DIR"/.* 2>/dev/null
+  rm -rf "$DEPLOYER_DATA_DIR"/* "$DEPLOYER_DATA_DIR"/.* 2>/dev/null
+  rm -rf "$MARIADB_DATA_DIR"/* "$MARIADB_DATA_DIR"/.* 2>/dev/null
 
   echo "------------------------------------------------------------------------"
   echo "Starting restore from $SOURCE_FILE"
@@ -960,7 +962,6 @@ function doRestore() {
     echo "------------------------------------------------------------------------"
     echo "Restoring solr indexes"
     echo "------------------------------------------------------------------------"
-    rm -rf "$SOLR_INDEXES_DIR/*"
     java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
   fi
 
@@ -969,7 +970,6 @@ function doRestore() {
     echo "------------------------------------------------------------------------"
     echo "Restoring elasticsearch indexes"
     echo "------------------------------------------------------------------------"
-    rm -rf "$ES_INDEXES_DIR/*"
     java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes-es.zip" "$ES_INDEXES_DIR"
   fi
 
