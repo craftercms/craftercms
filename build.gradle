@@ -30,12 +30,6 @@ ext {
     commandLinePrefix = []
     startUpFile = project.hasProperty("debug") ? "./debug.sh" : "./startup.sh"
     shutDownFile = "./shutdown.sh"
-    
-    if (isWin) {
-        startUpFile = project.hasProperty("debug") ? "debug.bat" : "startup.bat"
-        shutDownFile = "shutdown.bat"
-        commandLinePrefix = ["cmd", "/c"]
-    }
 
     /** Subprocess Properties **/
     processLogFile = ".gradle.log"
@@ -337,7 +331,7 @@ envs.each { env ->
         })
     }
 
-    if (!tasks.findByName("${env}_status") && !isWin) {
+    if (!tasks.findByName("${env}_status")) {
         task "${env}_status" doLast({
             def extraStartupParams = []
             if (startMongodb) {
