@@ -892,7 +892,9 @@ function doBackup() {
   cd "$TEMP_FOLDER"
   java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TARGET_FILE" true
 
-  rm -rf "$TEMP_FOLDER"
+  rmDirContents "$TEMP_FOLDER"
+  rmdir "$TEMP_FOLDER"
+
   echo "------------------------------------------------------------------------"
   echo "> Backup completed and saved to $TARGET_FILE"
 }
@@ -923,14 +925,12 @@ function doRestore() {
   echo "------------------------------------------------------------------------"
   echo "Clearing all existing data"
   echo "------------------------------------------------------------------------"
-  # Can't delete folders, only contents, since they might be mounted (e.g Docker volumes)
-  # 2>/dev/null removes the warnings about refusing to remove '.' or '..'
-  rm -rf "$MONGODB_DATA_DIR"/* "$MONGODB_DATA_DIR"/.* 2>/dev/null
-  rm -rf "$CRAFTER_DATA_DIR/repos"/* "$CRAFTER_DATA_DIR/repos"/.* 2>/dev/null
-  rm -rf "$SOLR_INDEXES_DIR"/* "$SOLR_INDEXES_DIR"/.* 2>/dev/null
-  rm -rf "$ES_INDEXES_DIR"/* "$ES_INDEXES_DIR"/.* 2>/dev/null
-  rm -rf "$DEPLOYER_DATA_DIR"/* "$DEPLOYER_DATA_DIR"/.* 2>/dev/null
-  rm -rf "$MARIADB_DATA_DIR"/* "$MARIADB_DATA_DIR"/.* 2>/dev/null
+  rmDirContents "$MONGODB_DATA_DIR"
+  rmDirContents "$CRAFTER_DATA_DIR/repos"
+  rmDirContents "$SOLR_INDEXES_DIR"
+  rmDirContents "$ES_INDEXES_DIR"
+  rmDirContents "$DEPLOYER_DATA_DIR"
+  rmDirContents "$MARIADB_DATA_DIR"
 
   echo "------------------------------------------------------------------------"
   echo "Starting restore from $SOURCE_FILE"
@@ -1007,6 +1007,14 @@ function doRestore() {
   rm -r "$TEMP_FOLDER"
   echo "------------------------------------------------------------------------"
   echo "> Restore complete, you may now start the system"
+}
+
+function rmDirContents() {
+  DIR=$1
+  if [ ! -z "$DIR" ] && [ -d "$DIR" ]; then
+    # 2>/dev/null removes the warnings about refusing to remove '.' or '..'
+    rm -rf "$DIR"/* "$DIR"/.* 2>/dev/null
+  fi
 }
 
 function logo() {
