@@ -891,7 +891,9 @@ function doBackup() {
   cd "$TEMP_FOLDER"
   java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TARGET_FILE" true
 
-  rm -rf "$TEMP_FOLDER"
+  rmDirContents "$TEMP_FOLDER"
+  rmdir "$TEMP_FOLDER"
+
   echo "------------------------------------------------------------------------"
   echo "> Backup completed and saved to $TARGET_FILE"
 }
@@ -922,12 +924,12 @@ function doRestore() {
   echo "------------------------------------------------------------------------"
   echo "Clearing all existing data"
   echo "------------------------------------------------------------------------"
-  clearDataDir "$MONGODB_DATA_DIR"
-  clearDataDir "$CRAFTER_DATA_DIR/repos"
-  clearDataDir "$SOLR_INDEXES_DIR"
-  clearDataDir "$ES_INDEXES_DIR"
-  clearDataDir "$DEPLOYER_DATA_DIR"
-  clearDataDir "$MARIADB_DATA_DIR"
+  rmDirContents "$MONGODB_DATA_DIR"
+  rmDirContents "$CRAFTER_DATA_DIR/repos"
+  rmDirContents "$SOLR_INDEXES_DIR"
+  rmDirContents "$ES_INDEXES_DIR"
+  rmDirContents "$DEPLOYER_DATA_DIR"
+  rmDirContents "$MARIADB_DATA_DIR"
 
   echo "------------------------------------------------------------------------"
   echo "Starting restore from $SOURCE_FILE"
@@ -1006,12 +1008,10 @@ function doRestore() {
   echo "> Restore complete, you may now start the system"
 }
 
-function clearDataDir() {
+function rmDirContents() {
   DIR=$1
   if [ ! -z "$DIR" ] && [ -d "$DIR" ]; then
-    # Can't delete the folder, only contents, since the folder might be mounted (e.g Docker volume)
     # 2>/dev/null removes the warnings about refusing to remove '.' or '..'
-    echo "Clearing $DIR"
     rm -rf "$DIR"/* "$DIR"/.* 2>/dev/null
   fi
 }
