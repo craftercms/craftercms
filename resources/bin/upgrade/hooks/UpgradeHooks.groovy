@@ -20,11 +20,6 @@ package upgrade.hooks
 class UpgradeHooks {
 
     private static final def ALL_HOOKS = [
-            '3.0.19' : [
-                    new UpgradeSetEnvTo3019(),
-                    new UpgradeSharedConfTo3019(),
-                    new CopyCatalinaPolicyHook()
-            ]
     ]
 
     private def binFolder
