@@ -619,12 +619,13 @@ function getStatus() {
     echo -e "PID\t"
     echo `cat "$5"`
     echo -e  "Uptime (in seconds):\t"
-    echo "$statusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
+    echo "$statusOut"  |  grep -Eo '"uptime":\d+' | awk -F ":" '{print $2}'
     versionOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/version")
     if [ $? -eq 0 ]; then
-      echo -e  "Version:\t"
-      printf $(echo "$versionOut"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')
-      echo "$versionOut"| python -m json.tool | grep -w packageBuild | awk -F"[,|:]" '{print $2}'
+      echo -e "Version:\t"
+      echo -n $(echo "$versionOut"  |  egrep -Eo '"packageVersion":"[^"]+"' | awk -F ":" '{print $2}')
+      echo -n " "
+      echo "$versionOut"|  grep -Eo '"packageBuild":"[^"]+"' | awk -F ":" '{print $2}'
     fi
   else
     echo -e "\033[38;5;196m"
@@ -643,9 +644,9 @@ function solrStatus(){
     echo -e "PID\t"
     echo `cat "$CRAFTER_HOME/bin/solr/bin/solr-$SOLR_PORT.pid"`
     echo -e  "Uptime (in minutes):\t"
-    echo "$solrStatusOut"  | python -m json.tool | grep upTimeMS | awk -F"[,|:]" '{print $2}'| awk '{print ($1/1000)/60}'| bc
+    echo "$solrStatusOut"  |  grep -Eo '"upTimeMS":\d+' | awk -F ":" '{print ($2/1000)/60}' | bc
     echo -e  "Solr Version:\t"
-    echo "$solrStatusOut"  | python -m json.tool | grep solr-spec-version | awk -F"[,|:]" '{print $2}'
+    echo "$solrStatusOut"  |  grep -Eo '"solr-spec-version":"[^"]+"' | awk -F ":" '{print $2}'
   else
     echo -e "\033[38;5;196m"
     echo "Solr is not running or is unreachable on port $SOLR_PORT"
