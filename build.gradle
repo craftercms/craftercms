@@ -131,7 +131,7 @@ ext {
     /** Cloneable Artifacts **/
     VALID_MODULES =
       ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite",
-      "plugin-maker", "studio-ui-ng", "video-center-blueprint"]
+      "plugin-maker", "video-center-blueprint"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -217,7 +217,6 @@ buildModules.each { module ->
                 if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
                     actualCommandLinePost.add("-Dstudio.vcbp.path=../video-center-blueprint/".toString())				
                     actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
-                    actualCommandLinePost.add("-Dstudio.ui.alpha.path=../studio-ui-ng")
                     actualCommandLinePost.add("-Dexec.skip=true")
                 }
                 def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
@@ -402,14 +401,12 @@ envs.each { env ->
 buildDeps.removeAll([
   tasks.findByName("studio-ui_build"),
   tasks.findByName("plugin-maker_build"),
-  tasks.findByName("studio-ui-ng_build"),
   tasks.findByName("video-center-blueprint_build")
 ] as Task[])
 
 cleanDeps.removeAll([
   tasks.findByName("studio-ui_clean"),
   tasks.findByName("plugin-maker_clean"),
-  tasks.findByName("studio-ui-ng_clean"),
   tasks.findByName("test-suite_build"),
   tasks.findByName("video-center-blueprint_clean")
 ] as Task[])

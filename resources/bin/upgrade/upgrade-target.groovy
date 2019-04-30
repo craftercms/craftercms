@@ -227,25 +227,30 @@ def upgrade(targetFolder, environmentName) {
 
 checkDownloadGrapesOnlyMode(getClass())
 
-def cli = new CliBuilder(usage: 'upgrade-target [options] <target-installation-path>')
-buildCli(cli)
+// TODO: Remove this message after upgrade scripts are fixed and uncomment the rest of the code
+println "The upgrade scripts have been disabled in 3.1.0, while they're being refactored. For now, please follow " +
+        "the upgrade instructions in " +
+        "https://docs.craftercms.org/en/3.1/system-administrators/upgrade/upgrading-to-craftercms-3-1-0.html" 
 
-def options = cli.parse(args)
-if (options) {
-    // Show usage text when -h or --help option is used.
-    if (options.help) {
-        printHelp(cli)
-        return
-    }
+// def cli = new CliBuilder(usage: 'upgrade-target [options] <target-installation-path>')
+// buildCli(cli)
 
-    // Parse the options and arguments
-    def extraArguments = options.arguments()
-    if (CollectionUtils.isNotEmpty(extraArguments)) {
-        def targetPath = extraArguments[0]
-        def targetFolder = Paths.get(targetPath)
+// def options = cli.parse(args)
+// if (options) {
+//     // Show usage text when -h or --help option is used.
+//     if (options.help) {
+//         printHelp(cli)
+//         return
+//     }    
 
-        upgrade(targetFolder, getEnvironmentName())
-    } else {
-        exitWithError(cli, 'No <target-installation-path> was specified')
-    }
-}
+//     // Parse the options and arguments
+//     def extraArguments = options.arguments()
+//     if (CollectionUtils.isNotEmpty(extraArguments)) {
+//         def targetPath = extraArguments[0]
+//         def targetFolder = Paths.get(targetPath)
+
+//         upgrade(targetFolder, getEnvironmentName())
+//     } else {
+//         exitWithError(cli, 'No <target-installation-path> was specified')
+//     }
+// }

@@ -223,17 +223,22 @@ def startUpgrade(cli, upgradeBinFolder, upgradeTmpFolder, downloadsBaseUrl, vers
 
 checkDownloadGrapesOnlyMode(getClass())
 
-def cli = new CliBuilder(usage: 'start-upgrade [options]')
-buildCli(cli)
+// TODO: Remove this message after upgrade scripts are fixed and uncomment the rest of the code
+println "The upgrade scripts have been disabled in 3.1.0, while they're being refactored. For now, please follow " +
+        "the upgrade instructions in " +
+        "https://docs.craftercms.org/en/3.1/system-administrators/upgrade/upgrading-to-craftercms-3-1-0.html" 
 
-def options = cli.parse(args)
-if (options) {
-    // Show usage text when -h or --help option is used.
-    if (options.help) {
-        printHelp(cli)
-        return
-    }
+// def cli = new CliBuilder(usage: 'start-upgrade [options]')
+// buildCli(cli)
 
-    startUpgrade(cli, getUpgradeBinFolder(), getUpgradeTmpFolder(), getDownloadsBaseUrl(), options.version,
-            options.'bundle-url', options.'bundle-path', getEnvironmentName())
-}
+// def options = cli.parse(args)
+// if (options) {
+//     // Show usage text when -h or --help option is used.
+//     if (options.help) {
+//         printHelp(cli)
+//         return
+//     }
+
+//     startUpgrade(cli, getUpgradeBinFolder(), getUpgradeTmpFolder(), getDownloadsBaseUrl(), options.version,
+//             options.'bundle-url', options.'bundle-path', getEnvironmentName())
+// }
