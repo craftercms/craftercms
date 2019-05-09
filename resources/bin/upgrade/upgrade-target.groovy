@@ -21,29 +21,44 @@ import upgrade.hooks.UpgradeHooks
         @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.25'),
         @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.7'),
         @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.1'),
+        @Grab(group = 'commons-codec', module = 'commons-codec', version = '1.11'),
         @Grab(group = 'commons-io', module = 'commons-io', version = '2.6'),
 ])
+
+import groovy.transform.Field
 
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.SimpleDateFormat
+import java.util.Date
 
+import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.collections4.CollectionUtils
+import org.apache.commons.io.FileUtils
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.SystemUtils
 
-import utils.NioUtils
-
 import static java.nio.file.StandardCopyOption.*
-import static upgrade.utils.UpgradeUtils.*
 import static utils.EnvironmentUtils.*
 import static utils.ScriptUtils.*
+
+// Files that should not be overwritten automatically
+@Field def configFilePatterns = [
+    'crafter-setenv\\.sh',
+    'apache-tomcat/conf/.+',
+    'apache-tomcat/shared/classes/.+',
+    'crafter-deployer/config/.+',
+    'crafter-deployer/logging\\.xml',
+    'elasticsearch/config/.+',
+    'solr/server/resources/.+',
+    'solr/server/solr/.+'
+]
 
 /**
  * Builds the CLI and adds the possible options
  */
 def buildCli(cli) {
     cli.h(longOpt: 'help', 'Show usage information')
-    cli.f(longOpt: 'full', 'Deprecated option. Since 3.0.19, a full upgrade is always executed')
 }
 
 /**
@@ -82,7 +97,7 @@ def backupData(binFolder) {
             env.remove("CRAFTER_LOGS_DIR")
     }
 
-    executeCommand([SystemUtils.IS_OS_WINDOWS ? "crafter.bat" : "./crafter.sh", "backup"], binFolder, setupCallback)
+    executeCommand(["./crafter.sh", "backup"], binFolder, setupCallback)
 }
 
 /**
@@ -103,7 +118,7 @@ def backupBin(binFolder, backupsFolder, environmentName) {
 
     println "Backing up bin directory to ${backupBinFolder}"
 
-    NioUtils.copyDirectory(binFolder, backupBinFolder)
+    FileUtils.copyDirectory(binFolder.toFile(), backupBinFolder.toFile())
 }
 
 /**
@@ -123,79 +138,155 @@ def shutdownCrafter(binFolder) {
             env.remove("CRAFTER_LOGS_DIR")
     }
 
-    executeCommand([SystemUtils.IS_OS_WINDOWS ? "shutdown.bat" : "./shutdown.sh"], binFolder, setupCallback)
+    executeCommand(["./shutdown.sh"], binFolder, setupCallback)
+}
 
-    if (SystemUtils.IS_OS_WINDOWS) {
-        print 'Please make sure Crafter has stopped and all Crafter process windows are closed, then press enter to continue '
-        System.in.read()
+def isConfigFile(path) {
+    return configFilePatterns.any { path.toString().matches(it) }
+}
+
+def getSyncUserInput(filePath) {
+    println '-----------------------------------------------------------------------'
+    println "File ${filePath} differs in old and new bin folders. Choose whether to:"
+    println '- (D)iff files'
+    println '- (E)dit old file (with $EDITOR or /usr/bin/editor)'
+    println '- (R)eplace old file with new file'
+    println '- (B)ackup old and copy new file'
+    println '- (C)ontinue'
+    println '- (A)bort and stop upgrade'   
+
+    def option = System.console().readLine '> Enter your choice: '
+        option = StringUtils.lowerCase(option)
+
+    return option
+}
+
+def diffFiles(oldFile, newFile) {
+    executeCommand(["diff", "\"${oldFile}\"".toString(), "\"${newFile}\"".toString()], null, null, [ 0, 1 ])
+}
+
+def openEditor(path) {
+    def command = System.getenv('EDITOR')
+    if (!command) {
+        command = 'editor'
+    }
+
+    executeCommand([command, "${path}".toString()])
+}
+
+def backupAndReplaceFile(binFolder, oldFile, newFile, filePath) {
+    def now = new Date()
+    def backupTimestamp = now.format("yyyyMMddHHmmss")
+    def backupFilePath = "${filePath}.bak.${backupTimestamp}"
+    def backupFile = binFolder.resolve(backupFilePath)
+
+    Files.move(oldFile, backupFile)
+    Files.copy(newFile, oldFile)
+
+    println "Backed up ${filePath} to ${backupFilePath} and copied over new version"
+}
+
+def syncFile(binFolder, newBinFolder, filePath) {
+    def oldFile = binFolder.resolve(filePath)
+    def newFile = newBinFolder.resolve(filePath)
+
+    if (!Files.isHidden(newFile)) {
+        if (Files.exists(oldFile)) {
+            if (isConfigFile(filePath)) {
+                def newMd5 = DigestUtils.md5Hex(Files.newInputStream(newFile))
+                def oldMd5 = DigestUtils.md5Hex(Files.newInputStream(oldFile))
+
+                def options = ['d', 'e', 'r', 'b', 'c', 'a']
+                def finalOptions = ['r', 'b', 'c', 'a']
+
+                if (newMd5 != oldMd5) {
+                    def option = ''
+
+                    while (!finalOptions.contains(option)) {
+                        option = getSyncUserInput(filePath)
+                        switch (option) {
+                            case 'd':
+                                diffFiles(oldFile, newFile)
+                                break
+                            case 'e':
+                                openEditor(oldFile)
+                                break
+                            case 'r':
+                                Files.copy(newFile, oldFile, REPLACE_EXISTING)
+                                println "Replaced ${oldFile} with ${newFile}"
+                                break
+                            case 'b':
+                                backupAndReplaceFile(binFolder, oldFile, newFile, filePath)
+                                break
+                            case 'c':
+                                break
+                            case 'a':
+                                println 'Aborting upgrade...'
+                                System.exit(0)
+                            default:
+                                println "Unrecognized option '${option}'"
+                                break                       
+                        }
+                    }
+                }
+            } else {
+                println "Copying over new version of ${filePath} (replacing non-config file)"
+
+                Files.copy(newFile, oldFile, REPLACE_EXISTING)
+            }
+        } else {
+            println "Copying over ${filePath} (new file)"
+
+            def parent = oldFile.parent
+            if (!Files.exists(parent)) {
+                Files.createDirectories(parent)
+            }
+
+            Files.copy(newFile, oldFile)
+        }
     }
 }
 
 /**
  * Does the actual upgrade
  */
-def doUpgrade(binFolder, newBinFolder, previousVersion, upgradeVersion) {
-    def upgradeHooks = new UpgradeHooks(binFolder, newBinFolder, previousVersion, upgradeVersion)
-        upgradeHooks.preUpgrade()
-
+def doUpgrade(binFolder, newBinFolder) {
     println "========================================================================"
     println "Upgrading Crafter"
     println "========================================================================"
 
-    def sharedFolder = binFolder.resolve("apache-tomcat/shared")
-    def newSharedFolder = newBinFolder.resolve("apache-tomcat/shared")
+    println "Synching files from ${newBinFolder} to ${binFolder}..."
 
-    println "Copying ${sharedFolder} to ${newSharedFolder}..."
+    // Clearing temp folders and exploded webapps in newBinFolder
+    def tomcatTempFolder = newBinFolder.resolve("apache-tomcat/temp")
+    def tomcatWorkFolder = newBinFolder.resolve("apache-tomcat/work")
+    def tomcatLogsFolder = newBinFolder.resolve("apache-tomcat/logs")
+    def tomcatWebAppsFolder = newBinFolder.resolve("apache-tomcat/webapps")
 
-    NioUtils.deleteDirectory(newSharedFolder)
-    NioUtils.copyDirectory(sharedFolder, newSharedFolder)
+    if (Files.exists(tomcatTempFolder)) {
+        FileUtils.cleanDirectory(tomcatTempFolder.toFile())
+    }
+    if (Files.exists(tomcatWorkFolder)) {
+        FileUtils.cleanDirectory(tomcatWorkFolder.toFile())
+    }
+    if (Files.exists(tomcatLogsFolder)) {
+        FileUtils.cleanDirectory(tomcatLogsFolder.toFile())
+    }
+    if (Files.exists(tomcatWebAppsFolder)) {
+        Files.walk(tomcatWebAppsFolder).withCloseable { files ->
+            files
+                .filter { file -> return file != tomcatWebAppsFolder && Files.isDirectory(file) }
+                .each { file -> FileUtils.deleteDirectory(file.toFile()) }
+        }
+    }
 
-    def confFolder = binFolder.resolve("apache-tomcat/conf")
-    def newConfFolder = newBinFolder.resolve("apache-tomcat/conf")
-
-    println "Copying ${confFolder} to ${newConfFolder}..."
-
-    NioUtils.deleteDirectory(newConfFolder)
-    NioUtils.copyDirectory(confFolder, newConfFolder)
-
-    def deployerConfigFolder = binFolder.resolve("crafter-deployer/config")
-    def newDeployerConfigFolder = newBinFolder.resolve("crafter-deployer/config")
-
-    println "Copying ${deployerConfigFolder} to ${newDeployerConfigFolder}..."
-
-    NioUtils.deleteDirectory(newDeployerConfigFolder)
-    NioUtils.copyDirectory(deployerConfigFolder, newDeployerConfigFolder)
-
-    def solrConfigset = binFolder.resolve("solr/server/solr/configsets/crafter_configs")
-    def newSolrConfigset = newBinFolder.resolve("solr/server/solr/configsets/crafter_configs")
-
-    println "Copying ${solrConfigset} to ${newSolrConfigset}..."
-
-    NioUtils.deleteDirectory(newSolrConfigset)
-    NioUtils.copyDirectory(solrConfigset, newSolrConfigset)
-
-    def setenvFile = binFolder.resolve("crafter-setenv.sh")
-    def newSetenvFile = newBinFolder.resolve("crafter-setenv.sh")
-
-    println "Copying ${setenvFile} to ${newSetenvFile}..."
-
-    Files.delete(newSetenvFile)
-    Files.copy(setenvFile, newSetenvFile, COPY_ATTRIBUTES)
-
-    setenvFile = binFolder.resolve("crafter-setenv.bat")
-    newSetenvFile = newBinFolder.resolve("crafter-setenv.bat")
-
-    println "Copying ${setenvFile} to ${newSetenvFile}..."
-
-    Files.delete(newSetenvFile)
-    Files.copy(setenvFile, newSetenvFile, COPY_ATTRIBUTES)
-
-    println "Replacing ${binFolder} with ${newBinFolder}..."
-
-    NioUtils.deleteDirectory(binFolder)
-    NioUtils.copyDirectory(newBinFolder, binFolder)
-
-    upgradeHooks.postUpgrade()
+    Files.walk(newBinFolder).withCloseable { files ->
+        files
+            .filter { file -> return !Files.isDirectory(file) }
+            .each { file ->
+                syncFile(binFolder, newBinFolder, newBinFolder.relativize(file))
+            }
+    }
 }
 
 /**
@@ -205,52 +296,40 @@ def upgrade(targetFolder, environmentName) {
     def binFolder = targetFolder.resolve("bin")
     def backupsFolder = targetFolder.resolve("backups")
     def newBinFolder = getCrafterBinFolder()
-    def previousVersion = readVersionFile(binFolder)
-    def upgradeVersion = readVersionFile(newBinFolder)
 
-    if (previousVersion != upgradeVersion) {
-        shutdownCrafter(binFolder)
-        backupBin(binFolder, backupsFolder, environmentName)
-        doUpgrade(binFolder, newBinFolder, previousVersion, upgradeVersion)
-        backupData(binFolder)
+    //shutdownCrafter(binFolder)
+    //backupBin(binFolder, backupsFolder, environmentName)
+    //backupData(binFolder)
+    doUpgrade(binFolder, newBinFolder)
 
-        println "========================================================================"
-        println "Upgrade complete"
-        println "========================================================================"
-        println "Please read the release notes before starting Crafter again for any additional changes you need to " +
-                "manually apply"
-    } else {
-        println "Trying to upgrade an installation in version ${previousVersion} to same version ${upgradeVersion}. " +
-                "Upgrade cancelled"
-    }
+    println "========================================================================"
+    println "Upgrade complete"
+    println "========================================================================"
+    println "Please read the release notes before starting Crafter again for any additional changes you need to " +
+            "manually apply"
 }
 
 checkDownloadGrapesOnlyMode(getClass())
 
-// TODO: Remove this message after upgrade scripts are fixed and uncomment the rest of the code
-println "The upgrade scripts have been disabled in 3.1.0, while they're being refactored. For now, please follow " +
-        "the upgrade instructions in " +
-        "https://docs.craftercms.org/en/3.1/system-administrators/upgrade/upgrading-to-craftercms-3-1-0.html" 
+def cli = new CliBuilder(usage: 'upgrade-target [options] <target-installation-path>')
+buildCli(cli)
 
-// def cli = new CliBuilder(usage: 'upgrade-target [options] <target-installation-path>')
-// buildCli(cli)
+def options = cli.parse(args)
+if (options) {
+    // Show usage text when -h or --help option is used.
+    if (options.help) {
+        printHelp(cli)
+        return
+    }    
 
-// def options = cli.parse(args)
-// if (options) {
-//     // Show usage text when -h or --help option is used.
-//     if (options.help) {
-//         printHelp(cli)
-//         return
-//     }    
+    // Parse the options and arguments
+    def extraArguments = options.arguments()
+    if (CollectionUtils.isNotEmpty(extraArguments)) {
+        def targetPath = extraArguments[0]
+        def targetFolder = Paths.get(targetPath)
 
-//     // Parse the options and arguments
-//     def extraArguments = options.arguments()
-//     if (CollectionUtils.isNotEmpty(extraArguments)) {
-//         def targetPath = extraArguments[0]
-//         def targetFolder = Paths.get(targetPath)
-
-//         upgrade(targetFolder, getEnvironmentName())
-//     } else {
-//         exitWithError(cli, 'No <target-installation-path> was specified')
-//     }
-// }
+        upgrade(targetFolder, getEnvironmentName())
+    } else {
+        exitWithError(cli, 'No <target-installation-path> was specified')
+    }
+}
