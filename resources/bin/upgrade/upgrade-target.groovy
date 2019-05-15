@@ -101,27 +101,6 @@ def backupData(binFolder) {
 }
 
 /**
- * Backups the bin folder.
- */
-def backupBin(binFolder, backupsFolder, environmentName) {
-    println "========================================================================"
-    println "Backing up bin"
-    println "========================================================================"
-
-    def timestamp = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date())
-
-    if (!Files.exists(backupsFolder)) {
-        Files.createDirectories(backupsFolder)
-    }
-
-    def backupBinFolder = backupsFolder.resolve("crafter-${environmentName}-bin.${timestamp}")
-
-    println "Backing up bin directory to ${backupBinFolder}"
-
-    FileUtils.copyDirectory(binFolder.toFile(), backupBinFolder.toFile())
-}
-
-/**
  * Shutdowns Crafter.
  */
 def shutdownCrafter(binFolder) {
@@ -145,20 +124,8 @@ def isConfigFile(path) {
     return configFilePatterns.any { path.toString().matches(it) }
 }
 
-def getSyncUserInput(filePath) {
-    println '-----------------------------------------------------------------------'
-    println "File ${filePath} differs in old and new bin folders. Choose whether to:"
-    println '- (D)iff files'
-    println '- (E)dit old file (with $EDITOR or /usr/bin/editor)'
-    println '- (R)eplace old file with new file'
-    println '- (B)ackup old and copy new file'
-    println '- (C)ontinue'
-    println '- (A)bort and stop upgrade'   
-
-    def option = System.console().readLine '> Enter your choice: '
-        option = StringUtils.lowerCase(option)
-
-    return option
+def compareFiles(file1, file2) {
+    return DigestUtils.md5Hex(Files.newInputStream(file1)) == DigestUtils.md5Hex(Files.newInputStream(file2))
 }
 
 def diffFiles(oldFile, newFile) {
@@ -168,74 +135,95 @@ def diffFiles(oldFile, newFile) {
 def openEditor(path) {
     def command = System.getenv('EDITOR')
     if (!command) {
-        command = 'editor'
+        command = 'nano'
     }
 
     executeCommand([command, "${path}".toString()])
 }
 
-def backupAndReplaceFile(binFolder, oldFile, newFile, filePath) {
+def overwriteFile(binFolder, oldFile, newFile, filePath) {
     def now = new Date()
     def backupTimestamp = now.format("yyyyMMddHHmmss")
     def backupFilePath = "${filePath}.bak.${backupTimestamp}"
     def backupFile = binFolder.resolve(backupFilePath)
 
-    Files.move(oldFile, backupFile)
-    Files.copy(newFile, oldFile)
+    println "[o] Overwriting ${filePath} with new version (backup of the old one will be at ${backupFilePath})"
 
-    println "Backed up ${filePath} to ${backupFilePath} and copied over new version"
+    Files.move(oldFile, backupFile)
+    Files.copy(newFile, oldFile, REPLACE_EXISTING)
 }
 
-def syncFile(binFolder, newBinFolder, filePath) {
+def showSyncFileMenu(filePath) {
+    println "[!] File ${filePath} is different in the new release. Please choose:"
+    println '[!] - (D)iff files to see what changed'
+    println '[!] - (E)dit the old file (with $EDITOR)'
+    println "[!] - (O)verwrite ${filePath} with the new version"
+    println "[!] - (S)kip and continue with the rest of the upgrade"
+    println "[!] - (A)lways overwrite files and don't ask again for the rest of the upgrade"
+    println '[!] - (Q)uit the upgrade script (this will stop the upgrade at this point)' 
+
+    def option = System.console().readLine '[>] Enter your choice: '
+        option = StringUtils.lowerCase(option)
+
+    return option
+}
+
+def syncFile(binFolder, newBinFolder, filePath, alwaysOverwrite) {
     def oldFile = binFolder.resolve(filePath)
     def newFile = newBinFolder.resolve(filePath)
 
     if (!Files.isHidden(newFile)) {
         if (Files.exists(oldFile)) {
             if (isConfigFile(filePath)) {
-                def newMd5 = DigestUtils.md5Hex(Files.newInputStream(newFile))
-                def oldMd5 = DigestUtils.md5Hex(Files.newInputStream(oldFile))
+                if (alwaysOverwrite) {
+                    overwriteFile(binFolder, oldFile, newFile, filePath)
+                } else {
+                    def options = ['d', 'e', 'o', 's', 'a', 'q']
+                    def done = false
 
-                def options = ['d', 'e', 'r', 'b', 'c', 'a']
-                def finalOptions = ['r', 'b', 'c', 'a']
-
-                if (newMd5 != oldMd5) {
-                    def option = ''
-
-                    while (!finalOptions.contains(option)) {
-                        option = getSyncUserInput(filePath)
-                        switch (option) {
-                            case 'd':
-                                diffFiles(oldFile, newFile)
-                                break
-                            case 'e':
-                                openEditor(oldFile)
-                                break
-                            case 'r':
-                                Files.copy(newFile, oldFile, REPLACE_EXISTING)
-                                println "Replaced ${oldFile} with ${newFile}"
-                                break
-                            case 'b':
-                                backupAndReplaceFile(binFolder, oldFile, newFile, filePath)
-                                break
-                            case 'c':
-                                break
-                            case 'a':
-                                println 'Aborting upgrade...'
-                                System.exit(0)
-                            default:
-                                println "Unrecognized option '${option}'"
-                                break                       
+                    while (!done) {
+                        def filesMatch = compareFiles(oldFile, newFile)
+                        if (filesMatch) {
+                            println "[=] File ${filePath} matches the one in the new release"
+                            done = true
+                        } else {
+                            selectedOption = showSyncFileMenu(filePath)
+                            switch (selectedOption) {
+                                case 'd':
+                                    diffFiles(oldFile, newFile)
+                                    break
+                                case 'e':
+                                    openEditor(oldFile)
+                                    break
+                                case 'o':
+                                    overwriteFile(binFolder, oldFile, newFile, filePath)
+                                    done = true
+                                    break
+                                case 's':
+                                    done = true
+                                    break
+                                case 'a':
+                                    overwriteFile(binFolder, oldFile, newFile, filePath)
+                                    done = true
+                                    alwaysOverwrite = true
+                                    break
+                                case 'q':
+                                    println '[!] Quitting upgrade...'
+                                    System.exit(0)
+                                default:
+                                    println "[!] Unrecognized option '${option}'"
+                                    break                       
+                            }                       
                         }
                     }
                 }
             } else {
-                println "Copying over new version of ${filePath} (replacing non-config file)"
+                println "[o] Overwriting non-config file ${filePath} with the new release version"
 
                 Files.copy(newFile, oldFile, REPLACE_EXISTING)
             }
         } else {
-            println "Copying over ${filePath} (new file)"
+            println "[+] Copying new file ${filePath}"
 
             def parent = oldFile.parent
             if (!Files.exists(parent)) {
@@ -245,6 +233,8 @@ def syncFile(binFolder, newBinFolder, filePath) {
             Files.copy(newFile, oldFile)
         }
     }
+
+    return alwaysOverwrite
 }
 
 /**
@@ -280,11 +270,13 @@ def doUpgrade(binFolder, newBinFolder) {
         }
     }
 
+    def alwaysOverwrite = false
+
     Files.walk(newBinFolder).withCloseable { files ->
         files
             .filter { file -> return !Files.isDirectory(file) }
             .each { file ->
-                syncFile(binFolder, newBinFolder, newBinFolder.relativize(file))
+                alwaysOverwrite = syncFile(binFolder, newBinFolder, newBinFolder.relativize(file), alwaysOverwrite)
             }
     }
 }
@@ -292,13 +284,12 @@ def doUpgrade(binFolder, newBinFolder) {
 /**
  * Executes the upgrade.
  */
-def upgrade(targetFolder, environmentName) {
+def upgrade(targetFolder) {
     def binFolder = targetFolder.resolve("bin")
     def backupsFolder = targetFolder.resolve("backups")
     def newBinFolder = getCrafterBinFolder()
 
     //shutdownCrafter(binFolder)
-    //backupBin(binFolder, backupsFolder, environmentName)
     //backupData(binFolder)
     doUpgrade(binFolder, newBinFolder)
 
@@ -328,7 +319,7 @@ if (options) {
         def targetPath = extraArguments[0]
         def targetFolder = Paths.get(targetPath)
 
-        upgrade(targetFolder, getEnvironmentName())
+        upgrade(targetFolder)
     } else {
         exitWithError(cli, 'No <target-installation-path> was specified')
     }
