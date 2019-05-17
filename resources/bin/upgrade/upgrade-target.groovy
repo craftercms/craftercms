@@ -35,8 +35,11 @@ import java.util.Date
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.collections4.CollectionUtils
 import org.apache.commons.io.FileUtils
+import org.apache.commons.lang3.BooleanUtils
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.SystemUtils
+
+import utils.NioUtils
 
 import static java.nio.file.StandardCopyOption.*
 import static utils.EnvironmentUtils.*
@@ -54,6 +57,8 @@ import static utils.ScriptUtils.*
     'solr/server/solr/[^/]+',
     'solr/server/solr/configsets/crafter_configs/.+'
 ]
+
+@Field def backupTimestampFormat = "yyyyMMddHHmmss"
 
 /**
  * Builds the CLI and adds the possible options
@@ -85,20 +90,52 @@ def exitWithError(cli, msg) {
  * Backups the data.
  */
 def backupData(binFolder) {
-    println "========================================================================"
-    println "Backing up data"
-    println "========================================================================"
+    def backup = System.console().readLine '> Backup the data folder before upgrade? [(Y)es/(N)o]: '
+        backup = BooleanUtils.toBoolean(backup)
 
-    def setupCallback = { pb ->
-        def env = pb.environment()
-            env.remove("CRAFTER_HOME")
-            env.remove("DEPLOYER_HOME")
-            env.remove("CRAFTER_BIN_DIR")
-            env.remove("CRAFTER_DATA_DIR")
-            env.remove("CRAFTER_LOGS_DIR")
+    if (backup) {
+        println "========================================================================"
+        println "Backing up data"
+        println "========================================================================"
+
+        def setupCallback = { pb ->
+            def env = pb.environment()
+                env.remove("CRAFTER_HOME")
+                env.remove("DEPLOYER_HOME")
+                env.remove("CRAFTER_BIN_DIR")
+                env.remove("CRAFTER_DATA_DIR")
+                env.remove("CRAFTER_LOGS_DIR")
+        }
+
+        executeCommand(["./crafter.sh", "backup"], binFolder, setupCallback)
     }
+}
 
-    executeCommand(["./crafter.sh", "backup"], binFolder, setupCallback)
+/**
+ * Backups the bin folder.
+ */
+def backupBin(binFolder, backupsFolder, environmentName) {
+    def backup = System.console().readLine '> Backup the bin folder before upgrade? [(Y)es/(N)o]: '
+        backup = BooleanUtils.toBoolean(backup)
+
+    if (backup) {
+        println "========================================================================"
+        println "Backing up bin"
+        println "========================================================================"
+
+        def now = new Date()
+        def backupTimestamp = now.format(backupTimestampFormat)
+
+        if (!Files.exists(backupsFolder)) {
+            Files.createDirectories(backupsFolder)
+        }
+
+        def backupBinFolder = backupsFolder.resolve("crafter-${environmentName}-bin.${backupTimestamp}.bak")
+
+        println "Backing up bin folder to ${backupBinFolder}"
+
+        NioUtils.copyDirectory(binFolder, backupBinFolder)
+    }
 }
 
 /**
@@ -121,10 +158,16 @@ def shutdownCrafter(binFolder) {
     executeCommand(["./shutdown.sh"], binFolder, setupCallback)
 }
 
+/**
+ * Checks if the path belongs to what Crafter considers a config file.
+ */
 def isConfigFile(path) {
     return configFilePatterns.any { path.toString().matches(it) }
 }
 
+/**
+ * Returns true if the checksum of both specified fiels is the same, false otherwise.
+ */
 def compareFiles(file1, file2) {
     def file1Md5
     def file2Md5
@@ -139,10 +182,16 @@ def compareFiles(file1, file2) {
     return file1Md5 == file2Md5
 }
 
+/**
+ * Executes the a diff between the specified files.
+ */
 def diffFiles(oldFile, newFile) {
     executeCommand(["/bin/sh", "-c", "diff ${oldFile} ${newFile} | less".toString()])
 }
 
+/**
+ * Opens the default editor, pointed by $EDITOR. If the env variable doesn't exist, nano is used instead.
+ */
 def openEditor(path) {
     def command = System.getenv('EDITOR')
     if (!command) {
@@ -152,9 +201,12 @@ def openEditor(path) {
     executeCommand([command, "${path}".toString()])
 }
 
+/**
+ * Overwrites the old file with the new file, backing up the old file first to ${OLD_FILE_PATH}.${TIMESTAMP}.bak.
+ */
 def overwriteFile(binFolder, oldFile, newFile, filePath) {
     def now = new Date()
-    def backupTimestamp = now.format("yyyyMMddHHmmss")
+    def backupTimestamp = now.format(backupTimestampFormat)
     def backupFilePath = "${filePath}.${backupTimestamp}.bak"
     def backupFile = binFolder.resolve(backupFilePath)
 
@@ -164,6 +216,9 @@ def overwriteFile(binFolder, oldFile, newFile, filePath) {
     Files.copy(newFile, oldFile, REPLACE_EXISTING)
 }
 
+/**
+ * Prints the border of a menu, using the specified length
+ */
 def printMenuBorder(length) {
     for (i = 0; i < length; i++) {
         print '-'
@@ -172,6 +227,10 @@ def printMenuBorder(length) {
     println ''
 }
 
+/**
+ * Prints the interactive "menu" that asks for the user input when the new version of a file differs from the old
+ * version. 
+ */
 def showSyncFileMenu(filePath) {
     def firstLine = "Config file ${filePath} is different in the new release. Please choose:".toString()
 
@@ -191,6 +250,9 @@ def showSyncFileMenu(filePath) {
     return option
 }
 
+/**
+ * Syncs an old file with it's new version.
+ */
 def syncFile(binFolder, newBinFolder, filePath, alwaysOverwrite) {
     def oldFile = binFolder.resolve(filePath)
     def newFile = newBinFolder.resolve(filePath)
@@ -261,6 +323,9 @@ def syncFile(binFolder, newBinFolder, filePath, alwaysOverwrite) {
     return alwaysOverwrite
 }
 
+/**
+ * Prints the interactive "menu" that asks for the user input when an old file doesn't appear in the new release.
+ */
 def showDeleteFileMenu(filePath) {
     def firstLine = "Config file ${filePath} doesn't exist in the new release. Delete the file?".toString()
 
@@ -269,6 +334,7 @@ def showDeleteFileMenu(filePath) {
     println ' - (N)o'
     println ' - (Y)es'
     println " - (A)lways delete the file and and don't ask again for the rest of the upgrade"
+    println ' - (Q)uit the upgrade script (this will stop the upgrade at this point)'
     printMenuBorder(firstLine.length()) 
 
     def option = System.console().readLine '> Enter your choice: '
@@ -277,6 +343,9 @@ def showDeleteFileMenu(filePath) {
     return option    
 }
 
+/**
+ * Checks if an old file needs to be deleted if it doesn't appear in the new release. 
+ */
 def deleteFileIfAbsentInNewRelease(binFolder, newBinFolder, filePath, alwaysDelete) {
     def oldFile = binFolder.resolve(filePath)
     def newFile = newBinFolder.resolve(filePath)
@@ -284,7 +353,7 @@ def deleteFileIfAbsentInNewRelease(binFolder, newBinFolder, filePath, alwaysDele
 
     if (!Files.exists(newFile)) {
         if (!alwaysDelete && !Files.isDirectory(oldFile)) {
-            def options = ['n', 'y', 'a']
+            def options = ['n', 'y', 'a', 'q']
             def done = false
 
             while (!done) {
@@ -302,6 +371,9 @@ def deleteFileIfAbsentInNewRelease(binFolder, newBinFolder, filePath, alwaysDele
                         alwaysDelete = true
                         done = true
                         break
+                    case 'q':
+                        println 'Quitting upgrade...'
+                        System.exit(0)
                     default:
                         println "[!] Unrecognized option '${selectedOption}'"
                         break                            
@@ -321,8 +393,10 @@ def deleteFileIfAbsentInNewRelease(binFolder, newBinFolder, filePath, alwaysDele
     return alwaysDelete
 }
 
+/**
+ * Clears Tomcat's temp folders and exploded webapps.
+ */
 def resetTomcat(binFolder) {
-    // Clearing temp folders and exploded webapps
     def tempFolder = binFolder.resolve("apache-tomcat/temp")
     def workFolder = binFolder.resolve("apache-tomcat/work")
     def logsFolder = binFolder.resolve("apache-tomcat/logs")
@@ -392,6 +466,7 @@ def upgrade(targetFolder) {
 
     shutdownCrafter(binFolder)
     backupData(binFolder)
+    backupBin(binFolder, backupsFolder, getEnvironmentName())
     doUpgrade(binFolder, newBinFolder)
 
     println "========================================================================"

@@ -19,13 +19,8 @@ package utils
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import java.nio.file.FileVisitResult
 import java.nio.file.Path
-import java.nio.file.SimpleFileVisitor
-import java.nio.file.attribute.BasicFileAttributes
-import java.util.Comparator
 
-import static java.nio.file.FileVisitResult.*
 import static java.nio.file.StandardCopyOption.*
 
 class NioUtils {
@@ -48,14 +43,27 @@ class NioUtils {
      * Does simple string replacement in a directory, recursively
      */
     static void findAndReplaceInDir(String target, String replacement, Path directory) {
-        Files.walk(directory).withCloseable { stream ->
-            stream.filter { file ->
+        Files.walk(directory).withCloseable { files ->
+            files.filter { file ->
                 return !Files.isDirectory(file)
             }.each { file ->
                 String content = fileToString(file).replace(target, replacement)
                 stringToFile(content, file)
             }
         }
+    }
+
+    /**
+     * Recursively copies a directory to another path, preserving the file attributes.
+     */
+    static void copyDirectory(Path srcDir, Path destDir) {
+        Files.walk(srcDir).withCloseable { files ->
+            files.each { srcFile ->
+                def destFile = destDir.resolve(srcDir.relativize(srcFile))
+
+                Files.copy(srcFile, destFile, COPY_ATTRIBUTES)
+            }
+        }       
     }
 
 }
