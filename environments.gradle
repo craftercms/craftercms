@@ -65,7 +65,8 @@ def configFilePatterns = [
     'bin/crafter-deployer/logging\\.xml',
     'bin/elasticsearch/config/.+',
     'bin/solr/server/resources/.+',
-    'bin/solr/server/solr/.+'
+    'bin/solr/server/solr/[^/]+',
+    'bin/solr/server/solr/configsets/crafter_configs/.+'
 ]
 
 task authoringPostEnvironment {

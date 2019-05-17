@@ -51,7 +51,8 @@ import static utils.ScriptUtils.*
     'crafter-deployer/logging\\.xml',
     'elasticsearch/config/.+',
     'solr/server/resources/.+',
-    'solr/server/solr/.+'
+    'solr/server/solr/[^/]+',
+    'solr/server/solr/configsets/crafter_configs/.+'
 ]
 
 /**
@@ -125,11 +126,21 @@ def isConfigFile(path) {
 }
 
 def compareFiles(file1, file2) {
-    return DigestUtils.md5Hex(Files.newInputStream(file1)) == DigestUtils.md5Hex(Files.newInputStream(file2))
+    def file1Md5
+    def file2Md5
+
+    Files.newInputStream(file1).withCloseable { inputStream ->
+        file1Md5 = DigestUtils.md5Hex(inputStream)
+    }
+    Files.newInputStream(file2).withCloseable { inputStream ->
+        file2Md5 = DigestUtils.md5Hex(inputStream)
+    }
+
+    return file1Md5 == file2Md5
 }
 
 def diffFiles(oldFile, newFile) {
-    executeCommand(["diff", "\"${oldFile}\"".toString(), "\"${newFile}\"".toString()], null, null, [ 0, 1 ])
+    executeCommand(["/bin/sh", "-c", "diff ${oldFile} ${newFile} | less".toString()])
 }
 
 def openEditor(path) {
@@ -144,25 +155,37 @@ def openEditor(path) {
 def overwriteFile(binFolder, oldFile, newFile, filePath) {
     def now = new Date()
     def backupTimestamp = now.format("yyyyMMddHHmmss")
-    def backupFilePath = "${filePath}.bak.${backupTimestamp}"
+    def backupFilePath = "${filePath}.${backupTimestamp}.bak"
     def backupFile = binFolder.resolve(backupFilePath)
 
-    println "[o] Overwriting ${filePath} with new version (backup of the old one will be at ${backupFilePath})"
+    println "[o] Overwriting config file ${filePath} with the new release version (backup of the old one will be at ${backupFilePath})"
 
     Files.move(oldFile, backupFile)
     Files.copy(newFile, oldFile, REPLACE_EXISTING)
 }
 
-def showSyncFileMenu(filePath) {
-    println "[!] File ${filePath} is different in the new release. Please choose:"
-    println '[!] - (D)iff files to see what changed'
-    println '[!] - (E)dit the old file (with $EDITOR)'
-    println "[!] - (O)verwrite ${filePath} with the new version"
-    println "[!] - (S)kip and continue with the rest of the upgrade"
-    println "[!] - (A)lways overwrite files and don't ask again for the rest of the upgrade"
-    println '[!] - (Q)uit the upgrade script (this will stop the upgrade at this point)' 
+def printMenuBorder(length) {
+    for (i = 0; i < length; i++) {
+        print '-'
+    }
 
-    def option = System.console().readLine '[>] Enter your choice: '
+    println ''
+}
+
+def showSyncFileMenu(filePath) {
+    def firstLine = "Config file ${filePath} is different in the new release. Please choose:".toString()
+
+    printMenuBorder(firstLine.length())
+    println firstLine
+    println ' - (D)iff files to see what changed'
+    println ' - (E)dit the old file (with $EDITOR)'
+    println " - (O)verwrite ${filePath} with the new version"
+    println ' - (K)eep the old file and continue with the rest of the upgrade'
+    println " - (A)lways overwrite files and don't ask again for the rest of the upgrade"
+    println ' - (Q)uit the upgrade script (this will stop the upgrade at this point)'
+    printMenuBorder(firstLine.length()) 
+
+    def option = System.console().readLine '> Enter your choice: '
         option = StringUtils.lowerCase(option)
 
     return option
@@ -172,69 +195,155 @@ def syncFile(binFolder, newBinFolder, filePath, alwaysOverwrite) {
     def oldFile = binFolder.resolve(filePath)
     def newFile = newBinFolder.resolve(filePath)
 
-    if (!Files.isHidden(newFile)) {
-        if (Files.exists(oldFile)) {
-            if (isConfigFile(filePath)) {
-                if (alwaysOverwrite) {
-                    overwriteFile(binFolder, oldFile, newFile, filePath)
-                } else {
-                    def options = ['d', 'e', 'o', 's', 'a', 'q']
-                    def done = false
+    if (Files.isDirectory(newFile)) {
+        if (!Files.exists(oldFile)) {
+            println "[+] Creating new folder ${filePath}"
 
-                    while (!done) {
-                        def filesMatch = compareFiles(oldFile, newFile)
-                        if (filesMatch) {
-                            println "[=] File ${filePath} matches the one in the new release"
-                            done = true
-                        } else {
-                            selectedOption = showSyncFileMenu(filePath)
-                            switch (selectedOption) {
-                                case 'd':
-                                    diffFiles(oldFile, newFile)
-                                    break
-                                case 'e':
-                                    openEditor(oldFile)
-                                    break
-                                case 'o':
-                                    overwriteFile(binFolder, oldFile, newFile, filePath)
-                                    done = true
-                                    break
-                                case 's':
-                                    done = true
-                                    break
-                                case 'a':
-                                    overwriteFile(binFolder, oldFile, newFile, filePath)
-                                    done = true
-                                    alwaysOverwrite = true
-                                    break
-                                case 'q':
-                                    println '[!] Quitting upgrade...'
-                                    System.exit(0)
-                                default:
-                                    println "[!] Unrecognized option '${option}'"
-                                    break                       
-                            }                       
-                        }
-                    }
-                }
-            } else {
-                println "[o] Overwriting non-config file ${filePath} with the new release version"
-
-                Files.copy(newFile, oldFile, REPLACE_EXISTING)
-            }
-        } else {
-            println "[+] Copying new file ${filePath}"
-
-            def parent = oldFile.parent
-            if (!Files.exists(parent)) {
-                Files.createDirectories(parent)
-            }
-
-            Files.copy(newFile, oldFile)
+            Files.createDirectories(oldFile)
         }
+    } else if (Files.exists(oldFile)) {
+        if (isConfigFile(filePath)) {
+            def options = ['d', 'e', 'o', 'k', 'a', 'q']
+            def done = false
+
+            while (!done) {
+                if (compareFiles(oldFile, newFile)) {
+                    done = true
+                } else if (alwaysOverwrite) {
+                    overwriteFile(binFolder, oldFile, newFile, filePath)
+                    done = true
+                } else {
+                    def selectedOption = showSyncFileMenu(filePath)
+                    switch (selectedOption) {
+                        case 'd':
+                            diffFiles(oldFile, newFile)
+                            break
+                        case 'e':
+                            openEditor(oldFile)
+                            break
+                        case 'o':
+                            overwriteFile(binFolder, oldFile, newFile, filePath)
+                            done = true
+                            break
+                        case 'k':
+                            done = true
+                            break
+                        case 'a':
+                            overwriteFile(binFolder, oldFile, newFile, filePath)
+                            done = true
+                            alwaysOverwrite = true
+                            break
+                        case 'q':
+                            println 'Quitting upgrade...'
+                            System.exit(0)
+                        default:
+                            println "[!] Unrecognized option '${selectedOption}'"
+                            break                       
+                    }                       
+                }
+            }
+        } else if (!compareFiles(oldFile, newFile)) {
+            println "[o] Overwriting file ${filePath} with the new release version"
+
+            Files.copy(newFile, oldFile, REPLACE_EXISTING)
+        }
+    } else {
+        println "[+] Copying new file ${filePath}"
+
+        def parent = oldFile.parent
+        if (!Files.exists(parent)) {
+            Files.createDirectories(parent)
+        }
+
+        Files.copy(newFile, oldFile)
     }
 
     return alwaysOverwrite
+}
+
+def showDeleteFileMenu(filePath) {
+    def firstLine = "Config file ${filePath} doesn't exist in the new release. Delete the file?".toString()
+
+    printMenuBorder(firstLine.length())
+    println firstLine
+    println ' - (N)o'
+    println ' - (Y)es'
+    println " - (A)lways delete the file and and don't ask again for the rest of the upgrade"
+    printMenuBorder(firstLine.length()) 
+
+    def option = System.console().readLine '> Enter your choice: '
+        option = StringUtils.lowerCase(option)
+
+    return option    
+}
+
+def deleteFileIfAbsentInNewRelease(binFolder, newBinFolder, filePath, alwaysDelete) {
+    def oldFile = binFolder.resolve(filePath)
+    def newFile = newBinFolder.resolve(filePath)
+    def delete = false
+
+    if (!Files.exists(newFile)) {
+        if (!alwaysDelete && !Files.isDirectory(oldFile)) {
+            def options = ['n', 'y', 'a']
+            def done = false
+
+            while (!done) {
+                def selectedOption = showDeleteFileMenu(filePath)
+                switch (selectedOption) {
+                    case 'n':
+                        done = true
+                        break
+                    case 'y':
+                        delete = true
+                        done = true
+                        break
+                    case 'a':
+                        delete = true
+                        alwaysDelete = true
+                        done = true
+                        break
+                    default:
+                        println "[!] Unrecognized option '${selectedOption}'"
+                        break                            
+                }                
+            }
+        } else {
+            delete = true
+        }
+    }
+
+    if (delete) {
+        println "[-] Deleting file ${filePath} that doesn't exist in the new release"
+
+        Files.delete(oldFile)
+    }
+
+    return alwaysDelete
+}
+
+def resetTomcat(binFolder) {
+    // Clearing temp folders and exploded webapps
+    def tempFolder = binFolder.resolve("apache-tomcat/temp")
+    def workFolder = binFolder.resolve("apache-tomcat/work")
+    def logsFolder = binFolder.resolve("apache-tomcat/logs")
+    def webAppsFolder = binFolder.resolve("apache-tomcat/webapps")
+
+    if (Files.exists(tempFolder)) {
+        FileUtils.cleanDirectory(tempFolder.toFile())
+    }
+    if (Files.exists(workFolder)) {
+        FileUtils.cleanDirectory(workFolder.toFile())
+    }
+    if (Files.exists(logsFolder)) {
+        FileUtils.cleanDirectory(logsFolder.toFile())
+    }
+    if (Files.exists(webAppsFolder)) {
+        Files.walk(webAppsFolder).withCloseable { files ->
+            files
+                .filter { file -> return file != webAppsFolder && Files.isDirectory(file) }
+                .each { file -> FileUtils.deleteDirectory(file.toFile()) }
+        }
+    }
 }
 
 /**
@@ -245,36 +354,28 @@ def doUpgrade(binFolder, newBinFolder) {
     println "Upgrading Crafter"
     println "========================================================================"
 
+    resetTomcat(binFolder)
+    resetTomcat(newBinFolder)
+
     println "Synching files from ${newBinFolder} to ${binFolder}..."
 
-    // Clearing temp folders and exploded webapps in newBinFolder
-    def tomcatTempFolder = newBinFolder.resolve("apache-tomcat/temp")
-    def tomcatWorkFolder = newBinFolder.resolve("apache-tomcat/work")
-    def tomcatLogsFolder = newBinFolder.resolve("apache-tomcat/logs")
-    def tomcatWebAppsFolder = newBinFolder.resolve("apache-tomcat/webapps")
-
-    if (Files.exists(tomcatTempFolder)) {
-        FileUtils.cleanDirectory(tomcatTempFolder.toFile())
-    }
-    if (Files.exists(tomcatWorkFolder)) {
-        FileUtils.cleanDirectory(tomcatWorkFolder.toFile())
-    }
-    if (Files.exists(tomcatLogsFolder)) {
-        FileUtils.cleanDirectory(tomcatLogsFolder.toFile())
-    }
-    if (Files.exists(tomcatWebAppsFolder)) {
-        Files.walk(tomcatWebAppsFolder).withCloseable { files ->
-            files
-                .filter { file -> return file != tomcatWebAppsFolder && Files.isDirectory(file) }
-                .each { file -> FileUtils.deleteDirectory(file.toFile()) }
-        }
-    }
-
     def alwaysOverwrite = false
+    def alwaysDelete = false
 
+    // Delete files in the old bundle that are absent in the new bundle
+    Files.walk(binFolder).withCloseable { files ->
+        files
+            .sorted(Comparator.reverseOrder())
+            .each { file ->
+                alwaysDelete = deleteFileIfAbsentInNewRelease(
+                    binFolder, newBinFolder, binFolder.relativize(file), alwaysDelete)
+            }
+    }    
+
+    // Sync the files between the old bundle and the new bundle
     Files.walk(newBinFolder).withCloseable { files ->
         files
-            .filter { file -> return !Files.isDirectory(file) }
+            .sorted(Comparator.reverseOrder())
             .each { file ->
                 alwaysOverwrite = syncFile(binFolder, newBinFolder, newBinFolder.relativize(file), alwaysOverwrite)
             }
@@ -289,8 +390,8 @@ def upgrade(targetFolder) {
     def backupsFolder = targetFolder.resolve("backups")
     def newBinFolder = getCrafterBinFolder()
 
-    //shutdownCrafter(binFolder)
-    //backupData(binFolder)
+    shutdownCrafter(binFolder)
+    backupData(binFolder)
     doUpgrade(binFolder, newBinFolder)
 
     println "========================================================================"
