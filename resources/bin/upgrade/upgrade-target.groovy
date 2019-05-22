@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import upgrade.hooks.UpgradeHooks
-
 @Grapes([
         @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.25'),
         @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.7'),
