@@ -556,7 +556,7 @@ function isMongoNeeded() {
       return 0
     fi
   done
-  test -s "$CATALINA_HOME/webapps/crafter-profile.war" || test -d "$CATALINA_HOME/webapps/crafter-profile"
+  return 1
 }
 
 function stopMongoDB(){
