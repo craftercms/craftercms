@@ -619,12 +619,13 @@ function getStatus() {
     echo -e "PID\t"
     echo `cat "$5"`
     echo -e  "Uptime (in seconds):\t"
-    echo "$statusOut"  | python -m json.tool | grep uptime | awk -F"[,|:|]" '{print $2}'
+    echo "$statusOut"  |  grep -Eo '"uptime":\d+' | awk -F ":" '{print $2}'
     versionOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/version")
     if [ $? -eq 0 ]; then
-      echo -e  "Version:\t"
-      printf $(echo "$versionOut"  | python -m json.tool | grep packageVersion | awk -F"[,|:]" '{print $2}')
-      echo "$versionOut"| python -m json.tool | grep -w packageBuild | awk -F"[,|:]" '{print $2}'
+      echo -e "Version:\t"
+      echo -n $(echo "$versionOut"  |  egrep -Eo '"packageVersion":"[^"]+"' | awk -F ":" '{print $2}')
+      echo -n " "
+      echo "$versionOut"|  grep -Eo '"packageBuild":"[^"]+"' | awk -F ":" '{print $2}'
     fi
   else
     echo -e "\033[38;5;196m"
@@ -643,9 +644,9 @@ function solrStatus(){
     echo -e "PID\t"
     echo `cat "$CRAFTER_HOME/bin/solr/bin/solr-$SOLR_PORT.pid"`
     echo -e  "Uptime (in minutes):\t"
-    echo "$solrStatusOut"  | python -m json.tool | grep upTimeMS | awk -F"[,|:]" '{print $2}'| awk '{print ($1/1000)/60}'| bc
+    echo "$solrStatusOut"  |  grep -Eo '"upTimeMS":\d+' | awk -F ":" '{print ($2/1000)/60}' | bc
     echo -e  "Solr Version:\t"
-    echo "$solrStatusOut"  | python -m json.tool | grep solr-spec-version | awk -F"[,|:]" '{print $2}'
+    echo "$solrStatusOut"  |  grep -Eo '"solr-spec-version":"[^"]+"' | awk -F ":" '{print $2}'
   else
     echo -e "\033[38;5;196m"
     echo "Solr is not running or is unreachable on port $SOLR_PORT"
@@ -891,7 +892,9 @@ function doBackup() {
   cd "$TEMP_FOLDER"
   java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TARGET_FILE" true
 
-  rm -rf "$TEMP_FOLDER"
+  rmDirContents "$TEMP_FOLDER"
+  rmdir "$TEMP_FOLDER"
+
   echo "------------------------------------------------------------------------"
   echo "> Backup completed and saved to $TARGET_FILE"
 }
@@ -922,12 +925,12 @@ function doRestore() {
   echo "------------------------------------------------------------------------"
   echo "Clearing all existing data"
   echo "------------------------------------------------------------------------"
-  rm -rf "$MONGODB_DATA_DIR/*"
-  rm -rf "$CRAFTER_DATA_DIR/repos/*"
-  rm -rf "$SOLR_INDEXES_DIR/*"
-  rm -rf "$ES_INDEXES_DIR/*"
-  rm -rf "$DEPLOYER_DATA_DIR/*"
-  rm -rf "$MARIADB_DATA_DIR/*"
+  rmDirContents "$MONGODB_DATA_DIR"
+  rmDirContents "$CRAFTER_DATA_DIR/repos"
+  rmDirContents "$SOLR_INDEXES_DIR"
+  rmDirContents "$ES_INDEXES_DIR"
+  rmDirContents "$DEPLOYER_DATA_DIR"
+  rmDirContents "$MARIADB_DATA_DIR"
 
   echo "------------------------------------------------------------------------"
   echo "Starting restore from $SOURCE_FILE"
@@ -960,7 +963,6 @@ function doRestore() {
     echo "------------------------------------------------------------------------"
     echo "Restoring solr indexes"
     echo "------------------------------------------------------------------------"
-    rm -rf "$SOLR_INDEXES_DIR/*"
     java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
   fi
 
@@ -969,7 +971,6 @@ function doRestore() {
     echo "------------------------------------------------------------------------"
     echo "Restoring elasticsearch indexes"
     echo "------------------------------------------------------------------------"
-    rm -rf "$ES_INDEXES_DIR/*"
     java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes-es.zip" "$ES_INDEXES_DIR"
   fi
 
@@ -1006,6 +1007,14 @@ function doRestore() {
   rm -r "$TEMP_FOLDER"
   echo "------------------------------------------------------------------------"
   echo "> Restore complete, you may now start the system"
+}
+
+function rmDirContents() {
+  DIR=$1
+  if [ ! -z "$DIR" ] && [ -d "$DIR" ]; then
+    # 2>/dev/null removes the warnings about refusing to remove '.' or '..'
+    rm -rf "$DIR"/* "$DIR"/.* 2>/dev/null
+  fi
 }
 
 function logo() {

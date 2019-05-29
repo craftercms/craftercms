@@ -5,7 +5,7 @@ about: Create a report to help us improve
 ---
 
 ## Describe the bug
-A clear and concise description of what the bug is.
+{{A clear and concise description of what the bug is.}}
 
 ## To Reproduce
 Steps to reproduce the behavior:
@@ -15,23 +15,23 @@ Steps to reproduce the behavior:
 4. See error
 
 ## Expected behavior
-A clear and concise description of what you expected to happen.
+{{A clear and concise description of what you expected to happen.}}
 
 ## Screenshots
-If applicable, add screenshots to help explain your problem.
+{{If applicable, add screenshots to help explain your problem.}}
 
 ## Logs
-If applicable, attach the logs/stack trace (use https://gist.github.com).
+{{If applicable, attach the logs/stack trace (use https://gist.github.com).}}
 
 ## Specs
 ### Version
-Software version if applicable (copy paste from Help > About).
+{{Software version if applicable (copy paste from Help > About).}}
 
 ### OS
-What OS did you use to produce the bug.
+{{What OS did you use to produce the bug.}}
 
 ### Browser
-What browser did you use to produce the bug.
+{{What browser did you use to produce the bug.}}
 
 ## Additional context
-Add any other context about the problem here.
+{{Add any other context about the problem here.}}

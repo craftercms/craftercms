@@ -65,35 +65,34 @@ def configFilePatterns = [
     'bin/crafter-deployer/logging\\.xml',
     'bin/elasticsearch/config/.+',
     'bin/solr/server/resources/.+',
-    'bin/solr/server/solr/.+'
+    'bin/solr/server/solr/[^/]+',
+    'bin/solr/server/solr/configsets/crafter_configs/.+'
 ]
 
 task authoringPostEnvironment {
     description "Setups authoring environment"
 
     doLast {
-        if (!isWin) {
-            exec {
-                workingDir "${authEnvDir}/bin/apache-tomcat/bin"
-                commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
-                                                 "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
-                                                 "startup.sh", "tool-wrapper.sh", "version.sh"]
-            }
-            exec {
-                workingDir "${authEnvDir}/bin/crafter-deployer"
-                commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh", "startup.sh", "shutdown.sh"]
-            }
-            exec {
-                workingDir "${authEnvDir}/bin/migration"
-                commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh",
-                                                 "import-bg.sh", "setenv.sh"]
-            }
-            exec {
-                workingDir "${authEnvDir}/bin"
-                commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
-                                                 "crafter-setenv.sh", "upgrade/start-upgrade.sh",
-                                                 "upgrade/upgrade-target.sh"]
-            }
+        exec {
+            workingDir "${authEnvDir}/bin/apache-tomcat/bin"
+            commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
+                                             "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
+                                             "startup.sh", "tool-wrapper.sh", "version.sh"]
+        }
+        exec {
+            workingDir "${authEnvDir}/bin/crafter-deployer"
+            commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh", "startup.sh", "shutdown.sh"]
+        }
+        exec {
+            workingDir "${authEnvDir}/bin/migration"
+            commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh",
+                                             "import-bg.sh", "setenv.sh"]
+        }
+        exec {
+            workingDir "${authEnvDir}/bin"
+            commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
+                                             "crafter-setenv.sh", "upgrade/start-upgrade.sh",
+                                             "upgrade/upgrade-target.sh"]
         }
 
         downloadGrapes("${authEnvDir}/bin", "upgrade/start-upgrade.groovy")
@@ -105,23 +104,21 @@ task deliveryPostEnvironment {
     description "Setups delivery environment"
 
     doLast {
-        if (!isWin) {
-            exec {
-                workingDir "${deliveryEnvDir}/bin/apache-tomcat/bin/"
-                commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
-                                                 "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
-                                                 "startup.sh", "tool-wrapper.sh", "version.sh"]
-            }
-            exec {
-                workingDir "${deliveryEnvDir}/bin/crafter-deployer/"
-                commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh", "startup.sh", "shutdown.sh"]
-            }
-            exec {
-                workingDir "${deliveryEnvDir}/bin"
-                commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
-                                                 "crafter-setenv.sh", "init-site.sh", "remove-site.sh",
-                                                 "upgrade/start-upgrade.sh", "upgrade/upgrade-target.sh"]
-            }
+        exec {
+            workingDir "${deliveryEnvDir}/bin/apache-tomcat/bin/"
+            commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
+                                             "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
+                                             "startup.sh", "tool-wrapper.sh", "version.sh"]
+        }
+        exec {
+            workingDir "${deliveryEnvDir}/bin/crafter-deployer/"
+            commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh", "startup.sh", "shutdown.sh"]
+        }
+        exec {
+            workingDir "${deliveryEnvDir}/bin"
+            commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
+                                             "crafter-setenv.sh", "init-site.sh", "remove-site.sh",
+                                             "upgrade/start-upgrade.sh", "upgrade/upgrade-target.sh"]
         }
 
         downloadGrapes("${deliveryEnvDir}/bin", "init-site.groovy")
@@ -406,7 +403,7 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                     if (backupAndReplaceConfig) {
                         def now = new Date()
                         def backupTimestamp = now.format("yyyyMMddHHmmss") 
-                        def backupFile = new File(destDir, filePath + ".bak.${backupTimestamp}")
+                        def backupFile = new File(destDir, "${filePath}.bak.${backupTimestamp}")
 
                         println "Config file ${filePath} is different in src and dest. Backing up dest file to " +
                                 "${backupFile.name} and replacing it with src file (backupAndReplaceConfig = true)"
@@ -424,7 +421,7 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                     }
                 }
             } else {
-                println "Copying over ${filePath} from src to dest (non-config file)"
+                println "Copying over ${filePath} from src to dest (replacing non-config file)"
 
                 FileUtils.copyFile(srcFile, destFile)
             }

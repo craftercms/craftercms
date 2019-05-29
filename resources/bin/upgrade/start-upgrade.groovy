@@ -19,8 +19,7 @@
         @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.25'),
         @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.7'),
         @Grab(group = 'commons-codec', module = 'commons-codec', version = '1.11'),
-        @Grab(group = 'commons-io', module = 'commons-io', version = '2.6'),
-        @Grab(group = 'net.lingala.zip4j', module = 'zip4j', version = '1.3.2')
+        @Grab(group = 'commons-io', module = 'commons-io', version = '2.6')
 ])
 
 import java.nio.file.Files
@@ -28,12 +27,8 @@ import java.nio.file.Paths
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.io.FilenameUtils
-
-import net.lingala.zip4j.core.ZipFile
-
-import utils.NioUtils
+import org.apache.commons.io.FileUtils
 
 import static java.nio.file.StandardCopyOption.*
 import static utils.EnvironmentUtils.*
@@ -118,14 +113,8 @@ def extractBundle(bundleFile, targetFolder) {
 
     println "Extracting bundle to folder ${targetFolder}"
 
-    if (FilenameUtils.getExtension(bundleFile.fileName.toString()).equalsIgnoreCase("zip")) {
-        // Extract as zip
-        def zipFile = new ZipFile(bundleFile.toAbsolutePath().toString())
-        zipFile.extractAll(targetFolder.toAbsolutePath().toString())
-    } else {
-        // Extract as tar.gz
-        executeCommand(["tar", "xzf", bundleFile.toAbsolutePath().toString()], targetFolder)
-    }
+    // Extract tar.gz
+    executeCommand(["tar", "xzf", bundleFile.toAbsolutePath().toString()], targetFolder)
 }
 
 /**
@@ -139,13 +128,7 @@ def downloadBundle(cli, targetFolder, downloadsBaseUrl, version, bundleUrl, envS
 
     if (!bundleUrl) {
         if (version) {
-            bundleUrl = "${downloadsBaseUrl}/${version}/crafter-cms-${envSuffix}"
-
-            if (SystemUtils.IS_OS_WINDOWS) {
-                bundleUrl += ".zip"
-            } else {
-                bundleUrl += ".tar.gz"
-            }
+            bundleUrl = "${downloadsBaseUrl}/${version}/crafter-cms-${envSuffix}.tar.gz"
         } else {
             exitWithError(cli, 'No [bundle-url] or [version] specified')
         }
@@ -166,31 +149,24 @@ def downloadBundle(cli, targetFolder, downloadsBaseUrl, version, bundleUrl, envS
 }
 
 /**
- * Creates the actual upgrade script.
+ * Sets up the actual upgrade script.
  */
 def setupUpgradeScript(upgradeBinFolder, upgradeTmpFolder) {
     println "============================================================"
-    println "Creating upgrade script"
+    println "Setting up upgrade script"
     println "============================================================"
 
     def sourceScript
     def targetScript
 
-    if (SystemUtils.IS_OS_WINDOWS) {
-        sourceScript = upgradeBinFolder.resolve("upgrade.bat.template")
-        targetScript = upgradeTmpFolder.resolve("upgrade.bat")
-    } else {
-        sourceScript = upgradeBinFolder.resolve("upgrade.sh.template")
-        targetScript = upgradeTmpFolder.resolve("upgrade.sh")
-    }
+    sourceScript = upgradeBinFolder.resolve("upgrade.sh.off")
+    targetScript = upgradeTmpFolder.resolve("upgrade.sh")
 
     Files.copy(sourceScript, targetScript, REPLACE_EXISTING)
 
-    if (!SystemUtils.IS_OS_WINDOWS) {
-        executeCommand(["chmod", "+x", targetScript.toAbsolutePath().toString()])
-    }
+    executeCommand(["chmod", "+x", targetScript.toAbsolutePath().toString()])
 
-    println "Upgrade script created"
+    println "Upgrade script setup completed"
     println ""
     println "Please execute ${targetScript} to continue with upgrade"
 }
@@ -203,7 +179,7 @@ def startUpgrade(cli, upgradeBinFolder, upgradeTmpFolder, downloadsBaseUrl, vers
     def bundleFile
 
     if (Files.exists(upgradeTmpFolder)) {
-        NioUtils.deleteDirectory(upgradeTmpFolder)
+        FileUtils.deleteDirectory(upgradeTmpFolder.toFile())
         Files.createDirectory(upgradeTmpFolder)
     } else {
         Files.createDirectories(upgradeTmpFolder)
