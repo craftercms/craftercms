@@ -39,15 +39,15 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
 function help() {
   echo $(basename $BASH_SOURCE)
-  echo "    start [withMongo] [withSolr] [skipElasticsearch] [skipMongo], Starts Tomcat, Deployer and Elasticsearch. If\
-  withMongo is specified MongoDB will be started, if withSolr is specified Solr will be started, if skipElasticsearch\
-  is specified Elasticsearch will not be started, if skipMongo is specified MongoDB will not be started even if the\
-  Crafter Profile war is present"
-  echo "    stop, Stops Tomcat, Deployer, Elasticsearch (if started), Solr (if started) and Mongo (if started)"
-  echo "    debug [withMongo] [withSolr] [skipElasticsearch] [skipMongo], Starts Tomcat, Deployer and Elasticsearch in\
-  debug mode. If withMongo is specified MongoDB will be started, if withSolr is specified Solr will be started, if\
-  skipElasticsearch is specified Elasticsearch will not be started, if skipMongo is specified MongoDB will not be\
+  echo "    start [withMongoDB] [withSolr] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
+  Elasticsearch. If withMongoDB is specified MongoDB will be started, if withSolr is specified Solr will be started,\
+  if skipElasticsearch is specified Elasticsearch will not be started, if skipMongoDB is specified MongoDB will not be\
   started even if the Crafter Profile war is present"
+  echo "    stop, Stops Tomcat, Deployer, Elasticsearch (if started), Solr (if started) and Mongo (if started)"
+  echo "    debug [withMongoDB] [withSolr] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
+  Elasticsearch in debug mode. If withMongoDB is specified MongoDB will be started, if withSolr is specified Solr will\
+  be started, if skipElasticsearch is specified Elasticsearch will not be started, if skipMongoDB is specified MongoDB\
+  will not be started even if the Crafter Profile war is present"
   echo "    start_deployer, Starts Deployer"
   echo "    stop_deployer, Stops Deployer"
   echo "    debug_deployer, Starts Deployer in debug mode"
@@ -550,12 +550,12 @@ function startMongoDB(){
 
 function isMongoNeeded() {
   for o in "$@"; do
-    if [ $o = "skipMongo" ]; then
+    if [ $o = "skipMongo" ] || [ $o = "skipMongoDB" ]; then
       return 1
     fi
   done  
   for o in "$@"; do
-    if [ $o = "withMongo" ]; then
+    if [ $o = "withMongo" ] || [ $o = "withMongoDB" ]; then
       return 0
     fi
   done
