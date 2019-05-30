@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # -------------------- Spring Profiles --------------------
-# Uncomment to enable an external DB for Studio and stoppeed the embedded DB
+# Uncomment to enable an external DB for Studio and stop the embedded DB
 # export SPRING_PROFILES_ACTIVE=crafter.studio.externalDb
 
 # -------------------- Locations variables --------------------
