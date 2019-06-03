@@ -25,27 +25,6 @@ import java.util.regex.Pattern
 
 class UpgradeUtils {
 
-    public static final String VERSION_FILENAME = 'version.txt'
-    public static final String SH_SETENV_FILENAME = 'crafter-setenv.sh'
-    public static final String BAT_SETENV_FILENAME = 'crafter-setenv.bat'
-    public static final Pattern VERSION_NUMBER_REGEX = ~/(\d{1,3}\.\d{1,3}\.\d{1,3}).*/
 
-    /**
-     * Reads the version file under the specified bin folder.
-     */
-    static String readVersionFile(Path binFolder) {
-        def versionFile = binFolder.resolve(VERSION_FILENAME)
-        if (Files.exists(versionFile)) {
-            def version = NioUtils.fileToString(versionFile)
-                version = version.trim()
-
-            def versionMatcher = VERSION_NUMBER_REGEX.matcher(version)
-            if (versionMatcher.matches()) {
-                return versionMatcher.group(1)
-            }
-        }
-
-        return ''
-    }
 
 }

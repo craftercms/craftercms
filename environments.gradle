@@ -65,7 +65,8 @@ def configFilePatterns = [
     'bin/crafter-deployer/logging\\.xml',
     'bin/elasticsearch/config/.+',
     'bin/solr/server/resources/.+',
-    'bin/solr/server/solr/.+'
+    'bin/solr/server/solr/[^/]+',
+    'bin/solr/server/solr/configsets/crafter_configs/.+'
 ]
 
 task authoringPostEnvironment {
@@ -402,7 +403,7 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                     if (backupAndReplaceConfig) {
                         def now = new Date()
                         def backupTimestamp = now.format("yyyyMMddHHmmss") 
-                        def backupFile = new File(destDir, filePath + ".bak.${backupTimestamp}")
+                        def backupFile = new File(destDir, "${filePath}.bak.${backupTimestamp}")
 
                         println "Config file ${filePath} is different in src and dest. Backing up dest file to " +
                                 "${backupFile.name} and replacing it with src file (backupAndReplaceConfig = true)"
@@ -420,7 +421,7 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                     }
                 }
             } else {
-                println "Copying over ${filePath} from src to dest (non-config file)"
+                println "Copying over ${filePath} from src to dest (replacing non-config file)"
 
                 FileUtils.copyFile(srcFile, destFile)
             }

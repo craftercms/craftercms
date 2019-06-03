@@ -522,8 +522,7 @@ task postTest {
         def dataFolderSufix = Files.readAllLines(folderSuffixCacheFile.toPath(), Charset.forName("UTF-8")).get(0)
         def backupedFolder = file(repoFolder.parentFile.parentFile.absolutePath + dataFolderSufix)
         if (backupedFolder.exists()) {
-            repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath +
-                    "$dataFolderSufix-td")
+            repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath + "$dataFolderSufix-td")
             backupedFolder.renameTo(Paths.get(backupedFolder.parentFile.absolutePath, "data").toString())
         }
     }
