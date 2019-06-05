@@ -17,6 +17,7 @@
 
 package upgrade.hooks
 
+import java.nio.file.Files
 import java.nio.file.Path
 
 import static utils.NioUtils.*
@@ -46,13 +47,15 @@ class UpgradeSharedConfTo3019 implements UpgradeHook {
 
     void upgradeStudioConfigOverride(Path crafterSharedClassesFolder) {
         def studioConfigOverride = crafterSharedClassesFolder.resolve('studio/extension/studio-config-override.yaml')
-        def studioConfigOverrideStr = fileToString(studioConfigOverride)
+        if (Files.exists(studioConfigOverride)) {
+            def studioConfigOverrideStr = fileToString(studioConfigOverride)
 
-        println "Upgrading ${studioConfigOverride} to 3.0.19 version..."
+            println "Upgrading ${studioConfigOverride} to 3.0.19 version..."
 
-        studioConfigOverrideStr = studioConfigOverrideStr.replace('../data', '${sys:crafter.data.dir}')
+            studioConfigOverrideStr = studioConfigOverrideStr.replace('../data', '${sys:crafter.data.dir}')
 
-        stringToFile(studioConfigOverrideStr, studioConfigOverride)
+            stringToFile(studioConfigOverrideStr, studioConfigOverride)
+        }
     }
 
 }

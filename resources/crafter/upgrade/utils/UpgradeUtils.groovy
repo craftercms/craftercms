@@ -42,10 +42,12 @@ class UpgradeUtils {
             def versionMatcher = VERSION_NUMBER_REGEX.matcher(version)
             if (versionMatcher.matches()) {
                 return versionMatcher.group(1)
+            } else {
+                throw new IllegalStateException("Invalid version number in ${versionFile}")
             }
+        } else {
+            return 'pre-3.0.19'
         }
-
-        return ''
     }
 
 }
