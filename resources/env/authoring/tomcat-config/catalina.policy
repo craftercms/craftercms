@@ -236,6 +236,7 @@ grant {
     permission java.io.FilePermission "${crafter.logs.dir}/-", "read, write, delete";
     permission java.io.FilePermission "${java.home}/-", "read";
     permission java.io.FilePermission "${user.home}/-", "read";
+    permission java.io.FilePermission "${user.home}/.groovy", "read, write, delete";
     permission java.io.FilePermission "${user.home}/.groovy/-", "read, write, delete";
     permission java.io.FilePermission "${java.io.tmpdir}/-", "read, write, delete";
     permission java.io.FilePermission "/tmp/-", "read, write, delete";
