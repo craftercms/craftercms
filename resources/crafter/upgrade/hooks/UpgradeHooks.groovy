@@ -20,10 +20,16 @@ package upgrade.hooks
 class UpgradeHooks {
 
     private static final def ALL_HOOKS = [
-            '3.0.19' : [
-                    new UpgradeSetEnvTo3019(),
-                    new UpgradeSharedConfTo3019(),
-                    new CopyCatalinaPolicyHook()
+            'pre-3.0.19': [
+                new UpgradeSetEnvTo3019(),
+                new UpgradeSharedConfTo3019(),
+                new CopyCatalinaPolicyHook()
+            ],
+            '3.0.19': [
+                new CopyCatalinaPolicyHook() 
+            ],
+            '3.0.20': [
+                new CopyCatalinaPolicyHook() 
             ]
     ]
 
@@ -55,14 +61,7 @@ class UpgradeHooks {
     }
 
     private def resolveHooks() {
-        def currentVersion = previousVersion
-        def allHooksKeys = ALL_HOOKS.keySet().iterator()
-
-        while (allHooksKeys.hasNext() && currentVersion != upgradeVersion) {
-            currentVersion = allHooksKeys.next()
-
-            hooks += ALL_HOOKS[currentVersion]
-        }
+        hooks = ALL_HOOKS[previousVersion]
     }
 
 }

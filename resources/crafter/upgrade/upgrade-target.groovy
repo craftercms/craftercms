@@ -135,12 +135,12 @@ def shutdownCrafter(binFolder) {
  * Does the actual upgrade
  */
 def doUpgrade(binFolder, newBinFolder, previousVersion, upgradeVersion) {
+    println "========================================================================"
+    println "Upgrading Crafter ${previousVersion} to ${upgradeVersion}"
+    println "========================================================================"
+
     def upgradeHooks = new UpgradeHooks(binFolder, newBinFolder, previousVersion, upgradeVersion)
         upgradeHooks.preUpgrade()
-
-    println "========================================================================"
-    println "Upgrading Crafter"
-    println "========================================================================"
 
     def sharedFolder = binFolder.resolve("apache-tomcat/shared")
     def newSharedFolder = newBinFolder.resolve("apache-tomcat/shared")
