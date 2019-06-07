@@ -67,7 +67,7 @@ class ScriptUtils {
             setupCallback(processBuilder)
         }
 
-		processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
+	processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
         processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
         processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
 
