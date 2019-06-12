@@ -20,6 +20,8 @@
         <Property name="LOG_PATTERN">
             %d{yyyy-MM-dd HH:mm:ss.SSS} %5p %pid{ } --- [%t] %-40.40c{39} : %m%n%ex
         </Property>
+        <Property name="NUM_ROLLOVERS">10</Property>
+        <Property name="ROLLOVER_FILE_SIZE">10MB</Property>
     </Properties>
     <Appenders>
         <Console name="ConsoleAppender" target="SYSTEM_OUT">
@@ -31,15 +33,29 @@
             <DefaultRolloverStrategy max="10"/>
             <SizeBasedTriggeringPolicy size="10MB"/>
         </RollingFile>
-        <Routing name="RoutingAppender">
+        <Routing name="TargetFileAppender">
             <Routes pattern="$${ctx:targetId}">
                 <Route>
                     <RollingFile name="File-${ctx:targetId:-deployer-general}"
                                  fileName="${sys:logs.dir}/${ctx:targetId:-deployer-general}.log"
                                  filePattern="${sys:logs.dir}/${ctx:targetId:-deployer-general}-%i.log.gz">
                         <PatternLayout pattern="${LOG_PATTERN}"/>
-                        <DefaultRolloverStrategy max="10"/>
-                        <SizeBasedTriggeringPolicy size="10MB" />
+                        <DefaultRolloverStrategy max="${NUM_ROLLOVERS}"/>
+                        <SizeBasedTriggeringPolicy size="${ROLLOVER_FILE_SIZE}"/>
+                    </RollingFile>
+                </Route>
+            </Routes>
+        </Routing>
+        <Routing name="TargetErrorFileAppender">
+            <Routes pattern="$${ctx:targetId}">
+                <Route>
+                    <RollingFile name="File-${ctx:targetId:-deployer-general}-error"
+                                 fileName="${sys:logs.dir}/${ctx:targetId:-deployer-general}-error.log"
+                                 filePattern="${sys:logs.dir}/${ctx:targetId:-deployer-general}-error-%i.log.gz">
+                        <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+                        <PatternLayout pattern="${LOG_PATTERN}"/>
+                        <DefaultRolloverStrategy max="${NUM_ROLLOVERS}"/>
+                        <SizeBasedTriggeringPolicy size="${ROLLOVER_FILE_SIZE}"/>
                     </RollingFile>
                 </Route>
             </Routes>
@@ -48,11 +64,11 @@
     <Loggers>
         <Logger name="org.springframework" level="warn"/>
         <Logger name="org.craftercms" level="info"/>
-
         <Root level="info">
             <AppenderRef ref="ConsoleAppender"/>
             <AppenderRef ref="FileAppender"/>
-            <AppenderRef ref="RoutingAppender"/>
+            <AppenderRef ref="TargetFileAppender"/>
+            <AppenderRef ref="TargetErrorFileAppender"/>
         </Root>
     </Loggers>
 </Configuration>
