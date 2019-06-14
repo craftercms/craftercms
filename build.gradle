@@ -122,12 +122,12 @@ ext {
                 ",src/test/resources/testng_StudioAPI.xml"+
                 ",src/test/resources/testng_StudioAPI2.xml"
 
-    startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb").toBoolean() : false // Does not really.
-    withElasticsearch = project.hasProperty("withElasticsearch") ? project.property("withElasticsearch").toBoolean() : true
+    startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb").toBoolean() : false // TODO:: cleanup
+    withElasticsearch = project.hasProperty("withElasticsearch") ? project.property("withElasticsearch").toBoolean() : true // TODO:: cleanup
     withSolr = project.hasProperty("withSolr") ? project.property("withSolr").toBoolean() : false
-    silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent").toBoolean() : false
-    typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "tar"
-
+    silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent").toBoolean() : false // TODO:: cleanup
+    typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both" // TODO:: cleanup
+   
     /** Cloneable Artifacts **/
     VALID_MODULES =
       ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite",
@@ -171,7 +171,7 @@ if (getEnv().equalsIgnoreCase("all")) {
     envDepends = [tasks.findByName("${getEnv()}Environment")]
 }
 
-/** Some blackmagic here and there creates module_build tasks **/
+/** Create module_build tasks **/
 def buildModules = []
 def deployModules = [:]
 if (project.hasProperty("moduleName")) {
