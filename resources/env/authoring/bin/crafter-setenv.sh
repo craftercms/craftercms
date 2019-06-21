@@ -88,7 +88,10 @@ export MONGODB_PID="$MONGODB_DATA_DIR/mongod.lock"
 # -------------------- MariaDB variables --------------------
 export MARIADB_HOME="$CRAFTER_BIN_DIR/dbms"
 export MARIADB_DATA_DIR="$CRAFTER_DATA_DIR/db"
+export MARIADB_ROOT_USER=root
 export MARIADB_ROOT_PASSWD=
+export MARIADB_USER=crafter
+export MARIADB_PASSWD=crafter
 
 case "$(uname -s)" in
   Darwin)

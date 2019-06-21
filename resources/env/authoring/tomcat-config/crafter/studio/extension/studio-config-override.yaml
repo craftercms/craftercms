@@ -42,11 +42,13 @@ studio.preview.search.deleteUrl: ${env:SEARCH_URL}/api/2/admin/index/delete/{sit
 ##################################################
 ##                   Database                   ##
 ##################################################
-# Crafter Studio uses an embedded MariaDB while running unclustered
-# Crafter DB connection string. `crafter` user is created on initalization
-studio.db.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}/crafter?user=crafter&password=crafter
+# Crafter Studio uses an embedded MariaDB by default
+# Crafter DB connection string
+studio.db.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}/crafter?user=${env:MARIADB_USER}&password=${env:MARIADB_PASSWD}
 # Connection string used to initialize database. This creates the `crafter` schema, the `crafter` user and/or upgrades the database
-studio.db.initializer.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}?user=root&password=${env:MARIADB_ROOT_PASSWD}
+studio.db.initializer.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}?user=${env:MARIADB_ROOT_USER}&password=${env:MARIADB_ROOT_PASSWD}
+# Connection string if using a database with an already created schema and user (like AWS RDS)
+# studio.db.initializer.url: ${studio.db.url}
 # Port number for the embedded database (note this must match what's in the connection URLs in this config file)
 studio.db.port: ${env:MARIADB_PORT}
 # Data folder for the embedded database
@@ -163,16 +165,8 @@ studio.mail.port: ${env:MAIL_PORT}
 # IMPORTANT: When enabling clustering, please specify the environment variable 
 # SPRING_PROFILES_ACTIVE=crafter.studio.externalDb in your crafter-setenv.sh
 # (or Docker/Kubernetes env variables). This will stop studio from starting 
-# its embedded DB.
+# its embedded DB. Also configure the appropiate MARIADB env variables
 # -----------------------------------------------------------------------------
-# Clustering requires an external (not embedded) database, configure it below
-# External MariaDB database connection string
-# studio.db.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}/crafter?user=${env:MARIADB_USER}&password=${env:MARIADB_PASSWD}
-# External MariaDB database connection string used to initialize database
-# - If using a database with an already created schema and user (like AWS RDS):
-# studio.db.initializer.url: ${studio.db.url}
-# - If using a an empty database with root access to it:
-# studio.db.initializer.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}?user=root&password=${env:MARIADB_ROOT_PASSWD}
 
 # Cluster Syncers
 # Sandbox Sync Job interval in milliseconds which is how often to sync the work-area
