@@ -76,6 +76,16 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 # studio.security.cipher.salt: TDEsDF8vx3gV4c7G
 # Key for encrypting
 # studio.security.cipher.key: AoCcBdnsTa9R3DdG
+# Enable password requirements validation
+# studio.security.passwordRequirements.enabled: false
+# Password requirements validation regular expression
+#   (?=.*[0-9])       a digit must occur at least once
+#   (?=.*[a-z])       a lower case letter must occur at least once
+#   (?=.*[A-Z])       an upper case letter must occur at least once
+#   (?=.*[@#$%^&+=])  a special character must occur at least once
+#   (?=\S+$)          no whitespace allowed in the entire string
+#   .{8,}             anything, at least eight places though
+# studio.security.passwordRequirements.validationRegex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\S+$).{8,}$
 # Studio authentication chain configuration
 # studio.authentication.chain:
   # Authentication provider type
