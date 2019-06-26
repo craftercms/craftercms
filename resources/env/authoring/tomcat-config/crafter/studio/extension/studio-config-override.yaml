@@ -65,7 +65,8 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 # studio.db.initializer.randomAdminPassword.length: 16
 # Random admin password allowed chars
 # studio.db.initializer.randomAdminPassword.chars: ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*_=+-/
-
+# HTTP Session timeout for studio (value is in minutes).
+# studio.security.sessionTimeout: 60
 # Defines security provider for accessing repository. Possible values
 # - db (users are stored in database)
 # - ldap (users are imported from LDAP into the database)
