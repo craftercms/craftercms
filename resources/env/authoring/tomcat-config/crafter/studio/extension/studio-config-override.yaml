@@ -27,7 +27,7 @@ studio.configuration.site.defaultAuthoringUrl: ^https?://localhost:8080/studio/?
 # Default preview deployer URL (can be overridden per site)
 studio.preview.defaultPreviewDeployerUrl: ${env:DEPLOYER_URL}/api/1/target/deploy/{siteEnv}/{siteName}
 # Default preview create target URL (can be overridden per site)
-studio.preview.createTargetUrl: ${env:DEPLOYER_URL}/api/1/target/create-if-not-exists
+studio.preview.createTargetUrl: ${env:DEPLOYER_URL}/api/1/target/create_if_not_exists
 # Default preview create target URL (can be overridden per site)
 studio.preview.deleteTargetUrl: ${env:DEPLOYER_URL}/api/1/target/delete-if-exists/{siteEnv}/{siteName}
 # URL to the preview repository (aka Sandbox) where authors save work-in-progress
