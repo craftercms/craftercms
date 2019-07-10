@@ -312,6 +312,12 @@ envs.each { env ->
                     }
                 }
             }
+            
+            // Copy file to hide Tomcat version
+            copy {
+              from "resources/tomcat/ServerInfo.properties"
+              into "${path}/bin/apache-tomcat/lib/org/apache/catalina/util/"
+            }
 
             copy {
                 from "./src/studio/README.md"
