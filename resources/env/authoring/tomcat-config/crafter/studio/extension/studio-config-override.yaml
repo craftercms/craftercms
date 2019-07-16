@@ -262,4 +262,4 @@ studio.search.urls: ${env:ES_URL}
 # studio.serverless.delivery.deployer.target.template.params:
 #   aws:
 #     cloudformation:
-#       namespace: craftercms
+#       namespace: myorganization
