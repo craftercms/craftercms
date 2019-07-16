@@ -271,6 +271,12 @@ envs.each { env ->
                      "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/logging.properties"
                 into "${resourcesDestDir}/bin/apache-tomcat/conf"
             }
+            
+            // Copy file to hide Tomcat version
+            copy {
+              from "resources/tomcat/ServerInfo.properties"
+              into "${resourcesDestDir}/bin/apache-tomcat/lib/org/apache/catalina/util/"
+            }
 
             // Copy stock Solr config that needs to be updated
             copy {
@@ -282,7 +288,7 @@ envs.each { env ->
             copy {
                 from "${downloadDir}/elasticsearch-${elasticsearchVersion}/config/elasticsearch.yml"
                 into "${resourcesDestDir}/bin/elasticsearch/config"
-            }                  
+            }
 
             // Update config
             updateTomcatPorts("${resourcesDestDir}/bin/apache-tomcat/conf/server.xml")
