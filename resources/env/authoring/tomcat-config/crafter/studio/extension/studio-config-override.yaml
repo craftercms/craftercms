@@ -179,6 +179,11 @@ studio.mail.port: ${env:MAIL_PORT}
 # its embedded DB. Also configure the appropiate MARIADB env variables
 # -----------------------------------------------------------------------------
 
+# Cluster Git URL format for synching members. 
+# - Typical SSH URL format: ssh://{username}@{localAddress}{absolutePath}
+# - Typical HTTPS URL format: https://{localAddress}/repos/sites
+# studio.clustering.sync.urlFormat: ssh://{username}@{localAddress}{absolutePath}
+
 # Cluster Syncers
 # Sandbox Sync Job interval in milliseconds which is how often to sync the work-area
 # studio.clustering.sandboxSyncJob.interval: 2000
@@ -192,19 +197,20 @@ studio.mail.port: ${env:MAIL_PORT}
 # Cluster member registration, this registers *this* server into the pool
 # Cluster node registration data, remember to uncomment the next line
 # studio.clustering.node.registration:
-#  this server's local address (reachable to other cluster members)
+#  This server's local address (reachable to other cluster members). You can also specify a different port by 
+#  attaching :PORT to the adddress (e.g 192.168.1.200:2222)
 #  localAddress: ${env:CLUSTER_NODE_ADDRESS}
-#  authentication type to access this server's local repository
+#  Authentication type to access this server's local repository
 #  possible values
 #   - none (no authentication needed)
 #   - basic (username/password authentication)
 #   - key (ssh authentication)
 #  authenticationType: none
-#  username to access this server's local repository
+#  Username to access this server's local repository
 #  username: user
-#  password to access this server's local repository
+#  Password to access this server's local repository
 #  password: SuperSecurePassword
-#  private key to access this server's local repository (multiline string)
+#  Private key to access this server's local repository (multiline string)
 #  privateKey: |
 #    -----BEGIN PRIVATE KEY-----
 #    privateKey
