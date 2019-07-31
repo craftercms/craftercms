@@ -212,6 +212,7 @@ grant {
     permission java.lang.RuntimePermission "accessUserInformation";
     permission java.lang.RuntimePermission "setFactory";
     permission java.lang.RuntimePermission "reflectionFactoryAccess";
+    permission java.lang.RuntimePermission "getFileStoreAttributes";
     permission java.io.SerializablePermission "enableSubclassImplementation";
     permission java.lang.management.ManagementPermission "monitor";
     permission java.nio.file.LinkPermission "hard";
@@ -240,6 +241,7 @@ grant {
     permission java.io.FilePermission "${user.home}/.groovy/-", "read, write, delete";
     permission java.io.FilePermission "${java.io.tmpdir}/-", "read, write, delete";
     permission java.io.FilePermission "/tmp/-", "read, write, delete";
+    permission java.io.FilePermission "${user.home}", "read"; 
     permission groovy.security.GroovyCodeSourcePermission "*";
     permission java.security.SecurityPermission "putProviderProperty.BC";
     permission java.security.SecurityPermission "insertProvider.BC";
