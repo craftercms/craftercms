@@ -244,12 +244,6 @@ envs.each { env ->
                 into "${resourcesDestDir}/bin/apache-tomcat/bin"
             }
 
-            // Copy catalina.policy
-            copy {
-                from "./resources/env/${env}/tomcat-config/catalina.policy"
-                into "${resourcesDestDir}/bin/apache-tomcat/conf"
-            }
-
             // Copy Tomcat shared conf
             copy {
                 from "./resources/env/${env}/tomcat-config/crafter"
