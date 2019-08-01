@@ -71,14 +71,14 @@ class EnvironmentUtils {
      * Returns the bin folder for the Crafter installation.
      */
     static Path getCrafterBinFolder() {
-        return getCrafterHomeFolder().resolve("bin")
+        return Paths.get(getEnv("CRAFTER_BIN_DIR"))
     }
 
     /**
      * Returns the data folder for the Crafter installation.
      */
     static Path getCrafterDataFolder() {
-        return getCrafterHomeFolder().resolve("data")
+        return Paths.get(getEnv("CRAFTER_DATA_DIR"))
     }
 
     /**
@@ -89,9 +89,9 @@ class EnvironmentUtils {
     }
 
     /**
-     * Returns the upgrade folder inside the bin.
+     * Returns the home folder for the upgrade
      */
-    static Path getUpgradeBinFolder() {
+    static Path getUpgradeHomeFolder() {
         return Paths.get(getEnv("UPGRADE_HOME"))
     }
 

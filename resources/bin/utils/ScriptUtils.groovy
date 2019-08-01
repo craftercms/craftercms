@@ -52,7 +52,8 @@ class ScriptUtils {
     /**
      * Executes a command line process.
      */
-    static void executeCommand(List<String> command, Path workingDir = null, Closure<?> setupCallback = null, List<Integer> successExitValues = [ 0 ]) {
+    static void executeCommand(List<String> command, Path workingDir = null, Closure<?> setupCallback = null,
+                               List<Integer> successExitValues = [ 0 ]) {
         if (SystemUtils.IS_OS_WINDOWS) {
             command = ["cmd", "/c"] + command
         }

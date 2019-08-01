@@ -97,6 +97,7 @@ task authoringPostEnvironment {
 
         downloadGrapes("${authEnvDir}/bin", "upgrade/start-upgrade.groovy")
         downloadGrapes("${authEnvDir}/bin", "upgrade/upgrade-target.groovy")
+        downloadGrapes("${authEnvDir}/bin", "upgrade/post-upgrade.groovy")
     }
 }
 
@@ -125,6 +126,7 @@ task deliveryPostEnvironment {
         downloadGrapes("${deliveryEnvDir}/bin", "remove-site.groovy")
         downloadGrapes("${deliveryEnvDir}/bin", "upgrade/start-upgrade.groovy")
         downloadGrapes("${deliveryEnvDir}/bin", "upgrade/upgrade-target.groovy")
+        downloadGrapes("${deliveryEnvDir}/bin", "upgrade/post-upgrade.groovy")
     }
 }
 
@@ -195,7 +197,7 @@ envs.each { env ->
                     into "${envDir}/bin/apache-tomcat"
                 }
 
-                // Copy Crafter CMS README.txt
+                // Copy Crafter CMS README.txt and LICENSE
                 copy {
                     from "./resources/LICENSE"
                     from "./resources/README.txt"
