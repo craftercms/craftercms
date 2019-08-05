@@ -25,9 +25,9 @@ class UpdateIndexIdFormatInPreviewTargetsHook extends AbstractTargetConfigUpdati
 
     @Override
     boolean execute(Path binFolder, Path dataFolder, String environment) {
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         println "Updating target.search.indexIdFormat in Deployer Preview Targets"
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
         return super.execute(binFolder, dataFolder, environment)
     }

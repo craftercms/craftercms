@@ -29,13 +29,13 @@ class PostUpgradeHooks {
             'authoring 3.0.x': [
                     new UpdateIndexIdFormatInPreviewTargetsHook(),
                     new EnableCrafterSearchInTargetsHook(),
-                    new StartCrafterHook(),
+                    new StartCrafterHook(['withSolr']),
                     new CreateAuthoringTargetsHook(),
                     new RecreateSolrCoresHook()
             ],
             'delivery 3.0.x': [
                     new EnableCrafterSearchInTargetsHook(),
-                    new StartCrafterHook(),
+                    new StartCrafterHook(['withSolr']),
                     new RecreateSolrCoresHook()
             ]
     ]

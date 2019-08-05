@@ -25,9 +25,9 @@ class EnableCrafterSearchInTargetsHook extends AbstractTargetConfigUpdatingHook 
 
     @Override
     boolean execute(Path binFolder, Path dataFolder, String environment) {
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         println "Enabling Crafter Search in Deployer Targets"
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
         return super.execute(binFolder, dataFolder, environment)
     }

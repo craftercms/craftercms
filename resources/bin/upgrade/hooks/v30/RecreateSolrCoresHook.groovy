@@ -17,6 +17,7 @@
 package upgrade.hooks.v30
 
 import org.apache.commons.lang3.BooleanUtils
+import upgrade.exceptions.UpgradeException
 import upgrade.hooks.PostUpgradeHook
 
 import java.nio.file.Files
@@ -30,9 +31,9 @@ class RecreateSolrCoresHook implements PostUpgradeHook {
 
     @Override
     boolean execute(Path binFolder, Path dataFolder, String environment) {
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         println "Re-creating Solr cores for sites"
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
         println "WARNING: This will delete the current Solr site cores, recreate them, and trigger a content "
         println "re-index to re-populate them. This is necessary because of a major Solr upgrade. Don't proceed "
@@ -75,12 +76,11 @@ class RecreateSolrCoresHook implements PostUpgradeHook {
         httpClient.post {
             request.uri.path = "/crafter-search/api/2/admin/index/delete/${coreName}"
             request.contentType = 'application/json'
-            request.body = []
             response.success { fs ->
                 println "Solr core '${coreName}' deleted successfully"
             }
             response.failure { fs, body ->
-                println "Error while deleting Solr core '${coreName}': ${body.message}"
+                throw new UpgradeException("Error while deleting Solr core '${coreName}': ${body.message}")
             }
         }
     }
@@ -100,7 +100,7 @@ class RecreateSolrCoresHook implements PostUpgradeHook {
                 println "Solr core '${coreName}' created successfully"
             }
             response.failure { fs, body ->
-                println "Error while creating Solr core '${coreName}': ${body.message}"
+                throw new UpgradeException("Error while creating Solr core '${coreName}': ${body.message}")
             }
         }
     }
@@ -121,7 +121,7 @@ class RecreateSolrCoresHook implements PostUpgradeHook {
                 println "Re-index succesfully triggered for '${siteName}-${deployerEnv}'"
             }
             response.failure { fs, body ->
-                println "Error while triggering re-index for '${siteName}-${deployerEnv}': ${body.message}"
+                throw new UpgradeException("Error while triggering re-index for '${siteName}-${deployerEnv}': ${body.message}")
             }
         }
     }

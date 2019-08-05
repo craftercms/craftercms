@@ -466,9 +466,9 @@ def resetTomcat(Path binFolder) {
 /**
  * Does the actual upgrade
  */
-def doUpgrade(Path binFolder, Path newBinFolder) {
+def doUpgrade(String oldVersion, String newVersion, Path binFolder, Path newBinFolder) {
     println "========================================================================"
-    println "Upgrading Crafter"
+    println "Upgrading Crafter ${oldVersion} -> ${newVersion}"
     println "========================================================================"
 
     resetTomcat(binFolder)
@@ -510,6 +510,7 @@ def setupPostUpgradeScript(Path upgradeFolder, String oldVersion, String newVers
         content = content.replace("{{newVersion}}", newVersion)
 
     Files.write(destScript, content.getBytes(StandardCharsets.UTF_8))
+    Files.delete(sourceScript)
 
     executeCommand(["chmod", "+x", destScript.toAbsolutePath().toString()])
 }
@@ -527,15 +528,14 @@ def upgrade(Path targetFolder) {
     shutdownCrafter(binFolder)
     backupData(binFolder)
     backupBin(binFolder, backupsFolder, getEnvironmentName())
-    doUpgrade(binFolder, newBinFolder)
+    doUpgrade(oldVersion, newVersion, binFolder, newBinFolder)
 
     setupPostUpgradeScript(binFolder.resolve("upgrade"), oldVersion, newVersion)
 
     println "========================================================================"
     println "Upgrade complete"
     println "========================================================================"
-    println "Please read the release notes and make any necessary manual changes, then run the post upgrade script:"
-    println "${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh"
+    println "Please read the release notes and make any necessary manual changes, then run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh"
 }
 
 checkDownloadGrapesOnlyMode(getClass())

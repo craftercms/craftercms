@@ -61,6 +61,10 @@ def exitWithError(CliBuilder cli, String msg) {
 }
 
 def postUpgrade(String oldVersion, String newVersion, String environment) {
+    println "========================================================================"
+    println "Post-upgrade ${oldVersion} -> ${newVersion}"
+    println "========================================================================"
+
     Path binFolder = getCrafterBinFolder()
     Path dataFolder = getCrafterDataFolder()
     PostUpgradeHooks hooks = new PostUpgradeHooks(binFolder, dataFolder, oldVersion, newVersion, environment)

@@ -16,6 +16,7 @@
  */
 package upgrade.hooks.v30
 
+import upgrade.exceptions.UpgradeException
 import upgrade.hooks.PostUpgradeHook
 
 import java.nio.file.Files
@@ -28,9 +29,9 @@ class CreateAuthoringTargetsHook implements PostUpgradeHook {
 
     @Override
     boolean execute(Path binFolder, Path dataFolder, String environment) {
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         println "Creating Authoring Deployer Targets"
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
         Path sitesFolder = dataFolder.resolve("repos/sites")
 
@@ -52,7 +53,7 @@ class CreateAuthoringTargetsHook implements PostUpgradeHook {
         }
 
         httpClient.post {
-            request.uri.path = '/api/1/target/create'
+            request.uri.path = '/api/1/target/create_if_not_exists'
             request.contentType = 'application/json'
             request.body = [
                     env: 'authoring',
@@ -64,7 +65,7 @@ class CreateAuthoringTargetsHook implements PostUpgradeHook {
                 println "Authoring target for site '${siteName}' created successfully"
             }
             response.failure { fs, body ->
-                println "Error while creating target for site '${siteName}': ${body.message}"
+                throw new UpgradeException("Error while creating target for site '${siteName}': ${body.message}")
             }
         }
     }

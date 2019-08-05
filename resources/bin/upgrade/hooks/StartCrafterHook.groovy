@@ -24,11 +24,21 @@ import static utils.ScriptUtils.executeCommand
 
 class StartCrafterHook implements PostUpgradeHook {
 
+    private List<String> flags
+
+    StartCrafterHook() {
+        this.flags = []
+    }
+
+    StartCrafterHook(List<String> flags) {
+        this.flags = flags
+    }
+
     @Override
     boolean execute(Path binFolder, Path dataFolder, String environment) {
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         println "Starting up Crafter"
-        println "========================================================================"
+        println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
         def setupCallback = { pb ->
             def env = pb.environment()
@@ -39,7 +49,7 @@ class StartCrafterHook implements PostUpgradeHook {
             env.remove("CRAFTER_LOGS_DIR")
         }
 
-        executeCommand(["./startup.sh"], binFolder, setupCallback)
+        executeCommand(["./startup.sh"] + flags, binFolder, setupCallback)
 
         println ''
         println 'Please make sure Crafter has started successfully before continuing'

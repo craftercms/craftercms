@@ -18,6 +18,10 @@ package upgrade.exceptions
 
 class UpgradeException extends RuntimeException {
 
+    UpgradeException(String msg) {
+        super(msg)
+    }
+
     UpgradeException(String msg, Throwable cause) {
         super(msg, cause)
     }
