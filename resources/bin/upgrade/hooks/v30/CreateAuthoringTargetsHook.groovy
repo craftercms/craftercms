@@ -44,7 +44,7 @@ class CreateAuthoringTargetsHook implements PostUpgradeHook {
     }
 
     private void createAuthoringTargetForSite(Path siteFolder) {
-        def sitename = siteFolder.fileName.toString()
+        def siteName = siteFolder.fileName.toString()
         def sandboxFolder = siteFolder.resolve("sandbox").toAbsolutePath()
 
         def httpClient = configure {
@@ -56,15 +56,15 @@ class CreateAuthoringTargetsHook implements PostUpgradeHook {
             request.contentType = 'application/json'
             request.body = [
                     env: 'authoring',
-                    site_name: sitename,
+                    site_name: siteName,
                     template_name: 'authoring',
                     repo_url: sandboxFolder.toString()
             ]
             response.success { fs ->
-                println "Authoring target for site ${sitename} created successfully"
+                println "Authoring target for site '${siteName}' created successfully"
             }
             response.failure { fs, body ->
-                println "Error while creating target for site ${sitename}: ${body.message}"
+                println "Error while creating target for site '${siteName}': ${body.message}"
             }
         }
     }

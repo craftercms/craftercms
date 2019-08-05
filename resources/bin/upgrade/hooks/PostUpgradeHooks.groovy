@@ -18,6 +18,7 @@ package upgrade.hooks
 
 import upgrade.hooks.v30.CreateAuthoringTargetsHook
 import upgrade.hooks.v30.EnableCrafterSearchInTargetsHook
+import upgrade.hooks.v30.RecreateSolrCoresHook
 import upgrade.hooks.v30.UpdateIndexIdFormatInPreviewTargetsHook
 
 import java.nio.file.Path
@@ -29,11 +30,13 @@ class PostUpgradeHooks {
                     new UpdateIndexIdFormatInPreviewTargetsHook(),
                     new EnableCrafterSearchInTargetsHook(),
                     new StartCrafterHook(),
-                    new CreateAuthoringTargetsHook()
+                    new CreateAuthoringTargetsHook(),
+                    new RecreateSolrCoresHook()
             ],
             'delivery 3.0.x': [
                     new EnableCrafterSearchInTargetsHook(),
-                    new StartCrafterHook()
+                    new StartCrafterHook(),
+                    new RecreateSolrCoresHook()
             ]
     ]
 
