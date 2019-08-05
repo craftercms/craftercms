@@ -110,6 +110,33 @@ def backupData(binFolder) {
 }
 
 /**
+ * Upgrade DB
+ */
+def upgradeDB(binFolder) {
+    def upgrade = System.console().readLine '> Upgrade database? [(Y)es/(N)o]: '
+        upgrade = BooleanUtils.toBoolean(upgrade)
+
+    if (upgrade) {
+        println "========================================================================"
+        println "Upgrade database"
+        println "========================================================================"
+
+        def setupCallback = { pb ->
+            def env = pb.environment()
+                env.remove("CRAFTER_HOME")
+                env.remove("DEPLOYER_HOME")
+                env.remove("CRAFTER_BIN_DIR")
+                env.remove("CRAFTER_DATA_DIR")
+                env.remove("CRAFTER_LOGS_DIR")
+                env.remove("MARIADB_HOME")
+                env.remove("MARIADB_DATA_DIR")
+        }
+
+        executeCommand(["./crafter.sh", "upgradedb"], binFolder, setupCallback)
+    }
+}
+
+/**
  * Backups the bin folder.
  */
 def backupBin(binFolder, backupsFolder, environmentName) {
@@ -452,6 +479,8 @@ def doUpgrade(binFolder, newBinFolder) {
                 alwaysOverwrite = syncFile(binFolder, newBinFolder, newBinFolder.relativize(file), alwaysOverwrite)
             }
     }
+
+    upgradeDB(binFolder)
 }
 
 /**
