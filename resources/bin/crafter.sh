@@ -75,6 +75,7 @@ function help() {
   echo "    status_mongodb, Status of MonoDb"
   echo "    backup <name>, Perform a backup of all data"
   echo "    restore <file>, Perform a restore of all data"
+  echo "    upgradedb, Perform database upgrade (mysql_upgrade)"
   echo ""
   echo "For more information use '$(basename $BASH_SOURCE) man'"
   exit 2;
@@ -929,6 +930,47 @@ function doBackup() {
   echo "> Backup completed and saved to $TARGET_FILE"
 }
 
+function doUpgradeDB() {
+
+  echo "------------------------------------------------------------------------"
+  echo "Starting upgrade database $MARIADB_DATA_DIR"
+  echo "------------------------------------------------------------------------"
+
+  # Upgrade database
+  if [ -d "$MARIADB_DATA_DIR" ]; then
+    # Start DB if necessary
+    DB_STARTED=false
+    if [ -z $(pidOf "$MARIADB_PORT") ]; then
+      mkdir -p "$CRAFTER_BIN_DIR/dbms"
+      echo "------------------------------------------------------------------------"
+      echo "Starting DB"
+      echo "------------------------------------------------------------------------"
+      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" -DmariaDB4j.socket="/tmp/mysql.sock" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
+      sleep 30
+      DB_STARTED=true
+    fi
+
+    #Do upgrade
+    echo "------------------------------------------------------------------------"
+    echo "Upgrade mysql"
+    echo "------------------------------------------------------------------------"
+    $CRAFTER_BIN_DIR/dbms/bin/mysql_upgrade --port=$MARIADB_PORT 
+    abortOnError
+
+    if [ "$DB_STARTED" = true ]; then
+      # Stop DB
+      echo "------------------------------------------------------------------------"
+      echo "Stopping DB"
+      echo "------------------------------------------------------------------------"
+      kill $(cat mariadb4j.pid)
+      sleep 10
+    fi
+  fi
+
+  echo "------------------------------------------------------------------------"
+  echo "> Upgrade database completed"
+}
+
 function doRestore() {
   pid=$(pidOf $TOMCAT_HTTP_PORT)
   if ! [ -z $pid ]; then
@@ -1159,6 +1201,9 @@ case $1 in
   ;;
   restore)
     doRestore $2
+  ;;
+  upgradedb)
+    doUpgradeDB $2
   ;;
   status_engine)
     engineStatus
