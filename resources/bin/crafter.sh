@@ -931,9 +931,8 @@ function doBackup() {
 }
 
 function doUpgradeDB() {
-
   echo "------------------------------------------------------------------------"
-  echo "Starting upgrade database $MARIADB_DATA_DIR"
+  echo "Starting upgrade of database $MARIADB_DATA_DIR"
   echo "------------------------------------------------------------------------"
 
   # Upgrade database
@@ -950,7 +949,7 @@ function doUpgradeDB() {
       DB_STARTED=true
     fi
 
-    #Do upgrade
+    # Do upgrade
     echo "------------------------------------------------------------------------"
     echo "Upgrade mysql"
     echo "------------------------------------------------------------------------"

@@ -27,6 +27,7 @@ class PostUpgradeHooks {
 
     private static final Map<String, List<PostUpgradeHook>> ALL_HOOKS = [
             'authoring 3.0.x': [
+                    new UpgradeDbHook(),
                     new UpdateIndexIdFormatInPreviewTargetsHook(),
                     new EnableCrafterSearchInTargetsHook(),
                     new StartCrafterHook(['withSolr']),
@@ -34,9 +35,13 @@ class PostUpgradeHooks {
                     new RecreateSolrCoresHook()
             ],
             'delivery 3.0.x': [
+                    new UpgradeDbHook(),
                     new EnableCrafterSearchInTargetsHook(),
                     new StartCrafterHook(['withSolr']),
                     new RecreateSolrCoresHook()
+            ],
+            'authoring 3.1.0': [
+                    new UpgradeDbHook()
             ]
     ]
 
@@ -72,6 +77,9 @@ class PostUpgradeHooks {
         hooks = ALL_HOOKS["${environment} ${oldVersion} -> ${newVersion}".toString()]
         if (!hooks) {
             hooks = ALL_HOOKS["${environment} ${oldVersion}".toString()]
+            if (!hooks) {
+                hooks = ALL_HOOKS["${oldVersion}".toString()]
+            }
         }
     }
 
