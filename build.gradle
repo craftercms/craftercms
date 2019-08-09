@@ -41,7 +41,7 @@ ext {
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.24"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
     elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.6.0"
-    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.2"
+    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.2.1"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     
     /** Environment Building properties **/
