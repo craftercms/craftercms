@@ -30,7 +30,7 @@ import static utils.EnvironmentUtils.getTomcatUrl
 class RecreateSolrCoresHook implements PostUpgradeHook {
 
     @Override
-    boolean execute(Path binFolder, Path dataFolder, String environment) {
+    void execute(Path binFolder, Path dataFolder, String environment) {
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         println "Re-creating Solr cores for sites"
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -54,8 +54,6 @@ class RecreateSolrCoresHook implements PostUpgradeHook {
                 }
             }
         }
-
-        return true
     }
 
     protected void recreateCore(String siteName, String environment) {

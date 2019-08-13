@@ -82,6 +82,13 @@ class EnvironmentUtils {
     }
 
     /**
+     * Returns the data folder for the embedded MariaDB.
+     */
+    static Path getMariaDbDataFolder() {
+        return Paths.get(getEnv("MARIADB_DATA_DIR"))
+    }
+
+    /**
      * Returns the backups folder for the Crafter installation.
      */
     static Path getCrafterBackupsFolder() {

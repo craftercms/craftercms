@@ -20,6 +20,6 @@ import java.nio.file.Path
 
 interface PostUpgradeHook {
 
-	boolean execute(Path binFolder, Path dataFolder, String environment)
+	void execute(Path binFolder, Path dataFolder, String environment)
 
 }

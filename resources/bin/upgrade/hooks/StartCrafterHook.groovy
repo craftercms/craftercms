@@ -35,7 +35,7 @@ class StartCrafterHook implements PostUpgradeHook {
     }
 
     @Override
-    boolean execute(Path binFolder, Path dataFolder, String environment) {
+    void execute(Path binFolder, Path dataFolder, String environment) {
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         println "Starting up Crafter"
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -57,7 +57,9 @@ class StartCrafterHook implements PostUpgradeHook {
         def cont = System.console().readLine '> Continue? [(Y)es/(N)o]: '
             cont = BooleanUtils.toBoolean(cont)
 
-        return cont
+        if (!cont) {
+            System.exit(0)
+        }
     }
 
 }

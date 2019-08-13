@@ -27,7 +27,7 @@ import java.nio.file.Path
 abstract class AbstractTargetConfigUpdatingHook implements PostUpgradeHook {
 
     @Override
-    boolean execute(Path binFolder, Path dataFolder, String environment) {
+    void execute(Path binFolder, Path dataFolder, String environment) {
         Path targetsFolder = dataFolder.resolve("deployer/targets")
 
         if (Files.exists(targetsFolder)) {
@@ -36,8 +36,6 @@ abstract class AbstractTargetConfigUpdatingHook implements PostUpgradeHook {
                      .each { file -> updateTargetConfigFile(file) }
             }
         }
-
-        return true
     }
 
     protected void updateTargetConfigFile(Path configFile) {

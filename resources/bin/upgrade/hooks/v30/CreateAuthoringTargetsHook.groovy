@@ -28,7 +28,7 @@ import static utils.EnvironmentUtils.getDeployerUrl
 class CreateAuthoringTargetsHook implements PostUpgradeHook {
 
     @Override
-    boolean execute(Path binFolder, Path dataFolder, String environment) {
+    void execute(Path binFolder, Path dataFolder, String environment) {
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         println "Creating Authoring Deployer Targets"
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
@@ -40,8 +40,6 @@ class CreateAuthoringTargetsHook implements PostUpgradeHook {
                 files.each { file -> createAuthoringTargetForSite(file) }
             }
         }
-
-        return true
     }
 
     private void createAuthoringTargetForSite(Path siteFolder) {

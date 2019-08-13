@@ -24,12 +24,12 @@ import java.nio.file.Path
 class EnableCrafterSearchInTargetsHook extends AbstractTargetConfigUpdatingHook {
 
     @Override
-    boolean execute(Path binFolder, Path dataFolder, String environment) {
+    void execute(Path binFolder, Path dataFolder, String environment) {
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         println "Enabling Crafter Search in Deployer Targets"
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
-        return super.execute(binFolder, dataFolder, environment)
+        super.execute(binFolder, dataFolder, environment)
     }
 
     @Override
