@@ -42,11 +42,11 @@ class StartCrafterHook implements PostUpgradeHook {
 
         def setupCallback = { pb ->
             def env = pb.environment()
-            env.remove("CRAFTER_HOME")
-            env.remove("DEPLOYER_HOME")
-            env.remove("CRAFTER_BIN_DIR")
-            env.remove("CRAFTER_DATA_DIR")
-            env.remove("CRAFTER_LOGS_DIR")
+                env.remove("CRAFTER_HOME")
+                env.remove("DEPLOYER_HOME")
+                env.remove("CRAFTER_BIN_DIR")
+                env.remove("CRAFTER_DATA_DIR")
+                env.remove("CRAFTER_LOGS_DIR")
         }
 
         executeCommand(["./startup.sh"] + flags, binFolder, setupCallback)
