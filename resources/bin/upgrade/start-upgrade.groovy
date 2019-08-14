@@ -210,6 +210,6 @@ if (options) {
         return
     }
 
-    startUpgrade(cli, getUpgradeBinFolder(), getUpgradeTmpFolder(), getDownloadsBaseUrl(), options.version,
+    startUpgrade(cli, getUpgradeHomeFolder(), getUpgradeTmpFolder(), getDownloadsBaseUrl(), options.version,
             options.'bundle-url', options.'bundle-path', getEnvironmentName())
 }
