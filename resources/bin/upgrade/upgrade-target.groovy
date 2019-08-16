@@ -57,6 +57,11 @@ import static utils.ScriptUtils.*
     'solr/server/solr/[^/]+': true,
     'solr/server/solr/configsets/crafter_configs/.+': true
 ]
+// List of patterns for files that shouldn't be deleted
+@Field List<String> shouldNotBeDeletedFilePatterns = [
+    'install-license\\.(.*)',
+    'apache-tomcat/shared/classes/crafter/license(/.+)?'
+]
 @Field String backupTimestampFormat = "yyyyMMddHHmmss"
 @Field List<String> alwaysOverwriteConfigFilePatterns = []
 
@@ -159,10 +164,17 @@ def shutdownCrafter(Path binFolder) {
 }
 
 /**
- * Returns the config file pattern that matches the given path
+ * Returns the config file pattern that matches the given path.
  */
-def matchesConfigFilePattern(Path path) {
+def matchesConfigFilePatterns(Path path) {
     return configFilePatterns.keySet().find { path.toString().matches(it) }
+}
+
+/**
+ * Returns true if the given path matches one of the should not delete file patterns.
+ */
+def shouldNotBeDeleted(Path path) {
+    return shouldNotBeDeletedFilePatterns.any { path.toString().matches(it) }
 }
 
 /**
@@ -273,7 +285,7 @@ def syncFile(Path binFolder, Path newBinFolder, Path filePath, boolean alwaysOve
             Files.createDirectories(oldFile)
         }
     } else if (Files.exists(oldFile)) {
-        def configPattern = matchesConfigFilePattern(filePath)
+        def configPattern = matchesConfigFilePatterns(filePath)
         if (configPattern != null) {
             def done = false
 
@@ -368,7 +380,7 @@ def deleteFileIfAbsentInNewRelease(Path binFolder, Path newBinFolder, Path fileP
     def newFile = newBinFolder.resolve(filePath)
     def delete = false
 
-    if (!Files.exists(newFile)) {
+    if (!Files.exists(newFile) && !shouldNotBeDeleted(filePath)) {
         if (!alwaysDelete && !Files.isDirectory(oldFile)) {
             def done = false
 
@@ -504,9 +516,9 @@ def upgrade(Path targetFolder) {
     setupPostUpgradeScript(binFolder.resolve("upgrade"), oldVersion, newVersion)
 
     println "========================================================================"
-    println "Upgrade complete"
+    println "Upgrade completed"
     println "========================================================================"
-    println "Please read the release notes and make any necessary manual changes, then run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh"
+    println "!!! Please read the release notes and make any necessary manual changes, then run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh !!!"
 }
 
 checkDownloadGrapesOnlyMode(getClass())
