@@ -57,7 +57,7 @@ import static utils.ScriptUtils.*
     'solr/server/solr/[^/]+': true,
     'solr/server/solr/configsets/crafter_configs/.+': true
 ]
-// List of patterns for fields that shouldn't be deleted
+// List of patterns for files that shouldn't be deleted
 @Field List<String> shouldNotDeleteFilePatterns = [
     'install-license\\.(.*)',
     'apache-tomcat/shared/classes/crafter/license(/.+)?'
