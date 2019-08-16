@@ -58,7 +58,7 @@ import static utils.ScriptUtils.*
     'solr/server/solr/configsets/crafter_configs/.+': true
 ]
 // List of patterns for files that shouldn't be deleted
-@Field List<String> shouldNotBeDeleteFilePatterns = [
+@Field List<String> shouldNotBeDeletedFilePatterns = [
     'install-license\\.(.*)',
     'apache-tomcat/shared/classes/crafter/license(/.+)?'
 ]
@@ -174,7 +174,7 @@ def matchesConfigFilePatterns(Path path) {
  * Returns true if the given path matches one of the should not delete file patterns.
  */
 def shouldNotBeDeleted(Path path) {
-    return shouldNotBeDeleteFilePatterns.any { path.toString().matches(it) }
+    return shouldNotBeDeletedFilePatterns.any { path.toString().matches(it) }
 }
 
 /**
