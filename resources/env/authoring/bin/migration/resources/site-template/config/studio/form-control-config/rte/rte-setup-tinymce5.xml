@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
+	This file configures Studio's Rich Text Editor (RTE), and it supports several configuration profiles, where the
+	content model selects which profile to use for which RTE field in the forms.
+-->
+<config>
+    <setup>
+        <id>generic</id> <!-- This starts a profile configuration -->
+        
+        <rteStylesheets> <!-- This informs the RTE to use the CSS files -->
+            <!-- <link>/static-assets/css/rte/rte.css</link> -->
+        </rteStylesheets>
+        
+        <rteStyleOverride>
+            body {
+                <!-- styles -->
+            }
+        </rteStyleOverride>
+        
+        <plugins>
+            print preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template 
+			codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount 
+			textpattern help acecode
+        </plugins>
+
+        <toolbarItems1>
+            formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat
+        </toolbarItems1>
+        <toolbarItems2></toolbarItems2>
+        <toolbarItems3></toolbarItems3>
+        <toolbarItems4></toolbarItems4>
+    </setup>
+</config>
