@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+  ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
     AWS profiles configuration file. This files configures 0 or more
     AWS profiles with the information required by AWS services.
 
@@ -22,6 +39,17 @@ For every profile you need to specify at least:
    Every service can require additional properties.
 -->
 <aws>
+    <!--
+
+        AWS S3 Profile
+
+        Additional properties:
+
+        <bucketName/>
+
+        bucketName: name of the bucket where files will be uploaded
+
+    -->
     <profile>
         <id>s3-default</id>
         <credentials>
@@ -31,6 +59,30 @@ For every profile you need to specify at least:
         <region>us-west-1</region>
         <bucketName>sample-input-bucket</bucketName>
     </profile>
+
+    <!--
+
+    AWS Elastic Transcoder Profile
+
+    Additional properties:
+
+    <pipelineId/>
+    <outputs>
+        <output>
+            <presetId/>
+            <outputKeySuffix/>
+        </output>
+
+        ...
+
+    </outputs>
+
+    pipelineId: id of the pipeline that will be used for transcoding jobs
+    outputs: list of outputs for the transcoding jobs
+    presetId: id of the preset for a particular output, can use AWS default presets for common formats
+    outputKeySuffix: suffix added to a particular output
+
+    -->
     <profile>
         <id>elastic-transcoder-default</id>
         <credentials>
