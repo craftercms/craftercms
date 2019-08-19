@@ -1,0 +1,287 @@
+<!--
+  ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<form>
+    <title>A Page</title>
+    <description>A Simple Page</description>
+    <objectType>page</objectType>
+    <content-type>/page/entry</content-type>
+    <imageThumbnail>undefined</imageThumbnail>
+    <quickCreate>false</quickCreate>
+    <quickCreatePath></quickCreatePath>
+    <properties>		<property>
+        <name>display-template</name>
+        <label>Display Template</label>
+        <value>/templates/web/entry.ftl</value>
+        <type>template</type>
+    </property>
+        <property>
+			<name>no-template-required</name>
+			<label>No Template Required</label>
+			<value></value>
+			<type>boolean</type>
+		</property>
+        <property>
+            <name>merge-strategy</name>
+            <label>Merge Strategy</label>
+            <value>inherit-levels</value>
+            <type>string</type>
+        </property>
+    </properties>
+    <sections>		<section>
+        <title>Page Settings</title>
+        <description></description>
+        <defaultOpen>true</defaultOpen>
+        <fields>
+            <field>
+                <type>file-name</type>
+                <id>file-name</id>
+                <iceId></iceId>
+                <title>Page URL</title>
+                <description></description>
+                <defaultValue></defaultValue>
+                <help></help>
+                <properties>
+                    <property>
+                        <name>size</name>
+                        <value>50</value>
+                        <type>int</type>
+                    </property>
+                    <property>
+                        <name>maxlength</name>
+                        <value>50</value>
+                        <type>int</type>
+                    </property>
+                    <property>
+                        <name>readonly</name>
+                        <value></value>
+                        <type>boolean</type>
+                    </property>
+                </properties>
+                <constraints>
+                </constraints>
+            </field>
+            <field>
+                <type>input</type>
+                <id>internal-name</id>
+                <iceId></iceId>
+                <title>File Title</title>
+                <description></description>
+                <defaultValue></defaultValue>
+                <help></help>
+                <properties>
+                    <property>
+                        <name>size</name>
+                        <value>50</value>
+                        <type>int</type>
+                    </property>
+                    <property>
+                        <name>maxlength</name>
+                        <value>60</value>
+                        <type>int</type>
+                    </property>
+                    <property>
+                        <name>readonly</name>
+                        <value></value>
+                        <type>boolean</type>
+                    </property>
+                    <property>
+                        <name>tokenize</name>
+                        <value>false</value>
+                        <type>boolean</type>
+                    </property>
+                </properties>
+                <constraints>
+                    <constraint>
+                        <name>required</name>
+                        <value><![CDATA[true]]></value>
+                        <type>boolean</type>
+                    </constraint>
+                </constraints>
+            </field>
+            <field>
+                <type>page-nav-order</type>
+                <id>placeInNav</id>
+                <iceId></iceId>
+                <title>Place in Nav</title>
+                <description></description>
+                <defaultValue></defaultValue>
+                <help></help>
+                <properties>
+                    <property>
+                        <name>readonly</name>
+                        <value></value>
+                        <type>boolean</type>
+                    </property>
+                </properties>
+                <constraints>
+                    <constraint>
+                        <name>required</name>
+                        <value><![CDATA[]]></value>
+                        <type>boolean</type>
+                    </constraint>
+                </constraints>
+            </field>
+            <field>
+                <type>checkbox</type>
+                <id>disabled</id>
+                <iceId></iceId>
+                <title>Disable Page</title>
+                <description></description>
+                <defaultValue></defaultValue>
+                <help></help>
+                <properties>
+                    <property>
+                        <name>readonly</name>
+                        <value></value>
+                        <type>boolean</type>
+                    </property>
+                </properties>
+                <constraints>
+                    <constraint>
+                        <name>required</name>
+                        <value><![CDATA[]]></value>
+                        <type>boolean</type>
+                    </constraint>
+                </constraints>
+            </field>
+        </fields>
+    </section>
+        <section>
+            <title>Main Content</title>
+            <description></description>
+            <defaultOpen>true</defaultOpen>
+            <fields>
+                <field>
+                    <type>input</type>
+                    <id>title_t</id>
+                    <iceId>title</iceId>
+                    <title>Title</title>
+                    <description></description>
+                    <defaultValue></defaultValue>
+                    <help></help>
+                    <properties>
+                        <property>
+                            <name>size</name>
+                            <value>50</value>
+                            <type>int</type>
+                        </property>
+                        <property>
+                            <name>maxlength</name>
+                            <value>50</value>
+                            <type>int</type>
+                        </property>
+                        <property>
+                            <name>readonly</name>
+                            <value></value>
+                            <type>boolean</type>
+                        </property>
+                        <property>
+                            <name>tokenize</name>
+                            <value>false</value>
+                            <type>boolean</type>
+                        </property>
+                    </properties>
+                    <constraints>
+                        <constraint>
+                            <name>required</name>
+                            <value><![CDATA[true]]></value>
+                            <type>boolean</type>
+                        </constraint>
+                        <constraint>
+                            <name>pattern</name>
+                            <value><![CDATA[]]></value>
+                            <type>string</type>
+                        </constraint>
+                    </constraints>
+                </field>
+                <field>
+					<type>rte-tinymce5</type>
+					<id>body_html</id>
+					<iceId>main</iceId>
+					<title>Body</title>
+					<description></description>
+					<defaultValue></defaultValue>
+					<help></help>
+					<properties>
+						<property>
+							<name>height</name>
+							<value>300</value>
+							<type>int</type>
+						</property>
+						<property>
+							<name>forceRootBlockPTag</name>
+							<value>true</value>
+							<type>boolean</type>
+						</property>
+						<property>
+							<name>forcePTags</name>
+							<value>true</value>
+							<type>boolean</type>
+						</property>
+						<property>
+							<name>forceBRTags</name>
+							<value>false</value>
+							<type>boolean</type>
+						</property>
+						<property>
+							<name>supportedChannels</name>
+							<value></value>
+							<type>supportedChannels</type>
+						</property>
+						<property>
+							<name>rteConfiguration</name>
+							<value>generic</value>
+							<type>string</type>
+						</property>
+						<property>
+							<name>imageManager</name>
+							<value>desktopImages</value>
+							<type>datasource:image</type>
+						</property>
+						<property>
+							<name>videoManager</name>
+							<value></value>
+							<type>datasource:video</type>
+						</property>
+					</properties>
+					<constraints>
+						<constraint>
+							<name>required</name>
+							<value><![CDATA[true]]></value>
+							<type>boolean</type>
+						</constraint>
+					</constraints>
+				</field>
+            </fields>
+        </section>
+    </sections>
+    <datasources>				<datasource>
+        <type>img-desktop-upload</type>
+        <id>desktopImages</id>
+        <title>Desktop Images</title>
+        <interface>image</interface>
+        <properties>
+            <property>
+                <name>repoPath</name>
+                <value>/static-assets/item/images/{yyyy}/{mm}/{dd}/</value>
+                <type>undefined</type>
+            </property>
+        </properties>
+    </datasource>
+    </datasources>
+</form>

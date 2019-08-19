@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
   ~
@@ -16,10 +15,16 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    This file configures site properties used by Crafter Engine
--->
-
-<site>
-    
-</site>
+<content-type name="/page/entry" is-wcm-type="true">
+	<label>Entry</label>
+	<form>/page/entry</form>
+	<form-path>simple</form-path>
+	<model-instance-path>NOT-USED-BY-SIMPLE-FORM-ENGINE</model-instance-path>
+	<file-extension>xml</file-extension>
+	<content-as-folder>true</content-as-folder>
+	<previewable>true</previewable>
+    <quickCreate>false</quickCreate>
+    <quickCreatePath></quickCreatePath>
+	<noThumbnail>true</noThumbnail>
+	<image-thumbnail>image.jpg</image-thumbnail>
+</content-type>
