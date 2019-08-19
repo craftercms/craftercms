@@ -17,7 +17,7 @@ task("authoringPostEnvironment") {
 
     doLast {
         copy {
-            from "./resources/tomcat-config/crafter"
+            from "./resources/env/authoring/tomcat-config/crafter"
             into "${authEnv}/bin/apache-tomcat/shared/classes/crafter"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort),
                                            SOLR_PORT        : String.valueOf(authSolrPort),
@@ -59,15 +59,8 @@ task("authoringPostEnvironment") {
         }
 
         copy {
-            from("./resources/crafter/") {
-                exclude "**/init-site.*"
-                exclude "**/remove-site.*"
-                eachFile {
-                    if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
-                        it.exclude()
-                    }
-                }
-            }
+            from "./resources/bin/"
+            from "./resources/env/authoring/bin/"       
             into "${authEnv}/bin/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort),
                                            SOLR_PORT        : String.valueOf(authSolrPort),
@@ -82,17 +75,11 @@ task("authoringPostEnvironment") {
                                            GIT_BUILD_ID     : gitRevisionId,
                                            SMTP_PORT        : String.valueOf(authSMTPPort)
             ])
-        }
-
-        copy {
-            from "./resources/migration"
-            into "${authEnv}/bin/migration"
-            filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(authTomcatPort)])
             eachFile {
-                if (it.relativePath.getFile(file("${authEnv}/bin/migration")).exists() && !forceDeploy) {
+                if (it.relativePath.getFile(file("${authEnv}/bin/")).exists() && !forceDeploy) {
                     it.exclude()
                 }
-            }
+            }            
         }
 
         if (!isWin) {
@@ -136,7 +123,7 @@ task("deliveryPostEnvironment") {
     doLast {
 
         copy {
-            from "./resources/tomcat-config-delivery/crafter"
+            from "./resources/env/delivery/tomcat-config/crafter"
             into "${deliveryEnv}/bin/apache-tomcat/shared/classes/crafter"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
                                            SOLR_PORT        : String.valueOf(deliverySolrPort),
@@ -173,7 +160,8 @@ task("deliveryPostEnvironment") {
             }
         }
         copy {
-            from "./resources/crafter/"
+            from "./resources/bin/"
+            from "./resources/env/delivery/bin/"
             into "${deliveryEnv}/bin/"
             filter(ReplaceTokens, tokens: [TOMCAT_HTTP_PORT : String.valueOf(deliveryTomcatPort),
                                            SOLR_PORT        : String.valueOf(deliverySolrPort),
@@ -288,8 +276,8 @@ envs.each { env ->
             }
 
             copy {
-                from "./resources/tomcat-config/setenv.sh"
-                from "./resources/tomcat-config/setenv.bat"
+                from "./resources/env/delivery/tomcat-config/setenv.sh"
+                from "./resources/env/delivery/tomcat-config/setenv.bat"
                 into "${path}/bin/apache-tomcat/bin"
                 eachFile {
                     if (it.relativePath.getFile(file("${path}/bin/apache-tomcat/bin")).exists() && !forceDeploy) {
@@ -299,7 +287,7 @@ envs.each { env ->
             }
 
             copy {
-                from "./resources/tomcat-config/catalina.policy"
+                from "./resources/env/delivery/tomcat-config/catalina.policy"
                 into "${path}/bin/apache-tomcat/conf/"
             }
 
