@@ -166,9 +166,10 @@ def setupUpgradeScript(upgradeBinFolder, upgradeTmpFolder) {
 
     executeCommand(["chmod", "+x", targetScript.toAbsolutePath().toString()])
 
-    println "Upgrade script setup completed"
-    println ""
-    println "Please execute ${targetScript} to continue with upgrade"
+    println "========================================================================"
+    println "Start upgrade completed"
+    println "========================================================================"
+    println "!!! Please execute ${targetScript} to continue with upgrade !!!"
 }
 
 /**
@@ -211,5 +212,5 @@ if (options) {
     }
 
     startUpgrade(cli, getUpgradeHomeFolder(), getUpgradeTmpFolder(), getDownloadsBaseUrl(), options.version,
-            options.'bundle-url', options.'bundle-path', getEnvironmentName())
+                 options.'bundle-url', options.'bundle-path', getEnvironmentName())
 }

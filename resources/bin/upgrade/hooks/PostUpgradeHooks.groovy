@@ -32,16 +32,22 @@ class PostUpgradeHooks {
                     new EnableCrafterSearchInTargetsHook(),
                     new StartCrafterHook(['withSolr']),
                     new CreateAuthoringTargetsHook(),
-                    new RecreateSolrCoresHook()
+                    new RecreateSolrCoresHook(),
+                    new PostUpgradeCompletedHook(true)
             ],
             'delivery 3.0.x': [
                     new UpgradeEmbeddedDbHook(),
                     new EnableCrafterSearchInTargetsHook(),
                     new StartCrafterHook(['withSolr']),
-                    new RecreateSolrCoresHook()
+                    new RecreateSolrCoresHook(),
+                    new PostUpgradeCompletedHook(true)
             ],
             'authoring 3.1.0': [
-                    new UpgradeEmbeddedDbHook()
+                    new UpgradeEmbeddedDbHook(),
+                    new PostUpgradeCompletedHook(false)
+            ],
+            '*': [
+                    new PostUpgradeCompletedHook(false)
             ]
     ]
 
@@ -79,6 +85,9 @@ class PostUpgradeHooks {
             hooks = ALL_HOOKS["${environment} ${oldVersion}".toString()]
             if (!hooks) {
                 hooks = ALL_HOOKS["${oldVersion}".toString()]
+                if (!hooks) {
+                    hooks = ALL_HOOKS['*']
+                }
             }
         }
     }
