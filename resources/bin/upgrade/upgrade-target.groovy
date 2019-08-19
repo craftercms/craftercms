@@ -14,68 +14,75 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package upgrade
 
 @Grapes([
         @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.25'),
         @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.7'),
         @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.1'),
         @Grab(group = 'commons-codec', module = 'commons-codec', version = '1.11'),
-        @Grab(group = 'commons-io', module = 'commons-io', version = '2.6'),
+        @Grab(group = 'commons-io', module = 'commons-io', version = '2.6')
 ])
 
 import groovy.transform.Field
+import org.apache.commons.lang3.StringUtils
 
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
-import java.text.SimpleDateFormat
-import java.util.Date
 
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.collections4.CollectionUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.BooleanUtils
-import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.SystemUtils
 
 import utils.NioUtils
 
 import static java.nio.file.StandardCopyOption.*
+import static upgrade.utils.UpgradeUtils.*
 import static utils.EnvironmentUtils.*
 import static utils.ScriptUtils.*
 
-// Files that should not be overwritten automatically
-@Field def configFilePatterns = [
-    'crafter-setenv\\.sh',
-    'apache-tomcat/conf/.+',
-    'apache-tomcat/shared/classes/.+',
-    'crafter-deployer/config/.+',
-    'crafter-deployer/logging\\.xml',
-    'elasticsearch/config/.+',
-    'solr/server/resources/.+',
-    'solr/server/solr/[^/]+',
-    'solr/server/solr/configsets/crafter_configs/.+'
+// Files that should not be overwritten automatically. Keys are the file patterns, values indicate if the patterns
+// match multiple config files
+@Field Map<String, Boolean> configFilePatterns = [
+    'crafter-setenv\\.sh': false,
+    'apache-tomcat/conf/.+': true,
+    'apache-tomcat/shared/classes/.+': true,
+    'crafter-deployer/config/.+': true,
+    'crafter-deployer/logging\\.xml': false,
+    'elasticsearch/config/.+': true,
+    'solr/server/resources/.+': true,
+    'solr/server/solr/[^/]+': true,
+    'solr/server/solr/configsets/crafter_configs/.+': true
 ]
-
-@Field def backupTimestampFormat = "yyyyMMddHHmmss"
+// List of patterns for files that shouldn't be deleted
+@Field List<String> shouldNotBeDeletedFilePatterns = [
+    'install-license\\.(.*)',
+    'apache-tomcat/shared/classes/crafter/license(/.+)?'
+]
+@Field String backupTimestampFormat = "yyyyMMddHHmmss"
+@Field List<String> alwaysOverwriteConfigFilePatterns = []
 
 /**
  * Builds the CLI and adds the possible options
  */
-def buildCli(cli) {
+def buildCli(CliBuilder cli) {
     cli.h(longOpt: 'help', 'Show usage information')
 }
 
 /**
  * Prints the help info
  */
-def printHelp(cli) {
+def printHelp(CliBuilder cli) {
     cli.usage()
 }
 
 /**
  * Exits the script with an error message, the usage and an error status.
  */
-def exitWithError(cli, msg) {
+def exitWithError(CliBuilder cli, String msg) {
     println msg
     println ''
 
@@ -87,7 +94,7 @@ def exitWithError(cli, msg) {
 /**
  * Backups the data.
  */
-def backupData(binFolder) {
+def backupData(Path binFolder) {
     def backup = System.console().readLine '> Backup the data folder before upgrade? [(Y)es/(N)o]: '
         backup = BooleanUtils.toBoolean(backup)
 
@@ -110,36 +117,9 @@ def backupData(binFolder) {
 }
 
 /**
- * Upgrade DB
- */
-def upgradeDB(binFolder) {
-    def upgrade = System.console().readLine '> Upgrade database? [(Y)es/(N)o]: '
-        upgrade = BooleanUtils.toBoolean(upgrade)
-
-    if (upgrade) {
-        println "========================================================================"
-        println "Upgrade database"
-        println "========================================================================"
-
-        def setupCallback = { pb ->
-            def env = pb.environment()
-                env.remove("CRAFTER_HOME")
-                env.remove("DEPLOYER_HOME")
-                env.remove("CRAFTER_BIN_DIR")
-                env.remove("CRAFTER_DATA_DIR")
-                env.remove("CRAFTER_LOGS_DIR")
-                env.remove("MARIADB_HOME")
-                env.remove("MARIADB_DATA_DIR")
-        }
-
-        executeCommand(["./crafter.sh", "upgradedb"], binFolder, setupCallback)
-    }
-}
-
-/**
  * Backups the bin folder.
  */
-def backupBin(binFolder, backupsFolder, environmentName) {
+def backupBin(Path binFolder, Path backupsFolder, String environmentName) {
     def backup = System.console().readLine '> Backup the bin folder before upgrade? [(Y)es/(N)o]: '
         backup = BooleanUtils.toBoolean(backup)
 
@@ -166,7 +146,7 @@ def backupBin(binFolder, backupsFolder, environmentName) {
 /**
  * Shutdowns Crafter.
  */
-def shutdownCrafter(binFolder) {
+def shutdownCrafter(Path binFolder) {
     println "========================================================================"
     println "Shutting down Crafter"
     println "========================================================================"
@@ -184,16 +164,23 @@ def shutdownCrafter(binFolder) {
 }
 
 /**
- * Checks if the path belongs to what Crafter considers a config file.
+ * Returns the config file pattern that matches the given path.
  */
-def isConfigFile(path) {
-    return configFilePatterns.any { path.toString().matches(it) }
+def matchesConfigFilePatterns(Path path) {
+    return configFilePatterns.keySet().find { path.toString().matches(it) }
+}
+
+/**
+ * Returns true if the given path matches one of the should not delete file patterns.
+ */
+def shouldNotBeDeleted(Path path) {
+    return shouldNotBeDeletedFilePatterns.any { path.toString().matches(it) }
 }
 
 /**
  * Returns true if the checksum of both specified fiels is the same, false otherwise.
  */
-def compareFiles(file1, file2) {
+def compareFiles(Path file1, Path file2) {
     def file1Md5
     def file2Md5
 
@@ -210,14 +197,14 @@ def compareFiles(file1, file2) {
 /**
  * Executes the a diff between the specified files.
  */
-def diffFiles(oldFile, newFile) {
+def diffFiles(Path oldFile, Path newFile) {
     executeCommand(["/bin/sh", "-c", "diff ${oldFile} ${newFile} | less".toString()])
 }
 
 /**
  * Opens the default editor, pointed by $EDITOR. If the env variable doesn't exist, nano is used instead.
  */
-def openEditor(path) {
+def openEditor(Path path) {
     def command = System.getenv('EDITOR')
     if (!command) {
         command = 'nano'
@@ -229,7 +216,7 @@ def openEditor(path) {
 /**
  * Overwrites the old file with the new file, backing up the old file first to ${OLD_FILE_PATH}.${TIMESTAMP}.bak.
  */
-def overwriteFile(binFolder, oldFile, newFile, filePath) {
+def overwriteConfigFile(Path binFolder, Path oldFile, Path newFile, Path filePath) {
     def now = new Date()
     def backupTimestamp = now.format(backupTimestampFormat)
     def backupFilePath = "${filePath}.${backupTimestamp}.bak"
@@ -244,7 +231,7 @@ def overwriteFile(binFolder, oldFile, newFile, filePath) {
 /**
  * Prints the border of a menu, using the specified length
  */
-def printMenuBorder(length) {
+def printMenuBorder(int length) {
     for (i = 0; i < length; i++) {
         print '-'
     }
@@ -256,21 +243,30 @@ def printMenuBorder(length) {
  * Prints the interactive "menu" that asks for the user input when the new version of a file differs from the old
  * version. 
  */
-def showSyncFileMenu(filePath) {
-    def firstLine = "Config file ${filePath} is different in the new release. Please choose:".toString()
+def showSyncFileMenu(Path filePath, String configPattern) {
+    def firstLine = "Config file [${filePath}] is different in the new release. Please choose:".toString()
+    def matchesMultipleFiles = configFilePatterns[configPattern]
 
+    println ''
     printMenuBorder(firstLine.length())
     println firstLine
-    println ' - (D)iff files to see what changed'
-    println ' - (E)dit the old file (with $EDITOR)'
-    println " - (O)verwrite ${filePath} with the new version"
-    println ' - (K)eep the old file and continue with the rest of the upgrade'
-    println " - (A)lways overwrite files and don't ask again for the rest of the upgrade"
+    println ' - (D)iff file versions to see what changed'
+    println ' - (E)dit the original file (with $EDITOR)'
+    println ' - (K)eep the original file'
+    println ' - (O)verwrite the file with the new version'
+
+    if (matchesMultipleFiles) {
+        println " - (M)atching config files for regex [${configPattern}] should always be overwritten"
+    }
+
+    println " - (A)lways overwrite config files and don't ask again"
     println ' - (Q)uit the upgrade script (this will stop the upgrade at this point)'
-    printMenuBorder(firstLine.length()) 
+    printMenuBorder(firstLine.length())
 
     def option = System.console().readLine '> Enter your choice: '
         option = StringUtils.lowerCase(option)
+
+    println ''
 
     return option
 }
@@ -278,7 +274,7 @@ def showSyncFileMenu(filePath) {
 /**
  * Syncs an old file with it's new version.
  */
-def syncFile(binFolder, newBinFolder, filePath, alwaysOverwrite) {
+def syncFile(Path binFolder, Path newBinFolder, Path filePath, boolean alwaysOverwrite) {
     def oldFile = binFolder.resolve(filePath)
     def newFile = newBinFolder.resolve(filePath)
 
@@ -289,18 +285,18 @@ def syncFile(binFolder, newBinFolder, filePath, alwaysOverwrite) {
             Files.createDirectories(oldFile)
         }
     } else if (Files.exists(oldFile)) {
-        if (isConfigFile(filePath)) {
-            def options = ['d', 'e', 'o', 'k', 'a', 'q']
+        def configPattern = matchesConfigFilePatterns(filePath)
+        if (configPattern != null) {
             def done = false
 
             while (!done) {
                 if (compareFiles(oldFile, newFile)) {
                     done = true
-                } else if (alwaysOverwrite) {
-                    overwriteFile(binFolder, oldFile, newFile, filePath)
+                } else if (alwaysOverwrite || alwaysOverwriteConfigFilePatterns.contains(configPattern)) {
+                    overwriteConfigFile(binFolder, oldFile, newFile, filePath)
                     done = true
                 } else {
-                    def selectedOption = showSyncFileMenu(filePath)
+                    def selectedOption = showSyncFileMenu(filePath, configPattern)
                     switch (selectedOption) {
                         case 'd':
                             diffFiles(oldFile, newFile)
@@ -308,15 +304,20 @@ def syncFile(binFolder, newBinFolder, filePath, alwaysOverwrite) {
                         case 'e':
                             openEditor(oldFile)
                             break
-                        case 'o':
-                            overwriteFile(binFolder, oldFile, newFile, filePath)
-                            done = true
-                            break
                         case 'k':
                             done = true
                             break
+                        case 'o':
+                            overwriteConfigFile(binFolder, oldFile, newFile, filePath)
+                            done = true
+                            break
+                        case 'm':
+                            overwriteConfigFile(binFolder, oldFile, newFile, filePath)
+                            alwaysOverwriteConfigFilePatterns.add(configPattern)
+                            done = true
+                            break
                         case 'a':
-                            overwriteFile(binFolder, oldFile, newFile, filePath)
+                            overwriteConfigFile(binFolder, oldFile, newFile, filePath)
                             done = true
                             alwaysOverwrite = true
                             break
@@ -351,19 +352,22 @@ def syncFile(binFolder, newBinFolder, filePath, alwaysOverwrite) {
 /**
  * Prints the interactive "menu" that asks for the user input when an old file doesn't appear in the new release.
  */
-def showDeleteFileMenu(filePath) {
-    def firstLine = "Config file ${filePath} doesn't exist in the new release. Delete the file?".toString()
+def showDeleteFileMenu(Path filePath) {
+    def firstLine = "Config file [${filePath}] doesn't exist in the new release. Delete the file?".toString()
 
+    println ''
     printMenuBorder(firstLine.length())
     println firstLine
     println ' - (N)o'
     println ' - (Y)es'
-    println " - (A)lways delete the file and and don't ask again for the rest of the upgrade"
+    println " - (A)lways delete files absent from new release and and don't ask again"
     println ' - (Q)uit the upgrade script (this will stop the upgrade at this point)'
-    printMenuBorder(firstLine.length()) 
+    printMenuBorder(firstLine.length())
 
     def option = System.console().readLine '> Enter your choice: '
         option = StringUtils.lowerCase(option)
+
+    println ''
 
     return option    
 }
@@ -371,14 +375,13 @@ def showDeleteFileMenu(filePath) {
 /**
  * Checks if an old file needs to be deleted if it doesn't appear in the new release. 
  */
-def deleteFileIfAbsentInNewRelease(binFolder, newBinFolder, filePath, alwaysDelete) {
+def deleteFileIfAbsentInNewRelease(Path binFolder, Path newBinFolder, Path filePath, boolean alwaysDelete) {
     def oldFile = binFolder.resolve(filePath)
     def newFile = newBinFolder.resolve(filePath)
     def delete = false
 
-    if (!Files.exists(newFile)) {
+    if (!Files.exists(newFile) && !shouldNotBeDeleted(filePath)) {
         if (!alwaysDelete && !Files.isDirectory(oldFile)) {
-            def options = ['n', 'y', 'a', 'q']
             def done = false
 
             while (!done) {
@@ -421,7 +424,7 @@ def deleteFileIfAbsentInNewRelease(binFolder, newBinFolder, filePath, alwaysDele
 /**
  * Clears Tomcat's temp folders and exploded webapps.
  */
-def resetTomcat(binFolder) {
+def resetTomcat(Path binFolder) {
     def tempFolder = binFolder.resolve("apache-tomcat/temp")
     def workFolder = binFolder.resolve("apache-tomcat/work")
     def logsFolder = binFolder.resolve("apache-tomcat/logs")
@@ -448,9 +451,9 @@ def resetTomcat(binFolder) {
 /**
  * Does the actual upgrade
  */
-def doUpgrade(binFolder, newBinFolder) {
+def doUpgrade(String oldVersion, String newVersion, Path binFolder, Path newBinFolder) {
     println "========================================================================"
-    println "Upgrading Crafter"
+    println "Upgrading Crafter ${oldVersion} -> ${newVersion}"
     println "========================================================================"
 
     resetTomcat(binFolder)
@@ -479,28 +482,43 @@ def doUpgrade(binFolder, newBinFolder) {
                 alwaysOverwrite = syncFile(binFolder, newBinFolder, newBinFolder.relativize(file), alwaysOverwrite)
             }
     }
+}
 
-    upgradeDB(binFolder)
+def setupPostUpgradeScript(Path upgradeFolder, String oldVersion, String newVersion) {
+    def sourceScript = upgradeFolder.resolve("post-upgrade.sh.off")
+    def destScript = upgradeFolder.resolve("post-upgrade.sh")
+
+    def content = new String(Files.readAllBytes(sourceScript), StandardCharsets.UTF_8)
+        content = content.replace("{{oldVersion}}", oldVersion)
+        content = content.replace("{{newVersion}}", newVersion)
+
+    Files.write(destScript, content.getBytes(StandardCharsets.UTF_8))
+    Files.delete(sourceScript)
+
+    executeCommand(["chmod", "+x", destScript.toAbsolutePath().toString()])
 }
 
 /**
  * Executes the upgrade.
  */
-def upgrade(targetFolder) {
+def upgrade(Path targetFolder) {
     def binFolder = targetFolder.resolve("bin")
     def backupsFolder = targetFolder.resolve("backups")
     def newBinFolder = getCrafterBinFolder()
+    def oldVersion = readVersionFile(binFolder)
+    def newVersion = readVersionFile(newBinFolder)
 
     shutdownCrafter(binFolder)
     backupData(binFolder)
     backupBin(binFolder, backupsFolder, getEnvironmentName())
-    doUpgrade(binFolder, newBinFolder)
+    doUpgrade(oldVersion, newVersion, binFolder, newBinFolder)
+
+    setupPostUpgradeScript(binFolder.resolve("upgrade"), oldVersion, newVersion)
 
     println "========================================================================"
-    println "Upgrade complete"
+    println "Upgrade completed"
     println "========================================================================"
-    println "Please read the release notes before starting Crafter again for any additional changes you need to " +
-            "manually apply"
+    println "!!! Please read the release notes and make any necessary manual changes, then run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh !!!"
 }
 
 checkDownloadGrapesOnlyMode(getClass())
