@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+  ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
     Site Configuration Tools
 
     This file helps configure the Site Config section with tools. The tools specified here appear on the left-
@@ -24,6 +41,7 @@
     </config>
 -->
 <config>
+    <version>7</version>
     <tools>
         <tool>
             <name>content-types</name>
@@ -46,6 +64,12 @@
                     </icon>
                 </control>
                 <control>
+                    <name>numeric-input</name>
+                    <icon>
+                        <class>fa-pencil-square</class>
+                    </icon>
+                </control>
+                <control>
                     <name>textarea</name>
                     <icon>
                         <class>fa-paragraph</class>
@@ -58,9 +82,21 @@
                     </icon>
                 </control>
                 <control>
+                    <name>rte-tinymce5</name>
+                    <icon>
+                        <class>fa-code</class>
+                    </icon>
+                </control>
+                <control>
                     <name>dropdown</name>
                     <icon>
                         <class>fa-sort-desc</class>
+                    </icon>
+                </control>
+                <control>
+                    <name>time</name>
+                    <icon>
+                        <class>fa-clock-o</class>
                     </icon>
                 </control>
                 <control>
@@ -149,13 +185,6 @@
                     </icon>
                 </datasource>
                 <datasource>
-                    <name>img-cmis-repo</name>
-                    <icon>
-                        <class>fa-square</class>
-                        <stackedclass>fa-plug fa-inverse fa-image-plug</stackedclass>
-                    </icon>
-                </datasource>
-                <datasource>
                     <name>file-desktop-upload</name>
                     <icon>
                         <class>fa-upload</class>
@@ -174,6 +203,125 @@
                     </icon>
                 </datasource>
                 <datasource>
+                    <name>img-cmis-repo</name>
+                    <icon>
+                        <class>fa-square</class>
+                        <stackedclass>fa-plug fa-inverse fa-image-plug</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>video-cmis-repo</name>
+                    <icon>
+                        <class>fa-square-o fa-video-square</class>
+                        <stackedclass>fa-plug fa-video-plug</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>CMIS-upload</name>
+                    <icon>
+                        <class>fa-plug</class>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>img-CMIS-upload</name>
+                    <icon>
+                        <class>fa-square</class>
+                        <stackedclass>fa-plug fa-inverse fa-image-plug</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>video-CMIS-upload</name>
+                    <icon>
+                        <class>fa-square-o fa-video-square</class>
+                        <stackedclass>fa-plug fa-video-plug</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>WebDAV-repo</name>
+                    <icon>
+                        <class>fa-square-o fa-server</class>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>img-WebDAV-repo</name>
+                    <icon>
+                        <class>fa-square-o fa-server</class>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>video-WebDAV-repo</name>
+                    <icon>
+                        <class>fa-square-o fa-server</class>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>WebDAV-upload</name>
+                    <icon>
+                        <class>fa-square-o fa-server</class>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>img-WebDAV-upload</name>
+                    <icon>
+                        <class>fa-square-o fa-server</class>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>video-WebDAV-upload</name>
+                    <icon>
+                        <class>fa-square-o fa-server</class>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>S3-repo</name>
+                    <icon>
+                        <class>fa-file-o</class>
+                        <stackedclass>fa-amazon</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>img-S3-repo</name>
+                    <icon>
+                        <class>fa-square</class>
+                        <stackedclass>fa-amazon fa-inverse</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>video-S3-repo</name>
+                    <icon>
+                        <class>fa-film</class>
+                        <stackedclass>fa-amazon</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>S3-upload</name>
+                    <icon>
+                        <class>fa-file-o</class>
+                        <stackedclass>fa-amazon</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>img-S3-upload</name>
+                    <icon>
+                        <class>fa-square</class>
+                        <stackedclass>fa-amazon fa-inverse</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>video-S3-upload</name>
+                    <icon>
+                        <class>fa-film</class>
+                        <stackedclass>fa-amazon</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>video-S3-transcoding</name>
+                    <icon>
+                        <class>fa-film</class>
+                        <stackedclass>fa-amazon</stackedclass>
+                    </icon>
+                </datasource>
+                <datasource>
                     <name>video-desktop-upload</name>
                     <icon>
                         <class>fa-video-camera</class>
@@ -183,13 +331,6 @@
                     <name>video-browse-repo</name>
                     <icon>
                         <class>fa-file-video-o</class>
-                    </icon>
-                </datasource>
-                <datasource>
-                    <name>video-cmis-repo</name>
-                    <icon>
-                        <class>fa-square-o fa-video-square</class>
-                        <stackedclass>fa-plug fa-video-plug</stackedclass>
                     </icon>
                 </datasource>
                 <datasource>
@@ -217,6 +358,12 @@
                             <type>template</type>
                         </property>
                         <property>
+                            <name>no-template-required</name>
+                            <label>No Template Required</label>
+                            <value></value>
+                            <type>boolean</type>
+                        </property>
+                        <property>
                             <name>merge-strategy</name>
                             <label>Merge Strategy</label>
                             <value>inherit-levels</value>
@@ -235,6 +382,12 @@
                             <type>template</type>
                         </property>
                         <property>
+                            <name>no-template-required</name>
+                            <label>No Template Required</label>
+                            <value></value>
+                            <type>boolean</type>
+                        </property>
+                        <property>
                             <name>merge-strategy</name>
                             <label>Merge Strategy</label>
                             <value>inherit-levels</value>
@@ -250,20 +403,12 @@
             <label>Configuration</label>
         </tool>
         <tool>
-            <name>groups</name>
-            <label>Groups</label>
-        </tool>
-        <tool>
             <name>audit</name>
             <label>Audit</label>
         </tool>
         <tool>
             <name>workflow-states</name>
             <label>Workflow States</label>
-        </tool>
-        <tool>
-            <name>logging</name>
-            <label>Logging Levels</label>
         </tool>
         <tool>
             <name>log-view</name>
@@ -281,6 +426,13 @@
             <label>Remote Repositories</label>
             <icon>
                 <class>fa-database</class>
+            </icon>
+        </tool>
+        <tool>
+            <name>graphiql</name>
+            <label>GraphiQL</label>
+            <icon>
+                <class>fa-line-chart</class>
             </icon>
         </tool>
     </tools>

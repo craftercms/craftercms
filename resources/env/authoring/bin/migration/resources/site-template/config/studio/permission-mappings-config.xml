@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <!-- permission-mappings-config.xml
 
   This files contains the permissions mappings for the roles defined in
@@ -60,6 +77,7 @@
 
 -->
 <permissions>
+    <version>5</version>
     <role name="author">
         <rule regex="/site/website/.*">
             <allowed-permissions>
@@ -67,6 +85,10 @@
                 <permission>Write</permission>
                 <permission>Create Content</permission>
                 <permission>Create Folder</permission>
+                <permission>list_cmis</permission>
+                <permission>search_cmis</permission>
+                <permission>clone_content_cmis</permission>
+                <permission>upload_content_cmis</permission>
             </allowed-permissions>
         </rule>
         <rule regex="/site/components|/site/components/.*">
@@ -75,6 +97,10 @@
                 <permission>Write</permission>
                 <permission>Create Content</permission>
                 <permission>Create Folder</permission>
+                <permission>list_cmis</permission>
+                <permission>search_cmis</permission>
+                <permission>clone_content_cmis</permission>
+                <permission>upload_content_cmis</permission>
             </allowed-permissions>
         </rule>
         <rule regex="/static-assets|/static-assets/.*">
@@ -83,6 +109,16 @@
                 <permission>Write</permission>
                 <permission>Create Content</permission>
                 <permission>Create Folder</permission>
+                <permission>list_cmis</permission>
+                <permission>search_cmis</permission>
+                <permission>clone_content_cmis</permission>
+                <permission>upload_content_cmis</permission>
+            </allowed-permissions>
+        </rule>
+        <rule regex=".*">
+            <allowed-permissions>
+                <permission>S3 Read</permission>
+                <permission>S3 Write</permission>
             </allowed-permissions>
         </rule>
     </role>
@@ -94,6 +130,10 @@
                 <permission>Create Content</permission>
                 <permission>Create Folder</permission>
                 <permission>Publish</permission>
+                <permission>list_cmis</permission>
+                <permission>search_cmis</permission>
+                <permission>clone_content_cmis</permission>
+                <permission>upload_content_cmis</permission>
             </allowed-permissions>
         </rule>
         <rule regex="^/site/(?!website/index\.xml)(.*)">
@@ -109,11 +149,21 @@
                 <permission>Create Content</permission>
                 <permission>Create Folder</permission>
                 <permission>Publish</permission>
+                <permission>list_cmis</permission>
+                <permission>search_cmis</permission>
+                <permission>clone_content_cmis</permission>
+                <permission>upload_content_cmis</permission>
             </allowed-permissions>
         </rule>
         <rule regex="~DASHBOARD~">
             <allowed-permissions>
                 <permission>Publish</permission>
+            </allowed-permissions>
+        </rule>
+        <rule regex=".*">
+            <allowed-permissions>
+                <permission>S3 Read</permission>
+                <permission>S3 Write</permission>
             </allowed-permissions>
         </rule>
     </role>
@@ -126,6 +176,10 @@
                 <permission>Create Folder</permission>
                 <permission>Create Content</permission>
                 <permission>Change Content Type</permission>
+                <permission>list_cmis</permission>
+                <permission>search_cmis</permission>
+                <permission>clone_content_cmis</permission>
+                <permission>upload_content_cmis</permission>
             </allowed-permissions>
         </rule>
         <rule regex="^/(?!site/website/index\.xml)(.*)">
@@ -136,6 +190,12 @@
         <rule regex="~DASHBOARD~">
             <allowed-permissions>
                 <permission>Publish</permission>
+            </allowed-permissions>
+        </rule>
+        <rule regex=".*">
+            <allowed-permissions>
+                <permission>S3 Read</permission>
+                <permission>S3 Write</permission>
             </allowed-permissions>
         </rule>
     </role>
@@ -148,6 +208,18 @@
                 <permission>Create Folder</permission>
                 <permission>Create Content</permission>
                 <permission>Change Content Type</permission>
+                <permission>audit_log</permission>
+                <permission>list_cmis</permission>
+                <permission>search_cmis</permission>
+                <permission>clone_content_cmis</permission>
+                <permission>upload_content_cmis</permission>
+                <permission>add_remote</permission>
+                <permission>list_remotes</permission>
+                <permission>pull_from_remote</permission>
+                <permission>push_to_remote</permission>
+                <permission>rebuild_database</permission>
+                <permission>remove_remote</permission>
+                <permission>write_configuration</permission>
             </allowed-permissions>
         </rule>
         <rule regex="^/(?!site/website/index\.xml)(.*)">
@@ -158,6 +230,20 @@
         <rule regex="~DASHBOARD~">
             <allowed-permissions>
                 <permission>Publish</permission>
+                <permission>audit_log</permission>
+                <permission>add_remote</permission>
+                <permission>list_remotes</permission>
+                <permission>pull_from_remote</permission>
+                <permission>push_to_remote</permission>
+                <permission>rebuild_database</permission>
+                <permission>remove_remote</permission>
+                <permission>write_configuration</permission>
+            </allowed-permissions>
+        </rule>
+        <rule regex=".*">
+            <allowed-permissions>
+                <permission>S3 Read</permission>
+                <permission>S3 Write</permission>
             </allowed-permissions>
         </rule>
     </role>
@@ -173,11 +259,21 @@
                 <permission>Publish</permission>
             </allowed-permissions>
         </rule>
+        <rule regex=".*">
+            <allowed-permissions>
+                <permission>S3 Read</permission>
+            </allowed-permissions>
+        </rule>
     </role>
     <role name="*">
         <rule regex="/.*">
             <allowed-permissions>
                 <permission>Read</permission>
+            </allowed-permissions>
+        </rule>
+        <rule regex=".*">
+            <allowed-permissions>
+                <permission>S3 Read</permission>
             </allowed-permissions>
         </rule>
     </role>
