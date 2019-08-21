@@ -360,7 +360,7 @@ def showDeleteFileMenu(Path filePath) {
     println firstLine
     println ' - (N)o'
     println ' - (Y)es'
-    println " - (A)lways delete files absent from new release and and don't ask again"
+    println " - (A)lways delete files absent from new release and don't ask again"
     println ' - (Q)uit the upgrade script (this will stop the upgrade at this point)'
     printMenuBorder(firstLine.length())
 
