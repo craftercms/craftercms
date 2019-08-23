@@ -810,7 +810,21 @@ function doBackup() {
   fi
 
   # MySQL Dump
-  if [ -d "$MARIADB_DATA_DIR" ]; then
+  if [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]]; then
+    echo "------------------------------------------------------------------------"
+    echo "Backing up external DB"
+    echo "------------------------------------------------------------------------"
+
+    # Check that the mysqldump is in the path
+    if type "mysqldump" >/dev/null 2>&1; then
+      export MYSQL_PWD=$MARIADB_PASSWD
+      mysqldump --databases crafter --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp > "$TEMP_FOLDER/crafter.sql"
+      abortOnError
+    else
+      echo "External DB backup failed, unable to find mysqldump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
+      exit 1 
+    fi  
+  elif [ -d "$MARIADB_DATA_DIR" ]; then
     # Start DB if necessary
     DB_STARTED=false
     if [ -z $(pidOf "$MARIADB_PORT") ]; then
@@ -825,11 +839,11 @@ function doBackup() {
 
     #Do dump
     echo "------------------------------------------------------------------------"
-    echo "Backing up mysql"
+    echo "Backing up embedded DB"
     echo "------------------------------------------------------------------------"
-    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --port=$MARIADB_PORT --protocol=tcp --user=root > "$TEMP_FOLDER/crafter.sql"
+    export MYSQL_PWD=$MARIADB_ROOT_PASSWD
+    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp > "$TEMP_FOLDER/crafter.sql"
     abortOnError
-    echo -e "SET GLOBAL innodb_large_prefix = TRUE ;\nSET GLOBAL innodb_file_format = 'BARRACUDA' ;\nSET GLOBAL innodb_file_format_max = 'BARRACUDA' ;\nSET GLOBAL innodb_file_per_table = TRUE ;\n$(cat $TEMP_FOLDER/crafter.sql)" > $TEMP_FOLDER/crafter.sql
 
     if [ "$DB_STARTED" = true ]; then
       # Stop DB
@@ -930,46 +944,6 @@ function doBackup() {
   echo "> Backup completed and saved to $TARGET_FILE"
 }
 
-function doUpgradeDB() {
-  echo "------------------------------------------------------------------------"
-  echo "Starting upgrade of database $MARIADB_DATA_DIR"
-  echo "------------------------------------------------------------------------"
-
-  # Upgrade database
-  if [ -d "$MARIADB_DATA_DIR" ]; then
-    # Start DB if necessary
-    DB_STARTED=false
-    if [ -z $(pidOf "$MARIADB_PORT") ]; then
-      mkdir -p "$CRAFTER_BIN_DIR/dbms"
-      echo "------------------------------------------------------------------------"
-      echo "Starting DB"
-      echo "------------------------------------------------------------------------"
-      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" -DmariaDB4j.socket="/tmp/mysql.sock" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-      sleep 30
-      DB_STARTED=true
-    fi
-
-    # Do upgrade
-    echo "------------------------------------------------------------------------"
-    echo "Upgrade mysql"
-    echo "------------------------------------------------------------------------"
-    $CRAFTER_BIN_DIR/dbms/bin/mysql_upgrade --port=$MARIADB_PORT 
-    abortOnError
-
-    if [ "$DB_STARTED" = true ]; then
-      # Stop DB
-      echo "------------------------------------------------------------------------"
-      echo "Stopping DB"
-      echo "------------------------------------------------------------------------"
-      kill $(cat mariadb4j.pid)
-      sleep 10
-    fi
-  fi
-
-  echo "------------------------------------------------------------------------"
-  echo "> Upgrade database completed"
-}
-
 function doRestore() {
   pid=$(pidOf $TOMCAT_HTTP_PORT)
   if ! [ -z $pid ]; then
@@ -1065,35 +1039,94 @@ function doRestore() {
     abortOnError
   fi
 
-  # If it is an authoring env then sync the repos
+  # Restore DB
   if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
-    mkdir -p "$MARIADB_DATA_DIR"
-    #Start DB
-    echo "------------------------------------------------------------------------"
-    echo "Starting DB"
-    echo "------------------------------------------------------------------------"
-    java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-    sleep 30
+    if [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]]; then
+      echo "------------------------------------------------------------------------"
+      echo "Restoring external DB"
+      echo "------------------------------------------------------------------------"
 
-    # Import
-    echo "------------------------------------------------------------------------"
-    echo "Restoring DB"
-    echo "------------------------------------------------------------------------"
+      # Check that the mysql is in the path
+      if type "mysql" >/dev/null 2>&1; then
+        export MYSQL_PWD=$MARIADB_PASSWD
+        mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$TEMP_FOLDER/crafter.sql"
+        abortOnError
+      else
+        echo "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
+        exit 1 
+      fi
+    else
+      mkdir -p "$MARIADB_DATA_DIR"
+      #Start DB
+      echo "------------------------------------------------------------------------"
+      echo "Starting DB"
+      echo "------------------------------------------------------------------------"
+      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
+      sleep 30
 
-    $CRAFTER_BIN_DIR/dbms/bin/mysql --user=root --port=$MARIADB_PORT --protocol=TCP --binary-mode < "$TEMP_FOLDER/crafter.sql"
-    abortOnError
+      # Import
+      echo "------------------------------------------------------------------------"
+      echo "Restoring embedded DB"
+      echo "------------------------------------------------------------------------"
+      export MYSQL_PWD=$MARIADB_ROOT_PASSWD
+      $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$TEMP_FOLDER/crafter.sql"
+      abortOnError
 
-    # Stop DB
-    echo "------------------------------------------------------------------------"
-    echo "Stopping DB"
-    echo "------------------------------------------------------------------------"
-    kill $(cat mariadb4j.pid)
-    sleep 10
+      # Stop DB
+      echo "------------------------------------------------------------------------"
+      echo "Stopping DB"
+      echo "------------------------------------------------------------------------"
+      kill $(cat mariadb4j.pid)
+      sleep 10    
+    fi
   fi
 
   rm -r "$TEMP_FOLDER"
   echo "------------------------------------------------------------------------"
   echo "> Restore complete, you may now start the system"
+}
+
+function doUpgradeDB() {
+  echo "------------------------------------------------------------------------"
+  echo "Starting upgrade of embedded database $MARIADB_DATA_DIR"
+  echo "------------------------------------------------------------------------"
+
+  # Upgrade database
+  if [ -d "$MARIADB_DATA_DIR" ]; then
+    # Start DB if necessary
+    DB_STARTED=false
+    if [ -z $(pidOf "$MARIADB_PORT") ]; then
+      mkdir -p "$CRAFTER_BIN_DIR/dbms"
+      echo "------------------------------------------------------------------------"
+      echo "Starting DB"
+      echo "------------------------------------------------------------------------"
+      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
+      sleep 30
+      DB_STARTED=true
+    fi
+
+    # Do upgrade
+    echo "------------------------------------------------------------------------"
+    echo "Upgrading embedded DB"
+    echo "------------------------------------------------------------------------"
+    export MYSQL_PWD=$MARIADB_ROOT_PASSWD
+    $CRAFTER_BIN_DIR/dbms/bin/mysql_upgrade --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp 
+    abortOnError
+
+    if [ "$DB_STARTED" = true ]; then
+      # Stop DB
+      echo "------------------------------------------------------------------------"
+      echo "Stopping DB"
+      echo "------------------------------------------------------------------------"
+      kill $(cat mariadb4j.pid)
+      sleep 10
+    fi
+
+    echo "------------------------------------------------------------------------"
+    echo "> Upgrade database completed"    
+  else
+    echo 'No embedded DB found, skipping upgrade'
+  fi
 }
 
 function rmDirContents() {
