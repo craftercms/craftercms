@@ -344,24 +344,6 @@ envs.each { env ->
         })
     }
 
-    if (!tasks.findByName("${env}_bundle_zip")) {
-        task "${env}_bundle_zip"(type: Zip) {
-            description "Bundles as a Zip file ${env} enviroment"
-            def environmentPath = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
-            from(environmentPath) {
-                into("crafter")
-            }
-            archiveName "crafter-cms-${env}.zip"
-            fileMode null
-            dirMode null
-            includeEmptyDirs true
-            metadataCharset "UTF-8"
-            caseSensitive false
-            destinationDir(file("bundles/"))
-            zip64 true
-        }
-    }
-
     if (!tasks.findByName("${env}_bundle_tar")) {
         task "${env}_bundle_tar"(type: Tar) {
             description "Bundles as a Tar file ${env} enviroment"
@@ -369,7 +351,7 @@ envs.each { env ->
             from(environmentPath) {
                 into("crafter")
             }
-            archiveName "crafter-cms-${env}.tar.gz"
+            archiveName "crafter-cms-${env}-${project.version}.tar.gz"
             fileMode null
             dirMode null
             includeEmptyDirs true
@@ -380,14 +362,10 @@ envs.each { env ->
     }
 
     switch (typeOfBundle.toLowerCase()) {
-        case "zip":
-            bundleDeps.add(tasks.findByName("${env}_bundle_zip"))
-            break;
         case "tar":
             bundleDeps.add(tasks.findByName("${env}_bundle_tar"))
             break;
         default:
-            bundleDeps.add(tasks.findByName("${env}_bundle_zip"))
             bundleDeps.add(tasks.findByName("${env}_bundle_tar"))
             break;
     }
@@ -458,7 +436,7 @@ task deploy() {
 }
 
 task bundle(dependsOn: bundleDeps) {
-    description "Zips and Tars all Crafter enviroments."
+    description "Tars all Crafter enviroments."
 }
 
 task start(dependsOn: startDeps) {
