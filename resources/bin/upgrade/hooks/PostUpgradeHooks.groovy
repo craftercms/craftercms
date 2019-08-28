@@ -36,7 +36,6 @@ class PostUpgradeHooks {
                     new PostUpgradeCompletedHook(true)
             ],
             'delivery 3.0.x': [
-                    new UpgradeEmbeddedDbHook(),
                     new EnableCrafterSearchInTargetsHook(),
                     new StartCrafterHook(['withSolr']),
                     new RecreateSolrCoresHook(),
