@@ -355,7 +355,7 @@ envs.each { env ->
             from(environmentPath) {
                 into("crafter")
             }
-            archiveName "crafter-cms-${env}.zip"
+            archiveName "crafter-cms-${env}-${project.version}.zip"
             fileMode null
             dirMode null
             includeEmptyDirs true
@@ -373,7 +373,7 @@ envs.each { env ->
             from(environmentPath) {
                 into("crafter")
             }
-            archiveName "crafter-cms-${env}.tar.gz"
+            archiveName "crafter-cms-${env}-${project.version}.tar.gz"
             fileMode null
             dirMode null
             includeEmptyDirs true
