@@ -14,15 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package upgrade.hooks
 
 import java.nio.file.Path
 
-interface UpgradeHook {
+class PostUpgradeCompletedHook implements PostUpgradeHook {
 
-	void preUpgrade(Path binFolder, Path newBinFolder)
+    private boolean crafterStarted
 
-	void postUpgrade(Path binFolder)
+    PostUpgradeCompletedHook(boolean crafterStarted) {
+        this.crafterStarted = crafterStarted
+    }
+
+    @Override
+    void execute(Path binFolder, Path dataFolder, String environment) {
+        println "========================================================================"
+        println "Post-upgrade completed"
+        println "========================================================================"
+
+        if (crafterStarted) {
+            println 'Crafter has already been started, you can use the system again'
+        } else {
+            println "!!! Crafter has not been started, please run ${binFolder.resolve('startup.sh')} to start it !!!"
+        }
+    }
 
 }

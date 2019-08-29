@@ -1,16 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
+  ~ Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!--
 
     This configuration file drives the top contextual navigation bar in Crafter Studio.
 
 -->
 <app-context-menu>
+    <version>2</version>
     <context>
        <name>default</name>
         <left> <!-- left-aligned modules -->
             <menuItem>
                 <item><modulehook>wcm_logo</modulehook></item>
                 <item><modulehook>wcm_dropdown</modulehook></item>
+                <item><modulehook>quick-create</modulehook></item>
                 <item><modulehook>wcm_content</modulehook></item>
                 <item><modulehook>admin_console</modulehook></item>
             </menuItem>
@@ -30,6 +49,7 @@
         <modules> <!-- module definitions -->
             <module><moduleName>wcm_logo</moduleName><value>wcm_logo</value></module>
             <module><moduleName>wcm_dropdown</moduleName><value>wcm_dropdown</value></module>
+            <module><moduleName>quick-create</moduleName><value>quick-create</value></module>
             <module><moduleName>wcm_content</moduleName><value>wcm_content</value></module>
             <module><moduleName>admin_console</moduleName><value>admin_console</value></module>
 

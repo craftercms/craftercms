@@ -23,7 +23,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.1.0" // craftercms version flag
+project.version = "3.1.1" // craftercms version flag
 
 ext {
     isWin = System.getProperty('os.name').toLowerCase().contains('windows')
@@ -41,7 +41,7 @@ ext {
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.24"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
     elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.6.0"
-    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.2.7"
+    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.2.3"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     
     /** Environment Building properties **/
@@ -90,7 +90,7 @@ ext {
 
     /** Git properties **/
     gitURLTemplate = project.hasProperty("crafter.git.url") ? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "master" // craftercms branch flag
+    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "v3.1.1" // craftercms branch flag
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
     shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone").toBoolean() : false
     studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo").toBoolean() : false
@@ -122,12 +122,12 @@ ext {
                 ",src/test/resources/testng_StudioAPI.xml"+
                 ",src/test/resources/testng_StudioAPI2.xml"
 
-    startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb").toBoolean() : false // Does not really.
-    withElasticsearch = project.hasProperty("withElasticsearch") ? project.property("withElasticsearch").toBoolean() : true
+    startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb").toBoolean() : false // TODO:: cleanup
+    withElasticsearch = project.hasProperty("withElasticsearch") ? project.property("withElasticsearch").toBoolean() : true // TODO:: cleanup
     withSolr = project.hasProperty("withSolr") ? project.property("withSolr").toBoolean() : false
-    silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent").toBoolean() : false
-    typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
-
+    silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent").toBoolean() : false // TODO:: cleanup
+    typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both" // TODO:: cleanup
+   
     /** Cloneable Artifacts **/
     VALID_MODULES =
       ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite",
@@ -138,7 +138,7 @@ ext {
             "search"  : "./src/search/crafter-search-solr-server/target/crafter-search.war",
             "profile" : "./src/profile/server/target/crafter-profile.war",
             "engine"  : "./src/engine/target/ROOT.war",
-            "deployer": "./src/deployer/target/crafter-deployer-exec.jar",
+            "deployer": "./src/deployer/target/crafter-deployer.jar",
             "studio"  : "./src/studio/target/studio.war",
             "social"  : "./src/social/server/target/crafter-social.war"]
 
@@ -171,7 +171,7 @@ if (getEnv().equalsIgnoreCase("all")) {
     envDepends = [tasks.findByName("${getEnv()}Environment")]
 }
 
-/** Some blackmagic here and there creates module_build tasks **/
+/** Create module_build tasks **/
 def buildModules = []
 def deployModules = [:]
 if (project.hasProperty("moduleName")) {
@@ -344,24 +344,6 @@ envs.each { env ->
         })
     }
 
-    if (!tasks.findByName("${env}_bundle_zip")) {
-        task "${env}_bundle_zip"(type: Zip) {
-            description "Bundles as a Zip file ${env} enviroment"
-            def environmentPath = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
-            from(environmentPath) {
-                into("crafter")
-            }
-            archiveName "crafter-cms-${env}.zip"
-            fileMode null
-            dirMode null
-            includeEmptyDirs true
-            metadataCharset "UTF-8"
-            caseSensitive false
-            destinationDir(file("bundles/"))
-            zip64 true
-        }
-    }
-
     if (!tasks.findByName("${env}_bundle_tar")) {
         task "${env}_bundle_tar"(type: Tar) {
             description "Bundles as a Tar file ${env} enviroment"
@@ -369,7 +351,7 @@ envs.each { env ->
             from(environmentPath) {
                 into("crafter")
             }
-            archiveName "crafter-cms-${env}.tar.gz"
+            archiveName "crafter-cms-${env}-${project.version}.tar.gz"
             fileMode null
             dirMode null
             includeEmptyDirs true
@@ -380,14 +362,10 @@ envs.each { env ->
     }
 
     switch (typeOfBundle.toLowerCase()) {
-        case "zip":
-            bundleDeps.add(tasks.findByName("${env}_bundle_zip"))
-            break;
         case "tar":
             bundleDeps.add(tasks.findByName("${env}_bundle_tar"))
             break;
         default:
-            bundleDeps.add(tasks.findByName("${env}_bundle_zip"))
             bundleDeps.add(tasks.findByName("${env}_bundle_tar"))
             break;
     }
@@ -458,7 +436,7 @@ task deploy() {
 }
 
 task bundle(dependsOn: bundleDeps) {
-    description "Zips and Tars all Crafter enviroments."
+    description "Tars all Crafter enviroments."
 }
 
 task start(dependsOn: startDeps) {
@@ -544,8 +522,7 @@ task postTest {
         def dataFolderSufix = Files.readAllLines(folderSuffixCacheFile.toPath(), Charset.forName("UTF-8")).get(0)
         def backupedFolder = file(repoFolder.parentFile.parentFile.absolutePath + dataFolderSufix)
         if (backupedFolder.exists()) {
-            repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath +
-                    "$dataFolderSufix-td")
+            repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath + "$dataFolderSufix-td")
             backupedFolder.renameTo(Paths.get(backupedFolder.parentFile.absolutePath, "data").toString())
         }
     }
@@ -642,7 +619,6 @@ def deployBinary(deployable, env) {
         copy {
             from deployable.absolutePath
             into path.take(path.lastIndexOf('/'))
-            rename('-exec', '')
         }
     } else {
         logger.lifecycle "WARN: You haven't built ${module} module"

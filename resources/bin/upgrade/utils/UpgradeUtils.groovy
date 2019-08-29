@@ -26,12 +26,10 @@ import java.util.regex.Pattern
 class UpgradeUtils {
 
     public static final String VERSION_FILENAME = 'version.txt'
-    public static final String SH_SETENV_FILENAME = 'crafter-setenv.sh'
-    public static final String BAT_SETENV_FILENAME = 'crafter-setenv.bat'
-    public static final Pattern VERSION_NUMBER_REGEX = ~/(\d{1,3}\.\d{1,3}\.\d{1,3}).*/
+    public static final Pattern VERSION_NUMBER_REGEX = ~/((\d{1,3}\.\d{1,3})\.\d{1,3}).*/
 
     /**
-     * Reads the version file under the specified bin folder.
+     * Reads the version file under the install folder.
      */
     static String readVersionFile(Path binFolder) {
         def versionFile = binFolder.resolve(VERSION_FILENAME)
@@ -41,11 +39,23 @@ class UpgradeUtils {
 
             def versionMatcher = VERSION_NUMBER_REGEX.matcher(version)
             if (versionMatcher.matches()) {
-                return versionMatcher.group(1)
-            }
-        }
+                def majorMinorPatch = versionMatcher.group(1)
+                def majorMinor = versionMatcher.group(2)
 
-        return ''
+                if (majorMinor == '3.0') {
+                    return '3.0.x'
+                } else {
+                    return majorMinorPatch
+                }
+            } else {
+                throw new IllegalStateException("Invalid version number in ${versionFile}")
+            }
+        } else if (Files.exists(binFolder.resolve('elasticsearch'))) {
+            // 3.1.0 didn't have a version number file, but can be recognized by the new elasticsearch folder
+            return '3.1.0'
+        } else {
+            return '3.0.x'
+        }
     }
 
 }

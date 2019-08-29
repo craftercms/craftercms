@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # -------------------- Spring Profiles --------------------
-# Uncomment to enable an external DB for Studio and stoppeed the embedded DB
+# Uncomment to enable an external DB for Studio and stop the embedded DB
 # export SPRING_PROFILES_ACTIVE=crafter.studio.externalDb
 
 # -------------------- Locations variables --------------------
@@ -60,35 +60,38 @@ export DEPLOYER_JAVA_OPTS=${DEPLOYER_JAVA_OPTS:="-server -Xss1024K -Xmx1G"}
 export CATALINA_OPTS=${CATALINA_OPTS:="-server -Xss1024K -Xms1G -Xmx4G"}
 
 # -------------------- Solr variables --------------------
-export SOLR_HOME=$CRAFTER_BIN_DIR/solr/server/solr
-export SOLR_INDEXES_DIR=$CRAFTER_DATA_DIR/indexes
-export SOLR_LOGS_DIR="$CRAFTER_LOGS_DIR/solr"
-export SOLR_PID=$SOLR_INDEXES_DIR/solr.pid
+export SOLR_HOME=${SOLR_HOME:="$CRAFTER_BIN_DIR/solr/server/solr"}
+export SOLR_INDEXES_DIR=${SOLR_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes"}
+export SOLR_LOGS_DIR=${SOLR_LOGS_DIR:="$CRAFTER_LOGS_DIR/solr"}
+export SOLR_PID=${SOLR_PID:="$SOLR_HOME/solr.pid"}
 
 # -------------------- Elasticsearch variables --------------------
-export ES_HOME=$CRAFTER_BIN_DIR/elasticsearch/bin
-export ES_INDEXES_DIR=$CRAFTER_DATA_DIR/indexes-es
-export ES_LOGS_DIR="$CRAFTER_LOGS_DIR/elasticsearch"
-export ES_PID=$ES_HOME/elasticsearch.pid
+export ES_HOME=${ES_HOME:="$CRAFTER_BIN_DIR/elasticsearch/bin"}
+export ES_INDEXES_DIR=${ES_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes-es"}
+export ES_LOGS_DIR=${ES_LOGS_DIR:="$CRAFTER_LOGS_DIR/elasticsearch"}
+export ES_PID=${ES_PID:="$ES_HOME/elasticsearch.pid"}
 
 # -------------------- Deployer variables --------------------
-export DEPLOYER_HOME=$CRAFTER_BIN_DIR/crafter-deployer
-export DEPLOYER_DATA_DIR=$CRAFTER_DATA_DIR/deployer
-export DEPLOYER_LOGS_DIR=$CRAFTER_LOGS_DIR/deployer
-export DEPLOYER_DEPLOYMENTS_DIR=$CRAFTER_DATA_DIR/repos/sites
-export DEPLOYER_SDOUT=$DEPLOYER_LOGS_DIR/crafter-deployer.out
-export DEPLOYER_PID=$DEPLOYER_HOME/crafter-deployer.pid
+export DEPLOYER_HOME=${DEPLOYER_HOME:="$CRAFTER_BIN_DIR/crafter-deployer"}
+export DEPLOYER_DATA_DIR=${DEPLOYER_DATA_DIR:="$CRAFTER_DATA_DIR/deployer"}
+export DEPLOYER_LOGS_DIR=${DEPLOYER_LOGS_DIR:="$CRAFTER_LOGS_DIR/deployer"}
+export DEPLOYER_DEPLOYMENTS_DIR=${DEPLOYER_DEPLOYMENTS_DIR:="$CRAFTER_DATA_DIR/repos/sites"}
+export DEPLOYER_SDOUT=${DEPLOYER_SDOUT:="$DEPLOYER_LOGS_DIR/crafter-deployer.out"}
+export DEPLOYER_PID=${DEPLOYER_PID:="$DEPLOYER_HOME/crafter-deployer.pid"}
 
 # -------------------- MongoDB variables --------------------
-export MONGODB_HOME="$CRAFTER_BIN_DIR/mongodb"
-export MONGODB_DATA_DIR="$CRAFTER_DATA_DIR/mongodb"
-export MONGODB_LOGS_DIR="$CRAFTER_LOGS_DIR/mongodb"
-export MONGODB_PID="$MONGODB_DATA_DIR/mongod.lock"
+export MONGODB_HOME=${MONGODB_HOME:="$CRAFTER_BIN_DIR/mongodb"}
+export MONGODB_DATA_DIR=${MONGODB_DATA_DIR:="$CRAFTER_DATA_DIR/mongodb"}
+export MONGODB_LOGS_DIR=${MONGODB_LOGS_DIR:="$CRAFTER_LOGS_DIR/mongodb"}
+export MONGODB_PID=${MONGODB_PID:="$MONGODB_HOME/mongod.lock"}
 
 # -------------------- MariaDB variables --------------------
-export MARIADB_HOME="$CRAFTER_BIN_DIR/dbms"
-export MARIADB_DATA_DIR="$CRAFTER_DATA_DIR/db"
-export MARIADB_ROOT_PASSWD=
+export MARIADB_HOME=${MARIADB_HOME:="$CRAFTER_BIN_DIR/dbms"}
+export MARIADB_DATA_DIR=${MARIADB_DATA_DIR:="$CRAFTER_DATA_DIR/db"}
+export MARIADB_ROOT_USER=${MARIADB_ROOT_USER:="root"}
+export MARIADB_ROOT_PASSWD=${MARIADB_ROOT_PASSWD:=""}
+export MARIADB_USER=${MARIADB_USER:="crafter"}
+export MARIADB_PASSWD=${MARIADB_PASSWD:="crafter"}
 
 case "$(uname -s)" in
   Darwin)
@@ -99,15 +102,15 @@ case "$(uname -s)" in
   ;;
 esac
 
-export MARIADB_PID="$MARIADB_DATA_DIR/$MARIADB_PID_FILE_NAME"
+export MARIADB_PID=${MARIADB_PID:="$MARIADB_HOME/$MARIADB_PID_FILE_NAME"}
 
 # -------------------- Tomcat variables --------------------
-export CATALINA_HOME=$CRAFTER_BIN_DIR/apache-tomcat
-export CATALINA_PID=$CATALINA_HOME/tomcat.pid
-export CATALINA_LOGS_DIR="$CRAFTER_LOGS_DIR/tomcat"
-export CATALINA_OUT=$CATALINA_LOGS_DIR/catalina.out
-export CATALINA_TMPDIR=$CRAFTER_TEMP_DIR/tomcat
-export CRAFTER_APPLICATION_LOGS=$CATALINA_LOGS_DIR
+export CATALINA_HOME=${CATALINA_HOME:="$CRAFTER_BIN_DIR/apache-tomcat"}
+export CATALINA_PID=${CATALINA_PID:="$CATALINA_HOME/tomcat.pid"}
+export CATALINA_LOGS_DIR=${CATALINA_LOGS_DIR:="$CRAFTER_LOGS_DIR/tomcat"}
+export CATALINA_OUT=${CATALINA_OUT:="$CATALINA_LOGS_DIR/catalina.out"}
+export CATALINA_TMPDIR=${CATALINA_TMPDIR:="$CRAFTER_TEMP_DIR/tomcat"}
+export CRAFTER_APPLICATION_LOGS=${CRAFTER_APPLICATION_LOGS:="$CATALINA_LOGS_DIR"}
 
 # -------------------- Git variables --------------------
-export GIT_CONFIG_NOSYSTEM=true
+export GIT_CONFIG_NOSYSTEM=${GIT_CONFIG_NOSYSTEM:="true"}

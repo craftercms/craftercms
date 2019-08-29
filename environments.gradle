@@ -65,7 +65,8 @@ def configFilePatterns = [
     'bin/crafter-deployer/logging\\.xml',
     'bin/elasticsearch/config/.+',
     'bin/solr/server/resources/.+',
-    'bin/solr/server/solr/.+'
+    'bin/solr/server/solr/[^/]+',
+    'bin/solr/server/solr/configsets/crafter_configs/.+'
 ]
 
 task authoringPostEnvironment {
@@ -96,6 +97,7 @@ task authoringPostEnvironment {
 
         downloadGrapes("${authEnvDir}/bin", "upgrade/start-upgrade.groovy")
         downloadGrapes("${authEnvDir}/bin", "upgrade/upgrade-target.groovy")
+        downloadGrapes("${authEnvDir}/bin", "upgrade/post-upgrade.groovy")
     }
 }
 
@@ -124,6 +126,7 @@ task deliveryPostEnvironment {
         downloadGrapes("${deliveryEnvDir}/bin", "remove-site.groovy")
         downloadGrapes("${deliveryEnvDir}/bin", "upgrade/start-upgrade.groovy")
         downloadGrapes("${deliveryEnvDir}/bin", "upgrade/upgrade-target.groovy")
+        downloadGrapes("${deliveryEnvDir}/bin", "upgrade/post-upgrade.groovy")
     }
 }
 
@@ -194,7 +197,7 @@ envs.each { env ->
                     into "${envDir}/bin/apache-tomcat"
                 }
 
-                // Copy Crafter CMS README.txt
+                // Copy Crafter CMS README.txt and LICENSE
                 copy {
                     from "./resources/LICENSE"
                     from "./resources/README.txt"
@@ -243,12 +246,6 @@ envs.each { env ->
                 into "${resourcesDestDir}/bin/apache-tomcat/bin"
             }
 
-            // Copy catalina.policy
-            copy {
-                from "./resources/env/${env}/tomcat-config/catalina.policy"
-                into "${resourcesDestDir}/bin/apache-tomcat/conf"
-            }
-
             // Copy Tomcat shared conf
             copy {
                 from "./resources/env/${env}/tomcat-config/crafter"
@@ -270,6 +267,12 @@ envs.each { env ->
                      "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/logging.properties"
                 into "${resourcesDestDir}/bin/apache-tomcat/conf"
             }
+            
+            // Copy file to hide Tomcat version
+            copy {
+              from "resources/tomcat/ServerInfo.properties"
+              into "${resourcesDestDir}/bin/apache-tomcat/lib/org/apache/catalina/util/"
+            }
 
             // Copy stock Solr config that needs to be updated
             copy {
@@ -281,7 +284,7 @@ envs.each { env ->
             copy {
                 from "${downloadDir}/elasticsearch-${elasticsearchVersion}/config/elasticsearch.yml"
                 into "${resourcesDestDir}/bin/elasticsearch/config"
-            }                  
+            }
 
             // Update config
             updateTomcatPorts("${resourcesDestDir}/bin/apache-tomcat/conf/server.xml")
@@ -402,7 +405,7 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                     if (backupAndReplaceConfig) {
                         def now = new Date()
                         def backupTimestamp = now.format("yyyyMMddHHmmss") 
-                        def backupFile = new File(destDir, filePath + ".bak.${backupTimestamp}")
+                        def backupFile = new File(destDir, "${filePath}.bak.${backupTimestamp}")
 
                         println "Config file ${filePath} is different in src and dest. Backing up dest file to " +
                                 "${backupFile.name} and replacing it with src file (backupAndReplaceConfig = true)"
@@ -420,7 +423,7 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                     }
                 }
             } else {
-                println "Copying over ${filePath} from src to dest (non-config file)"
+                println "Copying over ${filePath} from src to dest (replacing non-config file)"
 
                 FileUtils.copyFile(srcFile, destFile)
             }

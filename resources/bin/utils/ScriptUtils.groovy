@@ -52,7 +52,8 @@ class ScriptUtils {
     /**
      * Executes a command line process.
      */
-    static void executeCommand(List<String> command, Path workingDir = null, Closure<?> setupCallback = null) {
+    static void executeCommand(List<String> command, Path workingDir = null, Closure<?> setupCallback = null,
+                               List<Integer> successExitValues = [ 0 ]) {
         if (SystemUtils.IS_OS_WINDOWS) {
             command = ["cmd", "/c"] + command
         }
@@ -67,6 +68,7 @@ class ScriptUtils {
             setupCallback(processBuilder)
         }
 
+        processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
         processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
         processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
 
@@ -74,8 +76,7 @@ class ScriptUtils {
         process.waitFor()
 
         def exitValue = process.exitValue()
-
-        if (exitValue != 0) {
+        if (!successExitValues.contains(exitValue)) {
             throw new RuntimeException("Process '${command}' exited with non-successful value ${exitValue}")
         }
     }

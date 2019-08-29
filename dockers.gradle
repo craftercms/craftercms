@@ -27,13 +27,25 @@ task buildAuthoringTomcatDocker {
             exclude "apache-tomcat/work/**"
             exclude "apache-tomcat/temp/**"
             exclude "apache-tomcat/webapps/crafter-search*"
+            if (!includeProfile) {
+                exclude "apache-tomcat/webapps/crafter-profile*"
+            }
+            exclude "apache-tomcat/webapps/crafter-social*"
             exclude "apache-tomcat/webapps/ROOT"
             exclude "apache-tomcat/webapps/studio"
             exclude "**/*.pid"
         }
 
+        def tag
+
+        if (includeProfile) {
+            tag = "craftercms/authoring_tomcat_w_profile:${project.version}"
+        } else {
+            tag = "craftercms/authoring_tomcat:${project.version}"
+        }
+
         exec {
-            commandLine commandLinePrefix + ['docker', 'build', '-t', "craftercms/authoring_tomcat:${project.version}", buildDir]
+            commandLine commandLinePrefix + ['docker', 'build', '-t', tag, buildDir]
         }
     }
 }
@@ -63,12 +75,24 @@ task buildDeliveryTomcatDocker {
             exclude "apache-tomcat/work/**"
             exclude "apache-tomcat/temp/**"
             exclude "apache-tomcat/webapps/crafter-search*"
+            if (!includeProfile) {
+                exclude "apache-tomcat/webapps/crafter-profile*"
+            }
+            exclude "apache-tomcat/webapps/crafter-social*"           
             exclude "apache-tomcat/webapps/ROOT"
             exclude "**/*.pid"
         }
 
+        def tag
+
+        if (includeProfile) {
+            tag = "craftercms/delivery_tomcat_w_profile:${project.version}"
+        } else {
+            tag = "craftercms/delivery_tomcat:${project.version}"
+        }
+
         exec {
-            commandLine commandLinePrefix + ['docker', 'build', '-t', "craftercms/delivery_tomcat:${project.version}", buildDir]
+            commandLine commandLinePrefix + ['docker', 'build', '-t', tag, buildDir]
         }
     }
 }
