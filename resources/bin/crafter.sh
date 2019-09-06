@@ -548,7 +548,6 @@ function startMongoDB(){
   fi
 }
 
-
 function isMongoNeeded() {
   for o in "$@"; do
     if [ $o = "skipMongo" ] || [ $o = "skipMongoDB" ]; then
@@ -780,33 +779,33 @@ function status(){
 }
 
 function doBackup() {
-  export TARGET_NAME=$1
-  if [ -z "$TARGET_NAME" ]; then
+  local targetName=$1
+  if [ -z "$targetName" ]; then
     if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/studio.war" ]; then
-      export TARGET_NAME="crafter-authoring-backup"
+      targetName="crafter-authoring-backup"
     else
-      export TARGET_NAME="crafter-delivery-backup"
+      targetName="crafter-delivery-backup"
     fi
   fi
   
-  export CURRENT_DATE=$(date +'%Y-%m-%d-%H-%M-%S')
-  export TARGET_FOLDER="$CRAFTER_HOME/backups"
-  export TARGET_FILE="$TARGET_FOLDER/$TARGET_NAME.$CURRENT_DATE.zip"
-  export TEMP_FOLDER="$CRAFTER_HOME/temp/backup"
+  local currentDate=$(date +'%Y-%m-%d-%H-%M-%S')
+  local targetFolder="$CRAFTER_HOME/backups"
+  local targetFile="$targetFolder/$targetName.$currentDate.tar.gz"
+  local tempFolder="$CRAFTER_HOME/temp/backup"
 
   echo "------------------------------------------------------------------------"
   echo "Starting backup"
   echo "------------------------------------------------------------------------"
   
-  if [ -d "$TEMP_FOLDER" ]; then
-    rm -r "$TEMP_FOLDER"
+  if [ -d "$tempFolder" ]; then
+    rm -r "$tempFolder"
   fi
 
-  mkdir -p "$TEMP_FOLDER"
-  mkdir -p "$TARGET_FOLDER"
+  mkdir -p "$tempFolder"
+  mkdir -p "$targetFolder"
 
-  if [ -f "$TARGET_FILE" ]; then
-    rm "$TARGET_FILE"
+  if [ -f "$targetFile" ]; then
+    rm "$targetFile"
   fi
 
   # MySQL Dump
@@ -818,7 +817,7 @@ function doBackup() {
     # Check that the mysqldump is in the path
     if type "mysqldump" >/dev/null 2>&1; then
       export MYSQL_PWD=$MARIADB_PASSWD
-      mysqldump --databases crafter --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp > "$TEMP_FOLDER/crafter.sql"
+      mysqldump --databases crafter --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp > "$tempFolder/crafter.sql"
       abortOnError
     else
       echo "External DB backup failed, unable to find mysqldump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
@@ -842,7 +841,7 @@ function doBackup() {
     echo "Backing up embedded DB"
     echo "------------------------------------------------------------------------"
     export MYSQL_PWD=$MARIADB_ROOT_PASSWD
-    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp > "$TEMP_FOLDER/crafter.sql"
+    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp > "$tempFolder/crafter.sql"
     abortOnError
 
     if [ "$DB_STARTED" = true ]; then
@@ -869,17 +868,17 @@ function doBackup() {
     echo "Backing up mongodb"
     echo "------------------------------------------------------------------------"
 
-    $MONGODB_HOME/bin/mongodump --port $MONGODB_PORT --out "$TEMP_FOLDER/mongodb"
+    $MONGODB_HOME/bin/mongodump --port $MONGODB_PORT --out "$tempFolder/mongodb"
     abortOnError
 
     CURRENT_DIR=$(pwd)
 
-    cd "$TEMP_FOLDER/mongodb"
-    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/mongodb.zip"
+    cd "$tempFolder/mongodb"
+    tar cvf "$tempFolder/mongodb.tar" .
     abortOnError
 
     cd $CURRENT_DIR
-    rm -r "$TEMP_FOLDER/mongodb"
+    rm -r "$tempFolder/mongodb"
 
     if [ "$MONGODB_STARTED" = true ]; then
       # Stop MongoDB
@@ -889,12 +888,12 @@ function doBackup() {
 
   # ZIP git repos
   if [ -d "$CRAFTER_DATA_DIR/repos" ]; then
-   echo "------------------------------------------------------------------------"
-   echo "Backing up git repos"
-   echo "------------------------------------------------------------------------"
-   cd "$CRAFTER_DATA_DIR/repos"
-   java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/repos.zip"
-   abortOnError
+    echo "------------------------------------------------------------------------"
+    echo "Backing up git repos"
+    echo "------------------------------------------------------------------------"
+    cd "$CRAFTER_DATA_DIR/repos"
+    tar cvf "$tempFolder/repos.tar" .
+    abortOnError
   fi
 
   # ZIP solr indexes
@@ -904,7 +903,7 @@ function doBackup() {
   if [ -d "$SOLR_INDEXES_DIR" ]; then
     echo "Adding solr indexes"
     cd "$SOLR_INDEXES_DIR"
-    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes.zip"
+    tar cvf "$tempFolder/indexes.tar" .
     abortOnError
   fi
 
@@ -915,7 +914,7 @@ function doBackup() {
   if [ -d "$ES_INDEXES_DIR" ]; then
     echo "Adding elasticsearch indexes"
     cd "$ES_INDEXES_DIR"
-    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/indexes-es.zip"
+    tar cvf "$tempFolder/indexes-es.tar" .
     abortOnError
   fi
 
@@ -925,7 +924,7 @@ function doBackup() {
    echo "Backing up deployer data"
    echo "------------------------------------------------------------------------"
    cd "$DEPLOYER_DATA_DIR"
-   java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TEMP_FOLDER/deployer.zip"
+   tar cvf "$tempFolder/deployer.tar" .
    abortOnError
   fi
 
@@ -933,30 +932,33 @@ function doBackup() {
   echo "------------------------------------------------------------------------"
   echo "Packaging everything"
   echo "------------------------------------------------------------------------"
-  cd "$TEMP_FOLDER"
-  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar zip . "$TARGET_FILE" true
+  cd "$tempFolder"
+  tar czvf "$targetFile" .
   abortOnError
 
-  rmDirContents "$TEMP_FOLDER"
-  rmdir "$TEMP_FOLDER"
+  rmDirContents "$tempFolder"
+  rmdir "$tempFolder"
 
   echo "------------------------------------------------------------------------"
-  echo "> Backup completed and saved to $TARGET_FILE"
+  echo "> Backup completed and saved to $targetFile"
 }
 
 function doRestore() {
-  pid=$(pidOf $TOMCAT_HTTP_PORT)
+  local pid=$(pidOf $TOMCAT_HTTP_PORT)
   if ! [ -z $pid ]; then
     echo "Please stop the system before starting the restore process."
     exit 1
   fi
-  export SOURCE_FILE=$1
-  if [ ! -f "$SOURCE_FILE" ]; then
-    echo "The file does not exist"
+
+  local sourceFile=$1
+  if [ ! -f "$sourceFile" ]; then
+    echo "The source file $sourceFile does not exist"
     help
     exit 1
   fi
-  export TEMP_FOLDER="$CRAFTER_HOME/temp/backup"
+
+  local tempFolder="$CRAFTER_HOME/temp/backup"
+  local packageExt=""
 
   read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the\
   existing sites and associated database and replace everything with the restored data. If you\
@@ -978,15 +980,27 @@ function doRestore() {
   rmDirContents "$MARIADB_DATA_DIR"
 
   echo "------------------------------------------------------------------------"
-  echo "Starting restore from $SOURCE_FILE"
+  echo "Starting restore from $sourceFile"
   echo "------------------------------------------------------------------------"
-  mkdir -p "$TEMP_FOLDER"
+  mkdir -p "$tempFolder"
 
   # UNZIP everything
-  java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$SOURCE_FILE" "$TEMP_FOLDER"
+  if [[ "$sourceFile" == *.tar.gz ]]; then
+    tar xzvf "$sourceFile" -C "$tempFolder"
+    abortOnError
+
+    packageExt="tar"
+  else
+    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$sourceFile" "$tempFolder"
+    abortOnError
+    
+    packageExt="zip"
+  fi
 
   # MongoDB Dump
-  if [ -f "$TEMP_FOLDER/mongodb.zip" ]; then
+  if [ -f "$tempFolder/mongodb.$packageExt" ]; then
+    mkdir -p "$tempFolder/mongodb"
+
     startMongoDB
     sleep 15
 
@@ -994,53 +1008,90 @@ function doRestore() {
     echo "Restoring MongoDB"
     echo "------------------------------------------------------------------------"
 
-    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/mongodb.zip" "$TEMP_FOLDER/mongodb"
-    abortOnError
+    if [ "$packageExt" == "tar" ]; then
+      tar xvf "$tempFolder/mongodb.tar" -C "$tempFolder/mongodb"
+      abortOnError
+    else
+      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/mongodb.zip" "$tempFolder/mongodb"
+      abortOnError
+    fi
 
-    $CRAFTER_BIN_DIR/mongodb/bin/mongorestore --port $MONGODB_PORT "$TEMP_FOLDER/mongodb"
+    $CRAFTER_BIN_DIR/mongodb/bin/mongorestore --port $MONGODB_PORT "$tempFolder/mongodb"
     abortOnError
 
     stopMongoDB
   fi
 
   # UNZIP git repos
-  if [ -f "$TEMP_FOLDER/repos.zip" ]; then
+  if [ -f "$tempFolder/repos.$packageExt" ]; then
+    mkdir -p "$CRAFTER_DATA_DIR/repos"
+
     echo "------------------------------------------------------------------------"
     echo "Restoring git repos"
     echo "------------------------------------------------------------------------"
-    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/repos.zip" "$CRAFTER_DATA_DIR/repos"
-    abortOnError
+
+    if [ "$packageExt" == "tar" ]; then
+      tar xvf "$tempFolder/repos.tar" -C "$CRAFTER_DATA_DIR/repos"
+      abortOnError
+    else
+      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/repos.zip" "$CRAFTER_DATA_DIR/repos"
+      abortOnError
+    fi
   fi
 
   # UNZIP solr indexes
-  if [ -f "$TEMP_FOLDER/indexes.zip" ]; then
+  if [ -f "$tempFolder/indexes.$packageExt" ]; then
+    mkdir -p "$SOLR_INDEXES_DIR"
+
     echo "------------------------------------------------------------------------"
     echo "Restoring solr indexes"
     echo "------------------------------------------------------------------------"
-    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes.zip" "$SOLR_INDEXES_DIR"
-    abortOnError
+
+    if [ "$packageExt" == "tar" ]; then
+      tar xvf "$tempFolder/indexes.tar" -C "$SOLR_INDEXES_DIR"
+      abortOnError
+    else
+      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/indexes.zip" "$SOLR_INDEXES_DIR"
+      abortOnError
+    fi
   fi
 
   # UNZIP elasticsearch indexes
-  if [ -f "$TEMP_FOLDER/indexes-es.zip" ]; then
+  if [ -f "$tempFolder/indexes-es.$packageExt" ]; then
+    mkdir -p "$ES_INDEXES_DIR"
+
     echo "------------------------------------------------------------------------"
     echo "Restoring elasticsearch indexes"
     echo "------------------------------------------------------------------------"
-    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/indexes-es.zip" "$ES_INDEXES_DIR"
-    abortOnError
+
+    if [ "$packageExt" == "tar" ]; then
+      tar xvf "$tempFolder/indexes-es.tar" -C "$ES_INDEXES_DIR"
+      abortOnError
+    else
+      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/indexes-es.zip" "$ES_INDEXES_DIR"
+      abortOnError
+    fi
   fi
 
   # UNZIP deployer data
-  if [ -f "$TEMP_FOLDER/deployer.zip" ]; then
+  if [ -f "$tempFolder/deployer.$packageExt" ]; then
+    mkdir -p "$DEPLOYER_DATA_DIR"
+
     echo "------------------------------------------------------------------------"
     echo "Restoring deployer data"
     echo "------------------------------------------------------------------------"
-    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$TEMP_FOLDER/deployer.zip" "$DEPLOYER_DATA_DIR"
-    abortOnError
+
+    if [ "$packageExt" == "tar" ]; then
+      tar xvf "$tempFolder/deployer.tar" -C "$DEPLOYER_DATA_DIR"
+      abortOnError
+    else
+      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/deployer.zip" "$DEPLOYER_DATA_DIR"
+      abortOnError
+    fi
   fi
 
   # Restore DB
-  if [ -f "$TEMP_FOLDER/crafter.sql" ]; then
+  if [ -f "$tempFolder/crafter.sql" ]; then
     if [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]]; then
       echo "------------------------------------------------------------------------"
       echo "Restoring external DB"
@@ -1049,7 +1100,7 @@ function doRestore() {
       # Check that the mysql is in the path
       if type "mysql" >/dev/null 2>&1; then
         export MYSQL_PWD=$MARIADB_PASSWD
-        mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$TEMP_FOLDER/crafter.sql"
+        mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
         abortOnError
       else
         echo "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
@@ -1069,7 +1120,7 @@ function doRestore() {
       echo "Restoring embedded DB"
       echo "------------------------------------------------------------------------"
       export MYSQL_PWD=$MARIADB_ROOT_PASSWD
-      $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$TEMP_FOLDER/crafter.sql"
+      $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
       abortOnError
 
       # Stop DB
@@ -1081,7 +1132,7 @@ function doRestore() {
     fi
   fi
 
-  rm -r "$TEMP_FOLDER"
+  rm -r "$tempFolder"
   echo "------------------------------------------------------------------------"
   echo "> Restore complete, you may now start the system"
 }
