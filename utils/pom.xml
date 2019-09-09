@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.craftercms</groupId>
     <artifactId>crafter-bundle-utils</artifactId>
-    <version>3.1.2</version><!-- craftercms version flag -->
+    <version>3.1.3-SNAPSHOT</version><!-- craftercms version flag -->
     <name>Crafter Bundle Utils</name>
     <description>Crafter Bundle Utils</description>
     <url>https://github.com/craftercms/craftercms</url>
