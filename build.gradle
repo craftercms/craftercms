@@ -23,7 +23,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.1.3-SNAPSHOT" // craftercms version flag
+project.version = "3.1.4-SNAPSHOT" // craftercms version flag
 
 ext {
     isWin = System.getProperty('os.name').toLowerCase().contains('windows')
