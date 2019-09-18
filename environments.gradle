@@ -325,7 +325,7 @@ def updateTomcatPorts(configFile) {
     content = content.replace('8005', '${tomcat.shutdown.port}')
     content = content.replace('8080', '${tomcat.http.port}')
     content = content.replace('8009', '${tomcat.ajp.port}')
-    content = content.replace('8443', '${tomcat.ajp.port}')
+    content = content.replace('8443', '${tomcat.https.port}')
     content = content.replace('protocol="HTTP/1.1"', 'protocol="HTTP/1.1" URIEncoding="UTF-8"')
     content = content.replace('protocol="AJP/1.3"', 'protocol="AJP/1.3" URIEncoding="UTF-8"')
 
