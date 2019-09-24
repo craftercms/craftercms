@@ -115,26 +115,6 @@ task downloadElasticsearch() {
     }
 }
 
-task downloadChromeDriver() {
-    doFirst {
-        def platform = ""
-        if (SystemUtils.IS_OS_LINUX) {
-            platform = "linux64"
-        } else {
-            platform = "mac64"
-        }
-        download {
-            src "https://chromedriver.storage.googleapis.com/${chromeDriverVersion}/chromedriver_${platform}.zip"
-            overwrite false
-            dest("./src/test-suite/bin/chromedriver-${testingPlatform}.zip")
-        }
-        copy {
-            from zipTree("./src/test-suite/bin/chromedriver-${testingPlatform}.zip")
-            into "./src/test-suite/bin/${browserToTest}-${testingPlatform}/"
-        }
-    }
-}
-
 task downloadMariaDB4j {
     doFirst {
         download {
