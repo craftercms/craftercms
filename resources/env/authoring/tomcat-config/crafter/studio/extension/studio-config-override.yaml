@@ -87,6 +87,14 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 #   (?=\S+$)          no whitespace allowed in the entire string
 #   .{8,}             anything, at least eight places though
 # studio.security.passwordRequirements.validationRegex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\S+$).{8,}$
+# Password requirements description
+# studio.security.passwordRequirements.description: >
+#   Password requirements
+#     Must have at least one digit
+#     Must have at least one lower case letter
+#     Must have at least one upper case letter
+#     Must have at least one special character
+#     Can not have whitespaces
 # Studio authentication chain configuration
 # studio.authentication.chain:
   # Authentication provider type
