@@ -242,7 +242,6 @@ envs.each { env ->
             // Copy Tomcat setenv
             copy {
                 from "./resources/env/${env}/tomcat-config/setenv.sh"
-                from "./resources/env/${env}/tomcat-config/setenv.bat"
                 into "${resourcesDestDir}/bin/apache-tomcat/bin"
             }
 

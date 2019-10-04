@@ -24,10 +24,6 @@ From the command line, navigate to the INSTALL_PATH/ directory, and execute the 
 
         $ bin/startup.sh
 
-    On Windows:
-
-        $ bin\startup.bat
-
 
 You can find detailed log information from the server in: INSTALL_FOLDER/logs/catalina.out.
 
@@ -62,10 +58,6 @@ From the command line, navigate to the INSTALL_PATH/ directory, and execute the 
     On Linux/Unix:
 
         $ bin/shutdown.sh
-
-    On Windows:
-
-        $ bin\shutdown.bat
 
 
 Going Further
