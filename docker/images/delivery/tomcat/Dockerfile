@@ -36,10 +36,13 @@ RUN mkdir -p /opt/crafter; \
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
+VOLUME [ "./data", "./logs", "./temp" ]
 
 # Copy bin folder
 COPY ./bin ./bin/
+
+# Make the Grapes dir a volume
+VOLUME ./bin/grapes
 
 # Delete the apache tomcat folder, we're going to link to the image's own Tomcat
 RUN rm -rf ./bin/apache-tomcat && ln -s /usr/local/tomcat ./bin/apache-tomcat
