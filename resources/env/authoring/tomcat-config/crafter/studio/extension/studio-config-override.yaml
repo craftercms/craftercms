@@ -20,6 +20,8 @@ studio.configuration.site.preview.destroy.context.url: ${env:ENGINE_URL}/api/1/s
 studio.configuration.site.defaultPreviewUrl: ^https?://localhost:8080/?
 # Default authoring URL
 studio.configuration.site.defaultAuthoringUrl: ^https?://localhost:8080/studio/?
+# Default GraphQL server URL
+studio.configuration.site.defaultGraphqlServerUrl: ^https?://localhost:8080/?
 
 ############################################################
 ##                    Preview Deployer                    ##
