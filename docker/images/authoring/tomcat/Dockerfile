@@ -37,10 +37,13 @@ RUN mkdir -p /opt/crafter; \
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
+VOLUME [ "./data", "./logs", "./temp" ]
 
 # Copy bin folder
 COPY ./bin ./bin/
+
+# Make the Grapes dir a volume
+VOLUME ./bin/grapes
 
 # Delete the bin/dbms dir
 RUN rm -rf ./bin/dbms
