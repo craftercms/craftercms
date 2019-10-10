@@ -28,13 +28,12 @@ RUN set -eux; \
 RUN mkdir -p /opt/crafter; \
     mkdir /opt/crafter/bin; \
     mkdir /opt/crafter/data; \
-    mkdir /opt/crafter/logs; \
-    mkdir /opt/crafter/temp
+    mkdir /opt/crafter/logs
 
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
+VOLUME [ "./data", "./logs"]
 
 # Copy bin folder
 COPY ./bin ./bin/
