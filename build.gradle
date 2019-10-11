@@ -126,7 +126,7 @@ ext {
     /** Cloneable Artifacts **/
     VALID_MODULES =
       ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite",
-      "plugin-maker", "video-center-blueprint"]
+      "plugin-maker"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -209,7 +209,6 @@ buildModules.each { module ->
                     }
                 }
                 if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
-                    actualCommandLinePost.add("-Dstudio.vcbp.path=../video-center-blueprint/".toString())				
                     actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
                     actualCommandLinePost.add("-Dexec.skip=true")
                 }
@@ -372,15 +371,13 @@ envs.each { env ->
 /* Cleanup non buildable modules */
 buildDeps.removeAll([
   tasks.findByName("studio-ui_build"),
-  tasks.findByName("plugin-maker_build"),
-  tasks.findByName("video-center-blueprint_build")
+  tasks.findByName("plugin-maker_build")
 ] as Task[])
 
 cleanDeps.removeAll([
   tasks.findByName("studio-ui_clean"),
   tasks.findByName("plugin-maker_clean"),
-  tasks.findByName("test-suite_build"),
-  tasks.findByName("video-center-blueprint_clean")
+  tasks.findByName("test-suite_build")
 ] as Task[])
 
 if (!includeSocial) {
