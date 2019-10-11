@@ -125,8 +125,7 @@ ext {
    
     /** Cloneable Artifacts **/
     VALID_MODULES =
-      ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite",
-      "plugin-maker"]
+      ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "plugin-maker"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -191,35 +190,33 @@ buildModules.each { module ->
 
     // Creates the Build Tasks
     if (!tasks.findByPath("${module}_build")) {
-        if (!module.equalsIgnoreCase("test-suite")) {
-            task "${module}_build" doLast({
-                def actualCommandLinePost = [];
-                if (!testArtifacts) {
-                    actualCommandLinePost.add("-Dmaven.test.skip=true")
+        task "${module}_build" doLast({
+            def actualCommandLinePost = [];
+            if (!testArtifacts) {
+                actualCommandLinePost.add("-Dmaven.test.skip=true")
+            }
+            if (module.equalsIgnoreCase("search")) {
+                actualCommandLinePost.add("-pl")
+                actualCommandLinePost.add("!crafter-search-solr-itest")
+            } else if (module.equalsIgnoreCase("profile")) {
+                actualCommandLinePost.add("-pl")
+                if (!includeProfile) {
+                    actualCommandLinePost.add("!admin-console,!integration-tests,!server")
+                } else {
+                    actualCommandLinePost.add("!integration-tests")
                 }
-                if (module.equalsIgnoreCase("search")) {
-                    actualCommandLinePost.add("-pl")
-                    actualCommandLinePost.add("!crafter-search-solr-itest")
-                } else if (module.equalsIgnoreCase("profile")) {
-                    actualCommandLinePost.add("-pl")
-                    if (!includeProfile) {
-                        actualCommandLinePost.add("!admin-console,!integration-tests,!server")
-                    } else {
-                        actualCommandLinePost.add("!integration-tests")
-                    }
-                }
-                if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
-                    actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
-                    actualCommandLinePost.add("-Dexec.skip=true")
-                }
-                def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
-                executeProcess(array, "./src/${module}".toString())
-            })
-            // Creates the Dependencies Array
-            def buildTask = tasks.findByName("${module}_build")
-            buildTask.description "Builds and installs locally ${module} module"
-            buildDeps.add(buildTask)
-        }
+            }
+            if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
+                actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
+                actualCommandLinePost.add("-Dexec.skip=true")
+            }
+            def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
+            executeProcess(array, "./src/${module}".toString())
+        })
+        // Creates the Dependencies Array
+        def buildTask = tasks.findByName("${module}_build")
+        buildTask.description "Builds and installs locally ${module} module"
+        buildDeps.add(buildTask)
 
         // Create init tasks
         task "${module}_init" doLast {
@@ -376,8 +373,7 @@ buildDeps.removeAll([
 
 cleanDeps.removeAll([
   tasks.findByName("studio-ui_clean"),
-  tasks.findByName("plugin-maker_clean"),
-  tasks.findByName("test-suite_build")
+  tasks.findByName("plugin-maker_clean")
 ] as Task[])
 
 if (!includeSocial) {
