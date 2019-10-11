@@ -302,7 +302,7 @@ envs.each { env ->
             }
 
             // Update config
-            updateTomcatPorts("${resourcesDestDir}/bin/apache-tomcat/conf/server.xml")
+            updateTomcatServerConf("${resourcesDestDir}/bin/apache-tomcat/conf/server.xml")
             updateTomcatContext("${resourcesDestDir}/bin/apache-tomcat/conf/context.xml")
             updateCatalinaProperties("${resourcesDestDir}/bin/apache-tomcat/conf/catalina.properties")
             updateCatalinaLogging("${resourcesDestDir}/bin/apache-tomcat/conf/logging.properties")
@@ -333,16 +333,20 @@ envs.each { env ->
     tasks.findByName("${env}Environment").finalizedBy("${env}PostEnvironment")   
 }
 
-def updateTomcatPorts(configFile) {
+def updateTomcatServerConf(configFile) {
     def file = new File(configFile)
     def content = file.text
 
+    // Replace ports
     content = content.replace('8005', '${tomcat.shutdown.port}')
     content = content.replace('8080', '${tomcat.http.port}')
     content = content.replace('8009', '${tomcat.ajp.port}')
     content = content.replace('8443', '${tomcat.https.port}')
     content = content.replace('protocol="HTTP/1.1"', 'protocol="HTTP/1.1" URIEncoding="UTF-8"')
     content = content.replace('protocol="AJP/1.3"', 'protocol="AJP/1.3" URIEncoding="UTF-8"')
+
+    // Replace log folder
+    content = content.replace('logs', '${catalina.logs}')
 
     file.write(content)
 }
