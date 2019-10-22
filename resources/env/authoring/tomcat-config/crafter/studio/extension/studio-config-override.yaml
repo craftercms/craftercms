@@ -288,3 +288,5 @@ studio.search.urls: ${env:ES_URL}
 #       deliveryLBDomainName:
 #       # The SSL certificate ARN the CloudFront CDN should use (optional)
 #       cloudfrontCertificateArn:
+#       # The alternate domains names (besides *.cloudfront.net) for the CloudFront CDN (optional)
+#       alternateCloudFrontDomainNames:
