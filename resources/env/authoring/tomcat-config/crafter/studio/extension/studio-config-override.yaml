@@ -282,11 +282,11 @@ studio.search.urls: ${env:ES_URL}
 # studio.serverless.delivery.deployer.target.template.params:
 #   aws:
 #     cloudformation:
-#       # Namespace to use for CloudFormation resources (required)
+#       # Namespace to use for CloudFormation resources (required when target template is aws-cloudformed-s3)
 #       namespace: myorganization
-#       # The domain name of the serverless delivery LB (required)
+#       # The domain name of the serverless delivery LB (required when target template is aws-cloudformed-s3)
 #       deliveryLBDomainName:
-#       # The SSL certificate ARN the CloudFront CDN should use (optional)
+#       # The SSL certificate ARN the CloudFront CDN should use (optional when target template is aws-cloudformed-s3)
 #       cloudfrontCertificateArn:
-#       # The alternate domains names (besides *.cloudfront.net) for the CloudFront CDN (optional)
+#       # The alternate domains names (besides *.cloudfront.net) for the CloudFront CDN (optional when target template is aws-cloudformed-s3)
 #       alternateCloudFrontDomainNames:
