@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 FROM alpine:3.9
 
+# Add default variables. Default cron runs the logrotate daily at 12 AM
 ENV CRON_SCHEDULE='0 0 * * *' \
     LOGROTATE_PATTERN='/opt/crafter/logs/deployer/* /opt/crafter/logs/tomcat/*' \
     LOGROTATE_COPIES='10' \
