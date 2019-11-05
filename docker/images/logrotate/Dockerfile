@@ -22,7 +22,7 @@ ENV CRON_SCHEDULE='0 0 * * *' \
 # Install dependencies
 RUN apk add --no-cache shadow logrotate tini gettext libintl
 
-# Copy entrypoint script and make it is executable
+# Copy entrypoint script and make it executable
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
@@ -32,6 +32,6 @@ COPY logrotate.tpl.conf .
 # Add the Crafter user
 RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter
 
-# Entrypoint and command (run by default)
+# Entrypoint and command
 ENTRYPOINT [ "./docker-entrypoint.sh" ]
 CMD ["/usr/sbin/crond", "-f", "-L", "/dev/stdout"]

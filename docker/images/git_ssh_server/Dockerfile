@@ -28,7 +28,7 @@ RUN sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/ssh
     echo '' >> /etc/ssh/sshd_config; \
     echo 'HostKeyAlgorithms ssh-rsa' >> /etc/ssh/sshd_config
 
-# Copy entrypoint script and make it is executable
+# Copy entrypoint script and make it executable
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
