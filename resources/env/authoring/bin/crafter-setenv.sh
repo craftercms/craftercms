@@ -94,6 +94,12 @@ export MARIADB_ROOT_PASSWD=${MARIADB_ROOT_PASSWD:=""}
 export MARIADB_USER=${MARIADB_USER:="crafter"}
 export MARIADB_PASSWD=${MARIADB_PASSWD:="crafter"}
 
+# -------------------- MariaDB Galera variables --------------------
+export MARIADB_GALERA_CLUSTER_ADDRESS=${MARIADB_GALERA_CLUSTER_ADDRESS:="192.168.56.100"}
+export MARIADB_GALERA_CLUSTER_NAME=${MARIADB_GALERA_CLUSTER_NAME:="studio_galera_cluster"}
+export MARIADB_GALERA_CLUSTER_NODE_ADDRESS=${MARIADB_GALERA_CLUSTER_NODE_ADDRESS:="192.168.56.100"}
+export MARIADB_GALERA_CLUSTER_NODE_NAME=${MARIADB_GALERA_CLUSTER_NODE_NAME:="studio_node_1"}
+
 case "$(uname -s)" in
   Darwin)
     MARIADB_PID_FILE_NAME="$(echo "$HOSTNAME" | awk -F'.' '{print $1}' ).pid"
