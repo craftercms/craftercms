@@ -215,6 +215,26 @@ task buildGitSshServerDocker {
     }    
 }
 
+
+task buildLogrotateDocker {
+    def buildDir = "${dockerImageBuildDir}/logrotate"
+
+    doFirst {
+        cleanBuildDir(buildDir)
+    }
+
+    doLast {
+        copy {
+            from "${dockerImageDir}/logrotate/"
+            into buildDir
+        }
+
+        exec {
+            commandLine commandLinePrefix + ['docker', 'build', '-t', "craftercms/logrotate:${project.version}", buildDir]
+        }
+    }    
+}
+
 def cleanBuildDir(buildDir) {
     delete buildDir
     mkdir buildDir 
@@ -227,6 +247,7 @@ task buildAuthoringDockers {
         dependsOn 'buildAuthoringTomcatDockerWithProfile'
     }
     dependsOn 'buildGitSshServerDocker'
+    dependsOn 'buildLogrotateDocker'
 }
 
 task buildDeliveryDockers {
