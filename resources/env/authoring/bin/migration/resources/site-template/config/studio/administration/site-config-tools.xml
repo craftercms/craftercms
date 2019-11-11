@@ -41,7 +41,7 @@
     </config>
 -->
 <config>
-    <version>7</version>
+    <version>9</version>
     <tools>
         <tool>
             <name>content-types</name>
@@ -170,6 +170,18 @@
                     <name>child-content</name>
                     <icon>
                         <class>fa-child</class>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>shared-content</name>
+                    <icon>
+                        <class>fa-share-alt</class>
+                    </icon>
+                </datasource>
+                <datasource>
+                    <name>embedded-content</name>
+                    <icon>
+                        <class>fa-dot-circle-o</class>
                     </icon>
                 </datasource>
                 <datasource>
