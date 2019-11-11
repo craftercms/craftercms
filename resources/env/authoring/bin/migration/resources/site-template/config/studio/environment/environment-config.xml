@@ -35,6 +35,7 @@
 
 -->
 <environment-config>
+    <version>2</version>
     <preview-server-url>http://localhost:8080</preview-server-url>
     <preview-engine-server-url>http://localhost:8080</preview-engine-server-url>
     <graphql-server-url>http://localhost:8080</graphql-server-url>

@@ -16,6 +16,27 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<studio>
-    <version>3.1.4.4</version>
-</studio>
+<code-editor-config>
+  <version>2</version>
+  <!--
+  <theme>light</theme>
+  <enable-basic-autocompletion>true</enable-basic-autocompletion>
+  <enable-live-autocompletion>true</enable-live-autocompletion>
+  <font-size>11pt</font-size>
+  <tab-size>4</tab-size>
+  -->
+  <snippets>
+    <!--
+    <snippet>
+      <key>freemarker-example</key>
+      <label>Freemarker Example</label>
+      <type>freemarker</type>
+      <content>
+        <![CDATA[
+        <#assign imageSrc = contentModel.image!"" />
+        ]]>
+      </content>
+    </snippet> 
+    -->
+  </snippets>
+</code-editor-config>
