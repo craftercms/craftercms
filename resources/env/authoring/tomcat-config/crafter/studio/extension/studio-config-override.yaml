@@ -84,6 +84,17 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 # Enable password requirements validation
 # studio.security.passwordRequirements.enabled: false
 # Password requirements validation regular expression
+# The supported capture group keys are:
+#   hasNumbers
+#   hasLowercase
+#   hasUppercase
+#   hasSpecialChars
+#   noSpaces
+#   minLength
+#   maxLength
+#   minMaxLength
+#   validPassword
+#   invalidPassword
 # studio.security.passwordRequirements.validationRegex: ^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[@#$%^&+=]))(?=(?<noSpaces>\S+$))(?<minLength>.{8,})$
 # Studio authentication chain configuration
 # studio.authentication.chain:
