@@ -93,7 +93,7 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 #   minLength
 #   maxLength
 #   minMaxLength
-# studio.security.passwordRequirements.validationRegex: ^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[@#$%^&+=]))(?=(?<noSpaces>\S+$))(?<minLength>.{8,})$
+# studio.security.passwordRequirements.validationRegex: ^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;\/@#$%^&+=]))(?<minLength>.{8,})$
 # Studio authentication chain configuration
 # studio.authentication.chain:
   # Authentication provider type
