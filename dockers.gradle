@@ -63,24 +63,6 @@ def withCrafterSearchTomcatBinExcludes = [
     "**/*.pid"   
 ]
 
-def withProfileTomcatBinExcludes = [
-    "migration",
-    "upgrade",
-    "crafter-deployer",
-    "elasticsearch",
-    "solr",
-    "dbms",
-    "apache-tomcat/work/**",
-    "apache-tomcat/temp/**",
-    "apache-tomcat/webapps/crafter-search*",
-    "apache-tomcat/webapps/crafter-social*",
-    "apache-tomcat/webapps/crafter-profile",
-    "apache-tomcat/webapps/crafter-profile-admin",
-    "apache-tomcat/webapps/ROOT",
-    "apache-tomcat/webapps/studio",
-    "**/*.pid"   
-]
-
 envs.each { env ->
     def capitalizedEnv = StringUtils.capitalize(env)
 
@@ -137,33 +119,6 @@ envs.each { env ->
             }
         }
     }
-
-    if (!tasks.findByName("build${capitalizedEnv}TomcatDockerWithProfile")) {
-        task "build${capitalizedEnv}TomcatDockerWithProfile" {
-            def buildDir = "${dockerImageBuildDir}/${env}/tomcat_w_profile"
-            def envDir = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
-
-            doFirst {
-                cleanBuildDir(buildDir)
-            }
-            doLast {
-                copy {
-                    from "${dockerImageDir}/${env}/tomcat/"
-                    into buildDir
-                }
-
-                copy {
-                    from "${envDir}/bin/"
-                    into "${buildDir}/bin"
-                    exclude withProfileTomcatBinExcludes
-                }
-
-                exec {
-                    commandLine commandLinePrefix + ['docker', 'build', '-t', "craftercms/${env}_tomcat_w_profile:${project.version}", buildDir]
-                }
-            }
-        }
-    }
 }
 
 task buildDeployerDocker {
@@ -215,7 +170,6 @@ task buildGitSshServerDocker {
     }    
 }
 
-
 task buildLogrotateDocker {
     def buildDir = "${dockerImageBuildDir}/logrotate"
 
@@ -235,6 +189,32 @@ task buildLogrotateDocker {
     }    
 }
 
+task buildProfileDocker {
+    def buildDir = "${dockerImageBuildDir}/profile"
+
+    doFirst {
+        cleanBuildDir(buildDir)
+    }
+
+    doLast {
+        copy {
+            from "${dockerImageBuildDir}/delivery/tomcat/"
+            from "${dockerImageDir}/profile/"
+            into buildDir
+        }
+
+        copy {
+            from "${deliveryEnvDir}/bin/apache-tomcat/webapps/crafter-profile.war"
+            from "${deliveryEnvDir}/bin/apache-tomcat/webapps/crafter-profile-admin.war"
+            into "${buildDir}/bin/apache-tomcat/webapps"
+        }
+
+        exec {
+            commandLine commandLinePrefix + ['docker', 'build', '-t', "craftercms/profile:${project.version}", buildDir]
+        }
+    }    
+}
+
 def cleanBuildDir(buildDir) {
     delete buildDir
     mkdir buildDir 
@@ -243,18 +223,15 @@ def cleanBuildDir(buildDir) {
 task buildAuthoringDockers {
     dependsOn 'buildAuthoringTomcatDocker'
     dependsOn 'buildAuthoringTomcatDockerWithCrafterSearch'
-    if (includeProfile) {
-        dependsOn 'buildAuthoringTomcatDockerWithProfile'
-    }
     dependsOn 'buildGitSshServerDocker'
     dependsOn 'buildLogrotateDocker'
 }
 
 task buildDeliveryDockers {
-    dependsOn 'buildDeployerDocker'
     dependsOn 'buildDeliveryTomcatDocker'
     dependsOn 'buildDeliveryTomcatDockerWithCrafterSearch'
+    dependsOn 'buildDeployerDocker'
     if (includeProfile) {
-        dependsOn 'buildDeliveryTomcatDockerWithProfile'
+        dependsOn 'buildProfileDocker'
     }
 }

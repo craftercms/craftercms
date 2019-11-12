@@ -52,9 +52,6 @@ RUN rm -rf ./bin/apache-tomcat/conf/* && rm -rf ./bin/apache-tomcat/webapps/*
 COPY ./bin/apache-tomcat/bin/setenv.sh ./bin/apache-tomcat/bin/
 COPY ./bin/apache-tomcat/conf ./bin/apache-tomcat/conf/
 COPY ./bin/apache-tomcat/webapps ./bin/apache-tomcat/webapps/
-
-# Create and copy the shared folder
-RUN mkdir ./bin/apache-tomcat/shared
 COPY ./bin/apache-tomcat/shared ./bin/apache-tomcat/shared/
 
 # Remove CATALINA_HOME from crafter-setenv.sh
