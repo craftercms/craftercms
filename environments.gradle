@@ -89,6 +89,13 @@ task authoringPostEnvironment {
     description "Setups authoring environment"
 
     doLast {
+        // Copy MariabDB4j jar for backup/restore
+        copy {
+            from "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar"
+            into "${authEnvDir}/bin"
+            rename "mariaDB4j-app-${mariadb4jVersion}.jar", 'mariaDB4j-app.jar'
+        }
+
         exec {
             workingDir "${authEnvDir}/bin/apache-tomcat/bin"
             commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
@@ -192,13 +199,6 @@ envs.each { env ->
                 copy {
                     from "${downloadDir}/elasticsearch-${elasticsearchVersion}"
                     into "${envDir}/bin/elasticsearch"
-                }
-
-                // Copy MariabDB4j jar for backup/restore
-                copy {
-                    from "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar"
-                    into "${envDir}/bin"
-                    rename "mariaDB4j-app-${mariadb4jVersion}.jar", 'mariaDB4j-app.jar'
                 }
 
                 // Copy Deployer README.md

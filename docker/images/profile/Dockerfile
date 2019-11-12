@@ -20,51 +20,44 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update; \
     apt-get install -y gosu; \
-    apt-get install -y --no-install-recommends lsof; \
-    apt-get install -y --no-install-recommends libaio1; \
-    apt-get install -y --no-install-recommends openssh-client; \
-    apt-get install -y --no-install-recommends git; \
     rm -rf /var/lib/apt/lists/*;
 
 # Create folders and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
     mkdir /opt/crafter/bin; \
-    mkdir /opt/crafter/backups; \
-    mkdir /opt/crafter/data; \
     mkdir /opt/crafter/logs; \
     mkdir /opt/crafter/temp
 
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "./data", "./logs", "./temp" ]
+VOLUME [ "./logs", "./temp" ]
 
-# Copy bin folder
-COPY ./bin ./bin/
+# Link ./bin/apache-tomcat to the image's own Tomcat
+RUN ln -s /usr/local/tomcat ./bin/apache-tomcat
 
-# Make the Grapes dir a volume
-VOLUME ./bin/grapes
-
-# Delete the bin/dbms dir
-RUN rm -rf ./bin/dbms
-# Delete the apache tomcat folder, we're going to link to the image's own Tomcat
-RUN rm -rf ./bin/apache-tomcat && ln -s /usr/local/tomcat ./bin/apache-tomcat
-
-# Copy Tomcat setenv.sh, config and webapps
+# Copy version.txt, crafter-setenv.sh, Tomcat setenv.sh, config, shared and profile webapps
 RUN rm -rf ./bin/apache-tomcat/conf/* && rm -rf ./bin/apache-tomcat/webapps/*
+COPY ./bin/version.txt ./bin/
+COPY ./bin/crafter-setenv.sh ./bin/
 COPY ./bin/apache-tomcat/bin/setenv.sh ./bin/apache-tomcat/bin/
 COPY ./bin/apache-tomcat/conf ./bin/apache-tomcat/conf/
-COPY ./bin/apache-tomcat/webapps ./bin/apache-tomcat/webapps/
-COPY ./bin/apache-tomcat/shared ./bin/apache-tomcat/shared/
+COPY ./bin/apache-tomcat/webapps/crafter-profile.war ./bin/apache-tomcat/webapps/
+COPY ./bin/apache-tomcat/webapps/crafter-profile-admin.war ./bin/apache-tomcat/webapps/
+COPY ./bin/apache-tomcat/shared/classes/crafter/profile ./bin/apache-tomcat/shared/classes/crafter/profile/
 
 # Remove CATALINA_HOME from crafter-setenv.sh
 RUN sed -i '/export CATALINA_HOME=$CRAFTER_BIN_DIR\/apache-tomcat/d' ./bin/crafter-setenv.sh
 
 # Replace ports for default ones
-RUN sed -i 's/8694/8983/g' ./bin/crafter-setenv.sh; \
-    sed -i 's/9201/9200/g' ./bin/crafter-setenv.sh; \
-    sed -i 's/27020/27017/g' ./bin/crafter-setenv.sh; \
-    sed -i 's/33306/3306/g' ./bin/crafter-setenv.sh;
+RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9202/9200/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9192/9191/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/28020/27017/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9080/8080/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9443/8443/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9009/8009/g' ./bin/crafter-setenv.sh; \
+    sed -i 's/9005/8005/g' ./bin/crafter-setenv.sh;
 
 # Copy entrypoint script and make it executable
 COPY ./docker-entrypoint.sh .
