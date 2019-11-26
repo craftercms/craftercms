@@ -77,7 +77,7 @@
 
 -->
 <permissions>
-    <version>5</version>
+    <version>11</version>
     <role name="author">
         <rule regex="/site/website/.*">
             <allowed-permissions>
@@ -119,6 +119,8 @@
             <allowed-permissions>
                 <permission>S3 Read</permission>
                 <permission>S3 Write</permission>
+                <permission>webdav_read</permission>
+                <permission>webdav_write</permission>
             </allowed-permissions>
         </rule>
     </role>
@@ -130,6 +132,8 @@
                 <permission>Create Content</permission>
                 <permission>Create Folder</permission>
                 <permission>Publish</permission>
+                <permission>get_publishing_queue</permission>
+                <permission>cancel_publish</permission>
                 <permission>list_cmis</permission>
                 <permission>search_cmis</permission>
                 <permission>clone_content_cmis</permission>
@@ -139,6 +143,7 @@
         <rule regex="^/site/(?!website/index\.xml)(.*)">
             <allowed-permissions>
                 <permission>Delete</permission>
+                <permission>delete_content</permission>
             </allowed-permissions>
         </rule>
         <rule regex="/(static-assets|templates|scripts)/.*">
@@ -149,21 +154,28 @@
                 <permission>Create Content</permission>
                 <permission>Create Folder</permission>
                 <permission>Publish</permission>
+                <permission>get_publishing_queue</permission>
+                <permission>cancel_publish</permission>
                 <permission>list_cmis</permission>
                 <permission>search_cmis</permission>
                 <permission>clone_content_cmis</permission>
                 <permission>upload_content_cmis</permission>
+                <permission>delete_content</permission>
             </allowed-permissions>
         </rule>
         <rule regex="~DASHBOARD~">
             <allowed-permissions>
                 <permission>Publish</permission>
+                <permission>get_publishing_queue</permission>
+                <permission>cancel_publish</permission>
             </allowed-permissions>
         </rule>
         <rule regex=".*">
             <allowed-permissions>
                 <permission>S3 Read</permission>
                 <permission>S3 Write</permission>
+                <permission>webdav_read</permission>
+                <permission>webdav_write</permission>
             </allowed-permissions>
         </rule>
     </role>
@@ -180,22 +192,51 @@
                 <permission>search_cmis</permission>
                 <permission>clone_content_cmis</permission>
                 <permission>upload_content_cmis</permission>
+                <permission>write_configuration</permission>
+                <permission>add_remote</permission>
+                <permission>list_remotes</permission>
+                <permission>pull_from_remote</permission>
+                <permission>push_to_remote</permission>
+                <permission>rebuild_database</permission>
+                <permission>remove_remote</permission>
+                <permission>site_status</permission>
+                <permission>resolve_conflict</permission>
+                <permission>site_diff_conflicted_file</permission>
+                <permission>commit_resolution</permission>
+                <permission>cancel_failed_pull</permission>
             </allowed-permissions>
         </rule>
         <rule regex="^/(?!site/website/index\.xml)(.*)">
             <allowed-permissions>
                 <permission>Delete</permission>
+                <permission>delete_content</permission>
             </allowed-permissions>
         </rule>
         <rule regex="~DASHBOARD~">
             <allowed-permissions>
                 <permission>Publish</permission>
+                <permission>get_publishing_queue</permission>
+                <permission>cancel_publish</permission>
+                <permission>write_configuration</permission>
+                <permission>add_remote</permission>
+                <permission>list_remotes</permission>
+                <permission>pull_from_remote</permission>
+                <permission>push_to_remote</permission>
+                <permission>rebuild_database</permission>
+                <permission>remove_remote</permission>
+                <permission>site_status</permission>
+                <permission>resolve_conflict</permission>
+                <permission>site_diff_conflicted_file</permission>
+                <permission>commit_resolution</permission>
+                <permission>cancel_failed_pull</permission>
             </allowed-permissions>
         </rule>
         <rule regex=".*">
             <allowed-permissions>
                 <permission>S3 Read</permission>
                 <permission>S3 Write</permission>
+                <permission>webdav_read</permission>
+                <permission>webdav_write</permission>
             </allowed-permissions>
         </rule>
     </role>
@@ -205,10 +246,11 @@
                 <permission>Read</permission>
                 <permission>Write</permission>
                 <permission>Publish</permission>
+                <permission>get_publishing_queue</permission>
+                <permission>cancel_publish</permission>
                 <permission>Create Folder</permission>
                 <permission>Create Content</permission>
                 <permission>Change Content Type</permission>
-                <permission>audit_log</permission>
                 <permission>list_cmis</permission>
                 <permission>search_cmis</permission>
                 <permission>clone_content_cmis</permission>
@@ -220,17 +262,24 @@
                 <permission>rebuild_database</permission>
                 <permission>remove_remote</permission>
                 <permission>write_configuration</permission>
+                <permission>site_status</permission>
+                <permission>resolve_conflict</permission>
+                <permission>site_diff_conflicted_file</permission>
+                <permission>commit_resolution</permission>
+                <permission>cancel_failed_pull</permission>
             </allowed-permissions>
         </rule>
         <rule regex="^/(?!site/website/index\.xml)(.*)">
             <allowed-permissions>
                 <permission>Delete</permission>
+                <permission>delete_content</permission>
             </allowed-permissions>
         </rule>
         <rule regex="~DASHBOARD~">
             <allowed-permissions>
                 <permission>Publish</permission>
-                <permission>audit_log</permission>
+                <permission>get_publishing_queue</permission>
+                <permission>cancel_publish</permission>
                 <permission>add_remote</permission>
                 <permission>list_remotes</permission>
                 <permission>pull_from_remote</permission>
@@ -238,12 +287,19 @@
                 <permission>rebuild_database</permission>
                 <permission>remove_remote</permission>
                 <permission>write_configuration</permission>
+                <permission>site_status</permission>
+                <permission>resolve_conflict</permission>
+                <permission>site_diff_conflicted_file</permission>
+                <permission>commit_resolution</permission>
+                <permission>cancel_failed_pull</permission>
             </allowed-permissions>
         </rule>
         <rule regex=".*">
             <allowed-permissions>
                 <permission>S3 Read</permission>
                 <permission>S3 Write</permission>
+                <permission>webdav_read</permission>
+                <permission>webdav_write</permission>
             </allowed-permissions>
         </rule>
     </role>
@@ -252,16 +308,21 @@
             <allowed-permissions>
                 <permission>Read</permission>
                 <permission>Publish</permission>
+                <permission>get_publishing_queue</permission>
+                <permission>cancel_publish</permission>
             </allowed-permissions>
         </rule>
         <rule regex="~DASHBOARD~">
             <allowed-permissions>
                 <permission>Publish</permission>
+                <permission>get_publishing_queue</permission>
+                <permission>cancel_publish</permission>
             </allowed-permissions>
         </rule>
         <rule regex=".*">
             <allowed-permissions>
                 <permission>S3 Read</permission>
+                <permission>webdav_read</permission>
             </allowed-permissions>
         </rule>
     </role>
@@ -274,6 +335,7 @@
         <rule regex=".*">
             <allowed-permissions>
                 <permission>S3 Read</permission>
+                <permission>webdav_read</permission>
             </allowed-permissions>
         </rule>
     </role>

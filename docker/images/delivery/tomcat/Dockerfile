@@ -36,10 +36,13 @@ RUN mkdir -p /opt/crafter; \
 WORKDIR /opt/crafter
 
 # Create volumes
-VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
+VOLUME [ "./data", "./logs", "./temp" ]
 
 # Copy bin folder
 COPY ./bin ./bin/
+
+# Make the Grapes dir a volume
+VOLUME ./bin/grapes
 
 # Delete the apache tomcat folder, we're going to link to the image's own Tomcat
 RUN rm -rf ./bin/apache-tomcat && ln -s /usr/local/tomcat ./bin/apache-tomcat
@@ -49,9 +52,6 @@ RUN rm -rf ./bin/apache-tomcat/conf/* && rm -rf ./bin/apache-tomcat/webapps/*
 COPY ./bin/apache-tomcat/bin/setenv.sh ./bin/apache-tomcat/bin/
 COPY ./bin/apache-tomcat/conf ./bin/apache-tomcat/conf/
 COPY ./bin/apache-tomcat/webapps ./bin/apache-tomcat/webapps/
-
-# Create and copy the shared folder
-RUN mkdir ./bin/apache-tomcat/shared
 COPY ./bin/apache-tomcat/shared ./bin/apache-tomcat/shared/
 
 # Remove CATALINA_HOME from crafter-setenv.sh

@@ -86,6 +86,7 @@ export MONGODB_LOGS_DIR=${MONGODB_LOGS_DIR:="$CRAFTER_LOGS_DIR/mongodb"}
 export MONGODB_PID=${MONGODB_PID:="$MONGODB_HOME/mongod.lock"}
 
 # -------------------- MariaDB variables --------------------
+export MARIADB_SCHEMA=${MARIADB_SCHEMA:="crafter"}
 export MARIADB_HOME=${MARIADB_HOME:="$CRAFTER_BIN_DIR/dbms"}
 export MARIADB_DATA_DIR=${MARIADB_DATA_DIR:="$CRAFTER_DATA_DIR/db"}
 export MARIADB_ROOT_USER=${MARIADB_ROOT_USER:="root"}

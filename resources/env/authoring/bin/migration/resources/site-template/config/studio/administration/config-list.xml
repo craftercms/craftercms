@@ -38,7 +38,7 @@
     - samplePath: the path to a sample file to help the user update the file
 -->
 <config>
-    <version>6</version>
+    <version>7</version>
     <files>
         <file>
             <module>studio</module>
@@ -67,6 +67,13 @@
             <title>confTabRTEtMCE5Conf</title>
             <description>confTabRTEtMCE5ConfDesc</description>
             <samplePath>sample-form-control-rte-setup-tinymce5.xml</samplePath>
+        </file>
+        <file>
+            <module>studio</module>
+            <path>code-editor-config.xml</path>
+            <title>confTabCodeEditorConf</title>
+            <description>confTabCodeEditorConfDesc</description>
+            <samplePath>sample-code-editor-config.xml</samplePath>
         </file>
         <file>
             <module>studio</module>

@@ -20,6 +20,8 @@ studio.configuration.site.preview.destroy.context.url: ${env:ENGINE_URL}/api/1/s
 studio.configuration.site.defaultPreviewUrl: ^https?://localhost:8080/?
 # Default authoring URL
 studio.configuration.site.defaultAuthoringUrl: ^https?://localhost:8080/studio/?
+# Default GraphQL server URL
+studio.configuration.site.defaultGraphqlServerUrl: ^https?://localhost:8080/?
 
 ############################################################
 ##                    Preview Deployer                    ##
@@ -43,8 +45,10 @@ studio.preview.search.deleteUrl: ${env:SEARCH_URL}/api/2/admin/index/delete/{sit
 ##                   Database                   ##
 ##################################################
 # Crafter Studio uses an embedded MariaDB by default
+# Crafter DB schema name
+studio.db.schema: ${env:MARIADB_SCHEMA}
 # Crafter DB connection string
-studio.db.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}/crafter?user=${env:MARIADB_USER}&password=${env:MARIADB_PASSWD}
+studio.db.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}/${env:MARIADB_SCHEMA}?user=${env:MARIADB_USER}&password=${env:MARIADB_PASSWD}
 # Connection string used to initialize database. This creates the `crafter` schema, the `crafter` user and/or upgrades the database
 studio.db.initializer.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}?user=${env:MARIADB_ROOT_USER}&password=${env:MARIADB_ROOT_PASSWD}
 # Connection string if using a database with an already created schema and user (like AWS RDS)
@@ -80,13 +84,16 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 # Enable password requirements validation
 # studio.security.passwordRequirements.enabled: false
 # Password requirements validation regular expression
-#   (?=.*[0-9])       a digit must occur at least once
-#   (?=.*[a-z])       a lower case letter must occur at least once
-#   (?=.*[A-Z])       an upper case letter must occur at least once
-#   (?=.*[@#$%^&+=])  a special character must occur at least once
-#   (?=\S+$)          no whitespace allowed in the entire string
-#   .{8,}             anything, at least eight places though
-# studio.security.passwordRequirements.validationRegex: ^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\S+$).{8,}$
+# The supported capture group keys are:
+#   hasNumbers
+#   hasLowercase
+#   hasUppercase
+#   hasSpecialChars
+#   noSpaces
+#   minLength
+#   maxLength
+#   minMaxLength
+# studio.security.passwordRequirements.validationRegex: ^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;\/@#$%^&+=]))(?<minLength>.{8,})$
 # Studio authentication chain configuration
 # studio.authentication.chain:
   # Authentication provider type
@@ -189,6 +196,8 @@ studio.mail.port: ${env:MAIL_PORT}
 # studio.clustering.sandboxSyncJob.interval: 2000
 # Published Sync Job interval in milliseconds which is how often to sync the published repos
 # studio.clustering.publishedSyncJob.interval: 60000
+# Global Repo Sync Job interval in milliseconds which is how often to sync the global repo
+# studio.clustering.globalRepoSyncJob.interval: 45000
 # Cluster member after heartbeat stale for amount of minutes will be declared inactive
 # studio.clustering.heartbeatStale.timeLimit: 5
 # Cluster member after being inactive for amount of minutes will be removed from cluster
@@ -268,4 +277,11 @@ studio.search.urls: ${env:ES_URL}
 # studio.serverless.delivery.deployer.target.template.params:
 #   aws:
 #     cloudformation:
+#       # Namespace to use for CloudFormation resources (required when target template is aws-cloudformed-s3)
 #       namespace: myorganization
+#       # The domain name of the serverless delivery LB (required when target template is aws-cloudformed-s3)
+#       deliveryLBDomainName:
+#       # The SSL certificate ARN the CloudFront CDN should use (optional when target template is aws-cloudformed-s3)
+#       cloudfrontCertificateArn:
+#       # The alternate domains names (besides *.cloudfront.net) for the CloudFront CDN (optional when target template is aws-cloudformed-s3)
+#       alternateCloudFrontDomainNames:

@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.io.input.Tailer
 import org.apache.commons.io.input.TailerListenerAdapter
@@ -23,10 +39,9 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.1.3" // craftercms version flag
+project.version = "3.1.4" // craftercms version flag
 
 ext {
-    isWin = System.getProperty('os.name').toLowerCase().contains('windows')
     commandLinePrefix = []
     startUpFile = project.hasProperty("debug") ? "./debug.sh" : "./startup.sh"
     shutDownFile = "./shutdown.sh"
@@ -90,7 +105,7 @@ ext {
 
     /** Git properties **/
     gitURLTemplate = project.hasProperty("crafter.git.url") ? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "master" // craftercms branch flag
+    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "v3.1.4" // craftercms branch flag
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
     shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone").toBoolean() : false
     studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo").toBoolean() : false
@@ -98,30 +113,10 @@ ext {
     /** Other **/
     overwriteConfig = project.hasProperty("overwriteConfig") ? project.property("overwriteConfig").toBoolean() : false
     backupAndReplaceConfig = project.hasProperty("backupAndReplaceConfig") ? project.property("backupAndReplaceConfig").toBoolean() : false
-
+    
     /** Testing **/
-    testingPlatform = project.hasProperty("crafter.testing.platform") ? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ", "-")
-    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : "73.0.3683.68"
-    browserToTest = project.hasProperty("crafter.testing.browser") ? project.property("crafter.testing.browser") : "chrome"
     testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest").toBoolean() : false
-
-    testingSuites = project.hasProperty("crafter.testing.suites") ? project.property("crafter.testing.suites") :
-            "src/test/resources/testng_SanityTest.xml"+
-                ",src/test/resources/testng_StudioAccountManagement.xml"+
-                ",src/test/resources/testng_StudioContent.xml" +
-                ",src/test/resources/testng_StudioContextualNavigation.xml"+
-                ",src/test/resources/testng_StudioSiteDropdown.xml"+
-                ",src/test/resources/testng_StudioDashboard.xml"+
-                ",src/test/resources/testng_StudioGeneral.xml"+
-                ",src/test/resources/testng_StudioPreviewTools.xml"+
-                ",src/test/resources/testng_StudioSiteConfig.xml"+
-                ",src/test/resources/testng_StudioSites.xml"+
-                ",src/test/resources/testng_StudioRemoteReposScenarios.xml"+
-                ",src/test/resources/testng_StudioUsers.xml"+
-                ",src/test/resources/testng_StudioLoginLogout.xml"+
-                ",src/test/resources/testng_StudioAPI.xml"+
-                ",src/test/resources/testng_StudioAPI2.xml"
-
+    
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb").toBoolean() : false // TODO:: cleanup
     withElasticsearch = project.hasProperty("withElasticsearch") ? project.property("withElasticsearch").toBoolean() : true // TODO:: cleanup
     withSolr = project.hasProperty("withSolr") ? project.property("withSolr").toBoolean() : false
@@ -130,8 +125,7 @@ ext {
    
     /** Cloneable Artifacts **/
     VALID_MODULES =
-      ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite",
-      "plugin-maker", "video-center-blueprint"]
+      ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "plugin-maker"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -158,7 +152,6 @@ def updateDeps = []
 def startDeps = []
 def stopDeps = []
 def statusDeps = []
-def preTestDeps = browserToTest.equalsIgnoreCase("chrome") ? [downloadChromeDriver] : [downloadEdgeDriver,downloadIEDriver]
 def bundleDeps = []
 def envs = []
 def envDepends = []
@@ -197,36 +190,33 @@ buildModules.each { module ->
 
     // Creates the Build Tasks
     if (!tasks.findByPath("${module}_build")) {
-        if (!module.equalsIgnoreCase("test-suite")) {
-            task "${module}_build" doLast({
-                def actualCommandLinePost = [];
-                if (!testArtifacts) {
-                    actualCommandLinePost.add("-Dmaven.test.skip=true")
+        task "${module}_build" doLast({
+            def actualCommandLinePost = [];
+            if (!testArtifacts) {
+                actualCommandLinePost.add("-Dmaven.test.skip=true")
+            }
+            if (module.equalsIgnoreCase("search")) {
+                actualCommandLinePost.add("-pl")
+                actualCommandLinePost.add("!crafter-search-solr-itest")
+            } else if (module.equalsIgnoreCase("profile")) {
+                actualCommandLinePost.add("-pl")
+                if (!includeProfile) {
+                    actualCommandLinePost.add("!admin-console,!integration-tests,!server")
+                } else {
+                    actualCommandLinePost.add("!integration-tests")
                 }
-                if (module.equalsIgnoreCase("search")) {
-                    actualCommandLinePost.add("-pl")
-                    actualCommandLinePost.add("!crafter-search-solr-itest")
-                } else if (module.equalsIgnoreCase("profile")) {
-                    actualCommandLinePost.add("-pl")
-                    if (!includeProfile) {
-                        actualCommandLinePost.add("!admin-console,!integration-tests,!server")
-                    } else {
-                        actualCommandLinePost.add("!integration-tests")
-                    }
-                }
-                if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
-                    actualCommandLinePost.add("-Dstudio.vcbp.path=../video-center-blueprint/".toString())				
-                    actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
-                    actualCommandLinePost.add("-Dexec.skip=true")
-                }
-                def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
-                executeProcess(array, "./src/${module}".toString())
-            })
-            // Creates the Dependencies Array
-            def buildTask = tasks.findByName("${module}_build")
-            buildTask.description "Builds and installs locally ${module} module"
-            buildDeps.add(buildTask)
-        }
+            }
+            if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
+                actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
+                actualCommandLinePost.add("-Dexec.skip=true")
+            }
+            def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
+            executeProcess(array, "./src/${module}".toString())
+        })
+        // Creates the Dependencies Array
+        def buildTask = tasks.findByName("${module}_build")
+        buildTask.description "Builds and installs locally ${module} module"
+        buildDeps.add(buildTask)
 
         // Create init tasks
         task "${module}_init" doLast {
@@ -378,15 +368,12 @@ envs.each { env ->
 /* Cleanup non buildable modules */
 buildDeps.removeAll([
   tasks.findByName("studio-ui_build"),
-  tasks.findByName("plugin-maker_build"),
-  tasks.findByName("video-center-blueprint_build")
+  tasks.findByName("plugin-maker_build")
 ] as Task[])
 
 cleanDeps.removeAll([
   tasks.findByName("studio-ui_clean"),
-  tasks.findByName("plugin-maker_clean"),
-  tasks.findByName("test-suite_build"),
-  tasks.findByName("video-center-blueprint_clean")
+  tasks.findByName("plugin-maker_clean")
 ] as Task[])
 
 if (!includeSocial) {
@@ -400,15 +387,6 @@ if (!includeProfile) {
     deployDepends.removeIf({
         it.name.contains("profile")
     })
-}
-
-task selftest {
-    description "Selftest gradle script."
-    doLast {
-        def selftestScript="./initialSetupCheckForTestScript.sh"
-        def array = commandLinePrefix + [selftestScript]
-        executeProcess(array, "./src/test-suite")
-    }
 }
 
 task clean() {
@@ -474,72 +452,9 @@ task selfupdate {
     }
 }
 
-task preTest(dependsOn: preTestDeps) {
-    def repoFolder = file("${authEnvDir}/data/repos/sites")
-    def driverPath = ""
-    doFirst {
-        switch (browserToTest.toString().toLowerCase()) {
-            case "chrome":
-                driverPath = file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver")
-                break;
-            default:
-                driverPath = askForPath();
-        }
-
-        if (!file("./src/test-suite/test-properties.properties").exists()) {
-            def properties = []
-            properties.add("webBrowser=${browserToTest}")
-            properties.add("baseUrl=http://localhost:8080/studio/#/login")
-            properties.add("${browserToTest}.driver.path=${StringEscapeUtils.escapeJava(file(driverPath).absolutePath)}")
-            properties.add("deliverybaseUrl=http://localhost:9080/")
-            properties.add("executionenvironment=unix")
-
-            Files.write(Paths.get("./src/test-suite/test-properties.properties"), properties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
-        }
-
-        // Exists, is a folder and has sites
-        if (repoFolder.exists() && repoFolder.isDirectory() && (repoFolder.listFiles().length > 0)) {
-            def dataFolderSuffix = "-${new Date().format("YYYYMMdd")}-${UUID.randomUUID().toString()}"
-
-            logger.lifecycle("About to begin automatic testing suite")
-            logger.lifecycle("Current Data folder will be move to data_${dataFolderSuffix}")
-            logger.lifecycle("It will move it back when done ")
-            sleep(5 * 1000)
-            repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath + dataFolderSuffix)
-            repoFolder.parentFile.parentFile.mkdir()
-            Files.write(Paths.get(repoFolder.parentFile.parentFile.absolutePath, "_btbk.txt"), [dataFolderSuffix], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
-        }
-    }
-}
-
-task postTest {
-    def repoFolder = file("${authEnvDir}/data/repos/sites")
-    def folderSuffixCacheFile = Paths.get(repoFolder.parentFile.parentFile.absolutePath, "_btbk.txt").toFile()
-    if (folderSuffixCacheFile.exists()) {
-        logger.lifecycle("Moving back pre-test data")
-        logger.lifecycle("Test data was backup in the folder ${folderSuffixCacheFile.toString()}")
-        logger.lifecycle("This folder can be safely remove if needed.")
-        def dataFolderSufix = Files.readAllLines(folderSuffixCacheFile.toPath(), Charset.forName("UTF-8")).get(0)
-        def backupedFolder = file(repoFolder.parentFile.parentFile.absolutePath + dataFolderSufix)
-        if (backupedFolder.exists()) {
-            repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath + "$dataFolderSufix-td")
-            backupedFolder.renameTo(Paths.get(backupedFolder.parentFile.absolutePath, "data").toString())
-        }
-    }
-}
-
 task delay {
     doLast {
         sleep(30 * 1000)
-    }
-}
-
-task test() {
-    description "Tests Crafter CMS."
-    doLast {
-        def actualCommandLinePost = ["-Dfile=" + testingSuites]
-        def array = commandLinePrefix + ["mvn", "clean", "install"] + actualCommandLinePost
-        executeProcess(array, "./src/test-suite")
     }
 }
 
@@ -600,13 +515,6 @@ dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, download
 dependsOnOrdered(upgrade, [update, build, deploy])
 dependsOnOrdered(dockers, dockerDepends)
 
-// If delivery no test (for now)
-if (!project.hasProperty("env") || (project.hasProperty("env") && !project.property("env").equalsIgnoreCase("delivery"))) {
-    dependsOnOrdered(test, [preTest, authoring_start, delay])
-    test.finalizedBy(authoring_stop)
-    test.finalizedBy(postTest)
-}
-
 def deployBinary(deployable, env) {
     if (deployable.exists()) {
         def path = env.equals("authoring") ? authEnvDir : deliveryEnvDir
@@ -649,16 +557,6 @@ def executeProcess(command, workingDir) {
     if (proc.exitValue() != 0) {
         throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
     }
-}
-
-def askForPath() {
-    def console = System.console();
-    def inputPath = console.readLine("> Please enter path for selemiun driver of ${browserToTest} ")
-    if (!file(inputPath).exists()) {
-        console.logger.lifecycle("${inputPath} does not exist, please enter a new valid path");
-        askForPath();
-    }
-    return inputPath
 }
 
 def getModule() {

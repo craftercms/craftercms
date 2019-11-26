@@ -22,7 +22,7 @@
 
 -->
 <site-config>
-    <version>2</version>
+    <version>4</version>
     <wem-project>{siteName}</wem-project>
     <display-name>{siteName}</display-name>
     <default-timezone>EST5EDT</default-timezone>
@@ -33,8 +33,36 @@
         <live-environment>live</live-environment>
     </published-repository>
 
+    <publishing>
+        <comments>
+            <!-- Global setting would apply to all -->
+            <required>false</required>
+            <!-- Additional (also optional) specific overrides -->
+            <!-- <delete-required/> -->
+            <!-- <bulk-publish-required/> -->
+            <!-- <publish-by-commit-required/> -->
+        </comments>
+    </publishing>
+
     <form-engine>
         <field-name-postfix>true</field-name-postfix>
+        <ignore-postfix-fields>
+            <field>internal-name</field>
+            <field>file-name</field>
+            <field>placeInNav</field>
+            <field>scripts</field>
+            <field>mime-type</field>
+            <field>force-https</field>
+            <field>navLabel</field>
+            <field>expired</field>
+            <field>key</field>
+            <field>value</field>
+            <field>items</field>
+            <field>redirect-url</field>
+            <field>authorizedRoles</field>
+            <field>role</field>
+            <field>disabled</field>
+        </ignore-postfix-fields>
     </form-engine>
 
     <!--
