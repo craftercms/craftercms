@@ -375,7 +375,7 @@ function elasticsearchStatus(){
 
 function startTomcat() {
   cd $CRAFTER_BIN_DIR
-  if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
+  if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] || [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]] ;then
     echo "------------------------------------------------------------------------"
     echo "Starting Tomcat"
     echo "------------------------------------------------------------------------"
@@ -521,7 +521,7 @@ function startMongoDB(){
       tar xvf mongodb.tgz --strip 1
       rm mongodb.tgz
     fi
-    
+
     # Before run check if the port is available.
     possiblePID=$(pidOf $MONGODB_PORT)
     if  [ -z $possiblePID ];  then
@@ -553,7 +553,7 @@ function isMongoNeeded() {
     if [ $o = "skipMongo" ] || [ $o = "skipMongoDB" ]; then
       return 1
     fi
-  done  
+  done
   for o in "$@"; do
     if [ $o = "withMongo" ] || [ $o = "withMongoDB" ]; then
       return 0
@@ -775,7 +775,7 @@ function status(){
       socialStatus
     fi
   fi
-  
+
 }
 
 function doBackup() {
@@ -787,7 +787,7 @@ function doBackup() {
       targetName="crafter-delivery-backup"
     fi
   fi
-  
+
   local currentDate=$(date +'%Y-%m-%d-%H-%M-%S')
   local targetFolder="$CRAFTER_HOME/backups"
   local targetFile="$targetFolder/$targetName.$currentDate.tar.gz"
@@ -796,7 +796,7 @@ function doBackup() {
   echo "------------------------------------------------------------------------"
   echo "Starting backup"
   echo "------------------------------------------------------------------------"
-  
+
   if [ -d "$tempFolder" ]; then
     rm -r "$tempFolder"
   fi
@@ -821,8 +821,8 @@ function doBackup() {
       abortOnError
     else
       echo "External DB backup failed, unable to find mysqldump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
-      exit 1 
-    fi  
+      exit 1
+    fi
   elif [ -d "$MARIADB_DATA_DIR" ]; then
     # Start DB if necessary
     DB_STARTED=false
@@ -993,7 +993,7 @@ function doRestore() {
   else
     java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$sourceFile" "$tempFolder"
     abortOnError
-    
+
     packageExt="zip"
   fi
 
@@ -1104,7 +1104,7 @@ function doRestore() {
         abortOnError
       else
         echo "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
-        exit 1 
+        exit 1
       fi
     else
       mkdir -p "$MARIADB_DATA_DIR"
@@ -1128,7 +1128,7 @@ function doRestore() {
       echo "Stopping DB"
       echo "------------------------------------------------------------------------"
       kill $(cat mariadb4j.pid)
-      sleep 10    
+      sleep 10
     fi
   fi
 
@@ -1161,7 +1161,7 @@ function doUpgradeDB() {
     echo "Upgrading embedded DB"
     echo "------------------------------------------------------------------------"
     export MYSQL_PWD=$MARIADB_ROOT_PASSWD
-    $CRAFTER_BIN_DIR/dbms/bin/mysql_upgrade --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp 
+    $CRAFTER_BIN_DIR/dbms/bin/mysql_upgrade --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp
     abortOnError
 
     if [ "$DB_STARTED" = true ]; then
@@ -1174,7 +1174,7 @@ function doUpgradeDB() {
     fi
 
     echo "------------------------------------------------------------------------"
-    echo "> Upgrade database completed"    
+    echo "> Upgrade database completed"
   else
     echo 'No embedded DB found, skipping upgrade'
   fi
