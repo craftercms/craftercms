@@ -1,6 +1,7 @@
 target:
   localRepoPath: ${deployer.main.deployments.folderPath}/${target.siteName}
   engineUrl: ${env:ENGINE_URL}
+  engineManagementToken: ${env:ENGINE_MANAGEMENT_TOKEN}
   search:
     serverUrl: ${env:SEARCH_URL}
     elasticsearch:
