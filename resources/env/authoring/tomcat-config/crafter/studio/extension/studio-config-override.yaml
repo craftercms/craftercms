@@ -15,13 +15,19 @@ studio.repo.basePath: ${env:CRAFTER_DATA_DIR}/repos
 ##                   Site Configuration                   ##
 ############################################################
 # Destroy site context url for preview engine
-studio.configuration.site.preview.destroy.context.url: ${env:ENGINE_URL}/api/1/site/context/destroy.json?crafterSite={siteName}
+studio.configuration.site.preview.destroy.context.url: ${env:ENGINE_URL}/api/1/site/context/destroy.json?crafterSite={siteName}&token=${studio.configuration.management.previewAuthorizationToken}
 # Default preview URL
 studio.configuration.site.defaultPreviewUrl: ^https?://localhost:8080/?
 # Default authoring URL
 studio.configuration.site.defaultAuthoringUrl: ^https?://localhost:8080/studio/?
 # Default GraphQL server URL
 studio.configuration.site.defaultGraphqlServerUrl: ^https?://localhost:8080/?
+# Studio management authorization token.
+# Please update this per installation and provide this token to the status monitors.
+studio.configuration.management.authorizationToken: ${env:STUDIO_MANAGEMENT_TOKEN}
+# Preview engine management authorization token.
+# Please update this per installation and provide this token to the status monitors.
+studio.configuration.management.previewAuthorizationToken: ${env:ENGINE_MANAGEMENT_TOKEN}
 
 ############################################################
 ##                    Preview Deployer                    ##
