@@ -160,6 +160,11 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
     # Authentication via DB enabled
     # enabled: true
 
+# The key used for encryption of configuration properties
+studio.security.encryption.key: ${env:CRAFTER_ENCRYPTION_KEY}
+# The salt used for encryption of configuration properties
+studio.security.encryption.salt: ${env:CRAFTER_ENCRYPTION_SALT}
+
 ##################################################
 ##        SMTP Configuration (Email)            ##
 ##################################################

@@ -15,3 +15,9 @@ deployer:
       # Deployer management authorization token
       # Please update this per installation and provide this token to the status monitors.
       authorizationToken: ${DEPLOYER_MANAGEMENT_TOKEN}
+    security:
+      encryption:
+        # The key used for encryption of configuration properties
+        key: ${CRAFTER_ENCRYPTION_KEY}
+        # The salt used for encryption of configuration properties
+        salt: ${CRAFTER_ENCRYPTION_SALT}
