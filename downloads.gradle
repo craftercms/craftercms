@@ -70,69 +70,6 @@ task downloadSolr() {
     }
 }
 
-task downloadIEDriver {
-    doFirst{
-        download{
-            src WINDOWS_IE_DRIVER_URL
-            overwrite false
-            dest ("./src/test-suite/bin/ie-x64.zip")
-        }
-        copy {
-            from zipTree("./src/test-suite/bin/ie-x64.zip")
-            into "./src/test-suite/bin/${browserToTest}-win/"
-        }
-    }
-}
-
-task downloadEdgeDriver(){
-    doFirst{
-        file("./src/test-suite/bin/").mkdir()
-       def winBuildNumber =getWindowsBuildNumber();
-        def url=""
-        if(WINDOWS_EDGE_DRIVER_URL.containsKey(winBuildNumber)){
-            url=WINDOWS_EDGE_DRIVER_URL[winBuildNumber]
-        }
-        if(url.endsWith(".msi")){
-            println ("Your current Selenium Driver is an MSI installer, please \n install it in this path `./src/test-suite/bin` and make sure that you configure properly the `./src/test-suite/test-properties.properties`")
-        }
-        if(!url.isEmpty()){
-            println url
-            download{
-                src url
-                overwrite false
-                dest ("./src/test-suite/bin/edge/MicrosoftWebDriver.exe")
-                acceptAnyCertificate true
-            }
-        }else{
-            println "We could not found a suitable selenium driver for your windows build  ${winBuildNumber}"
-            println "Please go to https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/ and download"
-            println "the proper driver version and then configure its location in the `./src/test-suite/test-properties.properties` file "
-        }
-    }
-}
-
-task downloadChromeDriver(){
-    doFirst{
-        def platform=""
-        if(SystemUtils.IS_OS_WINDOWS){
-            platform = "win32"
-        }else if(SystemUtils.IS_OS_LINUX){
-            platform = "linux64"
-        }else{
-            platform = "mac64"
-        }
-        download{
-            src "https://chromedriver.storage.googleapis.com/${chromeDriverVersion}/chromedriver_${platform}.zip"
-            overwrite false
-            dest ("./src/test-suite/bin/chromedriver-${testingPlatform}.zip")
-        }
-        copy {
-            from zipTree("./src/test-suite/bin/chromedriver-${testingPlatform}.zip")
-            into "./src/test-suite/bin/${browserToTest}-${testingPlatform}/"
-        }
-    }
-}
-
 task downloadMariaDB4j {
   doFirst {
     download {
