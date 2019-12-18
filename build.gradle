@@ -108,32 +108,14 @@ ext {
     forceDeploy = project.hasProperty("forceDeploy") ? project.property("forceDeploy") : false
     keepBin = project.hasProperty("keepBin") ? project.property("keepBin") : false
 
-    testingPlatform = project.hasProperty("crafter.testing.platform") ? project.property("crafter.testing.platform") : System.properties['os.name'].toString().toLowerCase().replaceAll(" ", "-")
-    chromeDriverVersion = project.hasProperty("crafter.testing.chrome") ? project.property("crafter.testing.chrome") : 2.40
-    browserToTest = project.hasProperty("crafter.testing.browser") ? project.property("crafter.testing.browser") : "chrome"
     testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest") : false
-
-    testingSuites = project.hasProperty("crafter.testing.suites") ? project.property("crafter.testing.suites") :
-            "src/test/resources/testng_SanityTest.xml"+
-                ",src/test/resources/testng_StudioAccountManagement.xml"+
-                ",src/test/resources/testng_StudioContent.xml" +
-                ",src/test/resources/testng_StudioContextualNavigation.xml"+
-                ",src/test/resources/testng_StudioSiteDropdown.xml"+
-                ",src/test/resources/testng_StudioDashboard.xml"+
-                ",src/test/resources/testng_StudioGeneral.xml"+
-                ",src/test/resources/testng_StudioPreviewTools.xml"+
-                ",src/test/resources/testng_StudioSiteConfig.xml"+
-                ",src/test/resources/testng_StudioSites.xml"+
-                ",src/test/resources/testng_StudioUsers.xml"+
-                ",src/test/resources/testng_StudioLoginLogout.xml"+
-                ",src/test/resources/testng_StudioAPI.xml"
 
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb") : false // Does not really.
     silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent") : false
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both"
 
     /** Cloneable Artifacts **/
-    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "test-suite", "plugin-maker"]
+    VALID_MODULES = ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "plugin-maker"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -143,15 +125,6 @@ ext {
             "deployer": "./src/deployer/target/crafter-deployer.jar",
             "studio"  : "./src/studio/target/studio.war",
             "social"  : "./src/social/server/target/crafter-social.war"]
-    WINDOWS_EDGE_DRIVER_URL = [
-            "16299": "https://download.microsoft.com/download/D/4/1/D417998A-58EE-4EFE-A7CC-39EF9E020768/MicrosoftWebDriver.exe",
-            "15063": "https://download.microsoft.com/download/3/4/2/342316D7-EBE0-4F10-ABA2-AE8E0CDF36DD/MicrosoftWebDriver.exe",
-            "14393": "https://download.microsoft.com/download/3/2/D/32D3E464-F2EF-490F-841B-05D53C848D15/MicrosoftWebDriver.exe",
-            "10586": "https://download.microsoft.com/download/C/0/7/C07EBF21-5305-4EC8-83B1-A6FCC8F93F45/MicrosoftWebDriver.msi",
-            "10240": "https://download.microsoft.com/download/8/D/0/8D0D08CF-790D-4586-B726-C6469A9ED49C/MicrosoftWebDriver.msi"
-
-    ]
-    WINDOWS_IE_DRIVER_URL= "http://selenium-release.storage.googleapis.com/3.8/IEDriverServer_x64_3.8.0.zip"
 
     git = org.ajoberstar.grgit.Grgit.open(dir: ".")
     gitRevisionId = git.head().id.substring(0, 6)
@@ -169,7 +142,6 @@ def updateDeps = []
 def startDeps = []
 def stopDeps = []
 def statusDeps = []
-def preTestDeps = browserToTest.equalsIgnoreCase("chrome") ? [downloadChromeDriver] : [downloadEdgeDriver,downloadIEDriver]
 def bundleDeps = []
 def envs = []
 def envDepends = []
@@ -424,20 +396,6 @@ if (!includeProfile) {
     })
 }
 
-task selftest {
-    description "Selftest gradle script."
-    doLast {
-        def selftestScript="initialSetupCheckForTestScript"
-        if (isWin) {
-            selftestScript+=".bat"
-        } else {
-            selftestScript = "./"+selftestScript+".sh"
-        }
-        def array = commandLinePrefix + [selftestScript]
-        executeProcess(array, "./src/test-suite")
-    }
-}
-
 task clean() {
     //Dummy task Builds used as dependency of other tasks
     description "Clean all configured Crafter Modules"
@@ -550,89 +508,9 @@ task selfupdate {
     }
 }
 
-task preTest(dependsOn: preTestDeps) {
-    def repoFolder = file("${authEnv}/data/repos/sites")
-    def driverPath = ""
-    doFirst {
-        switch (browserToTest.toString().toLowerCase()) {
-            case "chrome":
-                if (SystemUtils.IS_OS_WINDOWS) {
-                    driverPath = file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver.exe")
-                } else {
-                    driverPath = file("./src/test-suite/bin/${browserToTest}-${testingPlatform}/chromedriver")
-                }
-                break;
-            case "edge":
-                driverPath = file("./src/test-suite/bin/${browserToTest}/MicrosoftWebDriver.exe")
-                break
-            case "ie":
-                driverPath = file("./src/test-suite/bin/ie-win/IEDriverServer.exe")
-                break
-            default:
-                driverPath = askForPath();
-        }
-
-        if (!file("./src/test-suite/test-properties.properties").exists()) {
-            def properties = []
-            properties.add("webBrowser=${browserToTest}")
-            properties.add("baseUrl=http://localhost:8080/studio/#/login")
-            properties.add("${browserToTest}.driver.path=${StringEscapeUtils.escapeJava(file(driverPath).absolutePath)}")
-            properties.add("deliverybaseUrl=http://localhost:9080/")
-
-            if (SystemUtils.IS_OS_WINDOWS) {
-                properties.add("executionenvironment=windows")
-            } else {
-                properties.add("executionenvironment=unix")
-            }
-
-            Files.write(Paths.get("./src/test-suite/test-properties.properties"), properties, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
-        }
-
-        // Exists, is a folder and has sites
-        if (repoFolder.exists() && repoFolder.isDirectory() && (repoFolder.listFiles().length > 0)) {
-            def dataFolderSuffix = "-${new Date().format("YYYYMMdd")}-${UUID.randomUUID().toString()}"
-
-            logger.lifecycle("About to begin automatic testing suite")
-            logger.lifecycle("Current Data folder will be move to data_${dataFolderSuffix}")
-            logger.lifecycle("It will move it back when done ")
-            sleep(5 * 1000)
-            repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath + dataFolderSuffix)
-            repoFolder.parentFile.parentFile.mkdir()
-            Files.write(Paths.get(repoFolder.parentFile.parentFile.absolutePath, "_btbk.txt"), [dataFolderSuffix], StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
-        }
-    }
-}
-
-
-task postTest {
-    def repoFolder = file("${authEnv}/data/repos/sites")
-    def folderSuffixCacheFile = Paths.get(repoFolder.parentFile.parentFile.absolutePath, "_btbk.txt").toFile()
-    if (folderSuffixCacheFile.exists()) {
-        logger.lifecycle("Moving back pre-test data")
-        logger.lifecycle("Test data was backup in the folder ${folderSuffixCacheFile.toString()}")
-        logger.lifecycle("This folder can be safely remove if needed.")
-        def dataFolderSufix = Files.readAllLines(folderSuffixCacheFile.toPath(), Charset.forName("UTF-8")).get(0)
-        def backupedFolder = file(repoFolder.parentFile.parentFile.absolutePath + dataFolderSufix)
-        if (backupedFolder.exists()) {
-            repoFolder.parentFile.parentFile.renameTo(repoFolder.parentFile.parentFile.absolutePath +
-                    "$dataFolderSufix-td")
-            backupedFolder.renameTo(Paths.get(backupedFolder.parentFile.absolutePath, "data").toString())
-        }
-    }
-}
-
 task delay {
     doLast {
         sleep(30 * 1000)
-    }
-}
-
-task test() {
-    description "Tests Crafter CMS."
-    doLast {
-        def actualCommandLinePost = ["-Dfile=" + testingSuites]
-        def array = commandLinePrefix + ["mvn", "clean", "install"] + actualCommandLinePost
-        executeProcess(array, "./src/test-suite")
     }
 }
 
@@ -670,13 +548,6 @@ dependsOnOrdered(init, initDeps)
 dependsOnOrdered(update, updateDeps)
 dependsOnOrdered(deploy, [preDeploy, downloadGroovy, downloadTomcat, downloadSolr, downloadMariaDB4j, utils] + envDepends + deliveryDeps)
 dependsOnOrdered(upgrade, [update, preUpgrade, build, deploy])
-
-// If delivery no test (for now)
-if (!project.hasProperty("env") || (project.hasProperty("env") && !project.property("env").equalsIgnoreCase("delivery"))) {
-    dependsOnOrdered(test, [preTest, authoring_start, delay])
-    test.finalizedBy(authoring_stop)
-    test.finalizedBy(postTest)
-}
 
 def deployBinary(deployable, env) {
     if (deployable.exists()) {
@@ -729,16 +600,6 @@ def checkOrCreateCheck(path) {
         def deployerDir = file("${path}/bin/crafter-deployer")
         deployerDir.mkdir()
     }
-}
-
-def askForPath() {
-    def console = System.console();
-    def inputPath = console.readLine("> Please enter path for selemiun driver of ${browserToTest} ")
-    if (!file(inputPath).exists()) {
-        console.logger.lifecycle("${inputPath} does not exist, please enter a new valid path");
-        askForPath();
-    }
-    return inputPath
 }
 
 def getModule() {
