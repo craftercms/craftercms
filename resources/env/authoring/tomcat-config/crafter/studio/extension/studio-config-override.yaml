@@ -294,6 +294,10 @@ studio.search.urls: ${env:ES_URL}
 #     # AWS secret key (optional if specified through default AWS chain)
 #     default_secret_key:
 #     cloudformation:
+#       # AWS access key (optional if aws.accessKey is specified)
+#       access_key:
+#       # AWS secret key (optional if aws.secretKey is specified)
+#       secret_key:
 #       # Namespace to use for CloudFormation resources (required when target template is aws-cloudformed-s3)
 #       namespace: myorganization
 #       # The domain name of the serverless delivery LB (required when target template is aws-cloudformed-s3)
