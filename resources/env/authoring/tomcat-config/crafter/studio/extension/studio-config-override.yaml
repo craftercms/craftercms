@@ -286,8 +286,18 @@ studio.search.urls: ${env:ES_URL}
 # The following parameters will be sent automatically, and you don't need to specify them: env, site_name, replace,
 # disable_deploy_cron, local_repo_path, repo_url, use_crafter_search
 # studio.serverless.delivery.deployer.target.template.params:
+#   # The delivery Elasticsearch endpoint (optional is authoring is using the same one, specified in the ES_URL env variable)
+#   elastic_search_url:
 #   aws:
+#     # AWS access key (optional if specified through default AWS chain)
+#     default_access_key:
+#     # AWS secret key (optional if specified through default AWS chain)
+#     default_secret_key:
 #     cloudformation:
+#       # AWS access key (optional if aws.accessKey is specified)
+#       access_key:
+#       # AWS secret key (optional if aws.secretKey is specified)
+#       secret_key:
 #       # Namespace to use for CloudFormation resources (required when target template is aws-cloudformed-s3)
 #       namespace: myorganization
 #       # The domain name of the serverless delivery LB (required when target template is aws-cloudformed-s3)
