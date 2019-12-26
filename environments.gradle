@@ -98,8 +98,8 @@ task authoringPostEnvironment {
 
         exec {
             workingDir "${authEnvDir}/bin/apache-tomcat/bin"
-            commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
-                                             "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
+            commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh",
+                                             "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh",
                                              "startup.sh", "tool-wrapper.sh", "version.sh"]
         }
         exec {
@@ -130,8 +130,8 @@ task deliveryPostEnvironment {
     doLast {
         exec {
             workingDir "${deliveryEnvDir}/bin/apache-tomcat/bin/"
-            commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
-                                             "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
+            commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh",
+                                             "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh",
                                              "startup.sh", "tool-wrapper.sh", "version.sh"]
         }
         exec {
@@ -164,7 +164,7 @@ envs.each { env ->
     if (!tasks.findByName("${env}Environment")) {
         task "${env}Environment" doLast {
             description "Setups ${env} environment"
-            
+
             def envDir = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
             def tokens = env.equalsIgnoreCase("authoring") ? authTokens : deliveryTokens
             def newEnv
@@ -221,13 +221,13 @@ envs.each { env ->
                 }
 
                 // It's a new env so copy resources directly
-                newEnv = true  
+                newEnv = true
                 resourcesDestDir = envDir
             } else {
                 // Copy resources to a temp folder to do a sync later
-                newEnv = false  
+                newEnv = false
                 resourcesDestDir = env.equalsIgnoreCase("authoring") ? authProcessedResourcesDir : deliveryProcessedResourcesDir
-                
+
                 delete resourcesDestDir
                 mkdir resourcesDestDir
             }
@@ -266,23 +266,24 @@ envs.each { env ->
                 from "./resources/env/${env}/tomcat-config/crafter"
                 into "${resourcesDestDir}/bin/apache-tomcat/shared/classes/crafter"
                 filter(ReplaceTokens, tokens: tokens)
-            }                        
+            }
 
             // Copy Crafter-specific Solr configsets
             copy {
                 from "./src/search/crafter-search-solr-provider/solr/configsets"
                 into "${resourcesDestDir}/bin/solr/server/solr/configsets"
-            }            
+            }
 
             // Copy stock Tomcat config that needs to be updated
             copy {
-                from "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/server.xml", 
+                from "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/server.xml",
                      "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/context.xml",
+                     "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/web.xml",
                      "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/catalina.properties",
                      "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/logging.properties"
                 into "${resourcesDestDir}/bin/apache-tomcat/conf"
             }
-            
+
             // Copy file to hide Tomcat version
             copy {
               from "resources/tomcat/ServerInfo.properties"
@@ -293,7 +294,7 @@ envs.each { env ->
             copy {
                 from "${downloadDir}/solr-${solrVersion}/server/solr/solr.xml"
                 into "${resourcesDestDir}/bin/solr/server/solr"
-            } 
+            }
 
             // Copy stock Elasticsearch config that needs to be updated
             copy {
@@ -304,6 +305,7 @@ envs.each { env ->
             // Update config
             updateTomcatServerConf("${resourcesDestDir}/bin/apache-tomcat/conf/server.xml")
             updateTomcatContext("${resourcesDestDir}/bin/apache-tomcat/conf/context.xml")
+            updateTomcatWebConf("${resourcesDestDir}/bin/apache-tomcat/conf/web.xml")
             updateCatalinaProperties("${resourcesDestDir}/bin/apache-tomcat/conf/catalina.properties")
             updateCatalinaLogging("${resourcesDestDir}/bin/apache-tomcat/conf/logging.properties")
             updateSolrConf("${resourcesDestDir}/bin/solr/server/solr/solr.xml")
@@ -326,11 +328,11 @@ envs.each { env ->
 
                 // Clean up resourcesDestDir
                 delete resourcesDestDir
-            }                           
+            }
         }
     }
 
-    tasks.findByName("${env}Environment").finalizedBy("${env}PostEnvironment")   
+    tasks.findByName("${env}Environment").finalizedBy("${env}PostEnvironment")
 }
 
 def updateTomcatServerConf(configFile) {
@@ -355,21 +357,35 @@ def updateTomcatContext(configFile) {
     def file = new File(configFile)
     def content = file.text
 
-    content = content.replace('<WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>', 
+    content = content.replace('<WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>',
         '<WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>' + System.lineSeparator() +
         '    <Resources cachingAllowed="true" cacheMaxSize="100000"/>')
 
-    file.write(content)    
+    file.write(content)
+}
+
+def updateTomcatWebConf(configFile) {
+    def file = new File(configFile)
+    def content = file.text
+    def xml = new XmlParser(false, true).parseText(content)
+
+    def mimeTypeNode = new NodeBuilder().'mime-mapping'() {
+        extension('tmpl')
+        'mime-type'('text/html')
+    }
+    xml.append(mimeTypeNode)
+
+    file.write(groovy.xml.XmlUtil.serialize(xml))
 }
 
 def updateCatalinaProperties(configFile) {
     def file = new File(configFile)
     def content = file.text
 
-    content = content.replace('shared.loader=', 
+    content = content.replace('shared.loader=',
         'shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar')
 
-    file.write(content)      
+    file.write(content)
 }
 
 def updateCatalinaLogging(configFile) {
@@ -378,18 +394,18 @@ def updateCatalinaLogging(configFile) {
 
     content = content.replace('${catalina.base}/logs', '${catalina.logs}')
 
-    file.write(content)    
+    file.write(content)
 }
 
 def updateSolrConf(configFile) {
     def file = new File(configFile)
     def content = file.text
 
-    content = content.replace('</solr>', 
+    content = content.replace('</solr>',
         '  <str name="coreRootDirectory">${crafter.solr.index:data/indexes}</str>' + System.lineSeparator() +
         '</solr>')
 
-    file.write(content)    
+    file.write(content)
 }
 
 def updateElasticsearchConf(configFile) {
@@ -401,7 +417,7 @@ def updateElasticsearchConf(configFile) {
     content = content.replace("#http.port: 9200", 'http.port: ${ES_PORT}')
     content = content.replace(
         '#discovery.zen.ping.unicast.hosts',
-        System.lineSeparator() + 
+        System.lineSeparator() +
         '# Disable cluster discovery' + System.lineSeparator() +
         'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
         '#discovery.zen.ping.unicast.hosts'
@@ -423,7 +439,7 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                 if (srcMd5 != destMd5) {
                     if (backupAndReplaceConfig) {
                         def now = new Date()
-                        def backupTimestamp = now.format("yyyyMMddHHmmss") 
+                        def backupTimestamp = now.format("yyyyMMddHHmmss")
                         def backupFile = new File(destDir, "${filePath}.bak.${backupTimestamp}")
 
                         println "Config file ${filePath} is different in src and dest. Backing up dest file to " +
