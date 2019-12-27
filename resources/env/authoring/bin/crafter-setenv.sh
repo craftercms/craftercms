@@ -70,6 +70,8 @@ export ES_HOME=${ES_HOME:="$CRAFTER_BIN_DIR/elasticsearch/bin"}
 export ES_INDEXES_DIR=${ES_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes-es"}
 export ES_LOGS_DIR=${ES_LOGS_DIR:="$CRAFTER_LOGS_DIR/elasticsearch"}
 export ES_PID=${ES_PID:="$ES_HOME/elasticsearch.pid"}
+export ES_USERNAME=${ES_USERNAME:=""}
+export ES_PASSWORD=${ES_PASSWORD:=""}
 
 # -------------------- Deployer variables --------------------
 export DEPLOYER_HOME=${DEPLOYER_HOME:="$CRAFTER_BIN_DIR/crafter-deployer"}
