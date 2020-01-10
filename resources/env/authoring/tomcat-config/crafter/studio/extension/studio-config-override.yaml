@@ -262,6 +262,10 @@ studio.mail.port: ${env:MAIL_PORT}
 ################################################################
 # URLs to connect to Elasticsearch
 studio.search.urls: ${env:ES_URL}
+# The username for Elasticsearch
+studio.search.username: ${env:ES_USERNAME}
+# The password for Elasticsearch
+studio.search.password: ${env:ES_PASSWORD}
 
 ##########################################################
 ##                 Serverless Delivery                  ##

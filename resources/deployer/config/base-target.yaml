@@ -7,6 +7,8 @@ target:
     elasticsearch:
       urls:
         - ${env:ES_URL}
+      username: ${env:ES_USERNAME}
+      password: ${env:ES_PASSWORD}
   notifications:
     mail:
       server:
