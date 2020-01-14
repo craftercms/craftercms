@@ -53,6 +53,10 @@ fi
 if [ "$1" = 'run' ]; then
     cd $DEPLOYER_HOME
     exec gosu crafter $CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
+elif [ "$1" = 'debug' ]; then
+    export JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+    cd $DEPLOYER_HOME
+    exec gosu crafter $CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
 else
     exec "$@"
 fi
