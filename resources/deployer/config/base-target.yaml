@@ -5,10 +5,24 @@ target:
   search:
     serverUrl: ${env:SEARCH_URL}
     elasticsearch:
+      # Single Cluster
       urls:
         - ${env:ES_URL}
       username: ${env:ES_USERNAME}
       password: ${env:ES_PASSWORD}
+
+      # Multiple Clusters
+#      readCluster:
+#        urls:
+#        username:
+#        password:
+#      writeClusters:
+#        - urls:
+#          username:
+#          password:
+#        - urls:
+#          username:
+#          password:
   notifications:
     mail:
       server:
