@@ -72,18 +72,20 @@ def deliveryTokens = [
   SMTP_PORT            : String.valueOf(deliverySMTPPort)
 ]
 
-// Files that should not be overwritten automatically
-def configFilePatterns = [
-    'bin/crafter-setenv\\.sh',
-    'bin/apache-tomcat/conf/.+',
-    'bin/apache-tomcat/shared/classes/.+',
-    'bin/crafter-deployer/config/.+',
-    'bin/crafter-deployer/logging\\.xml',
-    'bin/elasticsearch/config/.+',
-    'bin/solr/server/resources/.+',
-    'bin/solr/server/solr/[^/]+',
-    'bin/solr/server/solr/configsets/crafter_configs/.+'
-]
+ext {
+  // Files that should not be overwritten automatically
+  configFilePatterns = [
+      '.*crafter-setenv\\.sh',
+      '.*apache-tomcat/conf/.+',
+      '.*apache-tomcat/shared/classes/.+',
+      '.*crafter-deployer/config/.+',
+      '.*crafter-deployer/logging\\.xml',
+      '.*elasticsearch/config/.+',
+      '.*solr/server/resources/.+',
+      '.*solr/server/solr/[^/]+',
+      '.*solr/server/solr/configsets/crafter_configs/.+'
+  ]
+}
 
 task authoringPostEnvironment {
     description "Setups authoring environment"
@@ -101,6 +103,18 @@ task authoringPostEnvironment {
             commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
                                              "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
                                              "startup.sh", "tool-wrapper.sh", "version.sh"]
+        }
+        exec {
+            workingDir "${authEnvDir}/bin/elasticsearch"
+            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin", "modules"]
+        }
+        exec {
+            workingDir "${authEnvDir}/bin/groovy"
+            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
+        }
+        exec {
+            workingDir "${authEnvDir}/bin/solr"
+            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
         }
         exec {
             workingDir "${authEnvDir}/bin/crafter-deployer"
@@ -133,6 +147,18 @@ task deliveryPostEnvironment {
             commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
                                              "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
                                              "startup.sh", "tool-wrapper.sh", "version.sh"]
+        }
+        exec {
+            workingDir "${authEnvDir}/bin/elasticsearch"
+            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin", "modules"]
+        }
+        exec {
+            workingDir "${authEnvDir}/bin/groovy"
+            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
+        }
+        exec {
+            workingDir "${authEnvDir}/bin/solr"
+            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
         }
         exec {
             workingDir "${deliveryEnvDir}/bin/crafter-deployer/"
@@ -172,53 +198,7 @@ envs.each { env ->
 
             // Build env bin dir if it doesn't exist
             if (!file("${envDir}/bin").exists()) {
-                println "Building bin directory @ ${envDir}"
-
-                // Copy Groovy binaries
-                copy {
-                    from "${downloadDir}/groovy-${groovyVersion}"
-                    into "${envDir}/bin/groovy"
-                }
-
-                // Copy Tomcat binaries
-                copy {
-                    from "${downloadDir}/apache-tomcat-${tomcatVersion}"
-                    into "${envDir}/bin/apache-tomcat"
-                    exclude "**/webapps/**"
-                }
-                file("${envDir}/bin/apache-tomcat/shared/lib").mkdirs()
-                file("${envDir}/bin/apache-tomcat/webapps").mkdirs()
-
-                //  Copy Solr binaries
-                copy {
-                    from "${downloadDir}/solr-${solrVersion}"
-                    into "${envDir}/bin/solr"
-                }
-
-                // Copy Elastic Search binaries
-                copy {
-                    from "${downloadDir}/elasticsearch-${elasticsearchVersion}"
-                    into "${envDir}/bin/elasticsearch"
-                }
-
-                // Copy Deployer README.md
-                copy {
-                    from "./src/deployer/README.md"
-                    into "${envDir}/bin/crafter-deployer"
-                }
-
-                // Copy Studio README.md
-                copy {
-                    from "./src/studio/README.md"
-                    into "${envDir}/bin/apache-tomcat"
-                }
-
-                // Copy Crafter CMS README.txt and LICENSE
-                copy {
-                    from "./resources/LICENSE"
-                    from "./resources/README.txt"
-                    into "${envDir}"
-                }
+                logger.lifecycle "Building bin directory @ ${envDir}"
 
                 // It's a new env so copy resources directly
                 newEnv = true  
@@ -232,7 +212,9 @@ envs.each { env ->
                 mkdir resourcesDestDir
             }
 
-            println "Processing and copying resources to ${resourcesDestDir}..."
+            copyBinaries(resourcesDestDir, newEnv)
+
+            logger.lifecycle "Processing and copying resources to ${resourcesDestDir}..."
 
             // Copy Deployer config
             copy {
@@ -310,11 +292,20 @@ envs.each { env ->
             updateElasticsearchConf("${resourcesDestDir}/bin/elasticsearch/config/elasticsearch.yml")
 
             // Only sync resource files if it's not a new env
-            if (!newEnv) {
-                def syncSrcDir = file(resourcesDestDir)
-                def syncDestDir = env.equalsIgnoreCase("authoring") ? file(authEnvDir) : file(deliveryEnvDir)
-
-                println "Synching processed resources from ${syncSrcDir} to ${syncDestDir}..."
+            if (!newEnv) {              
+                def syncSrcDir = file(resourcesDestDir + "/bin")
+                def syncDestDir = env.equalsIgnoreCase("authoring") ? 
+                                    file(authEnvDir + "/bin") : file(deliveryEnvDir + "/bin")
+                
+                // Clean up old binaries
+                logger.lifecycle('Removing previous binaries from {}', syncDestDir)
+                delete fileTree(syncDestDir).matching {
+                  exclude {
+                    isConfigFile(it.file as String, configFilePatterns)
+                  }
+                }
+                
+                logger.lifecycle "Synching processed resources from ${syncSrcDir} to ${syncDestDir}..."
 
                 def resourceFiles = fileTree(syncSrcDir).each { file ->
                     if (!file.directory) {
@@ -331,6 +322,63 @@ envs.each { env ->
     }
 
     tasks.findByName("${env}Environment").finalizedBy("${env}PostEnvironment")   
+}
+
+def copyBinaries(destFolder, newEnv) {
+  logger.lifecycle("Copying binaries to folder {}", destFolder)  
+  
+  // Copy Groovy binaries
+  copy {
+      from "${downloadDir}/groovy-${groovyVersion}"
+      into "${destFolder}/bin/groovy"
+      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
+  }
+
+  // Copy Tomcat binaries
+  copy {
+      from "${downloadDir}/apache-tomcat-${tomcatVersion}"
+      into "${destFolder}/bin/apache-tomcat"
+      exclude "**/webapps/**"
+      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
+  }
+  file("${destFolder}/bin/apache-tomcat/shared/lib").mkdirs()
+  file("${destFolder}/bin/apache-tomcat/webapps").mkdirs()
+
+  //  Copy Solr binaries
+  copy {
+      from "${downloadDir}/solr-${solrVersion}"
+      into "${destFolder}/bin/solr"
+      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
+  }
+
+  // Copy Elastic Search binaries
+  copy {
+      from "${downloadDir}/elasticsearch-${elasticsearchVersion}"
+      into "${destFolder}/bin/elasticsearch"
+      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
+  }
+
+  // Copy Deployer README.md
+  copy {
+      from "./src/deployer/README.md"
+      into "${destFolder}/bin/crafter-deployer"
+      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
+  }
+
+  // Copy Studio README.md
+  copy {
+      from "./src/studio/README.md"
+      into "${destFolder}/bin/apache-tomcat"
+      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
+  }
+
+  // Copy Crafter CMS README.txt and LICENSE
+  copy {
+      from "./resources/LICENSE"
+      from "./resources/README.txt"
+      into "${destFolder}"
+      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
+  }
 }
 
 def updateTomcatServerConf(configFile) {
@@ -426,28 +474,28 @@ def syncFile(srcDir, destDir, filePath, configFilePatterns) {
                         def backupTimestamp = now.format("yyyyMMddHHmmss") 
                         def backupFile = new File(destDir, "${filePath}.bak.${backupTimestamp}")
 
-                        println "Config file ${filePath} is different in src and dest. Backing up dest file to " +
-                                "${backupFile.name} and replacing it with src file (backupAndReplaceConfig = true)"
+                        logger.lifecycle "Config file ${filePath} is different in src and dest. Backing up dest file " +
+                                  "to ${backupFile.name} and replacing it with src file (backupAndReplaceConfig = true)"
 
                         FileUtils.moveFile(destFile, backupFile)
                         FileUtils.copyFile(srcFile, destFile)
                     } else if (overwriteConfig) {
-                        println "Config file ${filePath} is different in src and dest. Overwriting dest file with " +
-                                "src file (overwriteConfig = true)"
+                        logger.lifecycle "Config file ${filePath} is different in src and dest. Overwriting dest file" +
+                                          " with src file (overwriteConfig = true)"
 
                         FileUtils.copyFile(srcFile, destFile)
                     } else {
-                        println "Config file ${filePath} is different in src and dest. Keeping file in dest " +
-                                "(backupAndReplaceConfig = true && overwriteConfig = false)"
+                        logger.lifecycle "Config file ${filePath} is different in src and dest. Keeping file in dest " +
+                                          "(backupAndReplaceConfig = true && overwriteConfig = false)"
                     }
                 }
             } else {
-                println "Copying over ${filePath} from src to dest (replacing non-config file)"
+                logger.info "Copying over ${filePath} from src to dest (replacing non-config file)"
 
                 FileUtils.copyFile(srcFile, destFile)
             }
         } else {
-            println "Copying over ${filePath} from src to dest (new file)"
+            logger.info "Copying over ${filePath} from src to dest (new file)"
 
             FileUtils.copyFile(srcFile, destFile)
         }
