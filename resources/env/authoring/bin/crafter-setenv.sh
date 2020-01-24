@@ -127,3 +127,6 @@ export SEARCH_MANAGEMENT_TOKEN=${SEARCH_MANAGEMENT_TOKEN:="defaultManagementToke
 # -------------------- Encryption variables --------------------
 export CRAFTER_ENCRYPTION_KEY=${CRAFTER_ENCRYPTION_KEY:="default_encrytption_key"}
 export CRAFTER_ENCRYPTION_SALT=${CRAFTER_ENCRYPTION_SALT:="default_encrytption_salt"}
+
+# -------------------- Cluster variables --------------------
+export CLUSTER_NODE_ADDRESS=${CLUSTER_NODE_ADDRESS:="127.0.0.1"}
