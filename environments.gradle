@@ -149,15 +149,15 @@ task deliveryPostEnvironment {
                                              "startup.sh", "tool-wrapper.sh", "version.sh"]
         }
         exec {
-            workingDir "${authEnvDir}/bin/elasticsearch"
+            workingDir "${deliveryEnvDir}/bin/elasticsearch"
             commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin", "modules"]
         }
         exec {
-            workingDir "${authEnvDir}/bin/groovy"
+            workingDir "${deliveryEnvDir}/bin/groovy"
             commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
         }
         exec {
-            workingDir "${authEnvDir}/bin/solr"
+            workingDir "${deliveryEnvDir}/bin/solr"
             commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
         }
         exec {
