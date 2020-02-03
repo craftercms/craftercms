@@ -293,6 +293,8 @@ studio.search.password: ${env:ES_PASSWORD}
 #   # The delivery Elasticsearch endpoint (optional is authoring is using the same one, specified in the ES_URL env variable)
 #   elastic_search_url:
 #   aws:
+#     # AWS region
+#     region: us-east-1
 #     # AWS access key (optional if specified through default AWS chain)
 #     default_access_key:
 #     # AWS secret key (optional if specified through default AWS chain)
