@@ -12,7 +12,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM alpine:3.9
+FROM alpine:3.10
 
 # Install dependencies
 RUN apk add --no-cache bash shadow openssh git su-exec
