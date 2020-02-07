@@ -99,8 +99,6 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 # studio.security.cipher.salt: TDEsDF8vx3gV4c7G
 # Key for encrypting
 # studio.security.cipher.key: AoCcBdnsTa9R3DdG
-# Enable password requirements validation
-# studio.security.passwordRequirements.enabled: false
 # Password requirements validation regular expression
 # The supported capture group keys are:
 #   hasNumbers
