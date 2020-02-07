@@ -99,8 +99,6 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 # studio.security.cipher.salt: TDEsDF8vx3gV4c7G
 # Key for encrypting
 # studio.security.cipher.key: AoCcBdnsTa9R3DdG
-# Enable password requirements validation
-# studio.security.passwordRequirements.enabled: false
 # Password requirements validation regular expression
 # The supported capture group keys are:
 #   hasNumbers
@@ -305,7 +303,7 @@ studio.search.password: ${env:ES_PASSWORD}
 #   # The delivery Elasticsearch endpoint (optional is authoring is using the same one, specified in the ES_URL env variable)
 #   elastic_search_url:
 #   aws:
-#     # AWS region
+#     # AWS region (optional if specified through default AWS chain)
 #     region: us-east-1
 #     # AWS access key (optional if specified through default AWS chain)
 #     default_access_key:
