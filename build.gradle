@@ -142,7 +142,6 @@ ext {
 
 apply from: "downloads.gradle"
 apply from: "environments.gradle"
-apply from: "dockers.gradle"
 
 def deployDepends = []
 def cleanDeps = []
@@ -485,27 +484,6 @@ task publishPlugin(type: GradleBuild) {
   startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
 }
 
-task dockers() {
-    description "Builds the Docker images"
-}
-
-def dockerDepends = []
-
-if (getEnv().equalsIgnoreCase("all")) {
-    dockerDepends = [buildAuthoringDockers, buildDeliveryDockers]
-
-    if (!file(authEnvDir).exists() || !file(deliveryEnvDir).exists()) {
-        dockerDepends = [deploy] + dockerDepends
-    }
-} else {
-    dockerDepends = [tasks.findByName("build${upperCaseFirstLetter(getEnv())}Dockers")]
-
-    def envDir = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
-    if (!file(envDir).exists()) {
-        dockerDepends = [deploy] + dockerDepends
-    }    
-}
-
 /** Makes sure Depends are run in order. **/
 dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
@@ -513,7 +491,6 @@ dependsOnOrdered(init, initDeps)
 dependsOnOrdered(update, updateDeps)
 dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, downloadElasticsearch, downloadMariaDB4j] + envDepends + deployDepends + [buildUtils])
 dependsOnOrdered(upgrade, [update, build, deploy])
-dependsOnOrdered(dockers, dockerDepends)
 
 def deployBinary(deployable, env) {
     if (deployable.exists()) {
