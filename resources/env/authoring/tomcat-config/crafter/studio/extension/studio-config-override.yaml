@@ -23,10 +23,8 @@ studio.configuration.site.defaultAuthoringUrl: ^https?://localhost:8080/studio/?
 # Default GraphQL server URL
 studio.configuration.site.defaultGraphqlServerUrl: ^https?://localhost:8080/?
 # Studio management authorization token.
-# Please update this per installation and provide this token to the status monitors.
 studio.configuration.management.authorizationToken: ${env:STUDIO_MANAGEMENT_TOKEN}
 # Preview engine management authorization token.
-# Please update this per installation and provide this token to the status monitors.
 studio.configuration.management.previewAuthorizationToken: ${env:ENGINE_MANAGEMENT_TOKEN}
 # Protected URLs with preview engine management authorization token.
 # Coma separated list of preview engine urls
