@@ -119,7 +119,7 @@ export CRAFTER_APPLICATION_LOGS=${CRAFTER_APPLICATION_LOGS:="$CATALINA_LOGS_DIR"
 export GIT_CONFIG_NOSYSTEM=${GIT_CONFIG_NOSYSTEM:="true"}
 
 # -------------------- Management tokens ----------------
-# Please update this per installation and provide this token to the status monitors.
+# Please update this per installation and provide these tokens to the status monitors.
 export STUDIO_MANAGEMENT_TOKEN=${STUDIO_MANAGEMENT_TOKEN:="defaultManagementToken"}
 export ENGINE_MANAGEMENT_TOKEN=${ENGINE_MANAGEMENT_TOKEN:="defaultManagementToken"}
 export DEPLOYER_MANAGEMENT_TOKEN=${DEPLOYER_MANAGEMENT_TOKEN:="defaultManagementToken"}
