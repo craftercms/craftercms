@@ -134,7 +134,7 @@ task downloadElasticsearch() {
 task downloadMariaDB4j {
     doFirst {
         download {
-            src "http://repository.sonatype.org/service/local/artifact/maven/redirect?r=central-proxy&g=org.craftercms.mariaDB4j&a=mariaDB4j-app&v=$mariadb4jVersion"
+            src "https://repo1.maven.org/maven2/org/craftercms/mariaDB4j/mariaDB4j-app/${mariadb4jVersion}/mariaDB4j-app-${mariadb4jVersion}.jar"
             overwrite false
             dest "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar"
         }
