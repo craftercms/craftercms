@@ -13,7 +13,6 @@ deployer:
       folderPath: ${logs.dir}
     management:
       # Deployer management authorization token
-      # Please update this per installation and provide this token to the status monitors.
       authorizationToken: ${DEPLOYER_MANAGEMENT_TOKEN}
     security:
       encryption:
