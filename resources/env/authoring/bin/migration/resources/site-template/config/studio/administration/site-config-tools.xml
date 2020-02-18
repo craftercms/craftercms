@@ -41,7 +41,7 @@
     </config>
 -->
 <config>
-    <version>9</version>
+    <version>10</version>
     <tools>
         <tool>
             <name>content-types</name>
@@ -162,6 +162,12 @@
                     <icon>
                         <class>fa-file-o</class>
                         <stackedclass>fa-magic</stackedclass>
+                    </icon>
+                </control>
+                <control>
+                    <name>internal-name</name>
+                    <icon>
+                        <class>fa-font</class>
                     </icon>
                 </control>
             </controls>
