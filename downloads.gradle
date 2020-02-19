@@ -57,18 +57,18 @@ task downloadTomcat() {
     description = "Downloads, checks Tomcat integrity and unzips it"
     doFirst {
         download {
-            src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
+            src "https://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
             overwrite false
             dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip")
         }
         download {
-            src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip.sha1"
-            dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip.sha1")
+            src "https://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip.sha512"
+            dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip.sha512")
             overwrite false
         }
     }
     doLast {
-        assert sha1(new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip")) == new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
+        assert sha512(new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip")) == new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip.sha512").getText('UTF-8').split(" ")[0]
 
         if (!file("${downloadDir}/apache-tomcat-${tomcatVersion}").exists()) {
             copy {
@@ -156,10 +156,6 @@ def messageDigest(file, alg) {
         sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
     }
     return sb.toString()
-}
-
-def sha1(file) {
-    messageDigest(file, "SHA1");
 }
 
 def sha256(file) {
