@@ -11,3 +11,12 @@ deployer:
         folderPath: ${processedCommits.dir}
     logging:
       folderPath: ${logs.dir}
+    management:
+      # Deployer management authorization token
+      authorizationToken: ${DEPLOYER_MANAGEMENT_TOKEN}
+    security:
+      encryption:
+        # The key used for encryption of configuration properties
+        key: ${CRAFTER_ENCRYPTION_KEY}
+        # The salt used for encryption of configuration properties
+        salt: ${CRAFTER_ENCRYPTION_SALT}

@@ -17,6 +17,8 @@ JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HO
   -Dloader.path=$DEPLOYER_HOME/lib"
 PID=${DEPLOYER_PID:="$DATA_DIR/crafter-deployer.pid"}
 OUTPUT=${DEPLOYER_SDOUT:="$LOGS_DIR/crafter-deployer.out"}
+DEPLOYER_MANAGEMENT_TOKEN=${DEPLOYER_MANAGEMENT_TOKEN:="defaultManagementToken"}
+ENGINE_MANAGEMENT_TOKEN=${ENGINE_MANAGEMENT_TOKEN:="defaultManagementToken"}
 
 function pidOf(){
   pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID)

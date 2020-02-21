@@ -39,7 +39,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.1.4" // craftercms version flag
+project.version = "3.1.5" // craftercms version flag
 
 ext {
     commandLinePrefix = []
@@ -53,9 +53,9 @@ ext {
 
     /** Download Properties **/
     groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.5.0"
-    tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.24"
+    tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.51"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
-    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.6.0"
+    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.8.6"
     mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.2.3"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     
@@ -105,7 +105,7 @@ ext {
 
     /** Git properties **/
     gitURLTemplate = project.hasProperty("crafter.git.url") ? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "master" // craftercms branch flag
+    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "v3.1.5" // craftercms branch flag
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
     shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone").toBoolean() : false
     studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo").toBoolean() : false
@@ -142,7 +142,6 @@ ext {
 
 apply from: "downloads.gradle"
 apply from: "environments.gradle"
-apply from: "dockers.gradle"
 
 def deployDepends = []
 def cleanDeps = []
@@ -485,27 +484,6 @@ task publishPlugin(type: GradleBuild) {
   startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
 }
 
-task dockers() {
-    description "Builds the Docker images"
-}
-
-def dockerDepends = []
-
-if (getEnv().equalsIgnoreCase("all")) {
-    dockerDepends = [buildAuthoringDockers, buildDeliveryDockers]
-
-    if (!file(authEnvDir).exists() || !file(deliveryEnvDir).exists()) {
-        dockerDepends = [deploy] + dockerDepends
-    }
-} else {
-    dockerDepends = [tasks.findByName("build${upperCaseFirstLetter(getEnv())}Dockers")]
-
-    def envDir = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
-    if (!file(envDir).exists()) {
-        dockerDepends = [deploy] + dockerDepends
-    }    
-}
-
 /** Makes sure Depends are run in order. **/
 dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
@@ -513,7 +491,6 @@ dependsOnOrdered(init, initDeps)
 dependsOnOrdered(update, updateDeps)
 dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, downloadElasticsearch, downloadMariaDB4j] + envDepends + deployDepends + [buildUtils])
 dependsOnOrdered(upgrade, [update, build, deploy])
-dependsOnOrdered(dockers, dockerDepends)
 
 def deployBinary(deployable, env) {
     if (deployable.exists()) {

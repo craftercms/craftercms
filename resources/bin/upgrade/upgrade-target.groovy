@@ -381,7 +381,7 @@ def deleteFileIfAbsentInNewRelease(Path binFolder, Path newBinFolder, Path fileP
     def delete = false
 
     if (!Files.exists(newFile) && !shouldNotBeDeleted(filePath)) {
-        if (!alwaysDelete && !Files.isDirectory(oldFile)) {
+        if (!alwaysDelete && !Files.isDirectory(oldFile) && matchesConfigFilePatterns(filePath) != null) {
             def done = false
 
             while (!done) {

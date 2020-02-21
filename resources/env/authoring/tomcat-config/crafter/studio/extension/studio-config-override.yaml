@@ -15,14 +15,30 @@ studio.repo.basePath: ${env:CRAFTER_DATA_DIR}/repos
 ##                   Site Configuration                   ##
 ############################################################
 # Destroy site context url for preview engine
-studio.configuration.site.preview.destroy.context.url: ${env:ENGINE_URL}/api/1/site/context/destroy.json?crafterSite={siteName}
+studio.configuration.site.preview.destroy.context.url: ${env:ENGINE_URL}/api/1/site/context/destroy.json?crafterSite={siteName}&token=${studio.configuration.management.previewAuthorizationToken}
 # Default preview URL
 studio.configuration.site.defaultPreviewUrl: ^https?://localhost:8080/?
 # Default authoring URL
 studio.configuration.site.defaultAuthoringUrl: ^https?://localhost:8080/studio/?
 # Default GraphQL server URL
 studio.configuration.site.defaultGraphqlServerUrl: ^https?://localhost:8080/?
-
+# Studio management authorization token.
+studio.configuration.management.authorizationToken: ${env:STUDIO_MANAGEMENT_TOKEN}
+# Preview engine management authorization token.
+studio.configuration.management.previewAuthorizationToken: ${env:ENGINE_MANAGEMENT_TOKEN}
+# Protected URLs with preview engine management authorization token.
+# Coma separated list of preview engine urls
+studio.configuration.management.previewProtectedUrls: >-
+  /api/1/monitoring/log.json,
+  /api/1/monitoring/memory.json,
+  /api/1/monitoring/status.json,
+  /api/1/monitoring/version.json,
+  /api/1/site/context/id,
+  /api/1/site/context/destroy,
+  /api/1/site/context/rebuild,
+  /api/1/site/context/graphql/rebuild,
+  /api/1/site/cache/clear,
+  /api/1/site/cache/statistics
 ############################################################
 ##                    Preview Deployer                    ##
 ############################################################
@@ -81,8 +97,6 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 # studio.security.cipher.salt: TDEsDF8vx3gV4c7G
 # Key for encrypting
 # studio.security.cipher.key: AoCcBdnsTa9R3DdG
-# Enable password requirements validation
-# studio.security.passwordRequirements.enabled: false
 # Password requirements validation regular expression
 # The supported capture group keys are:
 #   hasNumbers
@@ -153,6 +167,11 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
   # - provider: DB
     # Authentication via DB enabled
     # enabled: true
+
+# The key used for encryption of configuration properties
+studio.security.encryption.key: ${env:CRAFTER_ENCRYPTION_KEY}
+# The salt used for encryption of configuration properties
+studio.security.encryption.salt: ${env:CRAFTER_ENCRYPTION_SALT}
 
 ##################################################
 ##        SMTP Configuration (Email)            ##
@@ -251,6 +270,10 @@ studio.mail.port: ${env:MAIL_PORT}
 ################################################################
 # URLs to connect to Elasticsearch
 studio.search.urls: ${env:ES_URL}
+# The username for Elasticsearch
+studio.search.username: ${env:ES_USERNAME}
+# The password for Elasticsearch
+studio.search.password: ${env:ES_PASSWORD}
 
 ##########################################################
 ##                 Serverless Delivery                  ##
@@ -275,8 +298,20 @@ studio.search.urls: ${env:ES_URL}
 # The following parameters will be sent automatically, and you don't need to specify them: env, site_name, replace,
 # disable_deploy_cron, local_repo_path, repo_url, use_crafter_search
 # studio.serverless.delivery.deployer.target.template.params:
+#   # The delivery Elasticsearch endpoint (optional is authoring is using the same one, specified in the ES_URL env variable)
+#   elastic_search_url:
 #   aws:
+#     # AWS region (optional if specified through default AWS chain)
+#     region: us-east-1
+#     # AWS access key (optional if specified through default AWS chain)
+#     default_access_key:
+#     # AWS secret key (optional if specified through default AWS chain)
+#     default_secret_key:
 #     cloudformation:
+#       # AWS access key (optional if aws.accessKey is specified)
+#       access_key:
+#       # AWS secret key (optional if aws.secretKey is specified)
+#       secret_key:
 #       # Namespace to use for CloudFormation resources (required when target template is aws-cloudformed-s3)
 #       namespace: myorganization
 #       # The domain name of the serverless delivery LB (required when target template is aws-cloudformed-s3)

@@ -70,6 +70,8 @@ export ES_HOME=${ES_HOME:="$CRAFTER_BIN_DIR/elasticsearch/bin"}
 export ES_INDEXES_DIR=${ES_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes-es"}
 export ES_LOGS_DIR=${ES_LOGS_DIR:="$CRAFTER_LOGS_DIR/elasticsearch"}
 export ES_PID=${ES_PID:="$ES_HOME/elasticsearch.pid"}
+export ES_USERNAME=${ES_USERNAME:=""}
+export ES_PASSWORD=${ES_PASSWORD:=""}
 
 # -------------------- Deployer variables --------------------
 export DEPLOYER_HOME=${DEPLOYER_HOME:="$CRAFTER_BIN_DIR/crafter-deployer"}
@@ -111,7 +113,22 @@ export CATALINA_PID=${CATALINA_PID:="$CATALINA_HOME/tomcat.pid"}
 export CATALINA_LOGS_DIR=${CATALINA_LOGS_DIR:="$CRAFTER_LOGS_DIR/tomcat"}
 export CATALINA_OUT=${CATALINA_OUT:="$CATALINA_LOGS_DIR/catalina.out"}
 export CATALINA_TMPDIR=${CATALINA_TMPDIR:="$CRAFTER_TEMP_DIR/tomcat"}
-export CRAFTER_APPLICATION_LOGS=${CRAFTER_APPLICATION_LOGS:="$CATALINA_LOGS_DIR"}
 
 # -------------------- Git variables --------------------
 export GIT_CONFIG_NOSYSTEM=${GIT_CONFIG_NOSYSTEM:="true"}
+
+# -------------------- Management tokens ----------------
+# Please update this per installation and provide these tokens to the status monitors.
+export STUDIO_MANAGEMENT_TOKEN=${STUDIO_MANAGEMENT_TOKEN:="defaultManagementToken"}
+export ENGINE_MANAGEMENT_TOKEN=${ENGINE_MANAGEMENT_TOKEN:="defaultManagementToken"}
+export DEPLOYER_MANAGEMENT_TOKEN=${DEPLOYER_MANAGEMENT_TOKEN:="defaultManagementToken"}
+export SEARCH_MANAGEMENT_TOKEN=${SEARCH_MANAGEMENT_TOKEN:="defaultManagementToken"}
+export PROFILE_MANAGEMENT_TOKEN=${PROFILE_MANAGEMENT_TOKEN:="defaultManagementToken"}
+export SOCIAL_MANAGEMENT_TOKEN=${SOCIAL_MANAGEMENT_TOKEN:="defaultManagementToken"}
+
+# -------------------- Encryption variables --------------------
+export CRAFTER_ENCRYPTION_KEY=${CRAFTER_ENCRYPTION_KEY:="default_encryption_key"}
+export CRAFTER_ENCRYPTION_SALT=${CRAFTER_ENCRYPTION_SALT:="default_encryption_salt"}
+
+# -------------------- Cluster variables --------------------
+export CLUSTER_NODE_ADDRESS=${CLUSTER_NODE_ADDRESS:="127.0.0.1"}
