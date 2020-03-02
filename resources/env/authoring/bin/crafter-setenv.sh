@@ -1,11 +1,10 @@
 #!/bin/bash
 
-# Copyright (C) 2007-2019 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# it under the terms of the GNU General Public License version 3 as published by
+# the Free Software Foundation.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -113,7 +112,6 @@ export CATALINA_PID=${CATALINA_PID:="$CATALINA_HOME/tomcat.pid"}
 export CATALINA_LOGS_DIR=${CATALINA_LOGS_DIR:="$CRAFTER_LOGS_DIR/tomcat"}
 export CATALINA_OUT=${CATALINA_OUT:="$CATALINA_LOGS_DIR/catalina.out"}
 export CATALINA_TMPDIR=${CATALINA_TMPDIR:="$CRAFTER_TEMP_DIR/tomcat"}
-export CRAFTER_APPLICATION_LOGS=${CRAFTER_APPLICATION_LOGS:="$CATALINA_LOGS_DIR"}
 
 # -------------------- Git variables --------------------
 export GIT_CONFIG_NOSYSTEM=${GIT_CONFIG_NOSYSTEM:="true"}
