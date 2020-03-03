@@ -117,7 +117,7 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
     # Authentication header for secure key
     # secureKeyHeader: secure_key
     # Authentication headers secure key that is expected to match secure key value from headers
-    # Typically this is placed in the header by the authentication agent, e.g. Apache mod_mellon
+    # Typically this is placed in the header by the authentication agent
     # secureKeyHeaderValue: secure
     # Authentication header for username
     # usernameHeader: username
@@ -136,7 +136,7 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
     # If logout is enabled for headers authenticated users (SSO), set the endpoint of the SP or IdP logout, which should
     # be called after local logout. The {baseUrl} macro is provided so that the browser is redirected back to Studio
     # after logout (https://STUDIO_SERVER:STUDIO_PORT/studio)
-    # logoutUrl: /mellon/logout?ReturnTo={baseUrl}
+    # logoutUrl: /YOUR_DOMAIN/logout?ReturnTo={baseUrl}
   # Authentication provider type
   # - provider: LDAP
     # Authentication via LDAP enabled
