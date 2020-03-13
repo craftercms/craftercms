@@ -173,6 +173,9 @@ studio.security.encryption.key: ${env:CRAFTER_ENCRYPTION_KEY}
 # The salt used for encryption of configuration properties
 studio.security.encryption.salt: ${env:CRAFTER_ENCRYPTION_SALT}
 
+# Defines name used for environment specific configuration. It is used for environment overrides in studio. Default value is default.
+studio.configuration.site.environment: ${env:CRAFTER_ENVIRONMENT}
+
 ##################################################
 ##        SMTP Configuration (Email)            ##
 ##################################################

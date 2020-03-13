@@ -100,3 +100,6 @@ export SOCIAL_MANAGEMENT_TOKEN=${SOCIAL_MANAGEMENT_TOKEN:="defaultManagementToke
 # -------------------- Encryption variables --------------------
 export CRAFTER_ENCRYPTION_KEY=${CRAFTER_ENCRYPTION_KEY:="default_encryption_key"}
 export CRAFTER_ENCRYPTION_SALT=${CRAFTER_ENCRYPTION_SALT:="default_encryption_salt"}
+
+# -------------------- Configuration variables --------------------
+export CRAFTER_ENVIRONMENT=${CRAFTER_ENVIRONMENT:=default}
