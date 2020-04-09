@@ -1,5 +1,8 @@
 deployer:
   main:
+    config:
+      environment:
+        active: ${CRAFTER_ENVIRONMENT}
     targets:
       config:
         folderPath: ${targets.dir}

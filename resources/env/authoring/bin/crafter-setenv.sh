@@ -131,3 +131,6 @@ export CRAFTER_ENCRYPTION_SALT=${CRAFTER_ENCRYPTION_SALT:="default_encryption_sa
 
 # -------------------- Cluster variables --------------------
 export CLUSTER_NODE_ADDRESS=${CLUSTER_NODE_ADDRESS:="127.0.0.1"}
+
+# -------------------- Configuration variables --------------------
+export CRAFTER_ENVIRONMENT=${CRAFTER_ENVIRONMENT:=default}
