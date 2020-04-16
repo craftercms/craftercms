@@ -40,7 +40,7 @@
     </config>
 -->
 <config>
-    <version>10</version>
+    <version>11</version>
     <tools>
         <tool>
             <name>content-types</name>
@@ -134,6 +134,12 @@
                 </control>
                 <control>
                     <name>video-picker</name>
+                    <icon>
+                        <class>fa-video-camera</class>
+                    </icon>
+                </control>
+                <control>
+                    <name>transcoded-video-picker</name>
                     <icon>
                         <class>fa-video-camera</class>
                     </icon>
