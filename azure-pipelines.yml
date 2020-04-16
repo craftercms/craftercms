@@ -9,12 +9,19 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-- task: Gradle@2
-  inputs:
-    gradleWrapperFile: './gradlew'
-    options: '-Penv=authoring'
-    tasks: 'bundle'
-    publishJUnitResults: true
-    testResultsFiles: '**/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    sonarQubeRunAnalysis: false
+steps:
+  - task: Gradle@2
+    inputs:
+      gradleWrapperFile: './gradlew'
+      options: '-Penv=authoring'
+      tasks: 'bundle'
+      publishJUnitResults: true
+      testResultsFiles: '**/TEST-*.xml'
+      javaHomeOption: 'JDKVersion'
+      sonarQubeRunAnalysis: false
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'crafter-cms-authoring.tar.gz'
+      publishLocation: 'Container'
