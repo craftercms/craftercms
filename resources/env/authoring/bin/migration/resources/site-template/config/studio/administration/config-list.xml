@@ -37,7 +37,7 @@
     - samplePath: the path to a sample file to help the user update the file
 -->
 <config>
-    <version>7</version>
+    <version>8</version>
     <files>
         <file>
             <module>studio</module>
@@ -213,6 +213,13 @@
             <title>Asset Processing</title>
             <description>Asset Processing</description>
             <samplePath>sample-asset-processing-config.xml</samplePath>
+        </file>
+        <file>
+            <module>studio</module>
+            <path>blob-stores-config.xml</path>
+            <title>Blob Stores</title>
+            <description>Blob Stores</description>
+            <samplePath>sample-blob-stores-config.xml</samplePath>
         </file>
     </files>
 </config>
