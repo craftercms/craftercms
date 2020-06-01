@@ -20,7 +20,7 @@
 	content model selects which profile to use for which RTE field in the forms.
 -->
 <config>
-    <setup>
+	<setup>
         <id>generic</id> <!-- This starts a profile configuration -->
         
         <rteStylesheets> <!-- This informs the RTE to use the CSS files -->

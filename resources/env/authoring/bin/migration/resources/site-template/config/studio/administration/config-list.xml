@@ -37,7 +37,7 @@
     - samplePath: the path to a sample file to help the user update the file
 -->
 <config>
-    <version>8</version>
+    <version>10</version>
     <files>
         <file>
             <module>studio</module>
@@ -115,13 +115,6 @@
             <title>confTabRoleMappings</title>
             <description>confTabRoleMappingsDesc</description>
             <samplePath>sample-role-mappings-config.xml</samplePath>
-        </file>
-        <file>
-            <module>studio</module>
-            <path>environment/environment-config.xml</path>
-            <title>confTabEnvironmentConfiguration</title>
-            <description>confTabEnvironmentConfigurationDesc</description>
-            <samplePath>sample-environment-config.xml</samplePath>
         </file>
         <file>
             <module>studio</module>
@@ -220,6 +213,13 @@
             <title>Blob Stores</title>
             <description>Blob Stores</description>
             <samplePath>sample-blob-stores-config.xml</samplePath>
+        </file>
+        <file>
+            <module>engine</module>
+            <path>proxy-config.xml</path>
+            <title>Proxy Config</title>
+            <description>Proxy Config</description>
+            <samplePath>sample-proxy-config.xml</samplePath>
         </file>
     </files>
 </config>

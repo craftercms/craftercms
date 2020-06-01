@@ -63,7 +63,7 @@ For every repository you need to specify:
             <repository>
                 <id>alfresco</id>
                 <type>alfresco</type>
-                <url><url>http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom/</url></url>
+                <url>http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom/</url>
                 <username>guest</username>
                 <password>guest</password>
                 <base-path>/</base-path>

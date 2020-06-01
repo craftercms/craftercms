@@ -90,7 +90,7 @@
                 <permission>upload_content_cmis</permission>
             </allowed-permissions>
         </rule>
-        <rule regex="/site/components|/site/components/.*">
+        <rule regex="/site/items|/site/items/.*">
             <allowed-permissions>
                 <permission>Read</permission>
                 <permission>Write</permission>
@@ -184,6 +184,8 @@
                 <permission>Read</permission>
                 <permission>Write</permission>
                 <permission>Publish</permission>
+                <permission>get_publishing_queue</permission>
+                <permission>cancel_publish</permission>
                 <permission>Create Folder</permission>
                 <permission>Create Content</permission>
                 <permission>Change Content Type</permission>
