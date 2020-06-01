@@ -21,15 +21,20 @@
 
 -->
 <site-config>
-    <version>6</version>
+    <version>7</version>
     <wem-project>{siteName}</wem-project>
     <display-name>{siteName}</display-name>
     <default-timezone>EST5EDT</default-timezone>
+
+    <!-- Site URLs. Default to http://localhost:8080 if blank -->
+    <site-urls>
+        <authoring-url></authoring-url>
+        <staging-url></staging-url>
+        <live-url></live-url>
+    </site-urls>
     
     <published-repository>
         <enable-staging-environment>false</enable-staging-environment>
-        <staging-environment>staging</staging-environment>
-        <live-environment>live</live-environment>
     </published-repository>
 
     <publishing>
@@ -105,6 +110,7 @@
                 <pattern>/site/component-bindings/([^&lt;]+)\.xml</pattern>
                 <pattern>/site/indexes/([^&lt;]+)\.xml</pattern>
                 <pattern>/site/resources/([^&lt;]+)\.xml</pattern>
+                <pattern>/site/items/([^&lt;]+)\.xml</pattern>
             </pattern-group>
 
             <pattern-group name="asset">

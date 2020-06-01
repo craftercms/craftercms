@@ -160,7 +160,7 @@
                                 ${submissionComments!""}
                                 <br/>
                             </#if><br/>
-                            <a href="${previewUrl}/site-dashboard">Click Here to View Content Waiting for Approval</a>
+                            <a href="${authoringUrl}/site-dashboard">Click Here to View Content Waiting for Approval</a>
                             <br/><br/>
         <a href="${liveUrl}" >
             <img style="max-width: 350px;  max-height: 350px;" src="${liveUrl}/static-assets/images/workflow-email-footer.png" alt="" />
