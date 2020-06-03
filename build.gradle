@@ -238,7 +238,7 @@ buildModules.each { module ->
         //Creates Update Tasks
         task "${module}_update" doLast {
             if (!file("./src/${module}").exists()) {
-                throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'update' to initialize it.")
+                throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'init' to initialize it.")
             } else {
                 def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
                 executeProcess(arry, "./src/${module}".toString())
