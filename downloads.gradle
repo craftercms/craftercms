@@ -108,22 +108,22 @@ task downloadElasticsearch() {
     description = "Downloads, checks Elasticsearch integrity and unzips it"
     doFirst {
         download {
-            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}.zip"
+            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz"
             overwrite false
-            dest file("${downloadDir}/elasticsearch-${elasticsearchVersion}.zip")
+            dest file("${downloadDir}/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz")
         }
         download {
-            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}.zip.sha512"
-            dest file("${downloadDir}/elasticsearch-${elasticsearchVersion}.zip.sha512")
+            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz.sha512"
+            dest file("${downloadDir}/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz.sha512")
             overwrite false
         }
     }
     doLast {
-        assert sha512(new File(downloadDir, "elasticsearch-${elasticsearchVersion}.zip")) == new File(downloadDir, "elasticsearch-${elasticsearchVersion}.zip.sha512").getText('UTF-8').split(" ")[0]
+        assert sha512(new File(downloadDir, "elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz")) == new File(downloadDir, "elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz.sha512").getText('UTF-8').split(" ")[0]
 
-        if (!file("${downloadDir}/elasticsearch-${elasticsearchVersion}").exists()) {
+        if (!file("${downloadDir}/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64").exists()) {
             copy {
-                from zipTree("${downloadDir}/elasticsearch-${elasticsearchVersion}.zip")
+                from tarTree("${downloadDir}/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz")
                 into "${downloadDir}"
             }
         }
