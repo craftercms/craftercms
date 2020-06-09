@@ -16,6 +16,7 @@
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.io.input.Tailer
 import org.apache.commons.io.input.TailerListenerAdapter
+import org.apache.commons.lang3.SystemUtils
 
 import java.nio.charset.Charset
 import java.nio.file.Files
@@ -54,7 +55,10 @@ ext {
     groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.5.0"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.53"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
-    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.8.6"
+    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "7.2.1"
+    elasticsearchPlatfform =
+      project.hasProperty("elasticsearch.plafform") ? project.property("elasticsearch.plafform") :
+                                                      SystemUtils.IS_OS_MAC_OSX? "darwin" : "linux"
     mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.7"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     
