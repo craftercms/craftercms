@@ -41,13 +41,13 @@ task downloadTomcat() {
             dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip")
         }
         download {
-            src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip.sha1"
-            dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip.sha1")
+            src "http://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip.sha512"
+            dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip.sha512")
             overwrite false
         }
     }
     doLast{
-        assert sha1(new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip")) ==  new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip.sha1").getText('UTF-8').split(" ")[0]
+        assert sha512(new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip")) ==  new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip.sha512").getText('UTF-8').split(" ")[0]
     }
 }
 
