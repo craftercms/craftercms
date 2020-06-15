@@ -10,6 +10,13 @@ target:
         - ${env:ES_URL}
       username: ${env:ES_USERNAME}
       password: ${env:ES_PASSWORD}
+      timeout:
+        # The connection timeout in milliseconds, if set to -1 the default will be used
+        connect: -1
+        # The socket timeout in milliseconds, if set to -1 the default will be used
+        socket: -1
+      # The number of threads to use, if set to -1 the default will be used
+      threads: -1
 
       # Multiple Clusters
 #      readCluster:
