@@ -303,7 +303,14 @@ envs.each { env ->
                     isConfigFile(it.file as String, configFilePatterns)
                   }
                 }
-                
+
+                // Clean up empty folders left by the previous delete
+                fileTree(syncDestDir).visit {
+                    if (it.directory && !it.file.list().size()) {
+                        delete it.file
+                    }
+                }
+
                 logger.lifecycle "Synching processed resources from ${syncSrcDir} to ${syncDestDir}..."
 
                 def resourceFiles = fileTree(syncSrcDir).each { file ->
