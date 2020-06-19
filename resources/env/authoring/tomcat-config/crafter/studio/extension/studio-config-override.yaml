@@ -287,6 +287,8 @@ studio.search.threads: -1
 ##########################################################
 # Indicates if serverless delivery is enabled
 # studio.serverless.delivery.enabled: true
+# Indicates if the local (preview) Deployer is going to be used for serverless deployments
+# studio.serverless.delivery.deployer.local: true
 # The URL for the serverless delivery deployer create URL
 # studio.serverless.delivery.deployer.target.createUrl: ${studio.preview.createTargetUrl}
 # The URL for the serverless delivery deployer delete URL
@@ -295,12 +297,10 @@ studio.search.threads: -1
 # studio.serverless.delivery.deployer.target.template: aws-cloudformed-s3
 # Replace existing target configuration if one exists?
 # studio.serverless.delivery.deployer.target.replace: false
-# The URL the deployer will use to clone/pull the site's published repo. When the deployer is in a separate node
-# (because of clustering), this URL should be an SSH/HTTP URL to the load balancer in front of the Studios
-# studio.serverless.delivery.deployer.target.remoteRepoUrl: ${env:CRAFTER_DATA_DIR}/repos/sites/{siteName}/published
-# The deployer's local path where it will store the clone of the published site. This property is not needed if
-# the deployer is not the preview deployer, so you can leave an empty string ('') instead
-# studio.serverless.delivery.deployer.target.localRepoPath: ${env:CRAFTER_DATA_DIR}/repos/aws/{siteName}
+# The URL of the site repo that the Deployer needs to upload to the bucket needed by serverless delivery. If using the
+# local deployer, this should be the local path to the published repo. If using a a Deployer in a separate node
+# (because of clustering), this should be an load balanced SSH/HTTP URL to the published repo
+# studio.serverless.delivery.deployer.target.repoUrl: ${env:CRAFTER_DATA_DIR}/repos/sites/{siteName}/published
 # Parameters for the target template. Please check the deployer template documentation for the possible parameters.
 # The following parameters will be sent automatically, and you don't need to specify them: env, site_name, replace,
 # disable_deploy_cron, local_repo_path, repo_url, use_crafter_search
