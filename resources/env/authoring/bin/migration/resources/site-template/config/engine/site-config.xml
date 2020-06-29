@@ -33,13 +33,4 @@
         -->
         <disableFullModelTypeConversion>true</disableFullModelTypeConversion>
     </compatibility>
-
-    <cors>
-        <enable>true</enable>
-        <accessControlMaxAge>3600</accessControlMaxAge>
-        <accessControlAllowOrigin>*</accessControlAllowOrigin>
-        <accessControlAllowMethods>GET\, POST</accessControlAllowMethods>
-        <accessControlAllowHeaders>Content-Type</accessControlAllowHeaders>
-        <accessControlAllowCredentials>true</accessControlAllowCredentials>
-    </cors>
 </site>

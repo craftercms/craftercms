@@ -76,7 +76,7 @@
 
 -->
 <permissions>
-    <version>11</version>
+    <version>12</version>
     <role name="author">
         <rule regex="/site/website/.*">
             <allowed-permissions>
@@ -90,7 +90,7 @@
                 <permission>upload_content_cmis</permission>
             </allowed-permissions>
         </rule>
-        <rule regex="/site/items|/site/items/.*">
+        <rule regex="/site/components|/site/components/.*">
             <allowed-permissions>
                 <permission>Read</permission>
                 <permission>Write</permission>
@@ -184,8 +184,6 @@
                 <permission>Read</permission>
                 <permission>Write</permission>
                 <permission>Publish</permission>
-                <permission>get_publishing_queue</permission>
-                <permission>cancel_publish</permission>
                 <permission>Create Folder</permission>
                 <permission>Create Content</permission>
                 <permission>Change Content Type</permission>
@@ -205,6 +203,7 @@
                 <permission>site_diff_conflicted_file</permission>
                 <permission>commit_resolution</permission>
                 <permission>cancel_failed_pull</permission>
+                <permission>encryption_tool</permission>
             </allowed-permissions>
         </rule>
         <rule regex="^/(?!site/website/index\.xml)(.*)">
@@ -230,6 +229,7 @@
                 <permission>site_diff_conflicted_file</permission>
                 <permission>commit_resolution</permission>
                 <permission>cancel_failed_pull</permission>
+                <permission>encryption_tool</permission>
             </allowed-permissions>
         </rule>
         <rule regex=".*">
@@ -268,6 +268,7 @@
                 <permission>site_diff_conflicted_file</permission>
                 <permission>commit_resolution</permission>
                 <permission>cancel_failed_pull</permission>
+                <permission>encryption_tool</permission>
             </allowed-permissions>
         </rule>
         <rule regex="^/(?!site/website/index\.xml)(.*)">
@@ -293,6 +294,7 @@
                 <permission>site_diff_conflicted_file</permission>
                 <permission>commit_resolution</permission>
                 <permission>cancel_failed_pull</permission>
+                <permission>encryption_tool</permission>
             </allowed-permissions>
         </rule>
         <rule regex=".*">

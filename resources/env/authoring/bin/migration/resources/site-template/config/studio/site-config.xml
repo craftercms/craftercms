@@ -32,7 +32,7 @@
         <staging-url></staging-url>
         <live-url></live-url>
     </site-urls>
-    
+
     <published-repository>
         <enable-staging-environment>false</enable-staging-environment>
     </published-repository>
@@ -110,7 +110,6 @@
                 <pattern>/site/component-bindings/([^&lt;]+)\.xml</pattern>
                 <pattern>/site/indexes/([^&lt;]+)\.xml</pattern>
                 <pattern>/site/resources/([^&lt;]+)\.xml</pattern>
-                <pattern>/site/items/([^&lt;]+)\.xml</pattern>
             </pattern-group>
 
             <pattern-group name="asset">
