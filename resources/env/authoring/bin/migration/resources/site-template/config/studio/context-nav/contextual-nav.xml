@@ -23,7 +23,7 @@
 <app-context-menu>
     <version>2</version>
     <context>
-        <name>default</name>
+       <name>default</name>
         <left> <!-- left-aligned modules -->
             <menuItem>
                 <item><modulehook>wcm_logo</modulehook></item>
