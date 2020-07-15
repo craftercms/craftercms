@@ -197,7 +197,7 @@ buildModules.each { module ->
             if (!testArtifacts) {
                 actualCommandLinePost.add("-Dmaven.test.skip=true")
             }
-            if (module.equalsIgnoreCase("search")) {
+            /*if (module.equalsIgnoreCase("search")) {
                 actualCommandLinePost.add("-pl")
                 actualCommandLinePost.add("!crafter-search-solr-itest")
             } else if (module.equalsIgnoreCase("profile")) {
@@ -207,7 +207,7 @@ buildModules.each { module ->
                 } else {
                     actualCommandLinePost.add("!integration-tests")
                 }
-            }
+            }*/
             if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
                 actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
                 actualCommandLinePost.add("-Dexec.skip=true")
