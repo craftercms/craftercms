@@ -60,7 +60,7 @@ Before using `bundle` task make sure that the enviroment has been created and de
 Archives will be named `crafter-cms-${environment}.tar.gz` and can be found in the `bundles` folder.
 
 ```bash
-./gradlew init build deploy bundle
+./gradlew clone build deploy bundle
 ```
 
 To run Crafter CMS from the bundle, unzip and follow the instructions in the bundle's `README.txt`.
@@ -87,7 +87,7 @@ To download, build and generate a bundle from a given tag or branch of the sourc
 ```
 2. Download, build and bundle the branch that you want to work with
 ```bash
-    ./gradlew init build deploy bundle -Pcrafter.git.branch={BRANCH}/{TAG NAME}
+    ./gradlew clone build deploy bundle -Pcrafter.git.branch={BRANCH}/{TAG NAME}
 ```
 
 Replace {BRANCH} or {TAG NAME} or \<branch\> with the branch and tag you'd like to build.
@@ -104,7 +104,7 @@ Crafter CMS is built along a microservices-based architecture, and as such, comp
 Build all Crafter CMS modules
 
 ```bash
-    ./gradlew init build deploy
+    ./gradlew clone build deploy
 ```
 
 ### 3.1.2. Start All
