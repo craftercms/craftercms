@@ -233,7 +233,7 @@ buildModules.each { module ->
             def arry = commandLinePrefix + gitCloneCmd + ["-b", gitSourceBranch, finalUrl, path]
 
             if (file(path).exists()) {
-                logger.lifecycle("Module ${module} has already been initialized, please use " +
+                logger.lifecycle("Module ${module} has already been cloned, please use " +
                         "'update' to update it.")
             } else {
                 logger.lifecycle "Cloning: ${module}, branch: ${gitSourceBranch}, url: ${finalUrl}"
@@ -244,7 +244,7 @@ buildModules.each { module ->
         //Creates Update Tasks
         task "${module}_update" doLast {
             if (!file("./src/${module}").exists()) {
-                throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'init' to initialize it.")
+                throw new InvalidUserDataException("Module ${module} is not cloned. Please use 'clone' to clone it.")
             } else {
                 String[] arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
                 executeProcess(arry, "./src/${module}".toString())
