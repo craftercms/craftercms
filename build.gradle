@@ -28,15 +28,15 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.apache.commons', name: 'commons-text', version: '1.1'
-        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
-        classpath group: 'commons-io', name: 'commons-io', version: '2.6'
-        classpath 'org.ajoberstar:grgit:1.1.0'
+        classpath group: 'org.apache.commons', name: 'commons-text', version: project.property("commons.text.version")
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property("commons.lang3.version")
+        classpath group: 'commons-io', name: 'commons-io', version: project.property("commons.io.version")
+        classpath project.property("grgit.version")
     }
 }
 
 plugins {
-    id "de.undercouch.download" version "3.1.2"
+    id "de.undercouch.download" version "4.1.1"
 }
 
 project.version = "3.2.0-SNAPSHOT" // craftercms version flag
@@ -52,21 +52,21 @@ ext {
     processTailFinishDelay = 1000
 
     /** Download Properties **/
-    groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.5.0"
-    tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.53"
-    solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
-    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "7.2.1"
+    groovyVersion = project.property("groovy.version")
+    tomcatVersion = project.property("tomcat.version")
+    solrVersion = project.property("solr.version")
+    elasticsearchVersion = project.property("elasticsearch.version")
     elasticsearchPlatfform =
       project.hasProperty("elasticsearch.plafform") ? project.property("elasticsearch.plafform") :
                                                       SystemUtils.IS_OS_MAC_OSX? "darwin" : "linux"
-    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.7"
-    downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
+    mariadb4jVersion = project.property("mariadb4j.version")
+    downloadDir = project.property("downloadDir")
     
     /** Environment Building properties **/
-    authEnvDir = project.hasProperty("authoring.root") ? project.property("authoring.root") : "./crafter-authoring/"
-    deliveryEnvDir = project.hasProperty("delivery.root") ? project.property("delivery.root") : "./crafter-delivery/"
-    authProcessedResourcesDir = "./tmp/crafter-authoring"
-    deliveryProcessedResourcesDir = "./tmp/crafter-delivery"
+    authoringEnvDir = project.property("authoring.root")
+    deliveryEnvDir = project.property("delivery.root")
+    authoringProcessedResourcesDir = project.property("authoringProcessedResourcesDir")
+    deliveryProcessedResourcesDir = project.property("deliveryProcessedResourcesDir")
     includeProfile = project.hasProperty("crafter.profile") ? project.property("crafter.profile").toBoolean() : false
     includeSocial = project.hasProperty("crafter.social") ? project.property("crafter.social").toBoolean() : false
 
@@ -76,59 +76,59 @@ ext {
     }
 
     // Authoring
-    authTomcatPort = project.hasProperty("authoring.tomcat.http.port") ? project.property("authoring.tomcat.http.port").toInteger() : 8080
-    authTomcatShutdownPort = project.hasProperty("authoring.tomcat.shutdown.port") ? project.property("authoring.tomcat.shutdown.port").toInteger() : 8005
-    authTomcatAJPPort = project.hasProperty("authoring.tomcat.ajp.port") ? project.property("authoring.tomcat.ajp.port").toInteger() : 8009
-    authTomcatSSLPort = project.hasProperty("authoring.tomcat.https.port") ? project.property("authoring.tomcat.https.port").toInteger() : 8443
-    authTomcatDebugPort = project.hasProperty("authoring.tomcat.debug.port") ? project.property("authoring.tomcat.debug.port").toInteger() : 8000
-    authMongoDBPort = project.hasProperty("authoring.mongo.port") ? project.property("authoring.mongo.port").toInteger() : 27020
-    authSolrPort = project.hasProperty("authoring.solr.port") ? project.property("authoring.solr.port").toInteger() : 8694
-    authSolrDebugPort = project.hasProperty("authoring.solr.debug.port") ? project.property("authoring.solr.debug.port").toInteger() : 5005
-    authElasticsearchPort = project.hasProperty("authoring.elasticsearch.port") ? project.property("authoring.elasticsearch.port").toInteger() : 9201
-    authSMTPPort = project.hasProperty("authoring.studio.smtp.port") ? project.property("authoring.studio.smtp.port").toInteger() : 25
-    authMariaDbPort = project.hasProperty("authoring.mariadb.port") ? project.property("authoring.mariadb.port").toInteger() : 33306
-    authDeployerPort = project.hasProperty("authoring.deployer.port") ? project.property("authoring.deployer.port").toInteger() : 9191
-    authDeployerDebugPort = project.hasProperty("authoring.deployer.debug.port") ? project.property("authoring.deployer.debug.port").toInteger() : 5000
-    authDeploymentDir = project.hasProperty("authoring.deployment.dir") ? project.property("authoring.deployment.dir") : "data/repos/sites"
+    authoringTomcatPort = project.property("authoring.tomcat.http.port").toInteger()
+    authoringTomcatShutdownPort = project.property("authoring.tomcat.shutdown.port").toInteger()
+    authoringTomcatAJPPort = project.property("authoring.tomcat.ajp.port").toInteger()
+    authoringTomcatSSLPort = project.property("authoring.tomcat.https.port").toInteger()
+    authoringTomcatDebugPort = project.property("authoring.tomcat.debug.port").toInteger()
+    authoringMongoDBPort = project.property("authoring.mongo.port").toInteger()
+    authoringSolrPort = project.property("authoring.solr.port").toInteger()
+    authoringSolrDebugPort = project.property("authoring.solr.debug.port").toInteger()
+    authoringElasticsearchPort = project.property("authoring.elasticsearch.port").toInteger()
+    authoringSMTPPort = project.property("authoring.smtp.port").toInteger()
+    authoringMariaDbPort = project.property("authoring.mariadb.port").toInteger()
+    authoringDeployerPort = project.property("authoring.deployer.port").toInteger()
+    authoringDeployerDebugPort = project.property("authoring.deployer.debug.port").toInteger()
+    authoringDeploymentDir = project.property("authoring.deployment.dir")
 
     // Delivery
-    deliverySolrPort = project.hasProperty("delivery.solr.port") ? project.property("delivery.solr.port").toInteger() : 8695
-    deliverySolrDebugPort = project.hasProperty("delivery.solr.debug.port") ? project.property("delivery.solr.debug.port").toInteger() : 5006
-    deliveryElasticsearchPort = project.hasProperty("delivery.elasticsearch.port") ? project.property("delivery.elasticsearch.port").toInteger() : 9202
-    deliveryDeployerPort = project.hasProperty("delivery.deployer.port") ? project.property("delivery.deployer.port").toInteger() : 9192
-    deliveryDeployerDebugPort = project.hasProperty("delivery.deployer.debug.port") ? project.property("delivery.deployer.debug.port").toInteger() : 5001
-    deliveryDeploymentDir = project.hasProperty("delivery.deployment.dir") ? project.property("delivery.deployment.dir") : "data/repos/sites"
-    deliveryTomcatPort = project.hasProperty("delivery.tomcat.http.port") ? project.property("delivery.tomcat.http.port").toInteger(): 9080
-    deliveryTomcatShutdownPort = project.hasProperty("delivery.tomcat.shutdown.port") ? project.property("delivery.tomcat.shutdown.port").toInteger() : 9005
-    deliveryTomcatAJPPort = project.hasProperty("delivery.tomcat.ajp.port") ? project.property("delivery.tomcat.ajp.port").toInteger() : 9009
-    deliveryTomcatSSLPort = project.hasProperty("delivery.tomcat.https.port") ? project.property("delivery.tomcat.https.port").toInteger() : 9443
-    deliveryTomcatDebugPort = project.hasProperty("delivery.tomcat.debug.port") ? project.property("delivery.tomcat.debug.port").toInteger() : 9000
-    deliveryMongoDBPort = project.hasProperty("delivery.mongodb.port") ? project.property("delivery.mongodb.port").toInteger() : 28020
-    deliverySMTPPort = project.hasProperty("delivery.studio.smtp.port") ? project.property("delivery.studio.smtp.port").toInteger() : 25
+    deliverySolrPort = project.property("delivery.solr.port").toInteger()
+    deliverySolrDebugPort = project.property("delivery.solr.debug.port").toInteger()
+    deliveryElasticsearchPort = project.property("delivery.elasticsearch.port").toInteger()
+    deliveryDeployerPort = project.property("delivery.deployer.port").toInteger()
+    deliveryDeployerDebugPort = project.property("delivery.deployer.debug.port").toInteger()
+    deliveryDeploymentDir = project.property("delivery.deployment.dir")
+    deliveryTomcatPort = project.property("delivery.tomcat.http.port").toInteger()
+    deliveryTomcatShutdownPort = project.property("delivery.tomcat.shutdown.port").toInteger()
+    deliveryTomcatAJPPort = project.property("delivery.tomcat.ajp.port").toInteger()
+    deliveryTomcatSSLPort = project.property("delivery.tomcat.https.port").toInteger()
+    deliveryTomcatDebugPort = project.property("delivery.tomcat.debug.port").toInteger()
+    deliveryMongoDBPort =  project.property("delivery.mongodb.port").toInteger()
+    deliverySMTPPort = project.property("delivery.smtp.port").toInteger()
 
     /** Git properties **/
-    gitURLTemplate = project.hasProperty("crafter.git.url") ? project.property("crafter.git.url") : "https://github.com/craftercms/"
-    gitSourceBranch = project.hasProperty("crafter.git.branch") ? project.property("crafter.git.branch") : "develop" // craftercms branch flag
-    gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
-    shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone").toBoolean() : false
-    studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo").toBoolean() : false
+    gitURLTemplate = project.property("crafter.git.url")
+    gitSourceBranch = project.hasProperty("crafter.git.branch")? project.property("crafter.git.branch") : "develop" // craftercms branch flag
+    gitRepo = project.property("crafter.git.remote")
+    shallowClone = project.property("crafter.git.shallowClone").toBoolean()
+    studioUIFromRepo = project.property("crafter.ui.repo").toBoolean()
     
     /** Other **/
-    overwriteConfig = project.hasProperty("overwriteConfig") ? project.property("overwriteConfig").toBoolean() : false
-    backupAndReplaceConfig = project.hasProperty("backupAndReplaceConfig") ? project.property("backupAndReplaceConfig").toBoolean() : false
+    overwriteConfig = project.property("overwriteConfig").toBoolean()
+    backupAndReplaceConfig = project.property("backupAndReplaceConfig").toBoolean()
     
     /** Testing **/
-    testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest").toBoolean() : false
+    testArtifacts = project.property("crafter.unittest").toBoolean()
     
-    startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb").toBoolean() : false // TODO:: cleanup
-    withElasticsearch = project.hasProperty("withElasticsearch") ? project.property("withElasticsearch").toBoolean() : true // TODO:: cleanup
-    withSolr = project.hasProperty("withSolr") ? project.property("withSolr").toBoolean() : false
-    silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent").toBoolean() : false // TODO:: cleanup
-    typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both" // TODO:: cleanup
+    startMongodb = project.property("startMongodb").toBoolean()
+    withElasticsearch = project.property("withElasticsearch").toBoolean()
+    withSolr = project.property("withSolr").toBoolean()
+    silentBuild = project.property("crafter.build.silent").toBoolean()
+    typeOfBundle = project.property("crafter.bundle.archive")
    
     /** Cloneable Artifacts **/
     VALID_MODULES =
-      ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "plugin-maker"]
+      ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "plugin-maker", "groovy-sandbox", "script-security-plugin"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
@@ -183,7 +183,7 @@ buildModules.each { module ->
     // Creates the Clean Task
     if (!tasks.findByPath("${module}_clean")) {
         task "${module}_clean" doLast({
-            def array = commandLinePrefix + ["mvn", "clean"]
+            String[] array = commandLinePrefix + ["mvn", "clean"]
             executeProcess(array, "./src/${module}".toString())
         })
     } else {
@@ -213,7 +213,7 @@ buildModules.each { module ->
                 actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
                 actualCommandLinePost.add("-Dexec.skip=true")
             }
-            def array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
+            String[] array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
             executeProcess(array, "./src/${module}".toString())
         })
         // Creates the Dependencies Array
@@ -223,14 +223,15 @@ buildModules.each { module ->
 
         // Create init tasks
         task "${module}_init" doLast {
-            def finalUrl = "${gitURLTemplate}${module}.git".toString()
-            def path = "src/${module}".toString()
+            String finalUrl = "${gitURLTemplate}${module}.git".toString()
+            String path = "src/${module}".toString()
             def gitCloneCmd = ["git", "clone"]
             if (shallowClone) {
                 gitCloneCmd.add("--depth")
                 gitCloneCmd.add("1")
             }
             def arry = commandLinePrefix + gitCloneCmd + ["-b", gitSourceBranch, finalUrl, path]
+
             if (file(path).exists()) {
                 logger.lifecycle("Module ${module} has already been initialized, please use " +
                         "'update' to update it.")
@@ -245,7 +246,7 @@ buildModules.each { module ->
             if (!file("./src/${module}").exists()) {
                 throw new InvalidUserDataException("Module ${module} is not initialized. Please use 'init' to initialize it.")
             } else {
-                def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
+                String[] arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
                 executeProcess(arry, "./src/${module}".toString())
             }
         }
@@ -291,45 +292,63 @@ envs.each { env ->
     /* Per Env tasks */
     if (!tasks.findByName("${env}_start")) {
         task "${env}_start" doLast({
-            def extraStartupParams = []
+            String[] extraStartupParams = []
+
             if (startMongodb) {
-                extraStartupParams.add("forceMongo")
+                extraStartupParams += "forceMongo"
             }
+
             if (!withElasticsearch) {
-              extraStartupParams.add("skipElasticsearch")
+              extraStartupParams += "skipElasticsearch"
             }
+
             if (withSolr) {
-              extraStartupParams.add("withSolr")
+              extraStartupParams += "withSolr"
             }
-            def path = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
+
+            String path = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
+
             if (!file(path).exists()) {
                 throw new InvalidUserDataException("The '${env}' enviroment is not deployed. Please run 'deploy -Penv=${env}' before 'start'.")
             }
-            executeProcess(commandLinePrefix + [startUpFile] + extraStartupParams, "${path}/bin")
+
+            String[] finalCommand = []
+            finalCommand +=(commandLinePrefix)
+            finalCommand += startUpFile
+            finalCommand += extraStartupParams
+            executeProcess(finalCommand, "${path}/bin")
         })
     }
 
     if (!tasks.findByName("${env}_stop")) {
         task "${env}_stop" doLast({
-            def extraStartupParams = []
+            String[] extraStartupParams = []
+
             if (startMongodb) {
-                extraStartupParams.add("forceMongo")
+                extraStartupParams += "forceMongo"
             }
-            def path = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
+
+            String path = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
+
             if (!file(path).exists()) {
                 throw new InvalidUserDataException("The '${env}' enviroment is not deployed. Please run 'deploy -Penv=${env}' before 'start'.")
             }
-            executeProcess(commandLinePrefix + [shutDownFile] + extraStartupParams, "${path}/bin")
+
+            String[] finalCommand = []
+            finalCommand +=(commandLinePrefix)
+            finalCommand += shutDownFile
+            finalCommand += extraStartupParams
+            executeProcess(finalCommand, "${path}/bin")
         })
     }
 
     if (!tasks.findByName("${env}_status")) {
         task "${env}_status" doLast({
-            def extraStartupParams = []
+            String[] extraStartupParams = []
             if (startMongodb) {
                 extraStartupParams.add("forceMongo")
             }
-            def path = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
+            String path = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
             if (!file(path).exists()) {
                 throw new InvalidUserDataException("The '${env}' enviroment is not deployed. Please run 'deploy -Penv=${env}' before 'start'.")
             }
@@ -340,7 +359,7 @@ envs.each { env ->
     if (!tasks.findByName("${env}_bundle_tar")) {
         task "${env}_bundle_tar"(type: Tar) {
             description "Bundles as a Tar file ${env} enviroment"
-            def environmentPath = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
+            def environmentPath = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
             from(environmentPath) {
                 into("crafter")
             }
@@ -400,7 +419,7 @@ task build() {
     description "Builds all configured Crafter Modules"
 }
 
-task init(dependsOn: initDeps) {
+task clone(dependsOn: initDeps) {
     description "Clones all configured Crafter modules from ${gitURLTemplate} and branch ${gitSourceBranch}"
 }
 
@@ -435,10 +454,10 @@ task status(dependsOn: statusDeps) {
 task buildUtils() {
     description "Builds and deploys Crafter CMS Bundle Utility tools jar file."
     doLast {
-        def array = commandLinePrefix + ["mvn", "clean", "package"]
+        String[] array = commandLinePrefix + ["mvn", "clean", "package"]
         executeProcess(array, "./utils/")
         envs.each { env ->
-            def path = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
+            String path = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
             copy {
                 from "./utils/target/craftercms-utils.jar"
                 into "${path}/bin"
@@ -450,7 +469,7 @@ task buildUtils() {
 task selfupdate {
     description "Updates the Crafter CMS project"
     doLast {
-        def arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
+        String[] arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
         executeProcess(arry, ".")
     }
 }
@@ -491,14 +510,14 @@ task publishPlugin(type: GradleBuild) {
 /** Makes sure Depends are run in order. **/
 dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
-dependsOnOrdered(init, initDeps)
+dependsOnOrdered(clone, initDeps)
 dependsOnOrdered(update, updateDeps)
 dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, downloadElasticsearch, downloadMariaDB4j] + envDepends + deployDepends + [buildUtils])
 dependsOnOrdered(upgrade, [update, build, deploy])
 
 def deployBinary(deployable, env) {
     if (deployable.exists()) {
-        def path = env.equals("authoring") ? authEnvDir : deliveryEnvDir
+        def path = env.equals("authoring") ? authoringEnvDir : deliveryEnvDir
         path += deployable.absolutePath.endsWith(".jar") ? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
         path += deployable.name
         delete {
@@ -536,7 +555,7 @@ def executeProcess(command, workingDir) {
     }
     log.delete()
     if (proc.exitValue() != 0) {
-        throw new GradleException("${command} @ ${workingDir} return a  non-zero value (${proc.exitValue()})")
+        throw new GradleException("${command} @ ${workingDir} returned a non-zero value (${proc.exitValue()})")
     }
 }
 

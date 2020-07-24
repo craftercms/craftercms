@@ -98,8 +98,8 @@ export PROFILE_MANAGEMENT_TOKEN=${PROFILE_MANAGEMENT_TOKEN:="defaultManagementTo
 export SOCIAL_MANAGEMENT_TOKEN=${SOCIAL_MANAGEMENT_TOKEN:="defaultManagementToken"}
 
 # -------------------- Encryption variables --------------------
-export CRAFTER_ENCRYPTION_KEY=${CRAFTER_ENCRYPTION_KEY:="default_encryption_key"}
-export CRAFTER_ENCRYPTION_SALT=${CRAFTER_ENCRYPTION_SALT:="default_encryption_salt"}
+export CRAFTER_ENCRYPTION_KEY=${CRAFTER_ENCRYPTION_KEY:="zEtRii1jWUuUUB0W"}
+export CRAFTER_ENCRYPTION_SALT=${CRAFTER_ENCRYPTION_SALT:="DgGN9xhq3GOn6zxg"}
 
 # -------------------- Configuration variables --------------------
 export CRAFTER_ENVIRONMENT=${CRAFTER_ENVIRONMENT:=default}

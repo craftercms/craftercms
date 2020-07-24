@@ -26,30 +26,30 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
-        classpath group: 'commons-codec', name: 'commons-codec', version: '1.11'
-        classpath group: 'commons-io', name: 'commons-io', version: '2.6'
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property("commons.lang3.version")
+        classpath group: 'commons-codec', name: 'commons-codec', version: project.property("commons.codec.version")
+        classpath group: 'commons-io', name: 'commons-io', version: project.property("commons.io.version")
     }
 }
 
-def authTokens = [
-  TOMCAT_HTTP_PORT     : String.valueOf(authTomcatPort),
-  TOMCAT_HTTPS_PORT    : String.valueOf(authTomcatSSLPort),
-  TOMCAT_AJP_PORT      : String.valueOf(authTomcatAJPPort),
-  TOMCAT_SHUTDOWN_PORT : String.valueOf(authTomcatShutdownPort),
-  TOMCAT_DEBUG_PORT    : String.valueOf(authTomcatDebugPort),
-  SOLR_PORT            : String.valueOf(authSolrPort),
-  SOLR_DEBUG_PORT      : String.valueOf(authSolrDebugPort),
-  ES_PORT              : String.valueOf(authElasticsearchPort),
-  DEPLOYER_PORT        : String.valueOf(authDeployerPort),
-  DEPLOYER_DEBUG_PORT  : String.valueOf(authDeployerDebugPort),
-  DEPLOYMENT_DIR       : String.valueOf(authDeploymentDir),
-  MARIADB_PORT         : String.valueOf(authMariaDbPort),
-  MONGODB_PORT         : String.valueOf(authMongoDBPort),
+def authoringTokens = [
+  TOMCAT_HTTP_PORT     : String.valueOf(authoringTomcatPort),
+  TOMCAT_HTTPS_PORT    : String.valueOf(authoringTomcatSSLPort),
+  TOMCAT_AJP_PORT      : String.valueOf(authoringTomcatAJPPort),
+  TOMCAT_SHUTDOWN_PORT : String.valueOf(authoringTomcatShutdownPort),
+  TOMCAT_DEBUG_PORT    : String.valueOf(authoringTomcatDebugPort),
+  SOLR_PORT            : String.valueOf(authoringSolrPort),
+  SOLR_DEBUG_PORT      : String.valueOf(authoringSolrDebugPort),
+  ES_PORT              : String.valueOf(authoringElasticsearchPort),
+  DEPLOYER_PORT        : String.valueOf(authoringDeployerPort),
+  DEPLOYER_DEBUG_PORT  : String.valueOf(authoringDeployerDebugPort),
+  DEPLOYMENT_DIR       : String.valueOf(authoringDeploymentDir),
+  MARIADB_PORT         : String.valueOf(authoringMariaDbPort),
+  MONGODB_PORT         : String.valueOf(authoringMongoDBPort),
   ENV                  : "authoring",
   VERSION              : project.version,
   GIT_BUILD_ID         : gitRevisionId,
-  SMTP_PORT            : String.valueOf(authSMTPPort)
+  SMTP_PORT            : String.valueOf(authoringSMTPPort)
 ]
 
 def deliveryTokens = [
@@ -93,47 +93,47 @@ task authoringPostEnvironment {
         // Copy MariabDB4j jar for backup/restore
         copy {
             from "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar"
-            into "${authEnvDir}/bin"
+            into "${authoringEnvDir}/bin"
             rename "mariaDB4j-app-${mariadb4jVersion}.jar", 'mariaDB4j-app.jar'
         }
 
         exec {
-            workingDir "${authEnvDir}/bin/apache-tomcat/bin"
+            workingDir "${authoringEnvDir}/bin/apache-tomcat/bin"
             commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
                                              "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
                                              "startup.sh", "tool-wrapper.sh", "version.sh"]
         }
         exec {
-            workingDir "${authEnvDir}/bin/elasticsearch"
+            workingDir "${authoringEnvDir}/bin/elasticsearch"
             commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin", "modules"]
         }
         exec {
-            workingDir "${authEnvDir}/bin/groovy"
+            workingDir "${authoringEnvDir}/bin/groovy"
             commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
         }
         exec {
-            workingDir "${authEnvDir}/bin/solr"
+            workingDir "${authoringEnvDir}/bin/solr"
             commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
         }
         exec {
-            workingDir "${authEnvDir}/bin/crafter-deployer"
+            workingDir "${authoringEnvDir}/bin/crafter-deployer"
             commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh", "startup.sh", "shutdown.sh"]
         }
         exec {
-            workingDir "${authEnvDir}/bin/migration"
+            workingDir "${authoringEnvDir}/bin/migration"
             commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh",
                                              "import-bg.sh", "setenv.sh"]
         }
         exec {
-            workingDir "${authEnvDir}/bin"
+            workingDir "${authoringEnvDir}/bin"
             commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
                                              "crafter-setenv.sh", "upgrade/start-upgrade.sh",
                                              "upgrade/upgrade-target.sh"]
         }
 
-        downloadGrapes("${authEnvDir}/bin", "upgrade/start-upgrade.groovy")
-        downloadGrapes("${authEnvDir}/bin", "upgrade/upgrade-target.groovy")
-        downloadGrapes("${authEnvDir}/bin", "upgrade/post-upgrade.groovy")
+        downloadGrapes("${authoringEnvDir}/bin", "upgrade/start-upgrade.groovy")
+        downloadGrapes("${authoringEnvDir}/bin", "upgrade/upgrade-target.groovy")
+        downloadGrapes("${authoringEnvDir}/bin", "upgrade/post-upgrade.groovy")
     }
 }
 
@@ -190,8 +190,8 @@ envs.each { env ->
         task "${env}Environment" doLast {
             description "Setups ${env} environment"
             
-            def envDir = env.equalsIgnoreCase("authoring") ? "${authEnvDir}" : "${deliveryEnvDir}"
-            def tokens = env.equalsIgnoreCase("authoring") ? authTokens : deliveryTokens
+            def envDir = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
+            def tokens = env.equalsIgnoreCase("authoring") ? authoringTokens : deliveryTokens
             def newEnv
             def resourcesDestDir
 
@@ -205,7 +205,7 @@ envs.each { env ->
             } else {
                 // Copy resources to a temp folder to do a sync later
                 newEnv = false  
-                resourcesDestDir = env.equalsIgnoreCase("authoring") ? authProcessedResourcesDir : deliveryProcessedResourcesDir
+                resourcesDestDir = env.equalsIgnoreCase("authoring") ? authoringProcessedResourcesDir : deliveryProcessedResourcesDir
                 
                 delete resourcesDestDir
                 mkdir resourcesDestDir
@@ -294,7 +294,7 @@ envs.each { env ->
             if (!newEnv) {              
                 def syncSrcDir = file(resourcesDestDir + "/bin")
                 def syncDestDir = env.equalsIgnoreCase("authoring") ? 
-                                    file(authEnvDir + "/bin") : file(deliveryEnvDir + "/bin")
+                                    file(authoringEnvDir + "/bin") : file(deliveryEnvDir + "/bin")
                 
                 // Clean up old binaries
                 logger.lifecycle('Removing previous binaries from {}', syncDestDir)
