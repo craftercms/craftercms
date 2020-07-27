@@ -592,7 +592,7 @@ void dependsOnOrdered(Task task, List others) {
 }
 
 task assemble(type:Exec) {
-//	description "Deploy the parent POM to Maven Central"
+	description "Deploy the parent POM to Maven Central"
 	workingDir '.'
 	commandLine './.travis.sh'
 }
