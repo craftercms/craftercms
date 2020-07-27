@@ -131,6 +131,11 @@ task authoringPostEnvironment {
                                              "upgrade/upgrade-target.sh"]
         }
 
+        exec {
+               workingDir "${authoringEnvDir}"
+	        commandLine commandLinePrefix + ["ln", "-sf", , "../../logs/elasticsearch", "bin/elasticsearch/logs"]
+	    }
+
         downloadGrapes("${authoringEnvDir}/bin", "upgrade/start-upgrade.groovy")
         downloadGrapes("${authoringEnvDir}/bin", "upgrade/upgrade-target.groovy")
         downloadGrapes("${authoringEnvDir}/bin", "upgrade/post-upgrade.groovy")
@@ -169,6 +174,11 @@ task deliveryPostEnvironment {
                                              "crafter-setenv.sh", "init-site.sh", "remove-site.sh",
                                              "upgrade/start-upgrade.sh", "upgrade/upgrade-target.sh"]
         }
+
+        exec {
+		    workingDir "${deliveryEnvDir}"
+		    commandLine commandLinePrefix + ["ln", "-sf", , "../../logs/elasticsearch", "bin/elasticsearch/logs"]
+	    }
 
         downloadGrapes("${deliveryEnvDir}/bin", "init-site.groovy")
         downloadGrapes("${deliveryEnvDir}/bin", "remove-site.groovy")
