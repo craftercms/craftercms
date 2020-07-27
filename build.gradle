@@ -590,3 +590,9 @@ void dependsOnOrdered(Task task, List others) {
         others.get(i + 1).mustRunAfter(others.get(i))
     }
 }
+
+task assemble(type:Exec) {
+//	description "Deploy the parent POM to Maven Central"
+	workingDir '.'
+	commandLine './.travis.sh'
+}
