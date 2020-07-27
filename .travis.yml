@@ -14,10 +14,8 @@ notifications:
     skip_join: true
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
 script:
-- if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then bash -c  "mvn -DskipTests deploy
-  --settings .travis-settings.xml";  fi
-- if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then bash -c "mvn DskipTests clean install"
-  ;fi
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then bash -c  "mvn -DskipTests deploy --settings .travis-settings.xml";  fi
+  - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then bash -c "mvn DskipTests clean install";fi
 env:
   global:
   - secure: G+NpWD8MomdGAMc7TkSzTb92OmtUy08i53cU2H/cyzdvhfTOBJ5sp2vI+bSQ0NHXj7HBCyR6MO5mTQlTrYAaNlHKy6t0MYX4V3nPtQ869rvEerwsVJXrgLUMrE1ci1ghZGhaBF5w4SkjbsPbteU4s1ZIDPAlWbod7rET2PhLdIkf4w/UYfhFTR6O7y15Apfcikzs9i7JNZgoSsoMZT4gWp/rNIbcXz6SNJvA1tUrKHNqqaDwtFo7HRVj+fT5HAgVEPyKDf9iSdpFmPrjogkerZbFJZ8GfRi2s7G4VWQYkGZmBXHPmzb0jpjSk/3J9ZIQnKfQBUHWUztfPC2QA/24a03kSGFaYmCe+KRdBmlmVDilf+GEfUAtJX+eoIRaTKiFSIyWtghOqvNkGrpZGl9MHkurICzgKFJPahedIcXatxsvrBWhR0f9OhRhT8CUmBu8PJ0nImiy2LN623lZCLs43RjZLxR0H5934TBQ9QE9CV1MWuiElcY2ug7/jjJ+euXr/p901olZxHjIWLCuNxiw/Nw+V1o+DI83Vqfx+Pbll6zt3VjThn9SBfsgK6Fi3NvOPQCmdsNEGmJR+vlu/q4nbYS0DRmegTmrJRRCsOir1olEH4aDcetfmjVg796abAJ+Qf+fG14BYiAVRgdrJO8YT7cCtFo6p6c1cKbN1TDaTAQ=
