@@ -132,8 +132,8 @@ task authoringPostEnvironment {
         }
 
         exec {
-               workingDir "${authoringEnvDir}"
-	        commandLine commandLinePrefix + ["ln", "-sf", , "../../logs/elasticsearch", "bin/elasticsearch/logs"]
+            workingDir "${authoringEnvDir}"
+	        commandLine commandLinePrefix + ["mkdir", "-p", "bin/elasticsearch/logs"]
 	    }
 
         downloadGrapes("${authoringEnvDir}/bin", "upgrade/start-upgrade.groovy")
@@ -177,7 +177,7 @@ task deliveryPostEnvironment {
 
         exec {
 		    workingDir "${deliveryEnvDir}"
-		    commandLine commandLinePrefix + ["ln", "-sf", , "../../logs/elasticsearch", "bin/elasticsearch/logs"]
+		    commandLine commandLinePrefix + ["mkdir", "-p", "bin/elasticsearch/logs"]
 	    }
 
         downloadGrapes("${deliveryEnvDir}/bin", "init-site.groovy")
