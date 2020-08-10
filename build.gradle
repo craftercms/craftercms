@@ -128,7 +128,7 @@ ext {
    
     /** Cloneable Artifacts **/
     VALID_MODULES =
-      ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "plugin-maker", "groovy-sandbox", "script-security-plugin"]
+      ["groovy-sandbox", "script-security-plugin", "commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "plugin-maker"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
