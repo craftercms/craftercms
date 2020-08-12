@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License version 3 as published by
+  ~ the Free Software Foundation.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.craftercms</groupId>
+	<artifactId>craftercms-spring-boot</artifactId>
+	<version>3.2.0-SNAPSHOT</version><!-- craftercms version flag -->
+
+	<name>Crafter CMS - Springboot</name>
+	<description>Crafter CMS Parent POM - Springboot</description>
+	<packaging>pom</packaging>
+	<url>https://craftercms.org</url>
+
+	<organization>
+		<name>CrafterCMS</name>
+		<url>https://craftercms.org</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>GNU GENERAL PUBLIC LICENSE, Version 3</name>
+			<url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<scm>
+		<connection>scm:git:git://github.com/craftercms/craftercms</connection>
+		<developerConnection>scm:git:git://github.com/craftercms/craftercms</developerConnection>
+		<url>scm:git:git://github.com/craftercms/craftercms</url>
+	</scm>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.3.1.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<!-- Version Numbers -->
+		<commons.configuration.version>2.7</commons.configuration.version>
+		<commons.csv.version>1.8</commons.csv.version>
+		<commons.io.version>2.6</commons.io.version>
+		<jgit.version>5.8.1.202007141445-r</jgit.version>
+		<javax.mail.version>1.4.7</javax.mail.version>
+		<handlebars.version>4.2.0</handlebars.version>
+		<sardine.version>5.10</sardine.version>
+		<xerces.version>2.12.0</xerces.version>
+		<java.version>11</java.version>
+		<!-- Override property setup by Spring Boot Parent -->
+		<jackson.version>2.11.1</jackson.version>
+		<jackson.databind.version>2.11.1</jackson.databind.version>
+		<aws.version>1.11.820</aws.version>
+		<box.sdk.version>2.48.0</box.sdk.version>
+		<elasticsearch.version>7.2.1</elasticsearch.version>
+		<tomcat.version>9.0.37</tomcat.version>
+		<mariadb.version>10.4.6</mariadb.version>
+
+		<!-- build -->
+		<maven.javadoc.version>3.2.0</maven.javadoc.version>
+		<maven.source.version>3.2.1</maven.source.version>
+	        <maven.jar.version>3.2.0</maven.jar.version>
+	        <buildnumber.maven.version>1.4</buildnumber.maven.version>
+	        <maven.deploy.version>3.0.0-M1</maven.deploy.version>
+	        <maven.gpg.version>1.6</maven.gpg.version>
+		<maven.antrun.version>1.8</maven.antrun.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>sonatype-snapshots</id>
+			<name>Sonatype Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>warn</checksumPolicy>
+			</releases>
+		</repository>
+	</repositories>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- AWS SDK -->
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-bom</artifactId>
+				<version>${aws.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<profiles>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-deploy-plugin</artifactId>
+						<version>${maven.deploy.version}</version>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>${maven.gpg.version}</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+</project>
