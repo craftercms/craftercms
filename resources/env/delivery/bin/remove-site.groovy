@@ -85,11 +85,14 @@ def deleteDeployerTarget(siteName) {
  * Deletes the delivery repository folder
  */
 def deleteRepoFolder(repoPath) {
-	println "Deleting repo folder ${repoPath}..."
+	File repoFolder = new File(repoPath)
+	if (repoFolder.exists()) {
+		println "Deleting repo folder ${repoPath}..."
 
-	FileUtils.forceDelete(new File(repoPath))
+		FileUtils.forceDelete(repoFolder)
 
-	println "Repo folder deleted successfully"
+		println "Repo folder deleted successfully"
+	}
 }
 
 /**
