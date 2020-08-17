@@ -1,5 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<Context>
-    <!-- Adds the SameSite: Strict attribute to all Studio cookies -->
-    <CookieProcessor sameSiteCookies="strict" />
-</Context>
