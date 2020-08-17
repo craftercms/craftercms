@@ -90,14 +90,6 @@ task authoringPostEnvironment {
     description "Setups authoring environment"
 
     doLast {
-        // Copy Studio Tomcat context
-        mkdir "${authoringEnvDir}/bin/apache-tomcat/conf/Catalina/localhost"
-
-        copy {
-            from "./resources/env/authoring/tomcat-config/Catalina/localhost/studio.xml"
-            into "${authoringEnvDir}/bin/apache-tomcat/conf/Catalina/localhost"
-        }           
-
         // Copy MariabDB4j jar for backup/restore
         copy {
             from "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar"
