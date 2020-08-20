@@ -23,39 +23,39 @@
 
      <server>
          <id/> (id of the server, can have any value)
-         <url/> (url of the server)
+         <url/> (url of the server, if missing or empty the request will be executed locally)
          <patterns>
              <pattern/> (regex to match requests)
          </patterns>
      </server>
 -->
 <proxy-config>
-   <version>2</version>
+   <version>3</version>
    <servers>
       <server>
          <id>static-assets</id>
-         <url>http://localhost:8080</url>
+         <url></url>
          <patterns>
             <pattern>/static-assets/.*</pattern>
          </patterns>
       </server>
       <server>
          <id>graphql</id>
-         <url>http://localhost:8080</url>
+         <url></url>
          <patterns>
             <pattern>/api/1/site/graphql.*</pattern>
          </patterns>
       </server>
       <server>
          <id>engine</id>
-         <url>http://localhost:8080</url>
+         <url></url>
          <patterns>
-            <pattern>/api/1/.*</pattern>
+            <pattern>/api/.*</pattern>
          </patterns>
       </server>
       <server>
          <id>preview</id>
-         <url>http://localhost:8080</url>
+         <url></url>
          <patterns>
             <pattern>.*</pattern>
          </patterns>
