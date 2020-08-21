@@ -112,7 +112,8 @@ ext {
     gitRepo = project.property("crafter.git.remote")
     shallowClone = project.property("crafter.git.shallowClone").toBoolean()
     studioUIFromRepo = project.property("crafter.ui.repo").toBoolean()
-    
+    studioUIBuild = project.property("crafter.ui.build").toBoolean()
+
     /** Other **/
     overwriteConfig = project.property("overwriteConfig").toBoolean()
     backupAndReplaceConfig = project.property("backupAndReplaceConfig").toBoolean()
@@ -209,9 +210,14 @@ buildModules.each { module ->
                     actualCommandLinePost.add("!integration-tests")
                 }
             }
-            if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
-                actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
-                actualCommandLinePost.add("-Dexec.skip=true")
+            if (module.equalsIgnoreCase("studio")) {
+                if (!studioUIFromRepo) {
+                  actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
+                  actualCommandLinePost.add("-Dexec.skip=true")
+                }
+                if (!studioUIBuild) {
+                  actualCommandLinePost.add("-Dskip.yarn")
+                }
             }
             String[] array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
             executeProcess(array, "./src/${module}".toString())
