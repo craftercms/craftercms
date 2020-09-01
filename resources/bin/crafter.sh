@@ -788,9 +788,9 @@ function doBackup() {
   fi
 
   local currentDate=$(date +'%Y-%m-%d-%H-%M-%S')
-  local targetFolder="$CRAFTER_HOME/backups"
+  local targetFolder="$CRAFTER_BACKUPS_DIR"
   local targetFile="$targetFolder/$targetName.$currentDate.tar.gz"
-  local tempFolder="$CRAFTER_HOME/temp/backup"
+  local tempFolder="$CRAFTER_BACKUPS_DIR/temp"
 
   echo "------------------------------------------------------------------------"
   echo "Starting backup"
@@ -956,7 +956,7 @@ function doRestore() {
     exit 1
   fi
 
-  local tempFolder="$CRAFTER_HOME/temp/backup"
+  local tempFolder="$CRAFTER_BACKUPS_DIR/temp"
   local packageExt=""
 
   read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the\
