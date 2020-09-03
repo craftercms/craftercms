@@ -30,6 +30,14 @@ target:
 #        - urls:
 #          username:
 #          password:
+
+      # Settings used for all indices
+      indexSettings:
+        - key: "index.mapping.total_fields.limit"
+          value : 3000
+        - key: "index.mapping.depth.limit"
+          value: 40
+
   notifications:
     mail:
       server:
