@@ -130,7 +130,7 @@
         <httpproxy.version>1.11</httpproxy.version>
         <apache.ivy>2.5.0</apache.ivy>
         <tinify.version>1.6.4</tinify.version>
-        <mariadb4j.version>2.4.7</mariadb4j.version>
+        <mariadb4j.version>2.4.8</mariadb4j.version>
         <saxon.version>10.1</saxon.version>
         <apache.cxf.version>3.3.7</apache.cxf.version>
         <nekohtml.version>1.9.22</nekohtml.version>
@@ -153,6 +153,7 @@
         <metadata.extractors.version>2.14.0</metadata.extractors.version>
         <jsoup.version>1.13.1</jsoup.version>
         <google.protobuf.version>3.12.2</google.protobuf.version>
+        <unit.version>2.0</unit.version>
         <javax.inject.version>1</javax.inject.version>
         <jcraft.jsch.version>0.1.55</jcraft.jsch.version>
 	<hazelcast.version>4.0</hazelcast.version>
