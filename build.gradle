@@ -202,12 +202,14 @@ buildModules.each { module ->
                 actualCommandLinePost.add("-pl")
                 actualCommandLinePost.add("!crafter-search-solr-itest")
             } else if (module.equalsIgnoreCase("profile")) {
-                actualCommandLinePost.add("-pl")
                 if (!includeProfile) {
+                    // temp fix, maven complains about an empty -pl
+                    actualCommandLinePost.add("-pl")
                     //actualCommandLinePost.add("!admin-console,!integration-tests,!server")
                     actualCommandLinePost.add("!admin-console,,!server")
                 } else {
-                    actualCommandLinePost.add("!integration-tests")
+                    // temp fix because this module was removed
+                    // actualCommandLinePost.add("!integration-tests")
                 }
             }
             if (module.equalsIgnoreCase("studio")) {
