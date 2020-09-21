@@ -5,7 +5,6 @@ Crafter CMS is an open source project and wouldn't have been possible without th
 
 If you've contributed to Crafter CMS, send us a PR with your information and your contribution to get added. List contribution towards the top of External Contributors since that list is sorted in reverse chronological order (more recent goes first).
 
-<br>
 Core Developers
 ===============
 | Name | URL |
@@ -22,7 +21,7 @@ Core Developers
 | Vita Alhambra | https://github.com/alhambrav |
 | Yacdaniel Hurtado | https://github.com/yacdaniel |
 | Andy Reiter | https://github.com/AndyReiter |
-<br>
+
 Security Analysts
 =================
 | Name | URL | Contribution |
@@ -31,7 +30,7 @@ Security Analysts
 | Alvaro Muñoz <br> (GitHub) | https://github.com/pwntester | https://docs.craftercms.org/en/3.2/security/advisory.html#cv-2020080102 |
 | Buxu | https://github.com/buxu | https://docs.craftercms.org/en/3.2/security/advisory.html#cv-2018120601 |
 | Jasmin Landry | https://www.linkedin.com/in/jasminlandry | Crafter CMS 2.5 security issues |
-<br>
+
 External Contributors
 =====================
 | Name | URL | Contribution |
