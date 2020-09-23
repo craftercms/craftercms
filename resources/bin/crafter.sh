@@ -1102,7 +1102,11 @@ function doRestore() {
       if type "mysql" >/dev/null 2>&1; then
         export MYSQL_PWD=$MARIADB_PASSWD
         mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
-        mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
+        if [ -f "$tempFolder/users.sql" ]; then
+          mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
+        else 
+          echo "Users backup does not exists. Skipping restore users"
+        fi
         abortOnError
       else
         echo "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
@@ -1123,7 +1127,11 @@ function doRestore() {
       echo "------------------------------------------------------------------------"
       export MYSQL_PWD=$MARIADB_ROOT_PASSWD
       $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
-      $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
+      if [ -f "$tempFolder/users.sql" ]; then
+        $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
+      else 
+        echo "Users backup does not exists. Skipping restore users"
+      fi
       abortOnError
 
       # Stop DB
