@@ -788,9 +788,9 @@ function doBackup() {
   fi
 
   local currentDate=$(date +'%Y-%m-%d-%H-%M-%S')
-  local targetFolder="$CRAFTER_HOME/backups"
+  local targetFolder="$CRAFTER_BACKUPS_DIR"
   local targetFile="$targetFolder/$targetName.$currentDate.tar.gz"
-  local tempFolder="$CRAFTER_HOME/temp/backup"
+  local tempFolder="$CRAFTER_BACKUPS_DIR/temp"
 
   echo "------------------------------------------------------------------------"
   echo "Starting backup"
@@ -816,7 +816,8 @@ function doBackup() {
     # Check that the mysqldump is in the path
     if type "mysqldump" >/dev/null 2>&1; then
       export MYSQL_PWD=$MARIADB_PASSWD
-      mysqldump --databases crafter --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp > "$tempFolder/crafter.sql"
+      mysqldump --databases crafter --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
+      mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
       abortOnError
     else
       echo "External DB backup failed, unable to find mysqldump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
@@ -840,7 +841,8 @@ function doBackup() {
     echo "Backing up embedded DB"
     echo "------------------------------------------------------------------------"
     export MYSQL_PWD=$MARIADB_ROOT_PASSWD
-    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp > "$tempFolder/crafter.sql"
+    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
+    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
     abortOnError
 
     if [ "$DB_STARTED" = true ]; then
@@ -956,7 +958,7 @@ function doRestore() {
     exit 1
   fi
 
-  local tempFolder="$CRAFTER_HOME/temp/backup"
+  local tempFolder="$CRAFTER_BACKUPS_DIR/temp"
   local packageExt=""
 
   read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the\
@@ -1100,6 +1102,11 @@ function doRestore() {
       if type "mysql" >/dev/null 2>&1; then
         export MYSQL_PWD=$MARIADB_PASSWD
         mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
+        if [ -f "$tempFolder/users.sql" ]; then
+          mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
+        else 
+          echo "Users backup does not exists. Skipping restore users"
+        fi
         abortOnError
       else
         echo "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
@@ -1120,6 +1127,11 @@ function doRestore() {
       echo "------------------------------------------------------------------------"
       export MYSQL_PWD=$MARIADB_ROOT_PASSWD
       $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
+      if [ -f "$tempFolder/users.sql" ]; then
+        $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
+      else 
+        echo "Users backup does not exists. Skipping restore users"
+      fi
       abortOnError
 
       # Stop DB

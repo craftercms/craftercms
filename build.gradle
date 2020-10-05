@@ -39,7 +39,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.1.9-SNAPSHOT" // craftercms version flag
+project.version = "3.1.10-SNAPSHOT" // craftercms version flag
 
 ext {
     commandLinePrefix = []
@@ -52,16 +52,16 @@ ext {
     processTailFinishDelay = 1000
 
     /** Download Properties **/
-    groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "2.5.0"
+    groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "3.0.4"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.53"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
     elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "7.2.1"
     elasticsearchPlatfform =
       project.hasProperty("elasticsearch.plafform") ? project.property("elasticsearch.plafform") :
                                                       SystemUtils.IS_OS_MAC_OSX? "darwin" : "linux"
-    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.7"
+    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.8"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
-    
+
     /** Environment Building properties **/
     authEnvDir = project.hasProperty("authoring.root") ? project.property("authoring.root") : "./crafter-authoring/"
     deliveryEnvDir = project.hasProperty("delivery.root") ? project.property("delivery.root") : "./crafter-delivery/"
@@ -112,20 +112,20 @@ ext {
     gitRepo = project.hasProperty("crafter.git.remote") ? project.property("crafter.git.remote") : "origin"
     shallowClone = project.hasProperty("crafter.git.shallowClone") ? project.property("crafter.git.shallowClone").toBoolean() : false
     studioUIFromRepo = project.hasProperty("crafter.ui.repo") ? project.property("crafter.ui.repo").toBoolean() : false
-    
+
     /** Other **/
     overwriteConfig = project.hasProperty("overwriteConfig") ? project.property("overwriteConfig").toBoolean() : false
     backupAndReplaceConfig = project.hasProperty("backupAndReplaceConfig") ? project.property("backupAndReplaceConfig").toBoolean() : false
-    
+
     /** Testing **/
     testArtifacts = project.hasProperty("crafter.unittest") ? project.property("crafter.unittest").toBoolean() : false
-    
+
     startMongodb = project.hasProperty("startMongodb") ? project.property("startMongodb").toBoolean() : false // TODO:: cleanup
     withElasticsearch = project.hasProperty("withElasticsearch") ? project.property("withElasticsearch").toBoolean() : true // TODO:: cleanup
     withSolr = project.hasProperty("withSolr") ? project.property("withSolr").toBoolean() : false
     silentBuild = project.hasProperty("crafter.build.silent") ? project.property("crafter.build.silent").toBoolean() : false // TODO:: cleanup
     typeOfBundle = project.hasProperty("crafter.bundle.archive") ? project.property("crafter.bundle.archive") : "both" // TODO:: cleanup
-   
+
     /** Cloneable Artifacts **/
     VALID_MODULES =
       ["commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "plugin-maker"]
@@ -286,7 +286,7 @@ envs.each { env ->
             }
         }
     }
-    
+
     /* Per Env tasks */
     if (!tasks.findByName("${env}_start")) {
         task "${env}_start" doLast({
