@@ -148,7 +148,7 @@
         <solrj.version>7.7.3</solrj.version>
         <fontbox.version>2.0.20</fontbox.version>
         <hadoop.version>2.10.0</hadoop.version> <!-- was 2.7.7 -->
-        <elasticsearch.version>7.2.1</elasticsearch.version>
+        <elasticsearch.version>7.7.1</elasticsearch.version>
         <tika.version>1.24.1</tika.version>
         <metadata.extractors.version>2.14.0</metadata.extractors.version>
         <jsoup.version>1.13.1</jsoup.version>
