@@ -162,7 +162,7 @@
 
         <!-- Testing -->
         <testng.version>7.1.0</testng.version> <!-- 7.1.0 -->
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.1</junit.version>
         <mockito.version>1.10.19</mockito.version>
         <cargo.container>jetty9x</cargo.container>
         <cargo.maven2.version>1.7.15</cargo.maven2.version>
