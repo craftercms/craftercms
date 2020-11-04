@@ -395,6 +395,16 @@ def copyBinaries(destFolder, newEnv) {
       into "${destFolder}"
       exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
   }
+
+  // Copy Crafter CLI
+  copy {
+      from "./src/crafter-cli/target/crafter-cli"
+      into "${destFolder}/bin/cli"
+  }
+
+  ant.chmod(file: "${destFolder}/bin/cli/bin/crafter-cli", perm: "+x")
+  ant.symlink(link: "${destFolder}/bin/crafter-cli", resource: "cli/bin/crafter-cli")
+
 }
 
 def updateTomcatServerConf(configFile) {

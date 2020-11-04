@@ -128,8 +128,8 @@ ext {
     typeOfBundle = project.property("crafter.bundle.archive")
    
     /** Cloneable Artifacts **/
-    VALID_MODULES =
-      ["groovy-sandbox", "script-security-plugin", "commons", "core", "search", "profile", "engine", "deployer", "studio", "social", "studio-ui", "plugin-maker"]
+    VALID_MODULES = ["groovy-sandbox", "script-security-plugin", "commons", "core", "search", "profile", "engine",
+                     "deployer", "studio", "social", "studio-ui", "plugin-maker", "crafter-cli"]
 
     /** Deployable Artifacts **/
     VALID_DEPLOYABLE_MODULES = [
