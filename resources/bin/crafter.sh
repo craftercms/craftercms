@@ -832,7 +832,7 @@ function doBackup() {
       echo "Starting DB"
       echo "------------------------------------------------------------------------"
       java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-      sleep 30
+      $CRAFTER_BIN_DIR/wait-for-it.sh -h "$MARIADB_HOST" -p "$MARIADB_PORT" -t $MARIADB_TCP_TIMEOUT
       DB_STARTED=true
     fi
 
@@ -1119,7 +1119,7 @@ function doRestore() {
       echo "Starting DB"
       echo "------------------------------------------------------------------------"
       java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-      sleep 30
+      $CRAFTER_BIN_DIR/wait-for-it.sh -h "$MARIADB_HOST" -p "$MARIADB_PORT" -t $MARIADB_TCP_TIMEOUT
 
       # Import
       echo "------------------------------------------------------------------------"

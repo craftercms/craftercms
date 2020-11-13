@@ -90,6 +90,13 @@ task authoringPostEnvironment {
     description "Setups authoring environment"
 
     doLast {
+        // Copy wait-for-it utility
+        copy {
+            from "${downloadDir}/wait-for-it.sh"
+            into "${authEnvDir}/bin"
+        }
+        ant.chmod(file: "${authEnvDir}/bin/wait-for-it.sh", perm: '+x')
+
         // Copy MariabDB4j jar for backup/restore
         copy {
             from "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar"
@@ -146,6 +153,13 @@ task deliveryPostEnvironment {
     description "Setups delivery environment"
 
     doLast {
+        // Copy wait-for-it utility
+        copy {
+            from "${downloadDir}/wait-for-it.sh"
+            into "${deliveryEnvDir}/bin"
+        }
+        ant.chmod(file: "${deliveryEnvDir}/bin/wait-for-it.sh", perm: '+x')
+
         exec {
             workingDir "${deliveryEnvDir}/bin/apache-tomcat/bin/"
             commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
