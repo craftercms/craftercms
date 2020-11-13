@@ -64,7 +64,7 @@ studio.preview.search.deleteUrl: ${env:SEARCH_URL}/api/2/admin/index/delete/{sit
 # Crafter DB schema name
 studio.db.schema: ${env:MARIADB_SCHEMA}
 # Crafter DB connection string
-studio.db.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}/${env:MARIADB_SCHEMA}?user=${env:MARIADB_USER}&password=${env:MARIADB_PASSWD}
+studio.db.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}/${env:MARIADB_SCHEMA}?user=${env:MARIADB_USER}&password=${env:MARIADB_PASSWD}&socketTimeout=${:env:MARIADB_SOCKET_TIMEOUT}
 # Connection string used to initialize database. This creates the `crafter` schema, the `crafter` user and/or upgrades the database
 studio.db.initializer.url: jdbc:mariadb://${env:MARIADB_HOST}:${env:MARIADB_PORT}?user=${env:MARIADB_ROOT_USER}&password=${env:MARIADB_ROOT_PASSWD}
 # Connection string if using a database with an already created schema and user (like AWS RDS)
@@ -214,12 +214,6 @@ studio.mail.port: ${env:MAIL_PORT}
 # studio.clustering.sync.urlFormat: ssh://{username}@{localAddress}{absolutePath}
 
 # Cluster Syncers
-# Sandbox Sync Job interval in milliseconds which is how often to sync the work-area
-# studio.clustering.sandboxSyncJob.interval: 2000
-# Published Sync Job interval in milliseconds which is how often to sync the published repos
-# studio.clustering.publishedSyncJob.interval: 60000
-# Global Repo Sync Job interval in milliseconds which is how often to sync the global repo
-# studio.clustering.globalRepoSyncJob.interval: 45000
 # Cluster member after heartbeat stale for amount of minutes will be declared inactive
 # studio.clustering.heartbeatStale.timeLimit: 5
 # Cluster member after being inactive for amount of minutes will be removed from cluster

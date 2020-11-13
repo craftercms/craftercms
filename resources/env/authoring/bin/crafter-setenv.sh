@@ -95,6 +95,7 @@ export MARIADB_ROOT_USER=${MARIADB_ROOT_USER:="root"}
 export MARIADB_ROOT_PASSWD=${MARIADB_ROOT_PASSWD:="root"}
 export MARIADB_USER=${MARIADB_USER:="crafter"}
 export MARIADB_PASSWD=${MARIADB_PASSWD:="crafter"}
+export MARIADB_SOCKET_TIMEOUT=${MARIADB_SOCKET_TIMEOUT:="60000"}
 
 case "$(uname -s)" in
   Darwin)
