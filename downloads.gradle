@@ -140,16 +140,6 @@ task downloadMariaDB4j {
     }
 }
 
-task downloadWaitForIt {
-    doFirst {
-        download {
-            src "https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh"
-            overwrite true
-            dest "${downloadDir}/wait-for-it.sh"
-        }
-    }
-}
-
 def messageDigest(file, alg) {
     MessageDigest md = MessageDigest.getInstance(alg);
     FileInputStream fis = new FileInputStream(file.path);

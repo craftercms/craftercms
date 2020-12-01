@@ -520,7 +520,7 @@ dependsOnOrdered(clean, cleanDeps)
 dependsOnOrdered(build, [clean] + buildDeps)
 dependsOnOrdered(clone, initDeps)
 dependsOnOrdered(update, updateDeps)
-dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, downloadElasticsearch, downloadMariaDB4j, downloadWaitForIt] + envDepends + deployDepends + [buildUtils])
+dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, downloadElasticsearch, downloadMariaDB4j] + envDepends + deployDepends + [buildUtils])
 dependsOnOrdered(upgrade, [update, build, deploy])
 
 def deployBinary(deployable, env) {
