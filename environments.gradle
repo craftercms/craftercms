@@ -128,7 +128,7 @@ task authoringPostEnvironment {
             workingDir "${authoringEnvDir}/bin"
             commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
                                              "crafter-setenv.sh", "upgrade/start-upgrade.sh",
-                                             "upgrade/upgrade-target.sh"]
+                                             "upgrade/upgrade-target.sh", "wait-for-it.sh"]
         }
 
         exec {
@@ -172,7 +172,7 @@ task deliveryPostEnvironment {
             workingDir "${deliveryEnvDir}/bin"
             commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
                                              "crafter-setenv.sh", "init-site.sh", "remove-site.sh",
-                                             "upgrade/start-upgrade.sh", "upgrade/upgrade-target.sh"]
+                                             "upgrade/start-upgrade.sh", "upgrade/upgrade-target.sh", "wait-for-it.sh"]
         }
 
         exec {
