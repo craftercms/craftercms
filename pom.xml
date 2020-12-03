@@ -58,7 +58,7 @@
         <!-- Dependency Version Numbers -->
         <!-- Main -->
         <!-- Spring -->
-        <spring.version>5.2.7.RELEASE</spring.version>
+        <spring.version>5.2.9.RELEASE</spring.version>
         <spring.security.version>5.3.3.RELEASE</spring.security.version>
         <spring.security.saml2.version>1.0.10.RELEASE</spring.security.saml2.version>
         <spring.data.version>2.3.1.RELEASE</spring.data.version>
@@ -81,19 +81,19 @@
         <commons.fileupload.version>1.4</commons.fileupload.version>
         <commons.compress.version>1.20</commons.compress.version>
         
-        <httpcomponents.httpclient.version>4.5.12</httpcomponents.httpclient.version>
-        <httpcomponents.httpmime.version>4.5.12</httpcomponents.httpmime.version>
+        <httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
+        <httpcomponents.httpmime.version>4.5.13</httpcomponents.httpmime.version>
 
-        <jackson.version>2.12.0</jackson.version>
-        <jackson.databind.version>2.12.0</jackson.databind.version>
-        <jackson.dataformat.version>2.12.0</jackson.dataformat.version>
+        <jackson.version>2.11.3</jackson.version>
+        <jackson.databind.version>2.11.3</jackson.databind.version>
+        <jackson.dataformat.version>2.11.3</jackson.dataformat.version>
 
         <mongo.version>3.5.0</mongo.version> <!-- 3.12.6 -->
         <bson.version>3.5.0</bson.version>
         <jongo.version>1.4.1</jongo.version>
         <gmongo.version>1.5</gmongo.version>
 
-        <xstream.version>1.4.12</xstream.version>
+        <xstream.version>1.4.14</xstream.version>
         <slf4j.version>1.7.30</slf4j.version>
         <slf4j.api.version>1.7.30</slf4j.api.version>
         <jcl.over.slf4j.version>1.7.30</jcl.over.slf4j.version>
