@@ -69,10 +69,10 @@
 		<hazelcast.kubernetes.version>2.0.1</hazelcast.kubernetes.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
-		<jackson.version>2.11.1</jackson.version>
-		<jackson.databind.version>2.11.1</jackson.databind.version>
-		<aws.version>1.11.820</aws.version>
-		<box.sdk.version>2.48.0</box.sdk.version>
+		<jackson.version>2.12.0</jackson.version>
+		<jackson.databind.version>2.12.0</jackson.databind.version>
+		<aws.version>1.11.911</aws.version>
+		<box.sdk.version>2.52.0</box.sdk.version>
 		<elasticsearch.version>7.7.1</elasticsearch.version>
 		<tomcat.version>9.0.37</tomcat.version>
 		<mariadb.version>10.4.6</mariadb.version>

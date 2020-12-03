@@ -84,9 +84,9 @@
         <httpcomponents.httpclient.version>4.5.12</httpcomponents.httpclient.version>
         <httpcomponents.httpmime.version>4.5.12</httpcomponents.httpmime.version>
 
-        <jackson.version>2.11.1</jackson.version>
-        <jackson.databind.version>2.11.1</jackson.databind.version>
-        <jackson.dataformat.version>2.11.1</jackson.dataformat.version>
+        <jackson.version>2.12.0</jackson.version>
+        <jackson.databind.version>2.12.0</jackson.databind.version>
+        <jackson.dataformat.version>2.12.0</jackson.dataformat.version>
 
         <mongo.version>3.5.0</mongo.version> <!-- 3.12.6 -->
         <bson.version>3.5.0</bson.version>
@@ -132,7 +132,7 @@
         <tinify.version>1.6.4</tinify.version>
         <mariadb4j.version>2.4.8</mariadb4j.version>
         <saxon.version>10.1</saxon.version>
-        <apache.cxf.version>3.3.7</apache.cxf.version>
+        <apache.cxf.version>3.4.1</apache.cxf.version>
         <nekohtml.version>1.9.22</nekohtml.version>
         <tika.version>1.24.1</tika.version>
         <ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
