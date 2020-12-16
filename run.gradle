@@ -1,0 +1,49 @@
+/*
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+apply from: "commons.gradle"
+
+ext.runAuthoringEnvironment = { command, profileRequired, socialRequired ->
+    if (file("${authoringEnvDir}/bin/crafter.sh").exists()) {
+        // Run authoring tasks
+        execCommand(command, "${authoringEnvDir}/bin")
+    } else {
+        throw new GradleException("Authoring environment not deployed correctly. Please redeploy.")
+    }
+}
+
+ext.runDeliveryEnvironment = { command, profileRequired, socialRequired ->
+    if (file("${deliveryEnvDir}/bin/crafter.sh").exists()) {
+        // Run delivery tasks
+        execCommand(command, "${deliveryEnvDir}/bin")
+    } else {
+        throw new GradleException("Delivery environment not deployed correctly. Please redeploy.")
+    }
+}
+
+ext.runEnvironment = { environment, command, profileRequired, socialRequired ->
+    def cmd = ["./crafter.sh"] + command
+
+    // Run tasks per environment
+    if (environment == "authoring") {
+        runAuthoringEnvironment(cmd, profileRequired, socialRequired)
+    } else if (environment == "delivery") {
+        runDeliveryEnvironment(cmd, profileRequired, socialRequired)
+    } else {
+        logger.error("Unknown environment \"" + environment + "\"")
+        throw new GradleException("Unknown environment \"" + environment + "\"")
+    }
+}

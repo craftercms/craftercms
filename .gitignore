@@ -24,8 +24,10 @@ gradle-app.setting
 .gradle.log
 *.idea
 *.iml
+.idea
 dependency-reduced-pom.xml
 target/
+build/
 crafter-install/
 live-env/
 crafter-auth-env/

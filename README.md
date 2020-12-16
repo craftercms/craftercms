@@ -9,7 +9,7 @@ Crafter CMS is a modern content management platform for building digital experie
 * OTT video experiences on AWS Elemental Media Services
 * AR/VR applications using A-Frame
 
- You can learn more about Crafter here: http://docs.craftercms.org/en/3.1/index.html
+ You can learn more about Crafter here: http://docs.craftercms.org/current/index.html
 
 This repository is the parent project that builds everything and helps you build one of two things:
 
@@ -19,36 +19,26 @@ This repository is the parent project that builds everything and helps you build
 
 **WARNING:** This project is not intended to be used on Windows. Crafter CMS source code development and building is 
 _only_ supported on Unix based systems. If you want to use Crafter CMS in Windows, please refer to the documentation
-in [Running Crafter CMS in a Docker Container](https://docs.craftercms.org/en/3.1/getting-started/quick-start-guide.html#running-crafter-cms-in-a-docker-container).
+in [Running Crafter CMS in a Docker Container](https://docs.craftercms.org/current/getting-started/quick-start-guide.html#running-crafter-cms-in-a-docker-container).
 
 # 1. Initial Setup
-You must have these prerequisites on your system before you begin:
-* Java 8
-* Git 2.x+
-* Maven 3.3.x+
-
-**OS X extra prerequisite**
-
-* If you're on OS X, then using  [`brew`](http://brew.sh) install the latest `openssl` formula, like this: `brew install openssl`
-
-**Linux prerequisite**
-
-* Some of the scripts uses `lsof`.  Please note that some Linux distributions does not come with `lsof` pre-installed and so, may need to be installed.  To install `lsof` for Debian-based Linux distros: `apt-get install lsof`.  To install `lsof` for RedHat-based Linux distros: `yum install lsof`
+Please make sure your system meets the prerequisites:
+https://docs.craftercms.org/current/system-administrators/requirements-supported-platforms.html
 
 Let's begin :)
 
 If you're building a deployable Crafter CMS bundle, we'll clone the master branch:
 
 ```bash
-git clone https://github.com/craftercms/craftercms.git
+git clone -b master https://github.com/craftercms/craftercms.git
 ```
 
 OR
 
-If you would like to contribute to Crafter CMS, to build a developer's environment, we'll need to clone the develop branch:
+If you would like to contribute to Crafter CMS, to build a developer's environment, we'll need to clone the develop branch (default):
 
 ```bash
-git clone https://github.com/craftercms/craftercms.git -b develop
+git clone -b develop https://github.com/craftercms/craftercms.git
 ```
 
 # 2. Build a Deployable Bundle
@@ -73,24 +63,22 @@ To build a bundle for a specific environment:
 ```bash
     ./gradlew bundle -Penv=authoring
 ```
-Archive will be named `crafter-cms-authoring.tar.gz` and can be found in the `bundles` folder.
+Archive will be named `crafter-cms-authoring-${version}.tar.gz` and can be found in the `bundles` folder.
 
 For the `delivery` environment, simply substitute the `env=authoring` with `env=delivery`.
 
-## 2.2 Init/Update, Build and Bundle from a Tag/Branch
+## 2.2 Update, Build and Bundle from a Tag/Branch
 
 To download, build and generate a bundle from a given tag or branch of the source code,
 
 1. Clone the branch/tag of craftercms that you want to work with
 ```bash
-    git clone -b <branch> https://github.com/craftercms/craftercms/
+    git clone -b <tag or branch> https://github.com/craftercms/craftercms/
 ```
-2. Download, build and bundle the branch that you want to work with
+2. Download, build and bundle the tag/branch that you want to work with
 ```bash
-    ./gradlew clone build deploy bundle -Pcrafter.git.branch={BRANCH}/{TAG NAME}
+    ./gradlew clone build deploy bundle
 ```
-
-Replace {BRANCH} or {TAG NAME} or \<branch\> with the branch and tag you'd like to build.
 
 **Note**:
 When using a tag-based build, you're essentially cloning a point in time to build that specific version of Crafter CMS. That implies that you won't be able to update/nor push changes back.
@@ -114,7 +102,7 @@ Start Crafter CMS,
     ./gradlew start
 ```
 
-You can now point your browser to [http://localhost:8080/studio](http://localhost:8080/studio) and start using Crafter CMS. To get started with your first Crafter CMS experience, you can follow this guide: [http://docs.craftercms.org/en/3.1/content-authors/index.html](http://docs.craftercms.org/en/3.1/content-authors/index.html).
+You can now point your browser to [http://localhost:8080/studio](http://localhost:8080/studio) and start using Crafter CMS. To get started with your first Crafter CMS experience, you can follow this guide: [http://docs.craftercms.org/current/content-authors/index.html](http://docs.craftercms.org/current/content-authors/index.html).
 
 ##### Note
 * The authoring environment runs on port `8080`, a great place to start, while the delivery environment runs on port 
@@ -154,16 +142,16 @@ To build, start and stop one of the two environments is similar to building/star
 The mechanics for working with a single module are similar to working with _all_, with one exception: You can deploy a module to one or both environments (`authoring`/`delivery`).
 
 Crafter CMS comprises the modules:
-* [`core`](http://docs.craftercms.org/en/3.1/developers/projects/core/index.html)
-* [`commons`](http://docs.craftercms.org/en/3.1/developers/projects/commons/index.html)
-* [`engine`](http://docs.craftercms.org/en/3.1/developers/projects/engine/index.html)
-* [`studio`](http://docs.craftercms.org/en/3.1/developers/projects/studio/index.html)
-* [`search`](http://docs.craftercms.org/en/3.1/developers/projects/search/index.html)
-* [`profile`](http://docs.craftercms.org/en/3.1/developers/projects/profile/index.html)
-* [`social`](http://docs.craftercms.org/en/3.1/developers/projects/social/index.html)
-* [`deployer`](http://docs.craftercms.org/en/3.1/developers/projects/deployer/index.html)
+* [`core`](http://docs.craftercms.org/current/developers/projects/core/index.html)
+* [`commons`](http://docs.craftercms.org/current/developers/projects/commons/index.html)
+* [`engine`](http://docs.craftercms.org/current/developers/projects/engine/index.html)
+* [`studio`](http://docs.craftercms.org/current/developers/projects/studio/index.html)
+* [`search`](http://docs.craftercms.org/current/developers/projects/search/index.html)
+* [`profile`](http://docs.craftercms.org/current/developers/projects/profile/index.html)
+* [`social`](http://docs.craftercms.org/current/developers/projects/social/index.html)
+* [`deployer`](http://docs.craftercms.org/current/developers/projects/deployer/index.html)
 
-You'll find these projects checked out and ready for you to contribute to in the folder `src/{moduleName}`.
+You'll find these projects checked out and ready for you to contribute to in the folder `src/{modules}`.
 
 ### 3.3.1. Forking a Module
 Start by forking the module you want to work on. You can follow the [GitHub instructions](https://help.github.com/articles/fork-a-repo/).
@@ -181,18 +169,18 @@ To update your project with the latest from your repo:
 To get the latest code from `craftercms`, in order to have the latest updates from the community:
 
 ```bash
-    ./gradlew update -Pcrafter.git.remote=upstream
+    ./gradlew update -PgitRemote=upstream
 ```
 
 ### 3.3.2. Update, Build, Deploy, Start, and Stop a Module
 You can update, build, deploy, start or stop a module by:
 
 ```bash
-    ./gradlew update -PmoduleName=studio
-    ./gradlew build -PmoduleName=studio
-    ./gradlew deploy -PmoduleName=studio -Penv=authoring
-    ./gradlew start -PmoduleName=studio -Penv=authoring
-    ./gradlew stop -PmoduleName=studio -Penv=authoring
+    ./gradlew update -Pmodules=studio
+    ./gradlew build -Pmodules=studio
+    ./gradlew deploy -Pmodules=studio -Penv=authoring
+    ./gradlew start -Pmodules=studio -Penv=authoring
+    ./gradlew stop -Pmodules=studio -Penv=authoring
 ```
 
 ##### Note
@@ -200,4 +188,4 @@ You can update, build, deploy, start or stop a module by:
 * In the current version of Crafter CMS, some services run in the same Web container, and that implies the stopping/starting of one of these services will cause other services to stop/start as well.
 
 # 4. Advanced Topics
-For more detailed information and advanced topic, please visit the [detailed documentation](http://docs.craftercms.org/en/3.1/developers/projects/craftercms/index.html).
+For more detailed information and advanced topic, please visit the [detailed documentation](http://docs.craftercms.org/current/developers/projects/craftercms/index.html).

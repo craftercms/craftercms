@@ -38,21 +38,18 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
 function help() {
   echo $(basename $BASH_SOURCE)
-  echo "    start [withMongoDB] [withSolr] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
-  Elasticsearch. If withMongoDB is specified MongoDB will be started, if withSolr is specified Solr will be started,\
+  echo "    start [withMongoDB] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
+  Elasticsearch. If withMongoDB is specified MongoDB will be started,\
   if skipElasticsearch is specified Elasticsearch will not be started, if skipMongoDB is specified MongoDB will not be\
   started even if the Crafter Profile war is present"
-  echo "    stop, Stops Tomcat, Deployer, Elasticsearch (if started), Solr (if started) and Mongo (if started)"
-  echo "    debug [withMongoDB] [withSolr] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
-  Elasticsearch in debug mode. If withMongoDB is specified MongoDB will be started, if withSolr is specified Solr will\
-  be started, if skipElasticsearch is specified Elasticsearch will not be started, if skipMongoDB is specified MongoDB\
+  echo "    stop, Stops Tomcat, Deployer, Elasticsearch (if started), Mongo (if started)"
+  echo "    debug [withMongoDB] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
+  Elasticsearch in debug mode. If withMongoDB is specified MongoDB will be started,
+  if skipElasticsearch is specified Elasticsearch will not be started, if skipMongoDB is specified MongoDB\
   will not be started even if the Crafter Profile war is present"
   echo "    start_deployer, Starts Deployer"
   echo "    stop_deployer, Stops Deployer"
   echo "    debug_deployer, Starts Deployer in debug mode"
-  echo "    start_solr, Starts Solr"
-  echo "    stop_solr, Stops Solr"
-  echo "    debug_solr, Starts Solr in debug mode"
   echo "    start_elasticsearch, Starts Elasticsearch"
   echo "    stop_elasticsearch, Stops Elasticsearch"
   echo "    debug_elasticsearch, Starts Elasticsearch in debug mode"
@@ -68,7 +65,6 @@ function help() {
   echo "    status_social, Status of Crafter Social"
   echo "    status_search, Status of Crafter Search"
   echo "    status_deployer, Status of Deployer"
-  echo "    status_solr, Status of Solr"
   echo "    status_elasticsearch, Status of Elasticsearch"
   echo "    status_mariadb, Status of MariaDB"
   echo "    status_mongodb, Status of MonoDb"
@@ -150,110 +146,6 @@ function stopDeployer() {
   $DEPLOYER_HOME/deployer.sh stop;
 }
 
-function startSolr() {
-  cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Starting Solr"
-  echo "------------------------------------------------------------------------"
-  if [ ! -d $SOLR_INDEXES_DIR ]; then
-    mkdir -p $SOLR_INDEXES_DIR;
-  fi
-  if [ ! -d $SOLR_LOGS_DIR ]; then
-    mkdir -p $SOLR_LOGS_DIR;
-  fi
-
-  if [ ! -s "$SOLR_PID" ]; then
-    ## Before run check if the port is available.
-    possiblePID=$(pidOf $SOLR_PORT)
-    if  [ -z "$possiblePID" ];  then
-      $CRAFTER_BIN_DIR/solr/bin/solr start -p $SOLR_PORT -s $SOLR_HOME -Dcrafter.solr.index=$SOLR_INDEXES_DIR -a "$SOLR_JAVA_OPTS"
-      echo $(pidOf $SOLR_PORT) > $SOLR_PID
-    else
-      echo $possiblePID > $SOLR_PID
-      echo "Process PID $possiblePID is listening port $SOLR_PORT"
-      echo "Hijacking PID and saving into $SOLR_PID"
-      exit 0
-    fi
-  else
-    # IS it really up ?
-    if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
-      exit 6
-    fi
-    if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
-    then
-      echo "Solr Pid file is not ok, forcing startup"
-      rm "$SOLR_PID"
-      startSolr
-    fi
-    echo "Solr already started"
-  fi
-}
-
-function debugSolr() {
-  cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Starting Solr"
-  echo "------------------------------------------------------------------------"
-  if [ ! -d $SOLR_INDEXES_DIR ]; then
-    mkdir -p $SOLR_INDEXES_DIR;
-  fi
-  if [ ! -d $SOLR_LOGS_DIR ]; then
-    mkdir -p $SOLR_LOGS_DIR;
-  fi
-
-  if [ ! -s "$SOLR_PID" ]; then
-    ## Before run check if the port is available.
-    possiblePID=$(pidOf $SOLR_PORT)
-    if  [ -z "$possiblePID" ];  then
-      $CRAFTER_BIN_DIR/solr/bin/solr start -p $SOLR_PORT -s $SOLR_HOME -Dcrafter.solr.index=$SOLR_INDEXES_DIR \
-      -a "$SOLR_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044"
-      echo $(pidOf $SOLR_PORT) > $SOLR_PID
-    else
-      echo $possiblePID > $SOLR_PID
-      echo "Process PID $possiblePID is listening port $SOLR_PORT"
-      echo "Hijacking PID and saving into $SOLR_PID"
-      exit
-    fi
-  else
-    # IS it really up ?
-    if ! checkPortForRunning $SOLR_PORT $(cat "$SOLR_PID");then
-      exit 6
-    fi
-    if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
-    then
-      echo "Solr Pid file is not ok, forcing startup"
-      rm "$SOLR_PID"
-      debugSolr
-    fi
-    echo "Solr already started"
-  fi
-}
-
-function stopSolr() {
-  cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Stopping Solr"
-  echo "------------------------------------------------------------------------"
-  if [ -s "$SOLR_PID" ]; then
-    $CRAFTER_BIN_DIR/solr/bin/solr stop
-    if pgrep -F "$SOLR_PID" > /dev/null
-    then
-      killPID $SOLR_PID
-    fi
-    if [ $? -eq 0 ]; then
-      rm $SOLR_PID
-    fi
-  else
-    pid=$(pidOf $SOLR_PORT)
-    if ! [ -z $pid ]; then
-      echo "$pid" > $SOLR_PID
-      # No pid file but we found the process
-      killPID $SOLR_PID
-    fi
-    echo "Solr already shutdown or pid $SOLR_PID file not found";
-  fi
-}
-
 function startElasticsearch() {
   cd $CRAFTER_BIN_DIR
   echo "------------------------------------------------------------------------"
@@ -270,7 +162,7 @@ function startElasticsearch() {
     ## Before run check if the port is available.
     possiblePID=$(pidOf $ES_PORT)
     if  [ -z "$possiblePID" ];  then
-      $ES_HOME/elasticsearch -d -p $ES_PID
+      $ES_HOME/elasticsearch -d -p $ES_PID 2>&1&
     else
       echo $possiblePID > $ES_PID
       echo "Process PID $possiblePID is listening port $ES_PORT"
@@ -603,15 +495,6 @@ function skipElasticsearch() {
   return 1
 }
 
-function isSolrNeeded() {
-  for o in "$@"; do
-    if [ $o = "withSolr" ]; then
-      return 0
-    fi
-  done
-  return 1
-}
-
 function getStatus() {
   echo "------------------------------------------------------------------------"
   echo "$1 status"
@@ -632,26 +515,6 @@ function getStatus() {
   else
     echo -e "\033[38;5;196m"
     echo "$1 is not running or is unreachable on port $2"
-    echo -e "\033[0m"
-  fi
-}
-
-function solrStatus(){
-  echo "------------------------------------------------------------------------"
-  echo "Solr status"
-  echo "------------------------------------------------------------------------"
-
-  solrStatusOut=$(curl --silent  -f "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
-  if [ $? -eq 0 ]; then
-    echo -e "PID\t"
-    echo `cat "$CRAFTER_HOME/bin/solr/bin/solr-$SOLR_PORT.pid"`
-    echo -e  "Uptime (in minutes):\t"
-    echo "$solrStatusOut"  |  grep -Eo '"upTimeMS":\d+' | awk -F ":" '{print ($2/1000)/60}' | bc
-    echo -e  "Solr Version:\t"
-    echo "$solrStatusOut"  |  grep -Eo '"solr-spec-version":"[^"]+"' | awk -F ":" '{print $2}'
-  else
-    echo -e "\033[38;5;196m"
-    echo "Solr is not running or is unreachable on port $SOLR_PORT"
     echo -e "\033[0m"
   fi
 }
@@ -718,9 +581,6 @@ function start() {
   if ! skipElasticsearch "$@"; then
     startElasticsearch
   fi
-  if isSolrNeeded "$@"; then
-    startSolr
-  fi
   if isMongoNeeded "$@"; then
     startMongoDB
   fi
@@ -732,9 +592,6 @@ function debug() {
   debugDeployer
   if ! skipElasticsearch "$@"; then
     debugElasticsearch
-  fi
-  if isSolrNeeded "$@"; then
-    debugSolr
   fi
   if isMongoNeeded "$@"; then
     startMongoDB
@@ -752,14 +609,10 @@ function stop() {
   if [ ! -z $(pidOf $ES_PORT) ]; then
     stopElasticsearch
   fi
-  if [ ! -z $(pidOf $SOLR_PORT) ]; then
-    stopSolr
-  fi
 }
 
 function status(){
   elasticsearchStatus
-  solrStatus
   deployerStatus
   engineStatus
   searchStatus
@@ -897,17 +750,6 @@ function doBackup() {
     abortOnError
   fi
 
-  # ZIP solr indexes
-  echo "------------------------------------------------------------------------"
-  echo "Backing up solr indexes"
-  echo "------------------------------------------------------------------------"
-  if [ -d "$SOLR_INDEXES_DIR" ]; then
-    echo "Adding solr indexes"
-    cd "$SOLR_INDEXES_DIR"
-    tar cvf "$tempFolder/indexes.tar" .
-    abortOnError
-  fi
-
   # ZIP elasticsearch indexes
   echo "------------------------------------------------------------------------"
   echo "Backing up elasticsearch indexes"
@@ -1036,23 +878,6 @@ function doRestore() {
       abortOnError
     else
       java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/repos.zip" "$CRAFTER_DATA_DIR/repos"
-      abortOnError
-    fi
-  fi
-
-  # UNZIP solr indexes
-  if [ -f "$tempFolder/indexes.$packageExt" ]; then
-    mkdir -p "$SOLR_INDEXES_DIR"
-
-    echo "------------------------------------------------------------------------"
-    echo "Restoring solr indexes"
-    echo "------------------------------------------------------------------------"
-
-    if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/indexes.tar" -C "$SOLR_INDEXES_DIR"
-      abortOnError
-    else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/indexes.zip" "$SOLR_INDEXES_DIR"
       abortOnError
     fi
   fi
@@ -1243,18 +1068,6 @@ case $1 in
     logo
     stopDeployer
   ;;
-  debug_solr)
-    logo
-    debugSolr
-  ;;
-  start_solr)
-    logo
-    startSolr
-  ;;
-  stop_solr)
-    logo
-    stopSolr
-  ;;
   start_elasticsearch)
     logo
     startElasticsearch
@@ -1319,9 +1132,6 @@ case $1 in
   ;;
   status_elasticsearch)
     elasticsearchStatus
-  ;;
-  status_solr)
-    solrStatus
   ;;
   status_mongodb)
     mongoDbStatus

@@ -13,154 +13,125 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath group: 'org.apache.commons', name: 'commons-text', version: project.property("commons.text.version")
         classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property("commons.lang3.version")
     }
 }
 
-import java.security.MessageDigest;
-import org.apache.commons.lang3.SystemUtils;
+apply from: "commons.gradle"
+apply plugin: 'de.undercouch.download'
 
-task downloadGroovy() {
-    description = "Downloads, checks Groovy integrity and unzips it"
-    doFirst {
-        download {
-            src "https://dl.bintray.com/groovy/maven/apache-groovy-binary-${groovyVersion}.zip"
-            overwrite false
-            dest file("${downloadDir}/apache-groovy-${groovyVersion}.zip")
-        }
-        download {
-            src "https://dl.bintray.com/groovy/maven/apache-groovy-binary-${groovyVersion}.zip.sha256"
-            dest file("${downloadDir}/apache-groovy-${groovyVersion}.zip.sha256")
-            overwrite false
-        }
-    }
-    doLast {
-        assert sha256(new File(downloadDir, "apache-groovy-${groovyVersion}.zip")) == new File(downloadDir, "apache-groovy-${groovyVersion}.zip.sha256").getText('UTF-8')
+import org.apache.commons.lang3.SystemUtils
 
-        if (!file("${downloadDir}/groovy-${groovyVersion}").exists()) {
+ext {
+    def currentPlatform = SystemUtils.IS_OS_MAC_OSX? "darwin" : "linux"
+    def elasticsearchPlatform = getPropertySafelyWithDefaults("elasticsearchPlatform", currentPlatform)
+}
+
+ext.downloads = [
+    [
+        name: "tomcat",
+        url: "https://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip",
+        destinationFile: "${downloadDir}/apache-tomcat-${tomcatVersion}.zip",
+        checksumAlgorithm: "sha512",
+        expand: "true",
+        expandFolder: "${downloadDir}"
+    ],
+    [
+        name: "groovy",
+        url: "https://dl.bintray.com/groovy/maven/apache-groovy-binary-${groovyVersion}.zip",
+        destinationFile: "${downloadDir}/apache-groovy-${groovyVersion}.zip",
+        checksumAlgorithm: "sha256",
+        expand: "true",
+        expandFolder: "${downloadDir}"
+    ],
+    [
+        name: "elasticsearch",
+        url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatform}-x86_64.tar.gz",
+        destinationFile: "${downloadDir}/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatform}-x86_64.tar.gz",
+        checksumAlgorithm: "sha512",
+        expand: "true",
+        expandFolder: "${downloadDir}"
+    ],
+    [
+        name: "mariadb4j",
+        url: "https://repo1.maven.org/maven2/org/craftercms/mariaDB4j/mariaDB4j-app/${mariadb4jVersion}/mariaDB4j-app-${mariadb4jVersion}.jar",
+        destinationFile: "${downloadDir}/mariaDB4j-app.jar",
+        checksumAlgorithm: "md5",
+        expand: "false",
+        expandFolder: ""
+    ]
+]
+
+ext.getDownloads = { ->
+    return downloads;
+}
+
+ext.extractArtifact = { artifact, extractFolder ->
+    if (file(artifact).exists()){
+        if (artifact.endsWith(".zip")) {
             copy {
-                from zipTree("${downloadDir}/apache-groovy-${groovyVersion}.zip")
-                into "${downloadDir}"
+                from zipTree(artifact)
+                into extractFolder
             }
-        }
-    }
-}
-
-task downloadTomcat() {
-    description = "Downloads, checks Tomcat integrity and unzips it"
-    doFirst {
-        download {
-            src "https://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip"
-            overwrite false
-            dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip")
-        }
-        download {
-            src "https://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip.sha512"
-            dest file("${downloadDir}/apache-tomcat-${tomcatVersion}.zip.sha512")
-            overwrite false
-        }
-    }
-    doLast {
-        assert sha512(new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip")) == new File(downloadDir, "apache-tomcat-${tomcatVersion}.zip.sha512").getText('UTF-8').split(" ")[0]
-
-        if (!file("${downloadDir}/apache-tomcat-${tomcatVersion}").exists()) {
+        } else if (artifact.endsWith(".tar.gz")) {
             copy {
-                from zipTree("${downloadDir}/apache-tomcat-${tomcatVersion}.zip")
-                into "${downloadDir}"
+                from tarTree(artifact)
+                into extractFolder
             }
+        } else {
+            throw new GradleException("I don't know how to expand " + artifact)
         }
+    } else {
+        throw new GradleException("Artifact \"" + artifact + "\" not found, unable to expand.")
     }
 }
 
-task downloadSolr() {
-    description = "Downloads, checks Solr integrity and unzips it"
-    doFirst {
+ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwriteArtifact, verifyArtifact,
+                            expandArtifact, expandFolder ->
+    def downloaded = false
+
+    if (!file(destinationFile).exists() || overwriteArtifact) {
         download {
-            src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip"
-            overwrite false
-            dest file("${downloadDir}/solr-${solrVersion}.zip")
+            src url
+            dest destinationFile
+            overwrite overwriteArtifact
+            tempAndMove true
         }
+
+        downloaded = true
+    }
+
+    if (verifyArtifact && downloaded) {
         download {
-            src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip.sha512"
-            dest file("${downloadDir}/solr-${solrVersion}.zip.sha512")
-            overwrite false
+            src url + "." + checksumAlgorithm
+            dest destinationFile + "." + checksumAlgorithm
+            overwrite true
+            tempAndMove true
         }
+
+        String algorithm = "";
+        if (checksumAlgorithm == "sha512")
+            algorithm = "SHA-512"
+        else if (checksumAlgorithm == "md5")
+            algorithm = "MD5"
+        else if (checksumAlgorithm == "sha256")
+            algorithm = "SHA-256"
+        else
+            throw GradleException("Unknown digest algorithm: \"" + checksumAlgorithm + "\"")
+
+        def calculatedHash = checksumFile(destinationFile, algorithm)
+        def downloadedHash = new File(destinationFile + "." + checksumAlgorithm).getText('UTF-8').split(" ")[0]
+
+        assert calculatedHash == downloadedHash
     }
-    doLast {
-        assert sha512(new File(downloadDir, "solr-${solrVersion}.zip")) == new File(downloadDir, "solr-${solrVersion}.zip.sha512").getText('UTF-8').split(" ")[0]
 
-        if (!file("${downloadDir}/solr-${solrVersion}").exists()) {
-            copy {
-                from zipTree("${downloadDir}/solr-${solrVersion}.zip")
-                into "${downloadDir}"
-            }
-        }
+    if (expandArtifact && downloaded) {
+        extractArtifact(destinationFile, expandFolder)
     }
-}
-
-task downloadElasticsearch() {
-    description = "Downloads, checks Elasticsearch integrity and unzips it"
-    doFirst {
-        download {
-            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz"
-            overwrite false
-            dest file("${downloadDir}/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz")
-        }
-        download {
-            src "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz.sha512"
-            dest file("${downloadDir}/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz.sha512")
-            overwrite false
-        }
-    }
-    doLast {
-        assert sha512(new File(downloadDir, "elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz")) == new File(downloadDir, "elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz.sha512").getText('UTF-8').split(" ")[0]
-
-        if (!file("${downloadDir}/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64").exists()) {
-            copy {
-                from tarTree("${downloadDir}/elasticsearch-${elasticsearchVersion}-no-jdk-${elasticsearchPlatfform}-x86_64.tar.gz")
-                into "${downloadDir}"
-            }
-        }
-    }
-}
-
-task downloadMariaDB4j {
-    doFirst {
-        download {
-            src "https://repo1.maven.org/maven2/org/craftercms/mariaDB4j/mariaDB4j-app/${mariadb4jVersion}/mariaDB4j-app-${mariadb4jVersion}.jar"
-            overwrite false
-            dest "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar"
-        }
-    }
-}
-
-def messageDigest(file, alg) {
-    MessageDigest md = MessageDigest.getInstance(alg);
-    FileInputStream fis = new FileInputStream(file.path);
-    byte[] dataBytes = new byte[1024];
-    int nread = 0;
-    while ((nread = fis.read(dataBytes)) != -1) {
-        md.update(dataBytes, 0, nread);
-    };
-    byte[] mdbytes = md.digest();
-    //convert the byte to hex format
-    StringBuffer sb = new StringBuffer("");
-    for (int i = 0; i < mdbytes.length; i++) {
-        sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
-    }
-    return sb.toString()
-}
-
-def sha256(file) {
-    messageDigest(file, "SHA-256");
-}
-
-def sha512(file) {
-    messageDigest(file, "SHA-512")
 }

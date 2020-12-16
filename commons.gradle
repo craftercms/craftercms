@@ -1,0 +1,159 @@
+/*
+ * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+// Deps
+buildscript {
+	repositories {
+		jcenter()
+		mavenCentral()
+	}
+	dependencies {
+		classpath project.property("grgit.version")
+        classpath group: 'org.apache.commons', name: 'commons-text', version: project.property("commons.text.version")
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property("commons.lang3.version")
+	}
+}
+
+import java.security.MessageDigest
+
+// Helper methods
+ext.splash = { ->
+	System.out.println("\033[38;5;196m")
+	System.out.println(" ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗")
+	System.out.println("██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗    ██╔════╝ ████╗ ████║ ██╔════╝")
+	System.out.println("██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝    ██║      ██╔████╔██║ ███████╗")
+	System.out.println("██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗    ██║      ██║╚██╔╝██║ ╚════██║")
+	System.out.println("╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║    ╚██████╗ ██║ ╚═╝ ██║ ███████║")
+	System.out.println(" ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝     ╚═╝ ╚══════╝")
+	System.out.println("\033[0m")
+}
+
+ext.getPropertySafelyWithDefaults = {
+	prop, propDefault ->
+
+	def ret = project.hasProperty(prop)? project.property(prop).toString(): propDefault
+
+	return ret
+}
+
+// Settings
+ext {
+	srcFolder = getPropertySafelyWithDefaults("projectDir", ".") + "/src/"
+}
+
+ext.execCommand = { command, dir ->
+	// System.out.println("Executing command \"" + command)
+
+	exec {
+		workingDir dir
+		commandLine command
+	}
+}
+
+ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFiles ->
+    def command = [];
+
+    if (overwriteChangedFiles) {
+        command = ["rsync", "-ar", "--exclude", exclude, source, destination]
+    } else {
+        command = ["rsync", "--update", "-ar", "--exclude", exclude, source, destination]
+    }
+    execCommand(command, workingDir)
+}
+
+// Build methods
+ext.cloneModule = { module, gitUrl, shallowClone, gitBranch, gitRemote ->
+	def url = gitUrl + module
+	def dir = srcFolder
+	def gitFolder = new File(dir + module + "/.git")
+
+	if (!gitFolder.exists()) {
+		if (!file(srcFolder).exists())
+			file(srcFolder).mkdir()
+
+		if (shallowClone) {
+			execCommand(["git", "clone", "--depth", "1", "-b", gitBranch, "-o", gitRemote, url], dir)
+		} else {
+			execCommand(["git", "clone", "-b", gitBranch, "-o", gitRemote, url], dir)
+		}
+	}
+}
+
+ext.updateModule = { module ->
+	def dir = srcFolder + module
+
+	execCommand(["git", "pull"], dir)
+}
+
+ext.cleanModule = { module ->
+	def dir = srcFolder + module
+
+	execCommand(["mvn", "clean"], dir)
+}
+
+ext.buildModule = { module, unitTest ->
+	def dir = srcFolder + module
+
+	if (unitTest)
+		execCommand(["mvn", "install"], dir)
+	else
+		execCommand(["mvn", "install", "-DskipTests"], dir)
+}
+
+ext.checksumFile = { filePath, algorithm ->
+    // Set your algorithm
+    // "MD2","MD5","SHA","SHA-1","SHA-256","SHA-384","SHA-512"
+    MessageDigest md = MessageDigest.getInstance(algorithm);
+    FileInputStream fis = new FileInputStream(new File(filePath));
+    byte[] dataBytes = new byte[1024];
+
+    int nread = 0;
+    while ((nread = fis.read(dataBytes)) != -1) {
+        md.update(dataBytes, 0, nread);
+    }
+
+    byte[] mdbytes = md.digest();
+
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < mdbytes.length; i++) {
+        sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+    }
+    return sb.toString();
+}
+
+ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
+	def source
+
+	if (env == "authoring") {
+		source = "${authoringEnvDir}"
+	} else if (env == "delivery") {
+		source = "${deliveryEnvDir}"
+	} else {
+		throw new GradleException("Unknown environment " + env)
+	}
+
+/*
+	// TODO: add support for a fresh env before bundling
+	if (fresh) {
+		// Create a temporary folder and do a fresh build
+		// Set the source to the fresh build
+	}
+*/
+	// Tar and package
+	file(bundlesDir).mkdir()
+	execCommand(["tar", "czf", "${bundlesDir}/crafter-cms-${env}-${project.version}.tar.gz", source],
+				"${projectDir}")
+}

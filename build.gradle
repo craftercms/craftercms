@@ -13,594 +13,211 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import org.apache.commons.text.StringEscapeUtils
-import org.apache.commons.io.input.Tailer
-import org.apache.commons.io.input.TailerListenerAdapter
-import org.apache.commons.lang3.SystemUtils
-
-import java.nio.charset.Charset
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'org.apache.commons', name: 'commons-text', version: project.property("commons.text.version")
-        classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property("commons.lang3.version")
-        classpath group: 'commons-io', name: 'commons-io', version: project.property("commons.io.version")
-        classpath project.property("grgit.version")
-    }
-}
 
 plugins {
-    id "de.undercouch.download" version "4.1.1"
+    id "de.undercouch.download" version "3.4.3"
+	id "base"
 }
+
+apply plugin: "groovy"
+apply plugin: 'de.undercouch.download'
 
 project.version = "3.2.0-SNAPSHOT" // craftercms version flag
 
-ext {
-    commandLinePrefix = []
-    startUpFile = project.hasProperty("debug") ? "./debug.sh" : "./startup.sh"
-    shutDownFile = "./shutdown.sh"
-
-    /** Subprocess Properties **/
-    processLogFile = ".gradle.log"
-    processTailReadDelay = 100
-    processTailFinishDelay = 1000
-
-    /** Download Properties **/
-    groovyVersion = project.property("groovy.version")
-    tomcatVersion = project.property("tomcat.version")
-    solrVersion = project.property("solr.version")
-    elasticsearchVersion = project.property("elasticsearch.version")
-    elasticsearchPlatfform =
-      project.hasProperty("elasticsearch.plafform") ? project.property("elasticsearch.plafform") :
-                                                      SystemUtils.IS_OS_MAC_OSX? "darwin" : "linux"
-    mariadb4jVersion = project.property("mariadb4j.version")
-    downloadDir = project.property("downloadDir")
-    
-    /** Environment Building properties **/
-    authoringEnvDir = project.property("authoring.root")
-    deliveryEnvDir = project.property("delivery.root")
-    authoringProcessedResourcesDir = project.property("authoringProcessedResourcesDir")
-    deliveryProcessedResourcesDir = project.property("deliveryProcessedResourcesDir")
-    includeProfile = project.hasProperty("crafter.profile") ? project.property("crafter.profile").toBoolean() : false
-    includeSocial = project.hasProperty("crafter.social") ? project.property("crafter.social").toBoolean() : false
-
-    /** Social needs Profile **/
-    if (includeSocial) {
-        includeProfile = true
-    }
-
-    // Authoring
-    authoringTomcatPort = project.property("authoring.tomcat.http.port").toInteger()
-    authoringTomcatShutdownPort = project.property("authoring.tomcat.shutdown.port").toInteger()
-    authoringTomcatAJPPort = project.property("authoring.tomcat.ajp.port").toInteger()
-    authoringTomcatSSLPort = project.property("authoring.tomcat.https.port").toInteger()
-    authoringTomcatDebugPort = project.property("authoring.tomcat.debug.port").toInteger()
-    authoringMongoDBPort = project.property("authoring.mongo.port").toInteger()
-    authoringSolrPort = project.property("authoring.solr.port").toInteger()
-    authoringSolrDebugPort = project.property("authoring.solr.debug.port").toInteger()
-    authoringElasticsearchPort = project.property("authoring.elasticsearch.port").toInteger()
-    authoringSMTPPort = project.property("authoring.smtp.port").toInteger()
-    authoringMariaDbPort = project.property("authoring.mariadb.port").toInteger()
-    authoringDeployerPort = project.property("authoring.deployer.port").toInteger()
-    authoringDeployerDebugPort = project.property("authoring.deployer.debug.port").toInteger()
-    authoringDeploymentDir = project.property("authoring.deployment.dir")
-
-    // Delivery
-    deliverySolrPort = project.property("delivery.solr.port").toInteger()
-    deliverySolrDebugPort = project.property("delivery.solr.debug.port").toInteger()
-    deliveryElasticsearchPort = project.property("delivery.elasticsearch.port").toInteger()
-    deliveryDeployerPort = project.property("delivery.deployer.port").toInteger()
-    deliveryDeployerDebugPort = project.property("delivery.deployer.debug.port").toInteger()
-    deliveryDeploymentDir = project.property("delivery.deployment.dir")
-    deliveryTomcatPort = project.property("delivery.tomcat.http.port").toInteger()
-    deliveryTomcatShutdownPort = project.property("delivery.tomcat.shutdown.port").toInteger()
-    deliveryTomcatAJPPort = project.property("delivery.tomcat.ajp.port").toInteger()
-    deliveryTomcatSSLPort = project.property("delivery.tomcat.https.port").toInteger()
-    deliveryTomcatDebugPort = project.property("delivery.tomcat.debug.port").toInteger()
-    deliveryMongoDBPort =  project.property("delivery.mongodb.port").toInteger()
-    deliverySMTPPort = project.property("delivery.smtp.port").toInteger()
-
-    /** Git properties **/
-    gitURLTemplate = project.property("crafter.git.url")
-    gitSourceBranch = project.hasProperty("crafter.git.branch")? project.property("crafter.git.branch") : "develop" // craftercms branch flag
-    gitRepo = project.property("crafter.git.remote")
-    shallowClone = project.property("crafter.git.shallowClone").toBoolean()
-    studioUIFromRepo = project.property("crafter.ui.repo").toBoolean()
-    studioUIBuild = project.property("crafter.ui.build").toBoolean()
-
-    /** Other **/
-    overwriteConfig = project.property("overwriteConfig").toBoolean()
-    backupAndReplaceConfig = project.property("backupAndReplaceConfig").toBoolean()
-    
-    /** Testing **/
-    testArtifacts = project.property("crafter.unittest").toBoolean()
-    
-    startMongodb = project.property("startMongodb").toBoolean()
-    withElasticsearch = project.property("withElasticsearch").toBoolean()
-    withSolr = project.property("withSolr").toBoolean()
-    silentBuild = project.property("crafter.build.silent").toBoolean()
-    typeOfBundle = project.property("crafter.bundle.archive")
-   
-    /** Cloneable Artifacts **/
-    VALID_MODULES = ["groovy-sandbox", "script-security-plugin", "commons", "core", "search", "profile", "engine",
-                     "deployer", "studio", "social", "studio-ui", "plugin-maker", "crafter-cli"]
-
-    /** Deployable Artifacts **/
-    VALID_DEPLOYABLE_MODULES = [
-            "search"  : "./src/search/crafter-search-solr-server/target/crafter-search.war",
-            "profile" : "./src/profile/server/target/crafter-profile.war",
-            "engine"  : "./src/engine/target/ROOT.war",
-            "deployer": "./src/deployer/target/crafter-deployer.jar",
-            "studio"  : "./src/studio/target/studio.war",
-            "social"  : "./src/social/server/target/crafter-social.war"]
-
-    git = org.ajoberstar.grgit.Grgit.open(dir: ".")
-    gitRevisionId = git.head().id.substring(0, 6)
-}
-
-apply from: "downloads.gradle"
+apply from: "commons.gradle"
+apply from: "modules.gradle"
 apply from: "environments.gradle"
+apply from: "downloads.gradle"
+apply from: "deploy.gradle"
+apply from: "run.gradle"
 
-def deployDepends = []
-def cleanDeps = []
-def buildDeps = []
-def initDeps = []
-def updateDeps = []
-def startDeps = []
-def stopDeps = []
-def statusDeps = []
-def bundleDeps = []
-def envs = []
-def envDepends = []
+// Global Settings
+def environments = getPropertySafelyWithDefaults("env", "all")
+def overwriteArtifact = getPropertySafelyWithDefaults("refreshDownloads", "false").toBoolean()
+def overwriteChangedFiles = getPropertySafelyWithDefaults("overrideConfig","true").toBoolean()
+def refreshEnv = getPropertySafelyWithDefaults("refreshEnv", "false").toBoolean()
+def downloadGrapes = getPropertySafelyWithDefaults("downloadGrapes", "false").toBoolean()
+def socialRequired = getPropertySafelyWithDefaults("crafter.social", "false").toBoolean()
+def profileRequired = (getPropertySafelyWithDefaults("crafter.profile", "false").toBoolean() || socialRequired)
+def unitTest = getPropertySafelyWithDefaults("unitTest", "false").toBoolean()
+def startMongoDB = getPropertySafelyWithDefaults("startMongodb", (profileRequired || socialRequired)).toBoolean()
+def startElasticsearch = getPropertySafelyWithDefaults("withElasticsearch", "true").toBoolean()
+def startCommand = project.hasProperty("debug")? "debug" : "start"
+def stopCommand = "stop"
+def statusCommand = "status"
+def gitUrl = getPropertySafelyWithDefaults("gitUrl", "https://github.com/craftercms/")
+def gitRemote = getPropertySafelyWithDefaults("gitRemote", "origin")
+def shallowClone = getPropertySafelyWithDefaults("shallowClone", "false").toBoolean()
+def gitBranch = "develop"  // craftercms branch flag
+def bundlesDir = getPropertySafelyWithDefaults(bundlesDir, "./bundles")
 
-if (getEnv().equalsIgnoreCase("all")) {
-    envs = ["authoring", "delivery"]
-    envDepends = [authoringEnvironment, deliveryEnvironment]
-} else {
-    envs = [getEnv()]
-    envDepends = [tasks.findByName("${getEnv()}Environment")]
+task splash() {
+	description 'Displays splash screen'
+	doFirst {
+		splash()
+	}
 }
 
-/** Create module_build tasks **/
-def buildModules = []
-def deployModules = [:]
-if (project.hasProperty("moduleName")) {
-    buildModules = project.property("moduleName").toLowerCase().split(",")
-    buildModules.each {
-        deployModules.put(it, VALID_DEPLOYABLE_MODULES[it])
-    }
-} else {
-    buildModules = VALID_MODULES
-    deployModules = VALID_DEPLOYABLE_MODULES
+task preFlightCheck() {
+	description 'Checks dependencies'
+	dependsOn = [ "splash" ]
+	doFirst {
+		if (JavaVersion.current() != project.targetCompatibility) {
+    		throw new GradleException("The java version used ${JavaVersion.current()} is not the expected version ${project.targetCompatibility}.")
+		}
+
+		def command = "mvn -v"
+		if (!command.execute()) {
+			throw new GradleException("Maven ('mvn') not found, please make sure it is installed and accessible.")
+		}
+
+		command = "yarn -v"
+		if (!command.execute()) {
+			throw new GradleException("Yarn ('yarn') not found, please make sure it is installed and accessible.")
+		}
+
+		command = "lsof -v"
+		if (!command.execute()) {
+			throw new GradleException("'lsof' command not found, please make sure it is installed and accessible.")
+		}
+	}
 }
 
-buildModules.each { module ->
-    // Creates the Clean Task
-    if (!tasks.findByPath("${module}_clean")) {
-        task "${module}_clean" doLast({
-            String[] array = commandLinePrefix + ["mvn", "clean"]
-            executeProcess(array, "./src/${module}".toString())
-        })
-    } else {
-        logger.debug("Task ${module}_build already exists")
-    }
-
-    // Creates the Build Tasks
-    if (!tasks.findByPath("${module}_build")) {
-        task "${module}_build" doLast({
-            def actualCommandLinePost = [];
-            if (!testArtifacts) {
-                actualCommandLinePost.add("-Dmaven.test.skip=true")
-            }
-            if (module.equalsIgnoreCase("search")) {
-                actualCommandLinePost.add("-pl")
-                actualCommandLinePost.add("!crafter-search-solr-itest")
-            } else if (module.equalsIgnoreCase("profile")) {
-                if (!includeProfile) {
-                    // temp fix, maven complains about an empty -pl
-                    actualCommandLinePost.add("-pl")
-                    //actualCommandLinePost.add("!admin-console,!integration-tests,!server")
-                    actualCommandLinePost.add("!admin-console,,!server")
-                } else {
-                    // temp fix because this module was removed
-                    // actualCommandLinePost.add("!integration-tests")
-                }
-            }
-            if (module.equalsIgnoreCase("studio")) {
-                if (!studioUIFromRepo) {
-                  actualCommandLinePost.add("-Dstudio.ui.path=../studio-ui/".toString())
-                  actualCommandLinePost.add("-Dexec.skip=true")
-                }
-                if (!studioUIBuild) {
-                  actualCommandLinePost.add("-Dskip.yarn")
-                }
-            }
-            String[] array = commandLinePrefix + ["mvn", "install"] + actualCommandLinePost
-            executeProcess(array, "./src/${module}".toString())
-        })
-        // Creates the Dependencies Array
-        def buildTask = tasks.findByName("${module}_build")
-        buildTask.description "Builds and installs locally ${module} module"
-        buildDeps.add(buildTask)
-
-        // Create init tasks
-        task "${module}_init" doLast {
-            String finalUrl = "${gitURLTemplate}${module}.git".toString()
-            String path = "src/${module}".toString()
-            def gitCloneCmd = ["git", "clone"]
-            if (shallowClone) {
-                gitCloneCmd.add("--depth")
-                gitCloneCmd.add("1")
-            }
-            def arry = commandLinePrefix + gitCloneCmd + ["-b", gitSourceBranch, finalUrl, path]
-
-            if (file(path).exists()) {
-                logger.lifecycle("Module ${module} has already been cloned, please use " +
-                        "'update' to update it.")
-            } else {
-                logger.lifecycle "Cloning: ${module}, branch: ${gitSourceBranch}, url: ${finalUrl}"
-                executeProcess(arry, ".")
-            }
-        }
-
-        //Creates Update Tasks
-        task "${module}_update" doLast {
-            if (!file("./src/${module}").exists()) {
-                throw new InvalidUserDataException("Module ${module} is not cloned. Please use 'clone' to clone it.")
-            } else {
-                String[] arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
-                executeProcess(arry, "./src/${module}".toString())
-            }
-        }
-
-        def cleanTask = tasks.findByName("${module}_clean")
-        cleanTask.description "Cleans ${module} module"
-        cleanDeps.add(cleanTask)
-
-        def initTask = tasks.findByName("${module}_init")
-        initTask.description = "Clones from ${gitURLTemplate}${module} branch ${gitSourceBranch} the module ${module}"
-        initDeps.add(initTask)
-        def updateTask = tasks.findByName("${module}_update")
-        updateTask.description "Updates from ${gitRepo} branch ${gitSourceBranch} the module ${module}"
-        updateDeps.add(updateTask)
-    } else {
-        logger.debug("Task ${module}_build already exists")
-    }
+task download() {
+	description 'Downloads dependencies if required.'
+	dependsOn = [ "preFlightCheck" ]
+	doFirst {
+		getDownloads().each { download ->
+			downloadArtifact(
+								download['name'],
+								download['url'],
+								download['destinationFile'],
+								download['checksumAlgorithm'],
+								overwriteArtifact,
+								true /* verify artifact */,
+								download['expand'].toBoolean(),
+								download['expandFolder']
+							)
+		}
+	}
 }
 
-envs.each { env ->
-    // Creates the deploy tasks
-    deployModules.keySet().each { module ->
-        if (!(env.equalsIgnoreCase("delivery") && module.equalsIgnoreCase("studio"))) {
-            if (!tasks.findByName("${module}_${env}_deploy")) {
-                task "${module}_${env}_deploy" doLast({
-                    def deployable = file(VALID_DEPLOYABLE_MODULES[module])
-                    deployBinary(deployable, env)
-                    if (module.equalsIgnoreCase("profile")) {
-                        deployBinary(file("./src/profile/admin-console/target/crafter-profile-admin.war"), env)
-                    } else if (module.equalsIgnoreCase("social")) {
-                        deployBinary(file("./src/social/admin/target/crafter-social-admin.war"), env)
-                    }
-                })
-                def deployTask = tasks.findByName("${module}_${env}_deploy")
-                deployTask.description "Deploy ${module} in the ${env} enviroment"
-                deployDepends.add(deployTask)
-            } else {
-                logger.debug("Task ${module}_deploy already exists")
-            }
-        }
-    }
-    
-    /* Per Env tasks */
-    if (!tasks.findByName("${env}_start")) {
-        task "${env}_start" doLast({
-            String[] extraStartupParams = []
-
-            if (startMongodb) {
-                extraStartupParams += "forceMongo"
-            }
-
-            if (!withElasticsearch) {
-              extraStartupParams += "skipElasticsearch"
-            }
-
-            if (withSolr) {
-              extraStartupParams += "withSolr"
-            }
-
-            String path = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
-
-            if (!file(path).exists()) {
-                throw new InvalidUserDataException("The '${env}' enviroment is not deployed. Please run 'deploy -Penv=${env}' before 'start'.")
-            }
-
-            String[] finalCommand = []
-            finalCommand +=(commandLinePrefix)
-            finalCommand += startUpFile
-            finalCommand += extraStartupParams
-            executeProcess(finalCommand, "${path}/bin")
-        })
-    }
-
-    if (!tasks.findByName("${env}_stop")) {
-        task "${env}_stop" doLast({
-            String[] extraStartupParams = []
-
-            if (startMongodb) {
-                extraStartupParams += "forceMongo"
-            }
-
-            String path = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
-
-            if (!file(path).exists()) {
-                throw new InvalidUserDataException("The '${env}' enviroment is not deployed. Please run 'deploy -Penv=${env}' before 'start'.")
-            }
-
-            String[] finalCommand = []
-            finalCommand +=(commandLinePrefix)
-            finalCommand += shutDownFile
-            finalCommand += extraStartupParams
-            executeProcess(finalCommand, "${path}/bin")
-        })
-    }
-
-    if (!tasks.findByName("${env}_status")) {
-        task "${env}_status" doLast({
-            String[] extraStartupParams = []
-            if (startMongodb) {
-                extraStartupParams.add("forceMongo")
-            }
-            String path = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
-            if (!file(path).exists()) {
-                throw new InvalidUserDataException("The '${env}' enviroment is not deployed. Please run 'deploy -Penv=${env}' before 'start'.")
-            }
-            executeProcess(commandLinePrefix + ["./crafter.sh", "status"], "${path}/bin")
-        })
-    }
-
-    if (!tasks.findByName("${env}_bundle_tar")) {
-        task "${env}_bundle_tar"(type: Tar) {
-            description "Bundles as a Tar file ${env} enviroment"
-            def environmentPath = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
-            from(environmentPath) {
-                into("crafter")
-            }
-            archiveName "crafter-cms-${env}-${project.version}.tar.gz"
-            fileMode null
-            dirMode null
-            includeEmptyDirs true
-            caseSensitive false
-            compression = Compression.GZIP
-            destinationDir(file("bundles/"))
-        }
-    }
-
-    switch (typeOfBundle.toLowerCase()) {
-        case "tar":
-            bundleDeps.add(tasks.findByName("${env}_bundle_tar"))
-            break;
-        default:
-            bundleDeps.add(tasks.findByName("${env}_bundle_tar"))
-            break;
-    }
-
-    statusDeps.add(tasks.findByName("${env}_status"))
-    stopDeps.add(tasks.findByName("${env}_stop"))
-    startDeps.add(tasks.findByName("${env}_start"))
+task clone() {
+	description 'Clones the modules if required.'
+	dependsOn = [ "download" ]
+	doFirst {
+		getAllModules().each { module -> cloneModule(module, gitUrl, shallowClone, gitBranch, gitRemote) }
+	}
 }
 
-/* Cleanup non buildable modules */
-buildDeps.removeAll([
-  tasks.findByName("studio-ui_build"),
-  tasks.findByName("plugin-maker_build")
-] as Task[])
-
-cleanDeps.removeAll([
-  tasks.findByName("studio-ui_clean"),
-  tasks.findByName("plugin-maker_clean")
-] as Task[])
-
-if (!includeSocial) {
-    buildDeps.removeAll([tasks.findByName('social_build')] as Task[])
-    deployDepends.removeIf({
-        it.name.contains("social")
-    })
+task selfUpdate() {
+	description 'Updates the Crafter CMS parent project.'
+	dependsOn = [ "clone" ]
+	doFirst {
+		execCommand(["git", "pull"], "${projectDir}")
+	}
 }
 
-if (!includeProfile) {
-    deployDepends.removeIf({
-        it.name.contains("profile")
-    })
+task update() {
+	description 'Updates the modules.'
+	dependsOn = [ "clone" ]
+	doFirst {
+		getAllModules().each { module -> updateModule(module) }
+	}
 }
 
-task clean() {
-    description "Clean all configured Crafter Modules"
+clean() {
+	description 'Cleans the modules.'
+	mustRunAfter update
+	dependsOn = [ "clone" ]
+	doFirst {
+		getBuildModules().each { module -> cleanModule(module) }
+	}
 }
 
-task build() {
-    description "Builds all configured Crafter Modules"
+build() {
+	description 'Builds the modules and prepares the binaries for deployment.'
+	mustRunAfter clean
+	dependsOn = [ "clone" ]
+	doFirst {
+		getBuildModules().each { module -> buildModule(module, unitTest) }
+	}
 }
 
-task clone(dependsOn: initDeps) {
-    description "Clones all configured Crafter modules from ${gitURLTemplate} and branch ${gitSourceBranch}"
-}
-
-task update(dependsOn: updateDeps) {
-    description "Update all configured Crafter modules from ${gitSourceBranch} and branch ${gitSourceBranch}"
-}
-
-task upgrade() {
-    description "Delete all enviroment information (keeps the site data,db and indexes), update builds and deploy a new enviroment."
+task buildBaseEnvs() {
+	description 'Build base target environments.'
+	dependsOn = [ "clone" ]
+	doFirst {
+		getEnvironments().each { environment ->
+			prepareEnvironment(environment, refreshEnv, overwriteChangedFiles, downloadGrapes)
+		}
+	}
 }
 
 task deploy() {
-    description "Deploys all configured Crafter Modules"
+	description 'Deploys the module artifacts prepares the authoring/delivery environments.'
+	mustRunAfter build
+	dependsOn = [ "buildBaseEnvs" ]
+	doFirst {
+		getEnvironments().each { environment ->
+			deployEnvironment(environment, overwriteChangedFiles, profileRequired, socialRequired)
+		}
+	}
 }
 
-task bundle(dependsOn: bundleDeps) {
-    description "Tars all Crafter enviroments."
+task upgrade() {
+	description 'Upgrades all modules and redeploys them'
+	dependsOn = [ "update", "clean", "build", "deploy" ]
 }
 
-task start(dependsOn: startDeps) {
-    description "Starts configured Crafter enviroments.."
+task start() {
+	description 'Starts Crafter CMS'
+	doFirst {
+		getEnvironments().each { environment ->
+			def command = [ startCommand ]
+			if (!startElasticsearch)
+				command += ["skipElasticsearch"]
+			if (startMongoDB)
+				command += ["forceMongo"]
+			runEnvironment(environment, command, profileRequired, socialRequired)
+		}
+	}
 }
 
-task stop(dependsOn: stopDeps) {
-    description "Stops configured Crafter enviroments.."
+task stop() {
+	description 'Stops Crafter CMS'
+	doFirst {
+		getEnvironments().each { environment ->
+			def command = [ stopCommand ]
+			if (!startElasticsearch)
+				command += ["skipElasticsearch"]
+			if (startMongoDB)
+				command += ["forceMongo"]
+			runEnvironment(environment, command, profileRequired, socialRequired)
+		}
+	}
 }
 
-task status(dependsOn: statusDeps) {
-    description "Gets the status configured Crafter enviroments.."
+task status() {
+	description 'Reports Crafter CMS status'
+	doFirst {
+		getEnvironments().each { environment ->
+			def command = [ statusCommand ]
+			if (!startElasticsearch)
+				command += ["skipElasticsearch"]
+			if (startMongoDB)
+				command += ["forceMongo"]
+			runEnvironment(environment, command, profileRequired, socialRequired)
+		}
+	}
 }
 
-task buildUtils() {
-    description "Builds and deploys Crafter CMS Bundle Utility tools jar file."
-    doLast {
-        String[] array = commandLinePrefix + ["mvn", "clean", "package"]
-        executeProcess(array, "./utils/")
-        envs.each { env ->
-            String path = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
-            copy {
-                from "./utils/target/craftercms-utils.jar"
-                into "${path}/bin"
-            }
-        }
-    }
-}
-
-task selfupdate {
-    description "Updates the Crafter CMS project"
-    doLast {
-        String[] arry = commandLinePrefix + ["git", "pull", gitRepo, gitSourceBranch]
-        executeProcess(arry, ".")
-    }
-}
-
-task delay {
-    doLast {
-        sleep(30 * 1000)
-    }
-}
-
-task newPlugin(type: GradleBuild) {
-  description "Creates the folder structure for a new plugin"
-  group "plugin"
-
-  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
-  tasks = ['newPlugin']
-  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
-}
-
-task packagePlugin(type: GradleBuild) {
-  description "Packages a Crafter Studio plugin"
-  group "plugin"
-
-  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
-  tasks = ['packagePlugin']
-  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
-}
-
-task publishPlugin(type: GradleBuild) {
-  description "Publishes a plugin to the Crafter Marketplace"
-  group "plugin"
-
-  buildFile = Paths.get("src", "plugin-maker", "build.gradle")
-  tasks = ['publishPlugin']
-  startParameter.projectProperties = project.getGradle().getStartParameter().getProjectProperties()
-}
-
-/** Makes sure Depends are run in order. **/
-dependsOnOrdered(clean, cleanDeps)
-dependsOnOrdered(build, [clean] + buildDeps)
-dependsOnOrdered(clone, initDeps)
-dependsOnOrdered(update, updateDeps)
-dependsOnOrdered(deploy, [downloadGroovy, downloadTomcat, downloadSolr, downloadElasticsearch, downloadMariaDB4j] + envDepends + deployDepends + [buildUtils])
-dependsOnOrdered(upgrade, [update, build, deploy])
-
-def deployBinary(deployable, env) {
-    if (deployable.exists()) {
-        def path = env.equals("authoring") ? authoringEnvDir : deliveryEnvDir
-        path += deployable.absolutePath.endsWith(".jar") ? "bin/crafter-deployer/" : "bin/apache-tomcat/webapps/"
-        path += deployable.name
-        delete {
-            delete path
-            delete path.take(path.lastIndexOf('.'))
-        }
-        copy {
-            from deployable.absolutePath
-            into path.take(path.lastIndexOf('/'))
-        }
-    } else {
-        logger.lifecycle "WARN: You haven't built ${module} module"
-    }
-}
-
-def executeProcess(command, workingDir) {
-    ProcessBuilder pb = new ProcessBuilder(command)
-    pb.directory(new File(workingDir))
-    pb.redirectErrorStream(true)
-    def log = new File(processLogFile)
-    pb.redirectOutput(ProcessBuilder.Redirect.to(log))
-    def tailer = null
-    if(!silentBuild) {
-      tailer = Tailer.create(log, new TailerListenerAdapter() {
-        def void handle(String line) {
-          println line
-        }
-      }, processTailReadDelay)
-    }
-    Process proc = pb.start();
-    proc.waitFor()
-    if(tailer) {
-      Thread.sleep(processTailFinishDelay)
-      tailer.stop()
-    }
-    log.delete()
-    if (proc.exitValue() != 0) {
-        throw new GradleException("${command} @ ${workingDir} returned a non-zero value (${proc.exitValue()})")
-    }
-}
-
-def getModule() {
-    if (project.hasProperty("moduleName")) {
-        def moduleName = project.property("moduleName")
-        moduleName = moduleName.trim().toLowerCase()
-        return moduleName.trim().isEmpty() ? "all" : moduleName
-    } else {
-        return "all"
-    }
-}
-
-def getEnv() {
-    if (project.hasProperty("env")) {
-        def environmentName = project.property("env")
-        environmentName = environmentName.trim().toLowerCase()
-        return environmentName.trim().isEmpty() ? "all" : environmentName
-    } else {
-        return "all"
-    }
-}
-
-def upperCaseFirstLetter(str) {
-    return str.substring(0, 1).toUpperCase() + str.substring(1)
-}
-
-// Run task in the right order.
-void dependsOnOrdered(Task task, List others) {
-    task.dependsOn(others)
-    for (int i = 0; i < others.size() - 1; i++) {
-        others.get(i + 1).mustRunAfter(others.get(i))
-    }
-}
-
-task assemble(type:Exec) {
-	description "Deploy the parent POM to Maven Central"
-	workingDir '.'
-	commandLine './.travis.sh'
+task bundle() {
+	description 'Bundles the authoring/delivery environments into tarballs for distribution.'
+	dependsOn = [ "deploy" ]
+	doFirst {
+		getEnvironments().each { environment ->
+			bundleEnvironment(environment, bundlesDir)
+		}
+	}
 }

@@ -1,0 +1,185 @@
+apply from: "commons.gradle"
+apply from: "environments.gradle"
+
+ext.commonDeployArtifacts = [
+    [
+        module: 'deployer',
+        from: "${projectDir}/src/deployer/target/crafter-deployer.jar",
+        into: "/bin/crafter-deployer/"
+    ],
+    [
+        module: 'engine',
+        from: "${projectDir}/src/engine/target/ROOT.war",
+        into: "/bin/apache-tomcat/webapps/"
+    ],
+    [
+        module: 'profile',
+        from: "${projectDir}/src/profile/server/target/crafter-profile.war",
+        into: "/bin/apache-tomcat/webapps/"
+    ],
+    [
+        module: 'profile-admin',
+        from: "${projectDir}/src/profile/admin-console/target/crafter-profile-admin.war",
+        into: "/bin/apache-tomcat/webapps/"
+    ],
+    [
+        module: 'social',
+        from: "${projectDir}/src/social/server/target/crafter-social.war",
+        into: "/bin/apache-tomcat/webapps/"
+    ],
+    [
+        module: 'social-admin',
+        from: "${projectDir}/src/social/admin/target/crafter-social-admin.war",
+        into: "/bin/apache-tomcat/webapps/"
+    ]
+]
+
+ext.authoringDeployArtifacts = [
+    [
+        module: 'studio',
+        from: "${projectDir}/src/studio/target/studio.war",
+        into: "/bin/apache-tomcat/webapps/"
+    ]
+]
+
+ext.deliveryDeployArtifacts = [
+]
+
+ext.commonDeployPermissions = [
+    [
+        items: [
+            "/crafter-deployer/deployer.sh",
+            "/crafter-deployer/startup.sh",
+            "/crafter-deployer/shutdown.sh",
+            "/crafter.sh",
+            "/startup.sh",
+            "/debug.sh",
+            "/shutdown.sh",
+            "/crafter-setenv.sh"
+        ],
+        permissions: [
+            "+x"
+        ]
+    ]
+]
+
+ext.authoringDeployPermissions = [
+    [
+        items: [
+            "/migration/migrate.sh",
+            "/migration/migrate-bg.sh",
+            "/migration/import.sh",
+            "/migration/import-bg.sh",
+            "/migration/setenv.sh",
+            "/upgrade/start-upgrade.sh",
+            "/upgrade/upgrade-target.sh"
+        ],
+        permissions: [
+            "+x"
+        ]
+    ]
+]
+
+ext.deliveryDeployPermissions = [
+]
+
+ext.deployBaseEnvironment = { envFolder, overwriteChangedFiles, profileRequired, socialRequired ->
+    // Deploy crafter binaries into env
+    commonDeployArtifacts.each { item ->
+        def name = item.module
+        def from = item.from
+        def into = item.into
+        def exclude = ""
+        def performSync = true
+
+        // Skip Profile if it's not required nor is Social required (since Social depends on Profile)
+        if ((name == "profile" || name == "profile-admin")
+            && (!profileRequired && !socialRequired)) {
+            performSync = false
+        }
+        
+        // Skip Social if not required
+        if ((name == "social" || name == "social-admin")
+            && !socialRequired) {
+            performSync = false
+        }
+
+        if (performSync) {
+            syncFolder("${projectDir}", from, envFolder + into, exclude, overwriteChangedFiles)
+        }
+    }
+
+    commonDeployPermissions.each { group ->
+        def command = ["chmod"]
+        group['permissions'].each { permission ->
+            command << permission
+        }
+        group['items'].each { item ->
+            command << "bin" + item
+        }
+        group.items.each { path ->
+            execCommand(command, envFolder)
+        }
+    }
+}
+
+ext.deployAuthoringEnvironment = { overwriteChangedFiles, profileRequired, socialRequired ->
+    deployBaseEnvironment("${authoringEnvDir}", overwriteChangedFiles, profileRequired, socialRequired)
+
+    // Deploy crafter binaries into env
+    authoringDeployArtifacts.each { item ->
+        def from = item.from
+        def into = item.into
+        def exclude = ""
+        syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles)
+    }
+
+    authoringDeployPermissions.each { group ->
+        def command = ["chmod"]
+        group['permissions'].each { permission ->
+            command << permission
+        }
+        group['items'].each { item ->
+            command << "bin" + item
+        }
+        group.items.each { path ->
+            execCommand(command, "${authoringEnvDir}")
+        }
+    }
+}
+
+ext.deployDeliveryEnvironment = { overwriteChangedFiles, profileRequired, socialRequired ->
+    deployBaseEnvironment("${deliveryEnvDir}", overwriteChangedFiles, profileRequired, socialRequired)
+
+    // Deploy crafter binaries into env
+    deliveryDeployArtifacts.each { item ->
+        def from = item.from
+        def into = item.into
+        def exclude = ""
+        syncFolder("${projectDir}", from, "${deliveryEnvDir}" + into, exclude, overwriteChangedFiles)
+    }
+
+    deliveryUpdatePermissions.each { group ->
+        def command = ["chmod"]
+        group['permissions'].each { permission ->
+            command << permission
+        }
+        group['items'].each { item ->
+            command << "bin" + item
+        }
+        group.items.each { path ->
+            execCommand(command, "${deliveryEnvDir}")
+        }
+    }
+}
+
+ext.deployEnvironment = { environment, overwriteChangedFiles, profileRequired, socialRequired ->
+    if (environment == "authoring") {
+       deployAuthoringEnvironment(overwriteChangedFiles, profileRequired, socialRequired)
+    } else if (environment == "delivery") {
+        deployDeliveryEnvironment(overwriteChangedFiles, profileRequired, socialRequired)
+    } else {
+        logger.error("Unknown environment \"" + environment + "\"")
+        throw new GradleException("Unknown environment \"" + environment + "\"")
+    }
+}

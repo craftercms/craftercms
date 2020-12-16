@@ -13,533 +13,542 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import java.io.File
-import java.nio.file.Paths
-import java.util.Date
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.FileUtils
-import org.apache.commons.lang3.StringUtils
-import org.apache.tools.ant.filters.ReplaceTokens
 
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property("commons.lang3.version")
-        classpath group: 'commons-codec', name: 'commons-codec', version: project.property("commons.codec.version")
-        classpath group: 'commons-io', name: 'commons-io', version: project.property("commons.io.version")
-    }
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath project.property("grgit.version")
+	}
 }
 
+import org.apache.tools.ant.filters.ReplaceTokens
+import org.ajoberstar.grgit.Grgit;
+
+apply from: "commons.gradle"
+
+ext.environments = ["authoring", "delivery"]
+
+ext {
+    git = org.ajoberstar.grgit.Grgit.open(dir: "${projectDir}")
+	gitRevisionId = git.head().id.substring(0, 6)
+}
+
+ext.commonFoldersToCreate = [
+    "/bin",
+    "/bin/apache-tomcat/shared/lib",
+    "/bin/apache-tomcat/webapps",
+    "/bin/apache-tomcat/lib/org/apache/catalina/util/",
+    "/bin/elasticsearch/logs"
+]
+
+ext.authoringFoldersToCreate = [
+]
+
+ext.deliveryFoldersToCreate = [
+]
+
+ext.commonItemsToCopy = [
+    [
+        from: "${downloadDir}/groovy-${groovyVersion}/",
+        into: "/bin/groovy/",
+        exclude: ""
+    ],
+    [
+        from:"${downloadDir}/apache-tomcat-${tomcatVersion}/",
+        into: "/bin/apache-tomcat/",
+        exclude: "**/webapps/**"
+    ],
+    [
+        from: "${projectDir}/resources/tomcat/ServerInfo.properties",    // Hides tomcat version
+        into: "/bin/apache-tomcat/lib/org/apache/catalina/util/",
+        exclude: ""
+    ],
+    [
+        from: "${downloadDir}/elasticsearch-${elasticsearchVersion}/",
+        into: "/bin/elasticsearch/",
+        exclude: ""
+    ],
+    [
+        from: "${projectDir}/resources/LICENSE",
+        into: "/",
+        exclude: ""
+    ]
+]
+
+ext.authoringItemsToCopy = [
+    [
+        from: "${downloadDir}/mariaDB4j-app.jar",
+        into: "/bin",
+        exclude: ""
+    ],
+    [
+        from: "${projectDir}/resources/env/authoring/tomcat-config/setenv.sh",
+        into: "/bin/apache-tomcat/bin/",
+        exclude: ""
+    ]
+]
+
+ext.deliveryItemsToCopy = [
+    [
+        from: "${projectDir}/resources/env/delivery/tomcat-config/setenv.sh",
+        into: "/bin/apache-tomcat/bin/",
+        exclude: ""
+    ]
+]
+
+ext.commonGrapesDownloads = [
+    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+        "${projectDir}/resources/bin/upgrade/start-upgrade.groovy"],
+    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+        "${projectDir}/resources/bin/upgrade/upgrade-target.groovy"],
+    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+        "${projectDir}/resources/bin/upgrade/post-upgrade.groovy"]
+]
+
+ext.authoringGrapesDownloads = [
+]
+
+ext.deliveryGrapesDownloads = [
+    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+        "${projectDir}/resources/bin/init-site.groovy"],
+    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+        "${projectDir}/resources/bin/remove-site.groovy"]
+]
+
+ext.commonUpdatePermissions = [
+    [
+        items: [
+            "/apache-tomcat/bin/catalina.sh",
+            "/apache-tomcat/bin/configtest.sh",
+            "/apache-tomcat/bin/configtest.sh",
+            "/apache-tomcat/bin/daemon.sh",
+            "/apache-tomcat/bin/digest.sh",
+            "/apache-tomcat/bin/setclasspath.sh",
+            "/apache-tomcat/bin/shutdown.sh",
+            "/apache-tomcat/bin/startup.sh",
+            "/apache-tomcat/bin/tool-wrapper.sh",
+            "/apache-tomcat/bin/version.sh",
+        ],
+        permissions: [
+            "+x"
+        ]
+    ],
+    [
+        items: [
+            "/elasticsearch/bin/",
+            "/elasticsearch/modules"
+        ],
+        permissions: [
+            "-R",
+            "+x"
+        ]
+    ]
+]
+
+ext.authoringUpdatePermissions = [
+    [
+        items: [
+            "/apache-tomcat/bin/setenv.sh"
+        ],
+        permissions: [
+            "+x"
+        ]
+    ]
+]
+
+ext.deliveryUpdatePermissions = [
+    [
+        items: [
+            "/apache-tomcat/bin/setenv.sh"
+        ],
+        permissions: [
+            "+x"
+        ]
+    ]
+]
+
+ext.commonConfUpdatePatterns = [
+    [
+        confFile: "/bin/apache-tomcat/conf/server.xml",
+        patterns: [
+            [
+                match: 'protocol="HTTP/1.1"',
+                replace: 'protocol="HTTP/1.1" URIEncoding="UTF-8"'
+            ],
+            [
+                match: 'protocol="AJP/1.3"',
+                replace: 'protocol="AJP/1.3" URIEncoding="UTF-8"'
+            ],
+            [
+                match: 'logs',
+                replace: '${catalina.logs}'
+            ]
+        ]
+    ],
+    [
+        confFile: "/bin/apache-tomcat/conf/context.xml",
+        patterns: [
+            [
+                match: '<WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>',
+                replace: '<WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>' + System.lineSeparator() +
+                        '    <Resources cachingAllowed="true" cacheMaxSize="100000"/>'
+            ]
+        ]
+    ],
+    [
+        confFile: "/bin/apache-tomcat/conf/catalina.properties",
+        patterns: [
+            [
+                match: 'shared.loader=', 
+                replace: 'shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar'
+            ]
+        ]
+    ],
+    [
+        confFile: "/bin/apache-tomcat/conf/logging.properties",
+        patterns: [
+            [
+                match: '${catalina.base}/logs',
+                replace: '${catalina.logs}'
+            ]
+        ]
+    ],
+    [
+        confFile: "/bin/elasticsearch/config/elasticsearch.yml",
+        patterns: [
+            [
+                match: "#path.data: /path/to/data",
+                replace: 'path.data: ${ES_INDEXES_DIR}'
+            ],
+            [
+                match: "#path.logs: /path/to/logs",
+                replace: 'path.logs: ${ES_LOGS_DIR}'
+            ],
+            [
+                match: "#http.port: 9200",
+                replace: 'http.port: ${ES_PORT}'
+            ],
+            [
+                match: '#discovery.zen.ping.unicast.hosts',
+                replace: System.lineSeparator() + 
+                    '# Disable cluster discovery' + System.lineSeparator() +
+                    'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
+                    '#discovery.zen.ping.unicast.hosts'
+            ]
+        ]
+    ]
+]
+
+ext.authoringConfUpdatePatterns = [
+    [
+        confFile: "/bin/apache-tomcat/conf/server.xml",
+        patterns: [
+            [
+                match: "8005",
+                replace: "${authoringTomcatShutdownPort}"
+            ],
+            [
+                match: "8080",
+                replace: "${authoringTomcatHttpPort}"
+            ],
+            [
+                match: "8009",
+                replace: "${authoringTomcatAjpPort}"
+            ],
+            [
+                match: "8443",
+                replace: "${authoringTomcatHttpsPort}"
+            ],
+            [
+                match: "8009",
+                replace: "${authoringTomcatAjpPort}"
+            ]
+        ]
+    ]
+]
+
+ext.deliveryConfUpdatePatterns = [
+    [
+        confFile: "/bin/apache-tomcat/conf/server.xml",
+        patterns: [
+            [
+                match: "8005",
+                replace: "${deliveryTomcatShutdownPort}"
+            ],
+            [
+                match: "8080",
+                replace: "${deliveryTomcatHttpPort}"
+            ],
+            [
+                match: "8009",
+                replace: "${deliveryTomcatAjpPort}"
+            ],
+            [
+                match: "8443",
+                replace: "${deliveryTomcatHttpsPort}"
+            ],
+            [
+                match: "8009",
+                replace: "${deliveryTomcatAjpPort}"
+            ]
+        ]
+    ]
+]
+
 def authoringTokens = [
-  TOMCAT_HTTP_PORT     : String.valueOf(authoringTomcatPort),
-  TOMCAT_HTTPS_PORT    : String.valueOf(authoringTomcatSSLPort),
-  TOMCAT_AJP_PORT      : String.valueOf(authoringTomcatAJPPort),
+  TOMCAT_HTTP_PORT     : String.valueOf(authoringTomcatHttpPort),
+  TOMCAT_HTTPS_PORT    : String.valueOf(authoringTomcatHttpsPort),
+  TOMCAT_AJP_PORT      : String.valueOf(authoringTomcatAjpPort),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(authoringTomcatShutdownPort),
   TOMCAT_DEBUG_PORT    : String.valueOf(authoringTomcatDebugPort),
-  SOLR_PORT            : String.valueOf(authoringSolrPort),
-  SOLR_DEBUG_PORT      : String.valueOf(authoringSolrDebugPort),
   ES_PORT              : String.valueOf(authoringElasticsearchPort),
   DEPLOYER_PORT        : String.valueOf(authoringDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(authoringDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(authoringDeploymentDir),
   MARIADB_PORT         : String.valueOf(authoringMariaDbPort),
-  MONGODB_PORT         : String.valueOf(authoringMongoDBPort),
+  MONGODB_PORT         : String.valueOf(authoringMongoDbPort),
   ENV                  : "authoring",
   VERSION              : project.version,
   GIT_BUILD_ID         : gitRevisionId,
-  SMTP_PORT            : String.valueOf(authoringSMTPPort)
+  SMTP_PORT            : String.valueOf(authoringSmtpPort)
 ]
 
 def deliveryTokens = [
-  TOMCAT_HTTP_PORT     : String.valueOf(deliveryTomcatPort),
-  TOMCAT_HTTPS_PORT    : String.valueOf(deliveryTomcatSSLPort),
-  TOMCAT_AJP_PORT      : String.valueOf(deliveryTomcatAJPPort),
+  TOMCAT_HTTP_PORT     : String.valueOf(deliveryTomcatHttpPort),
+  TOMCAT_HTTPS_PORT    : String.valueOf(deliveryTomcatHttpsPort),
+  TOMCAT_AJP_PORT      : String.valueOf(deliveryTomcatAjpPort),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(deliveryTomcatShutdownPort),
   TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPort),
-  SOLR_PORT            : String.valueOf(deliverySolrPort),
-  SOLR_DEBUG_PORT      : String.valueOf(deliverySolrDebugPort),
   ES_PORT              : String.valueOf(deliveryElasticsearchPort),
   DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(deliveryDeploymentDir),
-  MONGODB_PORT         : String.valueOf(deliveryMongoDBPort),
+  MONGODB_PORT         : String.valueOf(deliveryMongoDbPort),
   ENV                  : "delivery",
   VERSION              : project.version,
   GIT_BUILD_ID         : gitRevisionId,
-  SMTP_PORT            : String.valueOf(deliverySMTPPort)
+  SMTP_PORT            : String.valueOf(deliverySmtpPort)
 ]
 
-ext {
-  // Files that should not be overwritten automatically
-  configFilePatterns = [
-      '.*crafter-setenv\\.sh',
-      '.*apache-tomcat/conf/.+',
-      '.*apache-tomcat/shared/classes/.+',
-      '.*crafter-deployer/config/.+',
-      '.*crafter-deployer/logging\\.xml',
-      '.*elasticsearch/config/.+',
-      '.*solr/server/resources/.+',
-      '.*solr/server/solr/[^/]+',
-      '.*solr/server/solr/configsets/crafter_configs/.+'
-  ]
+ext.getEnvironments = { ->
+    String[] result;
+
+    if (project.hasProperty("env"))
+        result = project.property("env").toLowerCase().split(",")
+    else
+        result = environments;
+
+    return result;
 }
 
-task authoringPostEnvironment {
-    description "Setups authoring environment"
-
-    doLast {
-        // Copy MariabDB4j jar for backup/restore
-        copy {
-            from "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar"
-            into "${authoringEnvDir}/bin"
-            rename "mariaDB4j-app-${mariadb4jVersion}.jar", 'mariaDB4j-app.jar'
-        }
-
-        exec {
-            workingDir "${authoringEnvDir}/bin/apache-tomcat/bin"
-            commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
-                                             "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
-                                             "startup.sh", "tool-wrapper.sh", "version.sh"]
-        }
-        exec {
-            workingDir "${authoringEnvDir}/bin/elasticsearch"
-            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin", "modules"]
-        }
-        exec {
-            workingDir "${authoringEnvDir}/bin/groovy"
-            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
-        }
-        exec {
-            workingDir "${authoringEnvDir}/bin/solr"
-            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
-        }
-        exec {
-            workingDir "${authoringEnvDir}/bin/crafter-deployer"
-            commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh", "startup.sh", "shutdown.sh"]
-        }
-        exec {
-            workingDir "${authoringEnvDir}/bin/migration"
-            commandLine commandLinePrefix + ["chmod", "+x", "migrate.sh", "migrate-bg.sh", "import.sh",
-                                             "import-bg.sh", "setenv.sh"]
-        }
-        exec {
-            workingDir "${authoringEnvDir}/bin"
-            commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
-                                             "crafter-setenv.sh", "upgrade/start-upgrade.sh",
-                                             "upgrade/upgrade-target.sh", "wait-for-it.sh"]
-        }
-
-        exec {
-            workingDir "${authoringEnvDir}"
-	        commandLine commandLinePrefix + ["mkdir", "-p", "bin/elasticsearch/logs"]
-	    }
-
-        downloadGrapes("${authoringEnvDir}/bin", "upgrade/start-upgrade.groovy")
-        downloadGrapes("${authoringEnvDir}/bin", "upgrade/upgrade-target.groovy")
-        downloadGrapes("${authoringEnvDir}/bin", "upgrade/post-upgrade.groovy")
+ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes ->
+    // Create require folders
+    commonFoldersToCreate.each { folder ->
+        file(envFolder + folder).mkdirs()
     }
-}
 
-task deliveryPostEnvironment {
-    description "Setups delivery environment"
-
-    doLast {
-        exec {
-            workingDir "${deliveryEnvDir}/bin/apache-tomcat/bin/"
-            commandLine commandLinePrefix + ["chmod", "+x", "catalina.sh", "setenv.sh", "configtest.sh", 
-                                             "daemon.sh", "digest.sh", "setclasspath.sh", "shutdown.sh", 
-                                             "startup.sh", "tool-wrapper.sh", "version.sh"]
-        }
-        exec {
-            workingDir "${deliveryEnvDir}/bin/elasticsearch"
-            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin", "modules"]
-        }
-        exec {
-            workingDir "${deliveryEnvDir}/bin/groovy"
-            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
-        }
-        exec {
-            workingDir "${deliveryEnvDir}/bin/solr"
-            commandLine commandLinePrefix + ["chmod", "-R", "+x", "bin"]
-        }
-        exec {
-            workingDir "${deliveryEnvDir}/bin/crafter-deployer/"
-            commandLine commandLinePrefix + ["chmod", "+x", "deployer.sh", "startup.sh", "shutdown.sh"]
-        }
-        exec {
-            workingDir "${deliveryEnvDir}/bin"
-            commandLine commandLinePrefix + ["chmod", "+x", "crafter.sh", "startup.sh", "debug.sh", "shutdown.sh",
-                                             "crafter-setenv.sh", "init-site.sh", "remove-site.sh",
-                                             "upgrade/start-upgrade.sh", "upgrade/upgrade-target.sh", "wait-for-it.sh"]
-        }
-
-        exec {
-		    workingDir "${deliveryEnvDir}"
-		    commandLine commandLinePrefix + ["mkdir", "-p", "bin/elasticsearch/logs"]
-	    }
-
-        downloadGrapes("${deliveryEnvDir}/bin", "init-site.groovy")
-        downloadGrapes("${deliveryEnvDir}/bin", "remove-site.groovy")
-        downloadGrapes("${deliveryEnvDir}/bin", "upgrade/start-upgrade.groovy")
-        downloadGrapes("${deliveryEnvDir}/bin", "upgrade/upgrade-target.groovy")
-        downloadGrapes("${deliveryEnvDir}/bin", "upgrade/post-upgrade.groovy")
+    // Copy files into env
+    commonItemsToCopy.each { item ->
+        def from = item.from
+        def into = item.into
+        def exclude = item.exclude
+        syncFolder("${projectDir}", from, envFolder + into, exclude, overwriteChangedFiles)
     }
-}
 
-def envs = []
-if (getEnv().equalsIgnoreCase("all")) {
-    envs = ["authoring", "delivery"]
-} else {
-    envs = [getEnv()]
-}
-
-envs.each { env ->
-    if (!tasks.findByName("${env}Environment")) {
-        task "${env}Environment" doLast {
-            description "Setups ${env} environment"
-            
-            def envDir = env.equalsIgnoreCase("authoring") ? "${authoringEnvDir}" : "${deliveryEnvDir}"
-            def tokens = env.equalsIgnoreCase("authoring") ? authoringTokens : deliveryTokens
-            def newEnv
-            def resourcesDestDir
-
-            // Build env bin dir if it doesn't exist
-            if (!file("${envDir}/bin").exists()) {
-                logger.lifecycle "Building bin directory @ ${envDir}"
-
-                // It's a new env so copy resources directly
-                newEnv = true  
-                resourcesDestDir = envDir
-            } else {
-                // Copy resources to a temp folder to do a sync later
-                newEnv = false  
-                resourcesDestDir = env.equalsIgnoreCase("authoring") ? authoringProcessedResourcesDir : deliveryProcessedResourcesDir
-                
-                delete resourcesDestDir
-                mkdir resourcesDestDir
-            }
-
-            copyBinaries(resourcesDestDir, newEnv)
-
-            logger.lifecycle "Processing and copying resources to ${resourcesDestDir}..."
-
-            // Copy Deployer config
-            copy {
-                from "./resources/deployer"
-                into "${resourcesDestDir}/bin/crafter-deployer"
-                filter(ReplaceTokens, tokens: tokens)
-            }
-
-            // Copy bin scripts
-            copy {
-                from "./resources/bin"
-                into "${resourcesDestDir}/bin"
-                filter(ReplaceTokens, tokens: tokens)
-            }
-
-            // Copy env specific bin scripts
-            copy {
-                from "./resources/env/${env}/bin"
-                into "${resourcesDestDir}/bin"
-                filter(ReplaceTokens, tokens: tokens)
-            }
-
-            // Copy Tomcat setenv
-            copy {
-                from "./resources/env/${env}/tomcat-config/setenv.sh"
-                into "${resourcesDestDir}/bin/apache-tomcat/bin"
-            }
-
-            // Copy Tomcat shared conf
-            copy {
-                from "./resources/env/${env}/tomcat-config/crafter"
-                into "${resourcesDestDir}/bin/apache-tomcat/shared/classes/crafter"
-                filter(ReplaceTokens, tokens: tokens)
-            }                        
-
-            // Copy Crafter-specific Solr configsets
-            copy {
-                from "./src/search/crafter-search-solr-provider/solr/configsets"
-                into "${resourcesDestDir}/bin/solr/server/solr/configsets"
-            }            
-
-            // Copy stock Tomcat config that needs to be updated
-            copy {
-                from "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/server.xml", 
-                     "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/context.xml",
-                     "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/catalina.properties",
-                     "${downloadDir}/apache-tomcat-${tomcatVersion}/conf/logging.properties"
-                into "${resourcesDestDir}/bin/apache-tomcat/conf"
-            }
-            
-            // Copy file to hide Tomcat version
-            copy {
-              from "resources/tomcat/ServerInfo.properties"
-              into "${resourcesDestDir}/bin/apache-tomcat/lib/org/apache/catalina/util/"
-            }
-
-            // Copy stock Solr config that needs to be updated
-            copy {
-                from "${downloadDir}/solr-${solrVersion}/server/solr/solr.xml"
-                into "${resourcesDestDir}/bin/solr/server/solr"
-            } 
-
-            // Copy stock Elasticsearch config that needs to be updated
-            copy {
-                from "${downloadDir}/elasticsearch-${elasticsearchVersion}/config/elasticsearch.yml"
-                into "${resourcesDestDir}/bin/elasticsearch/config"
-            }
-
-            // Update config
-            updateTomcatServerConf("${resourcesDestDir}/bin/apache-tomcat/conf/server.xml")
-            updateTomcatContext("${resourcesDestDir}/bin/apache-tomcat/conf/context.xml")
-            updateCatalinaProperties("${resourcesDestDir}/bin/apache-tomcat/conf/catalina.properties")
-            updateCatalinaLogging("${resourcesDestDir}/bin/apache-tomcat/conf/logging.properties")
-            updateSolrConf("${resourcesDestDir}/bin/solr/server/solr/solr.xml")
-            updateElasticsearchConf("${resourcesDestDir}/bin/elasticsearch/config/elasticsearch.yml")
-
-            // Only sync resource files if it's not a new env
-            if (!newEnv) {              
-                def syncSrcDir = file(resourcesDestDir + "/bin")
-                def syncDestDir = env.equalsIgnoreCase("authoring") ? 
-                                    file(authoringEnvDir + "/bin") : file(deliveryEnvDir + "/bin")
-                
-                // Clean up old binaries
-                logger.lifecycle('Removing previous binaries from {}', syncDestDir)
-                delete fileTree(syncDestDir).matching {
-                  exclude {
-                    isConfigFile(it.file as String, configFilePatterns)
-                  }
-                }
-
-                // Clean up empty folders left by the previous delete
-                fileTree(syncDestDir).visit {
-                    if (it.directory && !it.file.list().size()) {
-                        delete it.file
-                    }
-                }
-
-                logger.lifecycle "Synching processed resources from ${syncSrcDir} to ${syncDestDir}..."
-
-                def resourceFiles = fileTree(syncSrcDir).each { file ->
-                    if (!file.directory) {
-                        def path = StringUtils.substringAfter(file.path, "${syncSrcDir.path}/")
-
-                        syncFile(syncSrcDir, syncDestDir, path, configFilePatterns)
-                    }
-                }
-
-                // Clean up resourcesDestDir
-                delete resourcesDestDir
-            }                           
+    // Download Grapes
+    if (downloadGrapes) {
+        commonGrapesDownloads.each() { grapes ->
+            def command = grapes
+            execCommand(command, envFolder + "/bin/")
         }
     }
 
-    tasks.findByName("${env}Environment").finalizedBy("${env}PostEnvironment")   
+    commonUpdatePermissions.each { group ->
+        def command = ["chmod"]
+        group['permissions'].each { permission ->
+            command << permission
+        }
+        group['items'].each { item ->
+            command << "bin" + item
+        }
+        group.items.each { path ->
+            execCommand(command, envFolder)
+        }
+    }
+
+    // Update configuration files
+	commonConfUpdatePatterns.each { conf ->
+		updateConfFile(envFolder + conf['confFile'], conf['patterns'])
+	}
 }
 
-def copyBinaries(destFolder, newEnv) {
-  logger.lifecycle("Copying binaries to folder {}", destFolder)  
-  
-  // Copy Groovy binaries
-  copy {
-      from "${downloadDir}/groovy-${groovyVersion}"
-      into "${destFolder}/bin/groovy"
-      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
-  }
+ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes ->
+    // Prepare the base
+    prepareBaseEnvironment("${authoringEnvDir}", overwriteChangedFiles, downloadGrapes)
 
-  // Copy Tomcat binaries
-  copy {
-      from "${downloadDir}/apache-tomcat-${tomcatVersion}"
-      into "${destFolder}/bin/apache-tomcat"
-      exclude "**/webapps/**"
-      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
-  }
-  file("${destFolder}/bin/apache-tomcat/shared/lib").mkdirs()
-  file("${destFolder}/bin/apache-tomcat/webapps").mkdirs()
+    authoringFoldersToCreate.each { folder ->
+        file("${authoringEnvDir}" + folder).mkdirs()
+    }
 
-  //  Copy Solr binaries
-  copy {
-      from "${downloadDir}/solr-${solrVersion}"
-      into "${destFolder}/bin/solr"
-      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
-  }
+    // Copy files into env
+    authoringItemsToCopy.each { item ->
+        def from = item.from
+        def into = item.into
+        def exclude = item.exclude
+        syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles)
+    }
 
-  // Copy Elastic Search binaries
-  copy {
-      from "${downloadDir}/elasticsearch-${elasticsearchVersion}"
-      into "${destFolder}/bin/elasticsearch"
-      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
-  }
+    // Copy Deployer config
+    copy {
+        from "./resources/deployer"
+        into "${authoringEnvDir}/bin/crafter-deployer"
+        filter(ReplaceTokens, tokens: authoringTokens)
+    }
 
-  // Copy Deployer README.md
-  copy {
-      from "./src/deployer/README.md"
-      into "${destFolder}/bin/crafter-deployer"
-      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
-  }
+    // Copy bin scripts
+    copy {
+        from "${projectDir}/resources/bin"
+        into "${authoringEnvDir}/bin"
+        filter(ReplaceTokens, tokens: authoringTokens)
+    }
 
-  // Copy Studio README.md
-  copy {
-      from "./src/studio/README.md"
-      into "${destFolder}/bin/apache-tomcat"
-      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
-  }
+    // Copy env specific bin scripts
+    copy {
+        from "./resources/env/authoring/bin"
+        into "${authoringEnvDir}/bin"
+        filter(ReplaceTokens, tokens: authoringTokens)
+    }
 
-  // Copy Crafter CMS README.txt and LICENSE
-  copy {
-      from "./resources/LICENSE"
-      from "./resources/README.txt"
-      into "${destFolder}"
-      exclude { !newEnv && isConfigFile(it.file as String, configFilePatterns) }
-  }
+    // Copy Tomcat shared conf
+    copy {
+        from "./resources/env/authoring/tomcat-config/crafter"
+        into "${authoringEnvDir}/bin/apache-tomcat/shared/classes/crafter"
+        filter(ReplaceTokens, tokens: authoringTokens)
+    }
 
-  // Copy Crafter CLI
-  copy {
-      from "./src/crafter-cli/target/crafter-cli"
-      into "${destFolder}/bin/cli"
-  }
+    // Download Grapes
+    if (downloadGrapes) {
+        authoringGrapesDownloads.each() { grapes ->
+            def command = grapes
+            execCommand(command, "${authoringEnvDir}" + "/bin/")
+        }
+    }
 
-  ant.chmod(file: "${destFolder}/bin/cli/bin/crafter-cli", perm: "+x")
-  ant.symlink(link: "${destFolder}/bin/crafter-cli", resource: "cli/bin/crafter-cli")
+    authoringUpdatePermissions.each { group ->
+        def command = ["chmod"]
+        group['permissions'].each { permission ->
+            command << permission
+        }
+        group['items'].each { item ->
+            command << "bin" + item
+        }
+        group.items.each { path ->
+            execCommand(command, "${authoringEnvDir}")
+        }
+    }
 
+    // Update configuration files
+	authoringConfUpdatePatterns.each { conf ->
+		updateConfFile("${authoringEnvDir}" + conf['confFile'], conf['patterns'])
+	}
 }
 
-def updateTomcatServerConf(configFile) {
-    def file = new File(configFile)
+ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes ->
+    // Prepare the base
+    prepareBaseEnvironment("${deliveryEnvDir}", overwriteChangedFiles, downloadGrapes)
+
+    deliveryFoldersToCreate.each { folder ->
+        file("${deliveryEnvDir}" + folder).mkdirs()
+    }
+
+    // Copy files into env
+    deliveryItemsToCopy.each { item ->
+        def from = item.from
+        def into = item.into
+        def exclude = item.exclude
+        syncFolder("${projectDir}", from, "${deliveryEnvDir}" + into, exclude, overwriteChangedFiles)
+    }
+
+    // Copy Deployer config
+    copy {
+        from "./resources/deployer"
+        into "${deliveryEnvDir}/bin/crafter-deployer"
+        filter(ReplaceTokens, tokens: deliveryTokens)
+    }
+
+    // Copy bin scripts
+    copy {
+        from "${projectDir}/resources/bin"
+        into "${deliveryEnvDir}/bin"
+        filter(ReplaceTokens, tokens: deliveryTokens)
+    }
+
+    // Copy env specific bin scripts
+    copy {
+        from "./resources/env/delivery/bin"
+        into "${deliveryEnvDir}/bin"
+        filter(ReplaceTokens, tokens: deliveryTokens)
+    }
+
+    // Copy Tomcat shared conf
+    copy {
+        from "./resources/env/delivery/tomcat-config/crafter"
+        into "${deliveryEnvDir}/bin/apache-tomcat/shared/classes/crafter"
+        filter(ReplaceTokens, tokens: deliveryTokens)
+    }
+
+    // Download Grapes
+    if (downloadGrapes) {
+        deliveryGrapesDownloads.each() { grapes ->
+            def command = grapes
+            execCommand(command, "${deliveryEnvDir}" + "/bin/")
+        }
+    }
+
+    deliveryUpdatePermissions.each { group ->
+        def command = ["chmod"]
+        group['permissions'].each { permission ->
+            command << permission
+        }
+        group['items'].each { item ->
+            command << "bin" + item
+        }
+        group.items.each { path ->
+            execCommand(command, "${deliveryEnvDir}")
+        }
+    }
+
+    // Update configuration files
+	deliveryConfUpdatePatterns.each { conf ->
+		updateConfFile("${deliveryEnvDir}" + conf['confFile'], conf['patterns'])
+	}
+}
+
+ext.prepareEnvironment = { environment, refreshEnv, overwriteChangedFiles, downloadGrapes ->
+    if (environment == "authoring") {
+        if (!file("${authoringEnvDir}").exists() || refreshEnv) {
+            prepareAuthoringEnvironment(overwriteChangedFiles, downloadGrapes)
+        }
+    } else if (environment == "delivery") {
+        if (!file("${deliveryEnvDir}").exists() || refreshEnv) {
+            prepareDeliveryEnvironment(overwriteChangedFiles, downloadGrapes)
+        }
+    } else {
+        logger.error("Unknown environment \"" + environment + "\"")
+        throw new GradleException("Unknown environment \"" + environment + "\"")
+    }
+}
+
+ext.updateConfFile = { confFile, patterns ->
+    def file = new File(confFile)
     def content = file.text
 
-    // Replace ports
-    content = content.replace('8005', '${tomcat.shutdown.port}')
-    content = content.replace('8080', '${tomcat.http.port}')
-    content = content.replace('8009', '${tomcat.ajp.port}')
-    content = content.replace('8443', '${tomcat.https.port}')
-    content = content.replace('protocol="HTTP/1.1"', 'protocol="HTTP/1.1" URIEncoding="UTF-8"')
-    content = content.replace('protocol="AJP/1.3"', 'protocol="AJP/1.3" URIEncoding="UTF-8"')
-
-    // Replace log folder
-    content = content.replace('logs', '${catalina.logs}')
+    // Replace patterns
+    patterns.each { pattern ->
+        content = content.replace(pattern.match, pattern.replace)
+    }
 
     file.write(content)
-}
-
-def updateTomcatContext(configFile) {
-    def file = new File(configFile)
-    def content = file.text
-
-    content = content.replace('<WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>', 
-        '<WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>' + System.lineSeparator() +
-        '    <Resources cachingAllowed="true" cacheMaxSize="100000"/>')
-
-    file.write(content)    
-}
-
-def updateCatalinaProperties(configFile) {
-    def file = new File(configFile)
-    def content = file.text
-
-    content = content.replace('shared.loader=', 
-        'shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar')
-
-    file.write(content)      
-}
-
-def updateCatalinaLogging(configFile) {
-    def file = new File(configFile)
-    def content = file.text
-
-    content = content.replace('${catalina.base}/logs', '${catalina.logs}')
-
-    file.write(content)    
-}
-
-def updateSolrConf(configFile) {
-    def file = new File(configFile)
-    def content = file.text
-
-    content = content.replace('</solr>', 
-        '  <str name="coreRootDirectory">${crafter.solr.index:data/indexes}</str>' + System.lineSeparator() +
-        '</solr>')
-
-    file.write(content)    
-}
-
-def updateElasticsearchConf(configFile) {
-    def file = new File(configFile)
-
-    def content = file.text
-    content = content.replace("#path.data: /path/to/data", 'path.data: ${ES_INDEXES_DIR}')
-    content = content.replace("#path.logs: /path/to/logs", 'path.logs: ${ES_LOGS_DIR}')
-    content = content.replace("#http.port: 9200", 'http.port: ${ES_PORT}')
-    content = content.replace(
-        '#discovery.zen.ping.unicast.hosts',
-        System.lineSeparator() + 
-        '# Disable cluster discovery' + System.lineSeparator() +
-        'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
-        '#discovery.zen.ping.unicast.hosts'
-    )
-
-    file.write(content)
-}
-
-def syncFile(srcDir, destDir, filePath, configFilePatterns) {
-    def srcFile = new File(srcDir, filePath)
-    def destFile = new File(destDir, filePath)
-
-    if (!srcFile.hidden) {
-        if (destFile.exists()) {
-            if (isConfigFile(filePath, configFilePatterns)) {
-                def srcMd5 = DigestUtils.md5Hex(srcFile.newInputStream())
-                def destMd5 = DigestUtils.md5Hex(destFile.newInputStream())
-
-                if (srcMd5 != destMd5) {
-                    if (backupAndReplaceConfig) {
-                        def now = new Date()
-                        def backupTimestamp = now.format("yyyyMMddHHmmss") 
-                        def backupFile = new File(destDir, "${filePath}.bak.${backupTimestamp}")
-
-                        logger.lifecycle "Config file ${filePath} is different in src and dest. Backing up dest file " +
-                                  "to ${backupFile.name} and replacing it with src file (backupAndReplaceConfig = true)"
-
-                        FileUtils.moveFile(destFile, backupFile)
-                        FileUtils.copyFile(srcFile, destFile)
-                    } else if (overwriteConfig) {
-                        logger.lifecycle "Config file ${filePath} is different in src and dest. Overwriting dest file" +
-                                          " with src file (overwriteConfig = true)"
-
-                        FileUtils.copyFile(srcFile, destFile)
-                    } else {
-                        logger.lifecycle "Config file ${filePath} is different in src and dest. Keeping file in dest " +
-                                          "(backupAndReplaceConfig = true && overwriteConfig = false)"
-                    }
-                }
-            } else {
-                logger.info "Copying over ${filePath} from src to dest (replacing non-config file)"
-
-                FileUtils.copyFile(srcFile, destFile)
-            }
-        } else {
-            logger.info "Copying over ${filePath} from src to dest (new file)"
-
-            FileUtils.copyFile(srcFile, destFile)
-        }
-    }
-}
-
-def isConfigFile(path, configFilePatterns) {
-    return configFilePatterns.any { path.matches(it) }
-}
-
-/**
- * Download Grape dependencies beforehand so that Groovy scripts can run without Internet connection. We do this by
- * calling the script with -h to just print the help info
- */
-def downloadGrapes(binFolder, groovyScript) {
-    exec {
-        workingDir binFolder
-        commandLine commandLinePrefix + [Paths.get("groovy", "bin", "groovy") as String, "-cp", binFolder,
-            "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true", groovyScript]
-    }
 }
