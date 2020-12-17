@@ -51,26 +51,37 @@ ext.deliveryFoldersToCreate = [
 
 ext.commonItemsToCopy = [
     [
+        name: "groovy",
         from: "${downloadDir}/groovy-${groovyVersion}/",
         into: "/bin/groovy/",
         exclude: ""
     ],
     [
+        name: "tomcat",
         from:"${downloadDir}/apache-tomcat-${tomcatVersion}/",
         into: "/bin/apache-tomcat/",
         exclude: "**/webapps/**"
     ],
     [
+        name: "tomcat_info",
         from: "${projectDir}/resources/tomcat/ServerInfo.properties",    // Hides tomcat version
         into: "/bin/apache-tomcat/lib/org/apache/catalina/util/",
         exclude: ""
     ],
     [
+        name: "elasticsearch",
         from: "${downloadDir}/elasticsearch-${elasticsearchVersion}/",
         into: "/bin/elasticsearch/",
         exclude: ""
     ],
     [
+        name: "mongodb",
+        from: "${downloadDir}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}/",
+        into: "/bin/mongodb/",
+        exclude: ""
+    ],
+    [
+        name: "license",
         from: "${projectDir}/resources/LICENSE",
         into: "/",
         exclude: ""
@@ -79,11 +90,13 @@ ext.commonItemsToCopy = [
 
 ext.authoringItemsToCopy = [
     [
+        name: "mariadb",
         from: "${downloadDir}/mariaDB4j-app.jar",
         into: "/bin",
         exclude: ""
     ],
     [
+        name: "setenv",
         from: "${projectDir}/resources/env/authoring/tomcat-config/setenv.sh",
         into: "/bin/apache-tomcat/bin/",
         exclude: ""
@@ -92,6 +105,7 @@ ext.authoringItemsToCopy = [
 
 ext.deliveryItemsToCopy = [
     [
+        name: "setenv",
         from: "${projectDir}/resources/env/delivery/tomcat-config/setenv.sh",
         into: "/bin/apache-tomcat/bin/",
         exclude: ""
@@ -343,7 +357,7 @@ ext.getEnvironments = { ->
     return result;
 }
 
-ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes ->
+ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes, includeMongodb ->
     // Create require folders
     commonFoldersToCreate.each { folder ->
         file(envFolder + folder).mkdirs()
@@ -351,10 +365,20 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes 
 
     // Copy files into env
     commonItemsToCopy.each { item ->
+        def name = item.name
         def from = item.from
         def into = item.into
         def exclude = item.exclude
-        syncFolder("${projectDir}", from, envFolder + into, exclude, overwriteChangedFiles)
+        def performSync = true
+
+        // Skip Profile if it's not required nor is Social required (since Social depends on Profile)
+        if (name == "mongodb" && !includeMongodb) {
+            performSync = false
+        }
+
+        if (performSync) {
+            syncFolder("${projectDir}", from, envFolder + into, exclude, overwriteChangedFiles)
+        }
     }
 
     // Download Grapes
@@ -373,9 +397,7 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes 
         group['items'].each { item ->
             command << "bin" + item
         }
-        group.items.each { path ->
-            execCommand(command, envFolder)
-        }
+        execCommand(command, envFolder)
     }
 
     // Update configuration files
@@ -384,9 +406,9 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes 
 	}
 }
 
-ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes ->
+ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, includeMongodb ->
     // Prepare the base
-    prepareBaseEnvironment("${authoringEnvDir}", overwriteChangedFiles, downloadGrapes)
+    prepareBaseEnvironment("${authoringEnvDir}", overwriteChangedFiles, downloadGrapes, includeMongodb)
 
     authoringFoldersToCreate.each { folder ->
         file("${authoringEnvDir}" + folder).mkdirs()
@@ -444,9 +466,7 @@ ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes ->
         group['items'].each { item ->
             command << "bin" + item
         }
-        group.items.each { path ->
-            execCommand(command, "${authoringEnvDir}")
-        }
+        execCommand(command, "${authoringEnvDir}")
     }
 
     // Update configuration files
@@ -455,9 +475,9 @@ ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes ->
 	}
 }
 
-ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes ->
+ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes, includeMongodb ->
     // Prepare the base
-    prepareBaseEnvironment("${deliveryEnvDir}", overwriteChangedFiles, downloadGrapes)
+    prepareBaseEnvironment("${deliveryEnvDir}", overwriteChangedFiles, downloadGrapes, includeMongodb)
 
     deliveryFoldersToCreate.each { folder ->
         file("${deliveryEnvDir}" + folder).mkdirs()
@@ -515,9 +535,7 @@ ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes ->
         group['items'].each { item ->
             command << "bin" + item
         }
-        group.items.each { path ->
-            execCommand(command, "${deliveryEnvDir}")
-        }
+        execCommand(command, "${deliveryEnvDir}")
     }
 
     // Update configuration files
@@ -526,14 +544,14 @@ ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes ->
 	}
 }
 
-ext.prepareEnvironment = { environment, refreshEnv, overwriteChangedFiles, downloadGrapes ->
+ext.prepareEnvironment = { environment, refreshEnv, overwriteChangedFiles, downloadGrapes, includeMongodb ->
     if (environment == "authoring") {
         if (!file("${authoringEnvDir}").exists() || refreshEnv) {
-            prepareAuthoringEnvironment(overwriteChangedFiles, downloadGrapes)
+            prepareAuthoringEnvironment(overwriteChangedFiles, downloadGrapes, includeMongodb)
         }
     } else if (environment == "delivery") {
         if (!file("${deliveryEnvDir}").exists() || refreshEnv) {
-            prepareDeliveryEnvironment(overwriteChangedFiles, downloadGrapes)
+            prepareDeliveryEnvironment(overwriteChangedFiles, downloadGrapes, includeMongodb)
         }
     } else {
         logger.error("Unknown environment \"" + environment + "\"")

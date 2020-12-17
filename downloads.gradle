@@ -65,6 +65,14 @@ ext.downloads = [
         checksumAlgorithm: "md5",
         expand: "false",
         expandFolder: ""
+    ],
+    [
+        name: "mongodb",
+        url: "https://downloads.mongodb.org/${mongodbPlatform}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}.tgz",
+        destinationFile: "${downloadDir}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}.tar.gz",
+        checksumAlgorithm: "sha256",
+        expand: "true",
+        expandFolder: "${downloadDir}"
     ]
 ]
 

@@ -87,17 +87,25 @@ task download() {
 	description 'Downloads dependencies if required.'
 	dependsOn = [ "preFlightCheck" ]
 	doFirst {
+		def performDownload = true
 		getDownloads().each { download ->
-			downloadArtifact(
-								download['name'],
-								download['url'],
-								download['destinationFile'],
-								download['checksumAlgorithm'],
-								overwriteArtifact,
-								true /* verify artifact */,
-								download['expand'].toBoolean(),
-								download['expandFolder']
-							)
+			performDownload = true
+			if (download['name'] == "mongodb" && (!(socialRequired || profileRequired))) {
+				performDownload = false // Skip mongodb download
+			}
+
+			if (performDownload) {
+				downloadArtifact(
+						download['name'],
+						download['url'],
+						download['destinationFile'],
+						download['checksumAlgorithm'],
+						overwriteArtifact,
+						true /* verify artifact */,
+						download['expand'].toBoolean(),
+						download['expandFolder']
+				)
+			}
 		}
 	}
 }
@@ -149,7 +157,7 @@ task buildBaseEnvs() {
 	dependsOn = [ "clone" ]
 	doFirst {
 		getEnvironments().each { environment ->
-			prepareEnvironment(environment, refreshEnv, overwriteChangedFiles, downloadGrapes)
+			prepareEnvironment(environment, refreshEnv, overwriteChangedFiles, downloadGrapes, (socialRequired || profileRequired))
 		}
 	}
 }

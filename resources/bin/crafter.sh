@@ -403,16 +403,6 @@ function startMongoDB(){
       mkdir -p $MONGODB_LOGS_DIR;
     fi
 
-    if [ ! -d "$MONGODB_HOME" ]; then
-      cd $CRAFTER_BIN_DIR
-      mkdir $MONGODB_HOME
-      cd $MONGODB_HOME
-      echo "MongoDB not found"
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar download mongodb
-      tar xvf mongodb.tgz --strip 1
-      rm mongodb.tgz
-    fi
-
     # Before run check if the port is available.
     possiblePID=$(pidOf $MONGODB_PORT)
     if  [ -z $possiblePID ];  then
@@ -834,7 +824,7 @@ function doRestore() {
 
     packageExt="tar"
   else
-    java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$sourceFile" "$tempFolder"
+    unzip "$sourceFile" "$tempFolder"
     abortOnError
 
     packageExt="zip"
@@ -855,7 +845,7 @@ function doRestore() {
       tar xvf "$tempFolder/mongodb.tar" -C "$tempFolder/mongodb"
       abortOnError
     else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/mongodb.zip" "$tempFolder/mongodb"
+      unzip "$tempFolder/mongodb.zip" "$tempFolder/mongodb"
       abortOnError
     fi
 
@@ -877,7 +867,7 @@ function doRestore() {
       tar xvf "$tempFolder/repos.tar" -C "$CRAFTER_DATA_DIR/repos"
       abortOnError
     else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/repos.zip" "$CRAFTER_DATA_DIR/repos"
+      unzip "$tempFolder/repos.zip" "$CRAFTER_DATA_DIR/repos"
       abortOnError
     fi
   fi
@@ -894,7 +884,7 @@ function doRestore() {
       tar xvf "$tempFolder/indexes-es.tar" -C "$ES_INDEXES_DIR"
       abortOnError
     else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/indexes-es.zip" "$ES_INDEXES_DIR"
+      unzip "$tempFolder/indexes-es.zip" "$ES_INDEXES_DIR"
       abortOnError
     fi
   fi
@@ -911,7 +901,7 @@ function doRestore() {
       tar xvf "$tempFolder/deployer.tar" -C "$DEPLOYER_DATA_DIR"
       abortOnError
     else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/deployer.zip" "$DEPLOYER_DATA_DIR"
+      unzip "$tempFolder/deployer.zip" "$DEPLOYER_DATA_DIR"
       abortOnError
     fi
   fi
