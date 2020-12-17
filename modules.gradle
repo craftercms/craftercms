@@ -20,6 +20,9 @@ ext.allModules = [  "groovy-sandbox", "script-security-plugin", "commons",
 ext.buildModules = ["groovy-sandbox", "script-security-plugin", "commons",
                     "core", "search", "profile", "engine", "deployer", "studio-ui", "studio",
                     "social", "crafter-cli"]
+ext.deployModules = ["groovy-sandbox", "script-security-plugin", "commons",
+                    "core", "search", "profile", "profile-admin", "engine", "deployer", "studio-ui", "studio",
+                    "social", "social-admin","crafter-cli"]
 
 ext.getAllModules = { ->
     String[] result;
@@ -35,10 +38,21 @@ ext.getAllModules = { ->
 ext.getBuildModules = { ->
     String[] result;
 
-	if (project.hasProperty("modules"))
+    if (project.hasProperty("modules"))
         result = project.property("modules").toLowerCase().split(",")
     else
         result = buildModules;
+
+    return result;
+}
+
+ext.getDeployModules = { ->
+    String[] result;
+
+    if (project.hasProperty("modules"))
+        result = project.property("modules").toLowerCase().split(",")
+    else
+        result = deployModules;
 
     return result;
 }

@@ -168,7 +168,7 @@ task deploy() {
 	dependsOn = [ "buildBaseEnvs" ]
 	doFirst {
 		getEnvironments().each { environment ->
-			deployEnvironment(environment, getBuildModules(), overwriteChangedFiles, profileRequired, socialRequired)
+			deployEnvironment(environment, getDeployModules(), overwriteChangedFiles, profileRequired, socialRequired)
 		}
 	}
 }
