@@ -55,7 +55,7 @@ ext {
 }
 
 ext.execCommand = { command, dir ->
-	System.out.println("Executing command \"" + command)
+	// System.out.println("Executing command \"" + command)
 
 	exec {
 		workingDir dir
