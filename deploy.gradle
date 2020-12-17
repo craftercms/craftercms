@@ -121,9 +121,7 @@ ext.deployBaseEnvironment = { envFolder, modules, overwriteChangedFiles, profile
         group['items'].each { item ->
             command << "bin" + item
         }
-        group.items.each { path ->
-            execCommand(command, envFolder)
-        }
+        execCommand(command, envFolder)
     }
 }
 
@@ -155,9 +153,7 @@ ext.deployAuthoringEnvironment = { modules, overwriteChangedFiles, profileRequir
         group['items'].each { item ->
             command << "bin" + item
         }
-        group.items.each { path ->
-            execCommand(command, "${authoringEnvDir}")
-        }
+        execCommand(command, "${authoringEnvDir}")
     }
 }
 
@@ -189,9 +185,7 @@ ext.deployDeliveryEnvironment = { modules, overwriteChangedFiles, profileRequire
         group['items'].each { item ->
             command << "bin" + item
         }
-        group.items.each { path ->
-            execCommand(command, "${deliveryEnvDir}")
-        }
+        execCommand(command, "${deliveryEnvDir}")
     }
 }
 
