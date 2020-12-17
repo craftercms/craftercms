@@ -406,7 +406,7 @@ function startMongoDB(){
     # Before run check if the port is available.
     possiblePID=$(pidOf $MONGODB_PORT)
     if  [ -z $possiblePID ];  then
-      $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_DATA_DIR/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
+      $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_DATA_DIR/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT 2>&1&
     else
       echo $possiblePID > $MONGODB_PID
       echo "Process PID $possiblePID is listening port $MONGODB_PORT"
