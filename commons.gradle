@@ -92,10 +92,10 @@ ext.cloneModule = { module, gitUrl, shallowClone, gitBranch, gitRemote ->
 	}
 }
 
-ext.updateModule = { module ->
+ext.updateModule = { module, remote, branch ->
 	def dir = srcFolder + module
 
-	execCommand(["git", "pull"], dir)
+	execCommand(["git", "pull", remote, branch], dir)
 }
 
 ext.cleanModule = { module ->

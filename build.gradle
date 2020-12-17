@@ -114,7 +114,7 @@ task selfUpdate() {
 	description 'Updates the Crafter CMS parent project.'
 	dependsOn = [ "clone" ]
 	doFirst {
-		execCommand(["git", "pull"], "${projectDir}")
+		execCommand(["git", "pull", gitRemote, gitBranch], "${projectDir}")
 	}
 }
 
@@ -122,7 +122,7 @@ task update() {
 	description 'Updates the modules.'
 	dependsOn = [ "clone" ]
 	doFirst {
-		getAllModules().each { module -> updateModule(module) }
+		getAllModules().each { module -> updateModule(module, gitRemote, gitBranch) }
 	}
 }
 
