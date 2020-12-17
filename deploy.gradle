@@ -83,8 +83,8 @@ ext.authoringDeployPermissions = [
 ext.deliveryDeployPermissions = [
 ]
 
-ext.deployBaseEnvironment = { envFolder, overwriteChangedFiles, profileRequired, socialRequired ->
-    // Deploy crafter binaries into env
+ext.deployBaseEnvironment = { envFolder, modules, overwriteChangedFiles, profileRequired, socialRequired ->
+    // Deploy Crafter binaries into env
     commonDeployArtifacts.each { item ->
         def name = item.module
         def from = item.from
@@ -101,6 +101,10 @@ ext.deployBaseEnvironment = { envFolder, overwriteChangedFiles, profileRequired,
         // Skip Social if not required
         if ((name == "social" || name == "social-admin")
             && !socialRequired) {
+            performSync = false
+        }
+
+        if (modules.find { it == name } == null) {
             performSync = false
         }
 
@@ -123,15 +127,24 @@ ext.deployBaseEnvironment = { envFolder, overwriteChangedFiles, profileRequired,
     }
 }
 
-ext.deployAuthoringEnvironment = { overwriteChangedFiles, profileRequired, socialRequired ->
-    deployBaseEnvironment("${authoringEnvDir}", overwriteChangedFiles, profileRequired, socialRequired)
+ext.deployAuthoringEnvironment = { modules, overwriteChangedFiles, profileRequired, socialRequired ->
+    deployBaseEnvironment("${authoringEnvDir}", modules, overwriteChangedFiles, profileRequired, socialRequired)
 
-    // Deploy crafter binaries into env
+    // Deploy Crafter binaries into env
     authoringDeployArtifacts.each { item ->
+        def name = item.module
         def from = item.from
         def into = item.into
         def exclude = ""
-        syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles)
+        def performSync = true
+
+        if (modules.find { it == name } == null) {
+            performSync = false
+        }
+
+        if (performSync) {
+            syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles)
+        }
     }
 
     authoringDeployPermissions.each { group ->
@@ -148,15 +161,24 @@ ext.deployAuthoringEnvironment = { overwriteChangedFiles, profileRequired, socia
     }
 }
 
-ext.deployDeliveryEnvironment = { overwriteChangedFiles, profileRequired, socialRequired ->
-    deployBaseEnvironment("${deliveryEnvDir}", overwriteChangedFiles, profileRequired, socialRequired)
+ext.deployDeliveryEnvironment = { modules, overwriteChangedFiles, profileRequired, socialRequired ->
+    deployBaseEnvironment("${deliveryEnvDir}", modules, overwriteChangedFiles, profileRequired, socialRequired)
 
-    // Deploy crafter binaries into env
+    // Deploy Crafter binaries into env
     deliveryDeployArtifacts.each { item ->
+        def name = item.module
         def from = item.from
         def into = item.into
         def exclude = ""
-        syncFolder("${projectDir}", from, "${deliveryEnvDir}" + into, exclude, overwriteChangedFiles)
+        def performSync = true
+
+        if (modules.find { it == name } == null) {
+            performSync = false
+        }
+
+        if (performSync) {
+            syncFolder("${projectDir}", from, "${deliveryEnvDir}" + into, exclude, overwriteChangedFiles)
+        }
     }
 
     deliveryUpdatePermissions.each { group ->
@@ -173,11 +195,11 @@ ext.deployDeliveryEnvironment = { overwriteChangedFiles, profileRequired, social
     }
 }
 
-ext.deployEnvironment = { environment, overwriteChangedFiles, profileRequired, socialRequired ->
+ext.deployEnvironment = { environment, modules, overwriteChangedFiles, profileRequired, socialRequired ->
     if (environment == "authoring") {
-       deployAuthoringEnvironment(overwriteChangedFiles, profileRequired, socialRequired)
+       deployAuthoringEnvironment(modules, overwriteChangedFiles, profileRequired, socialRequired)
     } else if (environment == "delivery") {
-        deployDeliveryEnvironment(overwriteChangedFiles, profileRequired, socialRequired)
+        deployDeliveryEnvironment(modules, overwriteChangedFiles, profileRequired, socialRequired)
     } else {
         logger.error("Unknown environment \"" + environment + "\"")
         throw new GradleException("Unknown environment \"" + environment + "\"")
