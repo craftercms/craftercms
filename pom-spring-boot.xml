@@ -67,6 +67,7 @@
 		<java.version>11</java.version>
 		<hazelcast.version>4.0</hazelcast.version>
 		<hazelcast.kubernetes.version>2.0.1</hazelcast.kubernetes.version>
+		<script.security.version>${project.version}</script.security.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
 		<jackson.version>2.11.3</jackson.version>
@@ -76,14 +77,15 @@
 		<elasticsearch.version>7.7.1</elasticsearch.version>
 		<tomcat.version>9.0.37</tomcat.version>
 		<mariadb.version>10.4.6</mariadb.version>
+		<groovy.version>3.0.7</groovy.version>
 
 		<!-- build -->
 		<maven.javadoc.version>3.2.0</maven.javadoc.version>
 		<maven.source.version>3.2.1</maven.source.version>
-	        <maven.jar.version>3.2.0</maven.jar.version>
-	        <buildnumber.maven.version>1.4</buildnumber.maven.version>
-	        <maven.deploy.version>3.0.0-M1</maven.deploy.version>
-	        <maven.gpg.version>1.6</maven.gpg.version>
+		<maven.jar.version>3.2.0</maven.jar.version>
+		<buildnumber.maven.version>1.4</buildnumber.maven.version>
+		<maven.deploy.version>3.0.0-M1</maven.deploy.version>
+		<maven.gpg.version>1.6</maven.gpg.version>
 		<maven.antrun.version>1.8</maven.antrun.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
