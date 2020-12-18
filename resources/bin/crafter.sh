@@ -110,7 +110,7 @@ function checkPortForRunning(){
 }
 
 function printTailInfo(){
-  echo -e "\033[38;5;196m"
+  echo -e "\033[0;32m"
   echo "Log files live here: \"$CRAFTER_LOGS_DIR\". "
   echo "To follow the main tomcat log, you can \"tail -f $CRAFTER_LOGS_DIR/tomcat/catalina.out\""
   echo -e "\033[0m"
