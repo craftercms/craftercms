@@ -9,9 +9,15 @@ Crafter CMS is a modern content management platform for building digital experie
 * OTT video experiences on AWS Elemental Media Services
 * AR/VR applications using A-Frame
 
- You can learn more about Crafter here: http://docs.craftercms.org/current/index.html
+You can learn more about Crafter CMS here: https://craftercms.org
 
-This repository is the parent project that builds everything and helps you build one of two things:
+Try Crafter CMS using a pre-built AMI (use the `authoring` AMI): https://aws.amazon.com/marketplace/seller-profile?id=6d75ffca-9630-44bd-90b4-ac0e99058995
+
+Download a pre-built bundle here: https://craftercms.org/downloads
+
+Read the docs here: https://docs.craftercms.org/current
+
+This repository is for developers interested in contributing to Crafter CMS, customizing their own release, or building the latest. This parent project helps you build one of:
 
 1. Deployable Crafter CMS bundle
 2. Docker images
@@ -50,7 +56,18 @@ Before using `bundle` task make sure that the enviroment has been created and de
 Archives will be named `crafter-cms-${environment}.tar.gz` and can be found in the `bundles` folder.
 
 ```bash
-./gradlew clone build deploy bundle
+./gradlew build deploy bundle
+```
+
+**Note**
+For Mac OSX, you'll need to set the platform for Elasticsearch like so:
+```bash
+./gradlew build deploy bundle -PelasticsearchPlatform=darwin
+```
+
+If building with Profile/Social, MongoDB must also be set to the target OS like so:
+```bash
+./gradlew build deploy bundle -PelasticsearchPlatform=darwin -PmongodbPlatform=macos
 ```
 
 To run Crafter CMS from the bundle, unzip and follow the instructions in the bundle's `README.txt`.
@@ -77,14 +94,14 @@ To download, build and generate a bundle from a given tag or branch of the sourc
 ```
 2. Download, build and bundle the tag/branch that you want to work with
 ```bash
-    ./gradlew clone build deploy bundle
+    ./gradlew build deploy bundle
 ```
 
 **Note**:
 When using a tag-based build, you're essentially cloning a point in time to build that specific version of Crafter CMS. That implies that you won't be able to update/nor push changes back.
 
 # 3. Build a Developer's Environment
-Crafter CMS is built along a microservices-based architecture, and as such, comprises a number of headless API-first (GraphQL, REST, in-process)  modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
+Crafter CMS comprises a number of headless API-first (GraphQL, REST, in-process)  modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
 
 
 ## 3.1. Build, Start and Stop All 
@@ -92,7 +109,7 @@ Crafter CMS is built along a microservices-based architecture, and as such, comp
 Build all Crafter CMS modules
 
 ```bash
-    ./gradlew clone build deploy
+    ./gradlew build deploy
 ```
 
 ### 3.1.2. Start All
@@ -160,16 +177,10 @@ The last step will be to add an upstream repository from the main `craftercms` r
 to make it happen.
 You can now work in your local system, and build/deploy and ultimately push to your fork. We welcome code contributions, so please do send us pull-requests.
 
-To update your project with the latest from your repo:
+To update your project with the latest:
 
 ```bash
     ./gradlew update
-```
-
-To get the latest code from `craftercms`, in order to have the latest updates from the community:
-
-```bash
-    ./gradlew update -PgitRemote=upstream
 ```
 
 ### 3.3.2. Update, Build, Deploy, Start, and Stop a Module
