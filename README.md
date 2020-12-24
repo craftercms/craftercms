@@ -1,3 +1,5 @@
+![build status](https://travis-ci.com/craftercms/craftercms.svg?branch=develop)
+
 # Crafter CMS
 
 Crafter CMS is a modern content management platform for building digital experience applications including:
