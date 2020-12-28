@@ -17,6 +17,8 @@ target:
         socket: -1
       # The number of threads to use, if set to -1 the default will be used
       threads: -1
+      # Indicates if keep alive should be enabled, defaults to false
+      keepAlive: false
 
       # Multiple Clusters
 #      readCluster:
