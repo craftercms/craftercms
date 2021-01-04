@@ -20,11 +20,13 @@ buildscript {
 	}
 	dependencies {
 		classpath project.property("grgit.version")
-	}
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+    }
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
-import org.ajoberstar.grgit.Grgit;
+import org.ajoberstar.grgit.Grgit
+import org.apache.commons.lang3.SystemUtils
 
 apply from: "commons.gradle"
 
@@ -33,6 +35,8 @@ ext.environments = ["authoring", "delivery"]
 ext {
     git = org.ajoberstar.grgit.Grgit.open(dir: "${projectDir}")
 	gitRevisionId = git.head().id.substring(0, 6)
+    elasticsearchPlatform = getPropertySafelyWithDefaults("elasticsearchPlatform", SystemUtils.IS_OS_MAC_OSX? "darwin" : "linux")
+    mongodbPlatform = getPropertySafelyWithDefaults("mongodbPlatform", SystemUtils.IS_OS_MAC_OSX? "osx" : "linux")
 }
 
 ext.commonFoldersToCreate = [

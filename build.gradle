@@ -32,7 +32,6 @@ apply from: "deploy.gradle"
 apply from: "run.gradle"
 
 // Global Settings
-def environments = getPropertySafelyWithDefaults("env", "all")
 def overwriteArtifact = getPropertySafelyWithDefaults("refreshDownloads", "false").toBoolean()
 def overwriteChangedFiles = getPropertySafelyWithDefaults("overrideConfig","true").toBoolean()
 def refreshEnv = getPropertySafelyWithDefaults("refreshEnv", "false").toBoolean()

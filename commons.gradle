@@ -71,7 +71,15 @@ ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFil
     } else {
         command = ["rsync", "--update", "-ar", "--exclude", exclude, source, destination]
     }
-    execCommand(command, workingDir)
+
+	try {
+		execCommand(command, workingDir)
+	} catch (e) {
+		logger.error("Failed to sync folders workingDir: {}, source: {}, destination: {}," +
+				"exclude: {}, overwriteChangedFiles: {}, exception: {}", workingDir, source,
+				destination, exclude, overwriteChangedFiles, e)
+		throw new GradleException("Failed to sync folders.", e)
+	}
 }
 
 // Build methods
@@ -84,10 +92,15 @@ ext.cloneModule = { module, gitUrl, shallowClone, gitBranch, gitRemote ->
 		if (!file(srcFolder).exists())
 			file(srcFolder).mkdir()
 
-		if (shallowClone) {
-			execCommand(["git", "clone", "--depth", "1", "-b", gitBranch, "-o", gitRemote, url], dir)
-		} else {
-			execCommand(["git", "clone", "-b", gitBranch, "-o", gitRemote, url], dir)
+		try {
+			if (shallowClone) {
+				execCommand(["git", "clone", "--depth", "1", "-b", gitBranch, "-o", gitRemote, url], dir)
+			} else {
+				execCommand(["git", "clone", "-b", gitBranch, "-o", gitRemote, url], dir)
+			}
+		} catch (e) {
+			logger.error("Failed to clone module: {}, exception: {}", module, e)
+			throw new GradleException("Failed to clone module.", e)
 		}
 	}
 }
@@ -95,22 +108,37 @@ ext.cloneModule = { module, gitUrl, shallowClone, gitBranch, gitRemote ->
 ext.updateModule = { module, remote, branch ->
 	def dir = srcFolder + module
 
-	execCommand(["git", "pull", remote, branch], dir)
+	try {
+		execCommand(["git", "pull", remote, branch], dir)
+	} catch (e) {
+		logger.error("Failed to update module: {}, exception: {}", module, e)
+		throw new GradleException("Failed to update module.", e)
+	}
 }
 
 ext.cleanModule = { module ->
 	def dir = srcFolder + module
 
-	execCommand(["mvn", "clean"], dir)
+	try {
+		execCommand(["mvn", "clean"], dir)
+	} catch (e) {
+		logger.error("Failed to clean module: {}, exception: {}", module, e)
+		throw new GradleException("Failed to clean module.", e)
+	}
 }
 
 ext.buildModule = { module, unitTest ->
 	def dir = srcFolder + module
 
-	if (unitTest)
-		execCommand(["mvn", "install"], dir)
-	else
-		execCommand(["mvn", "install", "-DskipTests"], dir)
+	try {
+		if (unitTest)
+			execCommand(["mvn", "install"], dir)
+		else
+			execCommand(["mvn", "install", "-DskipTests"], dir)
+	} catch (e) {
+		logger.error("Failed to build module: {}, exception: {}", module, e)
+		throw new GradleException("Failed to build module.", e)
+	}
 }
 
 ext.checksumFile = { filePath, algorithm ->
@@ -154,6 +182,13 @@ ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
 */
 	// Tar and package
 	file(bundlesDir).mkdir()
-	execCommand(["tar", "czf", "${bundlesDir}/crafter-cms-${env}-${project.version}.tar.gz", source],
+
+	try {
+		execCommand(["tar", "czf", "${bundlesDir}/crafter-cms-${env}-${project.version}.tar.gz", source],
 				"${projectDir}")
+	}
+	catch (e) {
+		logger.error("Failed to create bundle for env: {}, bundlesDir: {}", env, bundlesDir, e)
+		throw new GradleException("Failed to create bundle.", e)
+	}
 }

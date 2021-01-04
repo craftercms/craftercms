@@ -61,17 +61,6 @@ Archives will be named `crafter-cms-${environment}.tar.gz` and can be found in t
 ./gradlew build deploy bundle
 ```
 
-**Note**
-For Mac OSX, you'll need to set the platform for Elasticsearch like so:
-```bash
-./gradlew build deploy bundle -PelasticsearchPlatform=darwin
-```
-
-If building with Profile/Social, MongoDB must also be set to the target OS like so:
-```bash
-./gradlew build deploy bundle -PelasticsearchPlatform=darwin -PmongodbPlatform=macos
-```
-
 To run Crafter CMS from the bundle, unzip and follow the instructions in the bundle's `README.txt`.
 
 ## 2.1. Build an Environment Specific Bundle
