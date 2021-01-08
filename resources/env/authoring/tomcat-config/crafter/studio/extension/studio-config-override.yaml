@@ -275,6 +275,8 @@ studio.search.timeout.connect: -1
 studio.search.timeout.socket: -1
 # The number of threads to use, if set to -1 the default will be used
 studio.search.threads: -1
+# Indicates if keep alive should be enabled for sockets used by the search client, defaults to false
+studio.search.keepAlive: false
 
 ##########################################################
 ##                 Serverless Delivery                  ##
