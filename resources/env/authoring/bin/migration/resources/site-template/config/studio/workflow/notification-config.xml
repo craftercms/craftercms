@@ -84,9 +84,6 @@
                                         Error:<br/>
                                         ${deploymentError.toString()}
                                     <br/><br/>
-                                    <a href="${liveUrl}" >
-                                        <img style="max-width: 350px;  max-height: 350px;" src="${liveUrl}/static-assets/images/workflow-email-footer.png" alt="" />
-                                    </a>
                                 </p>
                             </body>
                         </html>
@@ -109,34 +106,32 @@
                                     <#else>
                                         The following content has been reviewed and approved by ${approver.firstName!approver.username} ${approver.lastName!""}:
                                     </#if>
-                               <ul>
-                                  <#list files as file>
-                                        <#if file.page>
-                                            <a href="${liveUrl}/${file.browserUri!""}">
-                                           </#if>
-                                       <li>${file.internalName!file.name}</li>
-                                        <#if file.page>
-                                          </a>
-                                      </#if>
-                                    </#list>
-                                </ul><br/>
-                                <#if scheduleDate??>
-                                    <a href="${liveUrl}">Click Here to View Your Published Content</a>
-                                    <br/>
-                                </#if>
-                                <a href="${authoringUrl}/site-dashboard" >
-                                    <img style="max-width: 350px;  max-height: 350px;" src="${liveUrl}/static-assets/images/workflow-email-footer.png" alt="" />
-                                </a>
+                                    <ul>
+                                       <#list files as file>
+                                           <li>
+                                               <#if file.page>
+                                                   <a href="${liveUrl}/${file.browserUri!""}">
+                                               </#if>
+                                               ${file.internalName!file.name}
+                                               <#if file.page>
+                                                   </a>
+                                               </#if>
+                                           </li>
+                                       </#list>
+                                    </ul><br/>
+                                    <#if scheduleDate??>
+                                        <a href="${liveUrl}">Click Here to View Your Published Content</a>
+                                        <br/>
+                                    </#if>
                                 </p>
                             </body>
-                        </html>
-                        ]]></body>
+                        </html>]]></body>
             </emailTemplate>
 
             <emailTemplate key="submittedForReview">
                 <subject>Content Review</subject>
                 <body><![CDATA[
-                    						<#setting time_zone='EST'>
+                        <#setting time_zone='EST'>
                         <html>
                         <head>
                             <meta charset="utf-8"/>
@@ -144,31 +139,30 @@
                         <body style=" font-size: 12pt">
                             <p>
                                 ${submitter.first_name!submitter.username} ${submitter.last_name} has submitted items for your review:
-                              <ul>
-                              <#list files as file>
-                                	<#if file.page>
-                                  	<a href="${authoringUrl}/preview/#/?page=${file.browserUri!""}&site=${siteName}">
-                                       </#if>
-    	                           <li>${file.internalName!file.name}</li>
-                                  	<#if file.page>
-	                                  </a>
-                                  </#if>
-                                </#list>
-                            </ul>
-                            <#if submissionComments?has_content>
-                            Comments:<br/>
-                                ${submissionComments!""}
+                                <ul>
+                                    <#list files as file>
+                                        <li>
+                                            <#if file.page>
+                                                <a href="${authoringUrl}/studio/preview/#/?page=${file.browserUri!""}&site=${siteName}">
+                                            </#if>
+                                            ${file.internalName!file.name}
+                                            <#if file.page>
+                                                </a>
+                                            </#if>
+                                        </li>
+                                    </#list>
+                                </ul>
+                                <#if submissionComments?has_content>
+                                    Comments:<br/>
+                                    ${submissionComments!""}
+                                    <br/>
+                                </#if>
                                 <br/>
-                            </#if><br/>
-                            <a href="${authoringUrl}/site-dashboard">Click Here to View Content Waiting for Approval</a>
-                            <br/><br/>
-        <a href="${liveUrl}" >
-            <img style="max-width: 350px;  max-height: 350px;" src="${liveUrl}/static-assets/images/workflow-email-footer.png" alt="" />
-        </a>
-    </p>
+                                <a href="${authoringUrl}/studio/site-dashboard">Click Here to View Content Waiting for Approval</a>
+                                <br/><br/>
+                            </p>
                         </body>
-                        </html>
-                        ]]></body>
+                    </html>]]></body>
             </emailTemplate>
 
             <emailTemplate key="contentRejected">
@@ -179,30 +173,28 @@
                             <head>
                                 <meta charset="utf-8"/>
                             </head>
-                             <body style=" font-size: 12pt;">
+                            <body style=" font-size: 12pt;">
                                 <p>
                                     The following content has been reviewed and requires some revision before it can be approved:
                                     <ul>
-                                  <#list files as file>
-                                        <#if file.page>
-                                            <a href="${authoringUrl}/preview/#/?page=${file.browserUri!""}&site=${siteName}">
-                                           </#if>
-                                       <li>${file.internalName!file.name}</li>
-                                        <#if file.page>
-                                          </a>
-                                      </#if>
-                                    </#list>
-                                </ul>
-                                Reason:<br/>
+                                        <#list files as file>
+                                            <li>
+                                                <#if file.page>
+                                                    <a href="${authoringUrl}/studio/preview/#/?page=${file.browserUri!""}&site=${siteName}">
+                                                </#if>
+                                                ${file.internalName!file.name}
+                                                <#if file.page>
+                                                    </a>
+                                                </#if>
+                                            </li>
+                                        </#list>
+                                    </ul>
+                                    Reason:<br/>
                                     ${rejectionReason!""}
-                                <br/><br/>
-                                <a href="${authoringUrl}/site-dashboard" >
-                                    <img style="max-width: 350px;  max-height: 350px;" src="${liveUrl}/static-assets/images/workflow-email-footer.png" alt="" />
-                                </a>
+                                    <br/><br/>
                                 </p>
                             </body>
-                        </html>
-                        ]]></body>
+                        </html>]]></body>
             </emailTemplate>
             <emailTemplate key="contentExpiringSoon">
                 <subject>Content Expiring Soon</subject>
@@ -215,7 +207,7 @@
                                 <p>
                                     ${monitorName} in site '${siteName}':
                                     <ul>
-                                  <#list items as item>
+                                    <#list items as item>
                                         <#if item.url??>
                                             <li><a href="${item.url}">${item.internalName!item.id}</a></li>
                                         <#else>
@@ -225,8 +217,7 @@
                                 </ul>
                                 </p>
                             </body>
-                        </html>
-                        ]]></body>
+                        </html>]]></body>
             </emailTemplate>
 
             <emailTemplate key="repositoryMergeConflict">
@@ -246,9 +237,10 @@
                                     </ul>
                                 </p>
                             </body>
-                        </html>
-]]></body>
+                        </html>]]></body>
             </emailTemplate>
         </emailTemplates>
+
+
     </lang>
 </notificationConfig>
