@@ -22,7 +22,7 @@ plugins {
 apply plugin: "groovy"
 apply plugin: 'de.undercouch.download'
 
-project.version = "3.2.0-SNAPSHOT" // craftercms version flag
+project.version = "4.0.0-SNAPSHOT" // craftercms version flag
 
 apply from: "commons.gradle"
 apply from: "modules.gradle"
