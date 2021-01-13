@@ -16,7 +16,7 @@
 
 ext.allModules = [  "groovy-sandbox", "script-security-plugin", "commons",
                     "core", "search", "profile", "engine", "deployer", "studio-ui",
-                    "studio", "social", "plugin-maker", "crafter-cli"]
+                    "studio", "social", "crafter-cli"]
 ext.buildModules = ["groovy-sandbox", "script-security-plugin", "commons",
                     "core", "search", "profile", "engine", "deployer", "studio-ui", "studio",
                     "social", "crafter-cli"]
