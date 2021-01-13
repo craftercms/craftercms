@@ -70,11 +70,6 @@ task preFlightCheck() {
 			throw new GradleException("Maven ('mvn') not found, please make sure it is installed and accessible.")
 		}
 
-		command = "yarn -v"
-		if (!command.execute()) {
-			throw new GradleException("Yarn ('yarn') not found, please make sure it is installed and accessible.")
-		}
-
 		command = "lsof -v"
 		if (!command.execute()) {
 			throw new GradleException("'lsof' command not found, please make sure it is installed and accessible.")
