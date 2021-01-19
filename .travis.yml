@@ -20,10 +20,12 @@ notifications:
 script:
 - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
 	bash -c "mvn -DskipTests deploy --settings .travis-settings.xml";
-	bash -c "mvn -DskipTests -f pom-spring-boot.xml deploy --settings .travis-settings.xml";  fi
+	bash -c "mvn -DskipTests -f pom-spring-boot.xml deploy --settings .travis-settings.xml";
+  fi
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then
 	bash -c "mvn -DskipTests clean install"
-	bash -c "mvn -DskipTests -f pom-spring-boot.xml clean install"; fi
+	bash -c "mvn -DskipTests -f pom-spring-boot.xml clean install";
+  fi
 env:
   global:
   - secure: Xyxx1EXQn5MGsiCF8GREAe6hUMWKcgzrOBaA7mRkfSl/vEbFWEnSAqUZo8Zh1/2YJGP8uG7O6VYjCJ8xOykzfp+oKntmAYhEZTZAEVCp9x76jSEZs+BM3uOWaEP+xl/wLGfMzMBOby1ItNHAuxAwxztPKeLu6ijNrXaLxURUiulZN9vbBVinoca35gWMKPtaaEk85Fx7BbnnNo9+f3U2LjQGq8ifXHpsUwgrnc66Rl/x+I4ahuxjDNv5W8Afj7r5Mws8oIO3ubn9KuO7YCqDPsUDnMDj25fP4ZuYL/jFnSboasGvdQbnV/UYW3D9gMUlianu6ck9p1fJ4lR3OruDfQ1ASS9H4+JcBSMshPxrYwzHFPWCHHGnJZPQZsm4auX4bhXu0qWyFZjrSomZnJhGnyto6zwUtXOKSMI43HPOYptP9qCoEzGpOrrQT/tsunqx41CDbqv4KFmVV+wrX75xJY3eI837hKnxKK2P6Hzc8ZQ+nub5UH6xes1V72QD91+ZbE7MGDTf/4VViB655lD7GBcCUCi4GfeiZVsWmahnKjkwFjhVrovJfXJ7tQEcCJ6owxFuKqs89999n6jadkQkSfSYyYdNBEJHdd2pgKtqRgWAsYUkL4JQKIuEdcM3MfkepIfMcCa54ZHnZg0LEC+2Jwyb7SiGaI98fRZGs5YKb4s=
