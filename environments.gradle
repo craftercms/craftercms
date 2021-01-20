@@ -140,7 +140,6 @@ ext.commonUpdatePermissions = [
         items: [
             "/apache-tomcat/bin/catalina.sh",
             "/apache-tomcat/bin/configtest.sh",
-            "/apache-tomcat/bin/configtest.sh",
             "/apache-tomcat/bin/daemon.sh",
             "/apache-tomcat/bin/digest.sh",
             "/apache-tomcat/bin/setclasspath.sh",

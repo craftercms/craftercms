@@ -34,7 +34,7 @@ fi
 export CRAFTER_BIN_DIR=${CRAFTER_BIN_DIR:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
-. "$CRAFTER_BIN_DIR/crafter-setenv.sh"
+source "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
 function help() {
   echo $(basename $BASH_SOURCE)
@@ -77,7 +77,7 @@ function help() {
 }
 
 function version(){
-  echo "Copyright (C) 2007-2020 Crafter Software Corporation. All rights reserved."
+  echo "Copyright (C) 2007-2021 Crafter Software Corporation. All rights reserved."
   echo "Version @VERSION@-@GIT_BUILD_ID@"
 }
 
@@ -114,6 +114,11 @@ function printTailInfo(){
   echo "Log files live here: \"$CRAFTER_LOGS_DIR\". "
   echo "To follow the main tomcat log, you can \"tail -f $CRAFTER_LOGS_DIR/tomcat/catalina.out\""
   echo -e "\033[0m"
+}
+
+function runTask() {
+  "$@" 2>&1&
+  disown -h $!
 }
 
 function startDeployer() {
@@ -162,7 +167,7 @@ function startElasticsearch() {
     ## Before run check if the port is available.
     possiblePID=$(pidOf $ES_PORT)
     if  [ -z "$possiblePID" ];  then
-      $ES_HOME/elasticsearch -d -p $ES_PID 2>&1&
+      runTask $ES_HOME/elasticsearch -d -p $ES_PID
     else
       echo $possiblePID > $ES_PID
       echo "Process PID $possiblePID is listening port $ES_PORT"
@@ -201,7 +206,7 @@ function debugElasticsearch() {
     possiblePID=$(pidOf $ES_PORT)
     if  [ -z "$possiblePID" ];  then
       export ES_JAVA_OPTS="$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045"
-      $ES_HOME/elasticsearch -d -p $ES_PID
+      runTask $ES_HOME/elasticsearch -d -p $ES_PID
     else
       echo $possiblePID > $ES_PID
       echo "Process PID $possiblePID is listening port $ES_PORT"
@@ -282,7 +287,7 @@ function startTomcat() {
       possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
       if  [ -z "$possiblePID" ];  then
-        $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start
+        runTask $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start
       else
         echo $possiblePID > $CATALINA_PID
         echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
@@ -330,7 +335,7 @@ function debugTomcat() {
       possiblePID=$(pidOf $TOMCAT_HTTP_PORT)
 
       if  [ -z "$possiblePID" ];  then
-        $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda start
+        runTask $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda start
       else
         echo $possiblePID > $CATALINA_PID
         echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
@@ -406,7 +411,7 @@ function startMongoDB(){
     # Before run check if the port is available.
     possiblePID=$(pidOf $MONGODB_PORT)
     if  [ -z $possiblePID ];  then
-      nohup $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_DATA_DIR/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT 2>&1&
+      runTask $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_DATA_DIR/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
     else
       echo $possiblePID > $MONGODB_PID
       echo "Process PID $possiblePID is listening port $MONGODB_PORT"
@@ -450,7 +455,7 @@ function stopMongoDB(){
   if [ -s "$MONGODB_PID" ]; then
     case "$(uname -s)" in
       Linux)
-      $MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_DATA_DIR/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
+      runTask $MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_DATA_DIR/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
       ;;
       *)
       pkill -3 -F "$MONGODB_PID"
