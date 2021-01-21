@@ -117,7 +117,8 @@ function printTailInfo(){
 }
 
 function runTask() {
-  "$@" 2>&1&
+  "$@" 2>&1 > /dev/null &
+  sleep 2
   disown -h $!
 }
 
