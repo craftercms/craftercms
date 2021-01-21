@@ -248,11 +248,11 @@ ext.commonConfUpdatePatterns = [
                 replace: 'http.port: ${ES_PORT}'
             ],
             [
-                match: '#discovery.zen.ping.unicast.hosts',
+                match: '# ---------------------------------- Gateway -----------------------------------',
                 replace: System.lineSeparator() + 
                     '# Disable cluster discovery' + System.lineSeparator() +
                     'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
-                    '#discovery.zen.ping.unicast.hosts'
+                    '# ---------------------------------- Gateway -----------------------------------'
             ]
         ]
     ]
