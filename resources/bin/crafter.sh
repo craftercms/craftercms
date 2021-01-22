@@ -118,8 +118,9 @@ function printTailInfo(){
 
 function runTask() {
   "$@" 2>&1 > /dev/null &
+  TASK_PID=$!
   sleep 2
-  disown -h $!
+  disown -h $TASK_PID
 }
 
 function startDeployer() {
