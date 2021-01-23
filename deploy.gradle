@@ -46,38 +46,9 @@ ext.deliveryDeployArtifacts = [
 ]
 
 ext.commonDeployPermissions = [
-    [
-        items: [
-            "/crafter-deployer/deployer.sh",
-            "/crafter-deployer/startup.sh",
-            "/crafter-deployer/shutdown.sh",
-            "/crafter.sh",
-            "/startup.sh",
-            "/debug.sh",
-            "/shutdown.sh",
-            "/crafter-setenv.sh"
-        ],
-        permissions: [
-            "+x"
-        ]
-    ]
 ]
 
 ext.authoringDeployPermissions = [
-    [
-        items: [
-            "/migration/migrate.sh",
-            "/migration/migrate-bg.sh",
-            "/migration/import.sh",
-            "/migration/import-bg.sh",
-            "/migration/setenv.sh",
-            "/upgrade/start-upgrade.sh",
-            "/upgrade/upgrade-target.sh"
-        ],
-        permissions: [
-            "+x"
-        ]
-    ]
 ]
 
 ext.deliveryDeployPermissions = [

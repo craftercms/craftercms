@@ -167,7 +167,22 @@ ext.commonUpdatePermissions = [
 ext.authoringUpdatePermissions = [
     [
         items: [
-            "/apache-tomcat/bin/setenv.sh"
+            "/apache-tomcat/bin/setenv.sh",
+            "/crafter-deployer/deployer.sh",
+            "/crafter-deployer/startup.sh",
+            "/crafter-deployer/shutdown.sh",
+            "/crafter.sh",
+            "/startup.sh",
+            "/debug.sh",
+            "/shutdown.sh",
+            "/crafter-setenv.sh",
+            "/migration/migrate.sh",
+            "/migration/migrate-bg.sh",
+            "/migration/import.sh",
+            "/migration/import-bg.sh",
+            "/migration/setenv.sh",
+            "/upgrade/start-upgrade.sh",
+            "/upgrade/upgrade-target.sh"
         ],
         permissions: [
             "+x"
@@ -178,7 +193,15 @@ ext.authoringUpdatePermissions = [
 ext.deliveryUpdatePermissions = [
     [
         items: [
-            "/apache-tomcat/bin/setenv.sh"
+            "/apache-tomcat/bin/setenv.sh",
+            "/crafter-deployer/deployer.sh",
+            "/crafter-deployer/startup.sh",
+            "/crafter-deployer/shutdown.sh",
+            "/crafter.sh",
+            "/startup.sh",
+            "/debug.sh",
+            "/shutdown.sh",
+            "/crafter-setenv.sh"
         ],
         permissions: [
             "+x"
