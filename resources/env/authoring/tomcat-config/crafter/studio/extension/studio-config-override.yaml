@@ -330,3 +330,24 @@ studio.search.keepAlive: false
 # Indicates if Forwarded or X-Forwarded headers should be used when resolving the client-originated protocol and
 # address. Enable when Studio is behind a reverse proxy or load balancer that sends these
 studio.forwarded.headers.enabled: false
+
+##################################################
+##               Access Tokens                  ##
+##################################################
+
+# Issuer for the generated access tokens
+studio.security.token.issuer: ${env:STUDIO_TOKEN_ISSUER}
+# List of accepted issuers for validation of access tokens (separated by commas)
+studio.security.token.validIssuers: ${env:STUDIO_TOKEN_VALID_ISSUERS}
+# The audience for generation and validation of access tokens (if empty the instance id will be used)
+studio.security.token.audience: ${env:STUDIO_TOKEN_AUDIENCE}
+# Time in minutes for the expiration of the access tokens
+studio.security.token.timeout: ${env:STUDIO_TOKEN_TIMEOUT}
+# Password for signing the access tokens (needs to be equal or greater than 512 bits in length)
+studio.security.token.password.sign: ${env:STUDIO_TOKEN_SIGN_PASSWORD}
+# Password for encrypting the access tokens
+studio.security.token.password.encrypt: ${env:STUDIO_TOKEN_ENCRYPT_PASSWORD}
+# Name of the cookie to store the refresh token
+studio.security.token.cookie.name: ${env:STUDIO_REFRESH_TOKEN_NAME}
+# Time in seconds for the expiration of the refresh token cookie
+studio.security.token.cookie.maxAge: ${env:STUDIO_REFRESH_TOKEN_MAX_AGE}
