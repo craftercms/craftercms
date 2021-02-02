@@ -143,8 +143,12 @@ export CLUSTER_NODE_ADDRESS=${CLUSTER_NODE_ADDRESS:="$(hostname -i)"}
 # -------------------- Configuration variables --------------------
 export CRAFTER_ENVIRONMENT=${CRAFTER_ENVIRONMENT:=default}
 
-# -------------------- Studio's access tokens --------------------
-# These variables are used to control the access tokens used for Studio's API, please replace all default values
+# -------------------- Studio's access tokens ---------------------
+# *************************************************************************************
+# ************************* IMPORTANT *************************************************
+# The following variables are used to control the access tokens used for Studio's API,
+# please replace all default values to properly secure your installation
+# *************************************************************************************
 
 # Issuer for the generated access tokens
 export STUDIO_TOKEN_ISSUER=${STUDIO_TOKEN_ISSUER:="Crafter Studio"}
