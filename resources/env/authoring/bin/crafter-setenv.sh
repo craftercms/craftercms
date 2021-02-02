@@ -142,3 +142,27 @@ export CLUSTER_NODE_ADDRESS=${CLUSTER_NODE_ADDRESS:="$(hostname -i)"}
 
 # -------------------- Configuration variables --------------------
 export CRAFTER_ENVIRONMENT=${CRAFTER_ENVIRONMENT:=default}
+
+# -------------------- Studio's access tokens ---------------------
+# *************************************************************************************
+# ************************* IMPORTANT *************************************************
+# The following variables are used to control the access tokens used for Studio's API,
+# please replace all default values to properly secure your installation
+# *************************************************************************************
+
+# Issuer for the generated access tokens
+export STUDIO_TOKEN_ISSUER=${STUDIO_TOKEN_ISSUER:="Crafter Studio"}
+# List of accepted issuers for validation of access tokens (separated by commas)
+export STUDIO_TOKEN_VALID_ISSUERS=${STUDIO_TOKEN_VALID_ISSUERS:="Crafter Studio"}
+# The audience for generation and validation of access tokens (if empty the instance id will be used)
+export STUDIO_TOKEN_AUDIENCE=${STUDIO_TOKEN_AUDIENCE:=""}
+# Time in minutes for the expiration of the access tokens
+export STUDIO_TOKEN_TIMEOUT=${STUDIO_TOKEN_TIMEOUT:=5}
+# Password for signing the access tokens (needs to be equal or greater than 512 bits in length)
+export STUDIO_TOKEN_SIGN_PASSWORD=${STUDIO_TOKEN_SIGN_PASSWORD:="E1oEGMMEaxvUQJTFePPyniOLNxVLHuoPHGaedqMe1tQqXa28u3MvRTBgTZfRqIzM"}
+# Password for encrypting the access tokens
+export STUDIO_TOKEN_ENCRYPT_PASSWORD=${STUDIO_TOKEN_ENCRYPT_PASSWORD:="fEo7tQCXX1RYHE2ODOtjtBzmL0zzonSI"}
+# Name of the cookie to store the refresh token
+export STUDIO_REFRESH_TOKEN_NAME=${STUDIO_REFRESH_TOKEN_NAME:="refresh_token"}
+# Time in seconds for the expiration of the refresh token cookie
+export STUDIO_REFRESH_TOKEN_MAX_AGE=${STUDIO_REFRESH_TOKEN_MAX_AGE:=300}
