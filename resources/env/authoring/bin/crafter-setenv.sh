@@ -142,3 +142,8 @@ export CLUSTER_NODE_ADDRESS=${CLUSTER_NODE_ADDRESS:="$(hostname -i)"}
 
 # -------------------- Configuration variables --------------------
 export CRAFTER_ENVIRONMENT=${CRAFTER_ENVIRONMENT:=default}
+
+# The max size of the configuration cache for Studio
+export STUDIO_CONFIG_CACHE_MAX_SIZE=${STUDIO_CONFIG_CACHE_MAX_SIZE:=100}
+# The time in seconds to expire items in the configuration cache
+export STUDIO_CONFIG_CACHE_EXPIRE_TIME=${STUDIO_CONFIG_CACHE_EXPIRE_TIME:=500}
