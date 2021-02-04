@@ -25,7 +25,7 @@ fi
 OSARCH=$(getconf LONG_BIT)
 if [[ $OSARCH -eq "32" ]]; then
   echo -e "\033[38;5;196m"
-  echo "CrafterCMS is not supported in a 32bit os"
+  echo "Crafter CMS is not supported on 32-bit architecture"
   echo -e "\033[0m"
   read -r
   exit 5
@@ -117,7 +117,8 @@ function printTailInfo(){
 }
 
 function runTask() {
-  "$@" 2>&1 > /dev/null &
+#  "$@" 2>&1 > /dev/null &
+  "$@"
   TASK_PID=$!
   disown -h $TASK_PID
 }
