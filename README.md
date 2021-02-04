@@ -49,7 +49,43 @@ If you would like to contribute to Crafter CMS, to build a developer's environme
 git clone -b develop https://github.com/craftercms/craftercms.git
 ```
 
-# 2. Build a Deployable Bundle
+# 2. Summary of Commands and Options
+## 2.1 Commands
+
+* `download` Download dependencies
+* `clone` Clone Crafter CMS modules
+* `selfUpdate` Update the parent project (`craftercms`)
+* `update` Update modules
+* `clean` Clean modules
+* `build` Build modules
+* `deploy` Deploy modules
+* `upgrade` Upgrade modules (same as `update`, `build`, `deploy`)
+* `start` Start Crafter CMS
+* `stop` Stop Crafter CMS
+* `status` Report status on running environments if any
+* `bundle` Create a deployable bundle
+
+## 2.2 Options
+
+* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: Elasticsearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false` 
+* `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `false` 
+* `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false` 
+* `downloadGrapes`: Download Grapes ahead of time (useful when no public Internet is available), default `false`
+* `socialRequired` or `crafter.social`: Include Social in the build, default `false`
+* `profileRequired` or `crafter.profile`: Include Profile in the build, default `false`
+* `unitTest`: Run unit tests during build, default `false`
+* `startMongoDB`: start MongoDB, default `false` unless Profile or Social are enabled. This is automatic.
+* `startElasticsearch` or `withElasticsearch`: start Elasticsearch, default `true`
+* `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
+* `gitRemote`: Git remote name to use in cloned modules, default `origin`
+* `shallowClone`: Shallow clone modules? (faster, but you lose history), default `false`
+* `gitBranch`: Git branch to use when cloning modules, default `develop` (for develop branch)
+* `bundlesDir`: Where to deposit bundles, default `./bundles`
+* `downloadDir`: Where to store downloads, default `./downloads`
+* `authoringEnvDir`: Where to store the authoring environment, default `./crafter-authoring`
+* `deliveryEnvDir`: Where to store the delivery environment, default `./crafter-delivery`
+
+# 3. Build a Deployable Bundle
 
 To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.tar.gz` files ready to be deployed to any system.
 
@@ -63,7 +99,7 @@ Archives will be named `crafter-cms-${environment}.tar.gz` and can be found in t
 
 To run Crafter CMS from the bundle, unzip and follow the instructions in the bundle's `README.txt`.
 
-## 2.1. Build an Environment Specific Bundle
+## 3.1. Build an Environment Specific Bundle
 Crafter CMS is a decoupled CMS, and that means you have an `authoring` environment that caters to content creators, and a different environment, `delivery`, that handles the end-users that use the experience created by the former.
 
 To build a bundle for a specific environment:
@@ -75,7 +111,7 @@ Archive will be named `crafter-cms-authoring-${version}.tar.gz` and can be found
 
 For the `delivery` environment, simply substitute the `env=authoring` with `env=delivery`.
 
-## 2.2 Update, Build and Bundle from a Tag/Branch
+## 3.2 Update, Build and Bundle from a Tag/Branch
 
 To download, build and generate a bundle from a given tag or branch of the source code,
 
@@ -91,12 +127,12 @@ To download, build and generate a bundle from a given tag or branch of the sourc
 **Note**:
 When using a tag-based build, you're essentially cloning a point in time to build that specific version of Crafter CMS. That implies that you won't be able to update/nor push changes back.
 
-# 3. Build a Developer's Environment
+# 4. Build a Developer's Environment
 Crafter CMS comprises a number of headless API-first (GraphQL, REST, in-process)  modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
 
 
-## 3.1. Build, Start and Stop All 
-### 3.1.1. Build All
+## 4.1. Build, Start and Stop All 
+### 4.1.1. Build All
 Build all Crafter CMS modules
 
 ```bash
@@ -116,20 +152,20 @@ You can now point your browser to [http://localhost:8080/studio](http://localhos
 * The authoring environment runs on port `8080`, a great place to start, while the delivery environment runs on port 
 `9080`.
 
-### 3.1.3. Stop All
+### 4.1.3. Stop All
 Stop Crafter CMS,
 
 ```bash
     ./gradlew stop
 ```
 
-### 3.2. Two Environments: Authoring vs Delivery
+### 4.2. Two Environments: Authoring vs Delivery
 You might have noticed that you essentially have two environments built and running: `authoring` and `delivery`. Crafter CMS is a decoupled CMS, and that means you have an `authoring` environment that caters to content creators, and a different environment, `delivery`, that handles the end-users that use the experience created by the former.
 
 As a developer, you can use an `authoring` environment for most tasks without the need to run a `delivery` environment. It's important to note that `delivery` essentially runs the same software that's in `authoring` except Crafter Studio (the authoring tools).
 By default, this project will build both environments unless instructed otherwise. The `authoring` environment runs at [http://localhost:8080/studio](http://localhost:8080/studio), whereas the `delivery` environment runs at [http://localhost:9080/studio](http://localhost:9080/).
 
-### 3.2.1. Build, Start, and Stop a Specific Environment
+### 4.2.1. Build, Start, and Stop a Specific Environment
 To build, start and stop one of the two environments is similar to building/starting/stopping All.
 
 #### Authoring
@@ -161,7 +197,7 @@ Crafter CMS comprises the modules:
 
 You'll find these projects checked out and ready for you to contribute to in the folder `src/{modules}`.
 
-### 3.3.1. Forking a Module
+### 4.3.1. Forking a Module
 Start by forking the module you want to work on. You can follow the [GitHub instructions](https://help.github.com/articles/fork-a-repo/).
 The next step is to switch the origin url location to be the one just forked, to do so you can use [these GitHub instructions](https://help.github.com/articles/changing-a-remote-s-url/).
 The last step will be to add an upstream repository from the main `craftercms` repo to your own. Follow [these steps](https://help.github.com/articles/fork-a-repo/#step-3-configure-git-to-sync-your-fork-with-the-original-spoon-knife-repository)
@@ -174,7 +210,7 @@ To update your project with the latest:
     ./gradlew update
 ```
 
-### 3.3.2. Update, Build, Deploy, Start, and Stop a Module
+### 4.3.2. Update, Build, Deploy, Start, and Stop a Module
 You can update, build, deploy, start or stop a module by:
 
 ```bash
@@ -189,5 +225,5 @@ You can update, build, deploy, start or stop a module by:
 * If you don't specify the `env` parameter, it means all environments (where applicable).
 * In the current version of Crafter CMS, some services run in the same Web container, and that implies the stopping/starting of one of these services will cause other services to stop/start as well.
 
-# 4. Advanced Topics
+# 5. Advanced Topics
 For more detailed information and advanced topic, please visit the [detailed documentation](http://docs.craftercms.org/current/developers/projects/craftercms/index.html).
