@@ -52,25 +52,41 @@ ext.getPropertySafelyWithDefaults = {
 // Settings
 ext {
 	srcFolder = getPropertySafelyWithDefaults("projectDir", ".") + "/src/"
+	commandTimeout = getPropertySafelyWithDefaults("commandTimeout", 1000000).toInteger()
 }
 
 ext.execCommand = { command, dir ->
-	// System.out.println("Executing command \"" + command)
+	def cmd = "";
 
-	exec {
-		workingDir dir
-		commandLine command
+	command.each { fragment ->
+		cmd += fragment
+		if (fragment != command.last()) {
+			cmd += " "
+		}
 	}
+
+	//System.out.println("Executing command \"" + dir + ":" + cmd + "\"")
+
+	def proc = cmd.execute(null, file(dir))
+
+	proc.consumeProcessOutput(System.out, System.err)
+	proc.waitForOrKill(commandTimeout)
 }
 
 ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFiles ->
     def command = [];
 
-    if (overwriteChangedFiles) {
-        command = ["rsync", "-ar", "--exclude", exclude, source, destination]
-    } else {
-        command = ["rsync", "--update", "-ar", "--exclude", exclude, source, destination]
+	command = ["rsync", "-ar"]
+
+	if (!overwriteChangedFiles) {
+        command += ["--update"]
     }
+
+	if (!exclude.isEmpty()) {
+		command += ["--exclude", exclude]
+	}
+
+	command += [source, destination]
 
 	try {
 		execCommand(command, workingDir)

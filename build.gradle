@@ -33,7 +33,7 @@ apply from: "run.gradle"
 
 // Global Settings
 def overwriteArtifact = getPropertySafelyWithDefaults("refreshDownloads", "false").toBoolean()
-def overwriteChangedFiles = getPropertySafelyWithDefaults("overrideConfig","true").toBoolean()
+def overwriteChangedFiles = getPropertySafelyWithDefaults("overwriteChangedFiles","true").toBoolean()
 def refreshEnv = getPropertySafelyWithDefaults("refreshEnv", "false").toBoolean()
 def downloadGrapes = getPropertySafelyWithDefaults("downloadGrapes", "false").toBoolean()
 def socialRequired = getPropertySafelyWithDefaults("crafter.social", "false").toBoolean()
