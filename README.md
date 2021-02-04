@@ -67,20 +67,20 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 
 ## 2.2 Options
 
-* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: Elasticsearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false` 
 * `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `false` 
 * `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false` 
-* `downloadGrapes`: Download Grapes ahead of time (useful when no public Internet is available), default `false`
+* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: Elasticsearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false` 
+* `gitRemote`: Git remote name to use in cloned modules, default `origin`
+* `gitBranch`: Git branch to use when cloning modules, default `develop` (for develop branch)
+* `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
 * `socialRequired` or `crafter.social`: Include Social in the build, default `false`
 * `profileRequired` or `crafter.profile`: Include Profile in the build, default `false`
-* `unitTest`: Run unit tests during build, default `false`
-* `startMongoDB`: start MongoDB, default `false` unless Profile or Social are enabled. This is automatic.
 * `startElasticsearch` or `withElasticsearch`: start Elasticsearch, default `true`
-* `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
-* `gitRemote`: Git remote name to use in cloned modules, default `origin`
+* `startMongoDB`: start MongoDB, default `false` unless Profile or Social are enabled. This is automatic.
+* `unitTest`: Run unit tests during build, default `false`
 * `shallowClone`: Shallow clone modules? (faster, but you lose history), default `false`
-* `gitBranch`: Git branch to use when cloning modules, default `develop` (for develop branch)
 * `bundlesDir`: Where to deposit bundles, default `./bundles`
+* `downloadGrapes`: Download Grapes ahead of time (useful when no public Internet is available), default `false`
 * `downloadDir`: Where to store downloads, default `./downloads`
 * `authoringEnvDir`: Where to store the authoring environment, default `./crafter-authoring`
 * `deliveryEnvDir`: Where to store the delivery environment, default `./crafter-delivery`
