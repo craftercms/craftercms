@@ -67,7 +67,7 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 
 ## 2.2 Options
 
-* `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `false` 
+* `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `true` 
 * `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false` 
 * `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: Elasticsearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false` 
 * `gitRemote`: Git remote name to use in cloned modules, default `origin`
