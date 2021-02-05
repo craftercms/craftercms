@@ -19,7 +19,7 @@ Download a pre-built bundle here: https://craftercms.org/downloads
 
 Read the docs here: https://docs.craftercms.org/current
 
-This repository is for developers interested in contributing to Crafter CMS, customizing their own release, or building the latest. This parent project helps you build one of:
+This repository is for developers interested in contributing to Crafter CMS, customizing their own release, or building the latest. This parent project helps you build the following:
 
 1. Deployable Crafter CMS bundle
 2. Docker images
@@ -78,7 +78,7 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `startElasticsearch` or `withElasticsearch`: start Elasticsearch, default `true`
 * `startMongoDB`: start MongoDB, default `false` unless Profile or Social are enabled. This is automatic.
 * `unitTest`: Run unit tests during build, default `false`
-* `shallowClone`: Shallow clone modules? (faster, but you lose history), default `false`
+* `shallowClone`: Clone only the latest commits and not the entire history (faster, but you lose history), default `false`
 * `bundlesDir`: Where to deposit bundles, default `./bundles`
 * `downloadGrapes`: Download Grapes ahead of time (useful when no public Internet is available), default `false`
 * `downloadDir`: Where to store downloads, default `./downloads`
@@ -89,7 +89,7 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 
 To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.tar.gz` files ready to be deployed to any system.
 
-Before using `bundle` task make sure that the enviroment has been created and deployed using gradle tasks `build` and `deploy`
+Before using `bundle` task make sure that the environment has been created and deployed using gradle tasks `build` and `deploy`
 
 Archives will be named `crafter-cms-${environment}.tar.gz` and can be found in the `bundles` folder.
 
@@ -163,7 +163,7 @@ Stop Crafter CMS,
 You might have noticed that you essentially have two environments built and running: `authoring` and `delivery`. Crafter CMS is a decoupled CMS, and that means you have an `authoring` environment that caters to content creators, and a different environment, `delivery`, that handles the end-users that use the experience created by the former.
 
 As a developer, you can use an `authoring` environment for most tasks without the need to run a `delivery` environment. It's important to note that `delivery` essentially runs the same software that's in `authoring` except Crafter Studio (the authoring tools).
-By default, this project will build both environments unless instructed otherwise. The `authoring` environment runs at [http://localhost:8080/studio](http://localhost:8080/studio), whereas the `delivery` environment runs at [http://localhost:9080/studio](http://localhost:9080/).
+By default, this project will build both environments unless instructed otherwise. The `authoring` environment runs at [http://localhost:8080/studio](http://localhost:8080/studio), whereas the `delivery` environment runs at [http://localhost:9080/](http://localhost:9080/).
 
 ### 4.2.1. Build, Start, and Stop a Specific Environment
 To build, start and stop one of the two environments is similar to building/starting/stopping All.
@@ -182,10 +182,10 @@ To build, start and stop one of the two environments is similar to building/star
     ./gradlew stop -Penv=delivery
 ```
 
-### 3.3. Crafter Modules
+### 4.3. Crafter Modules
 The mechanics for working with a single module are similar to working with _all_, with one exception: You can deploy a module to one or both environments (`authoring`/`delivery`).
 
-Crafter CMS comprises the modules:
+Crafter CMS comprises the following modules:
 * [`core`](http://docs.craftercms.org/current/developers/projects/core/index.html)
 * [`commons`](http://docs.craftercms.org/current/developers/projects/commons/index.html)
 * [`engine`](http://docs.craftercms.org/current/developers/projects/engine/index.html)
