@@ -190,10 +190,21 @@ ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
 */
 	// Tar and package
 	file(bundlesDir).mkdir()
+	def bundleFilename = "${bundlesDir}/crafter-cms-${env}-${project.version}-${currentPlatform}-x86_64.tar.gz"
 
 	try {
-		execCommand(["tar", "czf", "${bundlesDir}/crafter-cms-${env}-${project.version}-${current.tar.gz", source],
-				"${projectDir}")
+		execCommand(["tar", "czf", bundleFilename, source], "${projectDir}")
+
+		def md5sum = checksumFile(bundleFilename, "MD5")
+		def sha512sum = checksumFile(bundleFilename, "SHA-512")
+
+		new File(bundleFilename + ".md5").withWriter('utf-8') {
+			writer -> writer.writeLine md5sum + "  " + bundleFilename
+		}
+
+		new File(bundleFilename + ".sha512").withWriter('utf-8') {
+			writer -> writer.writeLine sha512sum + "  " + bundleFilename
+		}
 	}
 	catch (e) {
 		logger.error("Failed to create bundle for env: {}, bundlesDir: {}", env, bundlesDir, e)

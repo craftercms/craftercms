@@ -116,7 +116,7 @@ ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwrit
             tempAndMove true
         }
 
-        String algorithm = "";
+        def algorithm = ""
         if (checksumAlgorithm == "sha512")
             algorithm = "SHA-512"
         else if (checksumAlgorithm == "md5")
