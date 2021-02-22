@@ -41,14 +41,6 @@ ext.splash = { ->
 	System.out.println("\033[0m")
 }
 
-ext.getPropertySafelyWithDefaults = {
-	prop, propDefault ->
-
-	def ret = project.hasProperty(prop)? project.property(prop).toString(): propDefault
-
-	return ret
-}
-
 // Settings
 ext {
 	srcFolder = getPropertySafelyWithDefaults("projectDir", ".") + "/src/"
@@ -200,7 +192,7 @@ ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
 	file(bundlesDir).mkdir()
 
 	try {
-		execCommand(["tar", "czf", "${bundlesDir}/crafter-cms-${env}-${project.version}.tar.gz", source],
+		execCommand(["tar", "czf", "${bundlesDir}/crafter-cms-${env}-${project.version}-${current.tar.gz", source],
 				"${projectDir}")
 	}
 	catch (e) {

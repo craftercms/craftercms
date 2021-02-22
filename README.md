@@ -84,6 +84,7 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `downloadDir`: Where to store downloads, default `./downloads`
 * `authoringEnvDir`: Where to store the authoring environment, default `./crafter-authoring`
 * `deliveryEnvDir`: Where to store the delivery environment, default `./crafter-delivery`
+* `currentPlatform`: What platform to build to (`linux` or `darwin`), default is the build machine's OS
 
 # 3. Build a Deployable Bundle
 

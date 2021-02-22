@@ -35,8 +35,6 @@ ext.environments = ["authoring", "delivery"]
 ext {
     git = org.ajoberstar.grgit.Grgit.open(dir: "${projectDir}")
 	gitRevisionId = git.head().id.substring(0, 6)
-    elasticsearchPlatform = getPropertySafelyWithDefaults("elasticsearchPlatform", SystemUtils.IS_OS_MAC_OSX? "darwin" : "linux")
-    mongodbPlatform = getPropertySafelyWithDefaults("mongodbPlatform", SystemUtils.IS_OS_MAC_OSX? "osx" : "linux")
 }
 
 ext.commonFoldersToCreate = [

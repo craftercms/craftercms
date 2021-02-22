@@ -24,31 +24,13 @@ apply plugin: 'de.undercouch.download'
 
 project.version = "4.0.0-SNAPSHOT" // craftercms version flag
 
+apply from: "global-settings.gradle"
 apply from: "commons.gradle"
 apply from: "modules.gradle"
 apply from: "environments.gradle"
 apply from: "downloads.gradle"
 apply from: "deploy.gradle"
 apply from: "run.gradle"
-
-// Global Settings
-def overwriteArtifact = getPropertySafelyWithDefaults("refreshDownloads", "false").toBoolean()
-def overwriteChangedFiles = getPropertySafelyWithDefaults("overwriteChangedFiles","true").toBoolean()
-def refreshEnv = getPropertySafelyWithDefaults("refreshEnv", "false").toBoolean()
-def downloadGrapes = getPropertySafelyWithDefaults("downloadGrapes", "false").toBoolean()
-def socialRequired = getPropertySafelyWithDefaults("crafter.social", "false").toBoolean()
-def profileRequired = (getPropertySafelyWithDefaults("crafter.profile", "false").toBoolean() || socialRequired)
-def unitTest = getPropertySafelyWithDefaults("unitTest", "false").toBoolean()
-def startMongoDB = getPropertySafelyWithDefaults("startMongodb", (profileRequired || socialRequired)).toBoolean()
-def startElasticsearch = getPropertySafelyWithDefaults("withElasticsearch", "true").toBoolean()
-def startCommand = project.hasProperty("debug")? "debug" : "start"
-def stopCommand = "stop"
-def statusCommand = "status"
-def gitUrl = getPropertySafelyWithDefaults("gitUrl", "https://github.com/craftercms/")
-def gitRemote = getPropertySafelyWithDefaults("gitRemote", "origin")
-def shallowClone = getPropertySafelyWithDefaults("shallowClone", "false").toBoolean()
-def gitBranch = "develop"  // craftercms branch flag
-def bundlesDir = getPropertySafelyWithDefaults(bundlesDir, "./bundles")
 
 task splash() {
 	description 'Displays splash screen'
