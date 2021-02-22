@@ -190,19 +190,20 @@ ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
 */
 	// Tar and package
 	file(bundlesDir).mkdir()
-	def bundleFilename = "${bundlesDir}/crafter-cms-${env}-${project.version}-${currentPlatform}-x86_64.tar.gz"
+	def bundleFilename = "crafter-cms-${env}-${project.version}-${currentPlatform}-x86_64.tar.gz"
+	def bundlePath = "${bundlesDir}/" + bundleFilename
 
 	try {
-		execCommand(["tar", "czf", bundleFilename, source], "${projectDir}")
+		execCommand(["tar", "czf", bundlePath, source], "${projectDir}")
 
-		def md5sum = checksumFile(bundleFilename, "MD5")
-		def sha512sum = checksumFile(bundleFilename, "SHA-512")
+		def md5sum = checksumFile(bundlePath, "MD5")
+		def sha512sum = checksumFile(bundlePath, "SHA-512")
 
-		new File(bundleFilename + ".md5").withWriter('utf-8') {
+		new File(bundlePath + ".md5").withWriter('utf-8') {
 			writer -> writer.writeLine md5sum + "  " + bundleFilename
 		}
 
-		new File(bundleFilename + ".sha512").withWriter('utf-8') {
+		new File(bundlePath + ".sha512").withWriter('utf-8') {
 			writer -> writer.writeLine sha512sum + "  " + bundleFilename
 		}
 	}
