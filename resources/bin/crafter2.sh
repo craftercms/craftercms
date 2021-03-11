@@ -692,19 +692,7 @@ function stopElasticsearch() {
 }
 
 function elasticsearchStatus() {
-  banner "Elasticsearch status"
-
-  esStatusOut=$(curl --silent  -f "http://localhost:$ES_PORT/_cat/nodes?h=uptime,version")
-  if [ $? -eq 0 ]; then
-    echo -e "PID\t"
-    echo $( cat "$ES_PID" )
-    echo -e  "uptime:\t"
-    echo "$esStatusOut" | awk '{print $1}'
-    echo -e  "Elasticsearch Version:\t"
-    echo "$esStatusOut" | awk '{print $2}'
-  else
-    cecho "Elasticsearch is not running or is unreachable on port $ES_PORT\n" "error"
-  fi
+  getStatus "Elasticsearch" $ES_PORT "$ES_PID"
 }
 
 function startTomcat() {
@@ -771,79 +759,50 @@ function skipElasticsearch() {
 }
 
 function getStatus() {
-  banner "$1 status"
+  module=$1
+  port=$2
+  pidFile=$3
 
-  cecho "Executing: curl --silent -f http://localhost:$2$3/api/$4/monitoring/status"
-  statusOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/status")
-  if [ $? -eq 0 ]; then
-    cecho -e "PID\t"
-    cecho $( cat "$5" )
-    cecho -e  "Uptime (in seconds):\t"
-    echo "$statusOut"  |  grep -Eo '"uptime":\d+' | awk -F ":" '{print $2}'
-    versionOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/version")
-    if [ $? -eq 0 ]; then
-      echo -e "Version:\t"
-      echo -n $(echo "$versionOut"  |  egrep -Eo '"packageVersion":"[^"]+"' | awk -F ":" '{print $2}')
-      echo -n " "
-      echo "$versionOut"|  grep -Eo '"packageBuild":"[^"]+"' | awk -F ":" '{print $2}'
-    fi
+  banner "$module status"
+
+  pid=$(getPidByPort $port)
+  if [ -z $pid ]; then
+    cecho "$module is not running\n" "warning"
   else
-    cecho "$1 is not running or is unreachable on port $2\n" "error"
+    cecho "$module is up and running with PID:\t$pid\n" "strong"
   fi
 }
 
 function deployerStatus(){
-  getStatus "Crafter Deployer" $DEPLOYER_PORT "" "1" $DEPLOYER_PID
+  getStatus "Crafter Deployer" $DEPLOYER_PORT $DEPLOYER_PID
 }
 
 function searchStatus(){
-  getStatus "Crafter Search" $TOMCAT_HTTP_PORT "/crafter-search" "1" $CATALINA_PID
+  getStatus "Crafter Search" $TOMCAT_HTTP_PORT $CATALINA_PID
 }
 
 function engineStatus(){
-  getStatus "Crafter Engine" $TOMCAT_HTTP_PORT "" "1" $CATALINA_PID
+  getStatus "Crafter Engine" $TOMCAT_HTTP_PORT $CATALINA_PID
 }
 
 function studioStatus(){
-  getStatus "Crafter Studio" $TOMCAT_HTTP_PORT "/studio" "2" $CATALINA_PID
+  getStatus "Crafter Studio" $TOMCAT_HTTP_PORT $CATALINA_PID
 }
 
 function profileStatus(){
-  getStatus "Crafter Profile" $TOMCAT_HTTP_PORT "/crafter-profile" "1" $CATALINA_PID
+  getStatus "Crafter Profile" $TOMCAT_HTTP_PORT $CATALINA_PID
 }
 
 function socialStatus(){
-  getStatus "Crafter Social" $TOMCAT_HTTP_PORT "/crafter-social" "3" $CATALINA_PID
+  getStatus "Crafter Social" $TOMCAT_HTTP_PORT $CATALINA_PID
 }
-
 
 function mariadbStatus() {
-  banner "MariaDB status"
-
-  if [ -s "$MARIADB_PID" ]; then
-    cecho -e "PID \t"
-    cecho $( cat "$MARIADB_PID" )
-  else
-    cecho "MariaDB is not running.\n" "error"
-  fi
+  getStatus "Studio Database" $MARIADB_PORT $MARIADB_PID
 }
 
-# shellcheck disable=SC2120
 function mongoDbStatus() {
-  banner "MongoDB status"
-
- if $(isMongoNeeded "$@") || [ ! -z "$(getPidByPort $MONGODB_PORT)" ]; then
-    if [ -e "$MONGODB_PID" ]; then
-      cecho "MongoDB PID\n" "info"
-      cecho "$(cat $MONGODB_PID)" "info"
-    else
-      cecho "MongoDB is not running\n" "error"
-    fi
- elif [ ! -d "$MONGODB_HOME" ]; then
-    cecho "MongoDB is not installed.\n" "error"
-  else
-    cecho "MongoDB is not running\n" "error"
-  fi
+  getStatus "MongoDB" $MONGODB_PORT "$MONGODB_PID"
 }
 
 function start() {
@@ -881,6 +840,7 @@ function stop() {
   fi
 }
 
+# shellcheck disable=SC2120
 function status() {
   elasticsearchStatus
   deployerStatus
@@ -891,7 +851,9 @@ function status() {
     mariadbStatus
   fi
   if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/crafter-profile.war" ]; then
-    mongoDbStatus
+    if isMongoNeeded "$@"; then
+      mongoDbStatus
+    fi
     profileStatus
     if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/crafter-social.war" ]; then
       socialStatus
