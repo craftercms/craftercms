@@ -35,7 +35,7 @@ ext.runDeliveryEnvironment = { command, profileRequired, socialRequired ->
 }
 
 ext.runEnvironment = { environment, command, profileRequired, socialRequired ->
-    def cmd = ["./crafter.sh"] + command
+    def cmd = ["${crafterCmd}"] + command
 
     // Run tasks per environment
     if (environment == "authoring") {
