@@ -83,11 +83,6 @@ function runModule() {
 	pidFile=$5
 	operation=$6
 
-  # TODO Cleanup
-	echo runModule $module $executable $port $foldersToCreate $pidFile $operation
-	echo Press any key to continue
-	#read -r
-
 	cd $CRAFTER_BIN_DIR
 
 	banner "$operation $module"
