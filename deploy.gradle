@@ -31,7 +31,12 @@ ext.commonDeployArtifacts = [
         module: 'social-admin',
         from: "${projectDir}/src/social/admin/target/crafter-social-admin.war",
         into: "/bin/apache-tomcat/webapps/"
-    ]
+    ],
+    [
+        module: 'crafter-cli',
+        from: "${projectDir}/src/crafter-cli/target/crafter-cli",
+        into: "/bin/"
+]
 ]
 
 ext.authoringDeployArtifacts = [
@@ -46,6 +51,14 @@ ext.deliveryDeployArtifacts = [
 ]
 
 ext.commonDeployPermissions = [
+    [
+        items: [
+                "/crafter-cli"
+        ],
+        permissions: [
+                "+x"
+        ]
+    ]
 ]
 
 ext.authoringDeployPermissions = [
@@ -84,8 +97,15 @@ ext.deployBaseEnvironment = { envFolder, modules, overwriteChangedFiles, profile
         }
     }
 
+    // Create CLI Symlink
+    // TODO: This is a bit messy, clean it up
+    def command = ["mv", "${projectDir}/" + envFolder + "/bin/crafter-cli", "${projectDir}/" + envFolder + "/bin/cli"]
+    execCommand(command, envFolder)
+    command = ["ln", "-s", "${projectDir}/" + envFolder +"/bin/cli/bin/crafter-cli", "${projectDir}/" + envFolder + "/bin/crafter-cli"]
+    execCommand(command, envFolder)
+
     commonDeployPermissions.each { group ->
-        def command = ["chmod"]
+        command = ["chmod"]
         group['permissions'].each { permission ->
             command << permission
         }
