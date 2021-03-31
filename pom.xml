@@ -163,6 +163,7 @@
         <hazelcast.kubernetes.version>2.0.1</hazelcast.kubernetes.version>
         <semver4j.version>3.1.0</semver4j.version>
         <jose4j.version>0.5.5</jose4j.version>
+        <httpclient.version>4.5.13</httpclient.version>
 
         <!-- Testing -->
         <testng.version>7.1.0</testng.version> <!-- 7.1.0 -->
