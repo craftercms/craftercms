@@ -78,6 +78,7 @@
 		<tomcat.version>9.0.37</tomcat.version>
 		<mariadb.version>10.4.6</mariadb.version>
 		<groovy.version>3.0.7</groovy.version>
+		<apache.ivy>2.5.0</apache.ivy>
 
 		<!-- build -->
 		<maven.javadoc.version>3.2.0</maven.javadoc.version>

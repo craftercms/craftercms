@@ -15,7 +15,7 @@ SEARCH_URL=${SEARCH_URL:="http://localhost:8080/crafter-search"}
 ES_URL=${ES_URL:="http://localhost:9200"}
 JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HOME/logging.xml -Dlogs.dir=$LOGS_DIR \
   -Ddeployments.dir=$DEPLOYMENTS_DIR -Dtargets.dir=$TARGETS_DIR -DprocessedCommits.dir=$PROCESSED_COMMITS \
-  -DdeploymentEvents.dir=$EVENTS_DIR -Dloader.path=$DEPLOYER_HOME/lib"
+  -DdeploymentEvents.dir=$EVENTS_DIR -Dloader.path=$DEPLOYER_HOME/lib -Dgrape.root=$CRAFTER_BIN_DIR"
 PID=${DEPLOYER_PID:="$DATA_DIR/crafter-deployer.pid"}
 OUTPUT=${DEPLOYER_SDOUT:="$LOGS_DIR/crafter-deployer.out"}
 DEPLOYER_MANAGEMENT_TOKEN=${DEPLOYER_MANAGEMENT_TOKEN:="defaultManagementToken"}
