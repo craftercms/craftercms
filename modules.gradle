@@ -16,13 +16,13 @@
 
 ext.allModules = [  "groovy-sandbox", "script-security-plugin", "commons",
                     "core", "search", "profile", "engine", "deployer", "studio-ui",
-                    "studio", "social", "crafter-cli"]
+                    "studio", "social", "cli"]
 ext.buildModules = ["groovy-sandbox", "script-security-plugin", "commons",
                     "core", "search", "profile", "engine", "deployer", "studio-ui", "studio",
-                    "social", "crafter-cli"]
+                    "social", "cli"]
 ext.deployModules = ["groovy-sandbox", "script-security-plugin", "commons",
                     "core", "search", "profile", "profile-admin", "engine", "deployer", "studio-ui", "studio",
-                    "social", "social-admin","crafter-cli"]
+                    "social", "social-admin","cli"]
 
 ext.getAllModules = { ->
     String[] result
