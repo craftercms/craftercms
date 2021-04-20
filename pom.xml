@@ -115,7 +115,7 @@
         <reactor.version>1.0.1.RELEASE</reactor.version>
         <jgit.version>5.10.0.202012080955-r</jgit.version>
         <snakeyaml.version>1.26</snakeyaml.version>
-        <aws.sdk.version>1.11.911</aws.sdk.version>
+        <aws.sdk.version>1.11.1000</aws.sdk.version>
         <box.sdk.version>2.52.0</box.sdk.version>
         <sardine.version>5.10</sardine.version>
         <dom4j.version>2.1.3</dom4j.version>
