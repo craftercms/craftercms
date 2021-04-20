@@ -54,7 +54,7 @@ ext {
     groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "3.0.4"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.53"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
-    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.8.6"
+    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.8.15"
     mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.8"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     
