@@ -127,7 +127,7 @@ def downloadBundle(cli, targetFolder, downloadsBaseUrl, version, bundleUrl, envS
 
     if (!bundleUrl) {
         if (version) {
-            bundleUrl = "${downloadsBaseUrl}/${version}/crafter-cms-${envSuffix}.tar.gz"
+            bundleUrl = "${downloadsBaseUrl}/${version}/crafter-cms-${envSuffix}-${version}.tar.gz"
         } else {
             exitWithError(cli, 'No [bundle-url] or [version] specified')
         }
