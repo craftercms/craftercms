@@ -102,7 +102,7 @@
         <freemarker.version>2.3.30</freemarker.version>
         <aspectj.version>1.9.5</aspectj.version>
         <bouncycastle.version>1.66</bouncycastle.version>
-        <javax.mail.version>1.4.7</javax.mail.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
         <javax.mail.api.version>1.6.2</javax.mail.api.version>
         <javax.activation.version>1.2.0</javax.activation.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
