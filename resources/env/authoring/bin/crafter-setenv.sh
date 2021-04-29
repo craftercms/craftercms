@@ -14,10 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# -------------------- Spring Profiles --------------------
-# Uncomment to enable an external DB for Studio and stop the embedded DB
-# export SPRING_PROFILES_ACTIVE=crafter.studio.externalDb
-
 # -------------------- Locations variables --------------------
 export CRAFTER_LOGS_DIR=${CRAFTER_LOGS_DIR:="$CRAFTER_HOME/logs"}
 export CRAFTER_DATA_DIR=${CRAFTER_DATA_DIR:="$CRAFTER_HOME/data"}
@@ -136,9 +132,6 @@ export CRAFTER_ENCRYPTION_SALT=${CRAFTER_ENCRYPTION_SALT:="default_encryption_sa
 # These variables are used by Studio to encrypt and decrypt values in the database.
 export CRAFTER_SYSTEM_ENCRYPTION_KEY=${CRAFTER_SYSTEM_ENCRYPTION_KEY:="zEtRii1jWUuUUB0W"}
 export CRAFTER_SYSTEM_ENCRYPTION_SALT=${CRAFTER_SYSTEM_ENCRYPTION_SALT:="DgGN9xhq3GOn6zxg"}
-
-# -------------------- Cluster variables -------------------
-export CLUSTER_NODE_ADDRESS=${CLUSTER_NODE_ADDRESS:="$(hostname -i)"}
 
 # -------------------- Configuration variables --------------------
 export CRAFTER_ENVIRONMENT=${CRAFTER_ENVIRONMENT:=default}

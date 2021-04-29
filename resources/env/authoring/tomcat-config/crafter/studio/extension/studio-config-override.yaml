@@ -198,49 +198,6 @@ studio.mail.port: ${env:MAIL_PORT}
 # Enable/disable (value true/false) debug mode for email service. Enabling debug mode allows tracking/debugging communication between email service and SMTP server.
 # studio.mail.debug: false
 
-##################################################
-##                 Clustering                   ##
-##################################################
-#-----------------------------------------------------------------------------
-# IMPORTANT: When enabling clustering, please specify the environment variable 
-# SPRING_PROFILES_ACTIVE=crafter.studio.externalDb in your crafter-setenv.sh
-# (or Docker/Kubernetes env variables). This will stop studio from starting 
-# its embedded DB. Also configure the appropiate MARIADB env variables
-# -----------------------------------------------------------------------------
-
-# Cluster Git URL format for synching members. 
-# - Typical SSH URL format: ssh://{username}@{localAddress}{absolutePath}
-# - Typical HTTPS URL format: https://{localAddress}/repos/sites
-# studio.clustering.sync.urlFormat: ssh://{username}@{localAddress}{absolutePath}
-
-# Cluster Syncers
-# Cluster member after heartbeat stale for amount of minutes will be declared inactive
-# studio.clustering.heartbeatStale.timeLimit: 5
-# Cluster member after being inactive for amount of minutes will be removed from cluster
-# studio.clustering.inactivity.timeLimit: 5
-
-# Cluster member registration, this registers *this* server into the pool
-# Cluster node registration data, remember to uncomment the next line
-# studio.clustering.node.registration:
-#  This server's local address (reachable to other cluster members). You can also specify a different port by 
-#  attaching :PORT to the adddress (e.g 192.168.1.200:2222)
-#  localAddress: ${env:CLUSTER_NODE_ADDRESS}
-#  Authentication type to access this server's local repository
-#  possible values
-#   - none (no authentication needed)
-#   - basic (username/password authentication)
-#   - key (ssh authentication)
-#  authenticationType: none
-#  Username to access this server's local repository
-#  username: user
-#  Password to access this server's local repository
-#  password: SuperSecurePassword
-#  Private key to access this server's local repository (multiline string)
-#  privateKey: |
-#    -----BEGIN PRIVATE KEY-----
-#    privateKey
-#    -----END PRIVATE KEY-----
-
 ################################################################
 ##                             CORS                           ##
 ################################################################
