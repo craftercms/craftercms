@@ -30,12 +30,12 @@ task downloadGroovy() {
     description = "Downloads, checks Groovy integrity and unzips it"
     doFirst {
         download {
-            src "https://dl.bintray.com/groovy/maven/apache-groovy-binary-${groovyVersion}.zip"
+            src "https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-sdk-${groovyVersion}.zip"
             overwrite false
             dest file("${downloadDir}/apache-groovy-${groovyVersion}.zip")
         }
         download {
-            src "https://dl.bintray.com/groovy/maven/apache-groovy-binary-${groovyVersion}.zip.sha256"
+            src "https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-sdk-${groovyVersion}.zip.sha256"
             dest file("${downloadDir}/apache-groovy-${groovyVersion}.zip.sha256")
             overwrite false
         }
