@@ -37,7 +37,7 @@ ext.downloads = [
     ],
     [
         name: "groovy",
-        url: "https://dl.bintray.com/groovy/maven/apache-groovy-binary-${groovyVersion}.zip",
+        url: "https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-sdk-${groovyVersion}.zip",
         destinationFile: "${downloadDir}/apache-groovy-${groovyVersion}.zip",
         checksumAlgorithm: "sha256",
         expand: "true",
