@@ -94,9 +94,9 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 # studio.security.type: ldap
 #
 # Salt for encrypting
-studio.security.cipher.salt: ${env:CRAFTER_SYSTEM_ENCRYPTION_KEY}
+studio.security.cipher.salt: ${env:CRAFTER_SYSTEM_ENCRYPTION_SALT}
 # Key for encrypting
-studio.security.cipher.key: ${env:CRAFTER_SYSTEM_ENCRYPTION_SALT}
+studio.security.cipher.key: ${env:CRAFTER_SYSTEM_ENCRYPTION_KEY}
 # Password requirements validation regular expression
 # The supported capture group keys are:
 #   hasNumbers
