@@ -115,11 +115,11 @@ ext.deliveryItemsToCopy = [
 ]
 
 ext.commonGrapesDownloads = [
-    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+    ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
         "${projectDir}/resources/bin/upgrade/start-upgrade.groovy"],
-    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+    ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
         "${projectDir}/resources/bin/upgrade/upgrade-target.groovy"],
-    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+    ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
         "${projectDir}/resources/bin/upgrade/post-upgrade.groovy"]
 ]
 
@@ -127,9 +127,9 @@ ext.authoringGrapesDownloads = [
 ]
 
 ext.deliveryGrapesDownloads = [
-    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+    ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
         "${projectDir}/resources/bin/init-site.groovy"],
-    ["groovy/bin/groovy", "-cp", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+    ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
         "${projectDir}/resources/bin/remove-site.groovy"]
 ]
 
