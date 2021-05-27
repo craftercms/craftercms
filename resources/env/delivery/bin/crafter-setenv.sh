@@ -98,6 +98,10 @@ export SEARCH_MANAGEMENT_TOKEN=${SEARCH_MANAGEMENT_TOKEN:="defaultManagementToke
 export PROFILE_MANAGEMENT_TOKEN=${PROFILE_MANAGEMENT_TOKEN:="defaultManagementToken"}
 export SOCIAL_MANAGEMENT_TOKEN=${SOCIAL_MANAGEMENT_TOKEN:="defaultManagementToken"}
 
+# -------------------- Access tokens ----------------
+# Please update this per installation and provide these tokens to the APIs.
+export SEARCH_ACCESS_TOKEN=${SEARCH_ACCESS_TOKEN:="defaultAccessToken"}
+
 # -------------------- Encryption variables --------------------
 export CRAFTER_ENCRYPTION_KEY=${CRAFTER_ENCRYPTION_KEY:="default_encryption_key"}
 export CRAFTER_ENCRYPTION_SALT=${CRAFTER_ENCRYPTION_SALT:="default_encryption_salt"}
