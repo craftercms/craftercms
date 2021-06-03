@@ -148,9 +148,6 @@
         <stax2.api.version>4.2.1</stax2.api.version> <!-- Workaround for jackson-dataformat-xml issue #340 of forgetting to update stax2-api  -->
         <jodatime.version>2.10.6</jodatime.version>
         <hibernate.validator.version>6.1.5.Final</hibernate.validator.version>
-        <solrj.version>7.7.3</solrj.version>
-        <fontbox.version>2.0.20</fontbox.version>
-        <hadoop.version>2.10.0</hadoop.version> <!-- was 2.7.7 -->
         <elasticsearch.version>7.7.1</elasticsearch.version>
         <tika.version>1.24.1</tika.version>
         <metadata.extractors.version>2.14.0</metadata.extractors.version>
@@ -169,15 +166,9 @@
         <testng.version>7.1.0</testng.version> <!-- 7.1.0 -->
         <junit.version>4.13.1</junit.version>
         <mockito.version>1.10.19</mockito.version>
-        <cargo.container>jetty9x</cargo.container>
-        <cargo.maven2.version>1.7.15</cargo.maven2.version>
-        <cargo.container.url>https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.4.30.v20200611/jetty-distribution-9.4.30.v20200611.tar.gz</cargo.container.url>
-        <cargo.container.downloadDir>${user.home}/.m2/cargo/containers</cargo.container.downloadDir>
-        <cargo.output>${basedir}/target/logs/container.log</cargo.output>
-        <cargo.log>${basedir}/target/logs/cargo.log</cargo.log>
-        <cargo.port>7070</cargo.port>
         <embedmongo.maven.version>0.3.5</embedmongo.maven.version>
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
+        <hamcrest.version>2.2</hamcrest.version>
 
         <!-- Build -->
         <maven.compiler.version>3.8.1</maven.compiler.version>
