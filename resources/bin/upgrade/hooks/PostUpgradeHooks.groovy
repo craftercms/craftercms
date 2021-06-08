@@ -15,31 +15,11 @@
  */
 package upgrade.hooks
 
-import upgrade.hooks.v30.CreateAuthoringTargetsHook
-import upgrade.hooks.v30.EnableCrafterSearchInTargetsHook
-import upgrade.hooks.v30.RecreateSolrCoresHook
-import upgrade.hooks.v30.UpdateIndexIdFormatInPreviewTargetsHook
-
 import java.nio.file.Path
 
 class PostUpgradeHooks {
 
     private static final Map<String, List<PostUpgradeHook>> ALL_HOOKS = [
-            'authoring 3.0.x': [
-                    new UpgradeEmbeddedDbHook(),
-                    new UpdateIndexIdFormatInPreviewTargetsHook(),
-                    new EnableCrafterSearchInTargetsHook(),
-                    new StartCrafterHook(['withSolr']),
-                    new CreateAuthoringTargetsHook(),
-                    new RecreateSolrCoresHook(),
-                    new PostUpgradeCompletedHook(true)
-            ],
-            'delivery 3.0.x': [
-                    new EnableCrafterSearchInTargetsHook(),
-                    new StartCrafterHook(['withSolr']),
-                    new RecreateSolrCoresHook(),
-                    new PostUpgradeCompletedHook(true)
-            ],
             'authoring 3.1.0': [
                     new UpgradeEmbeddedDbHook(),
                     new PostUpgradeCompletedHook(false)

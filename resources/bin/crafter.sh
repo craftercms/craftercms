@@ -814,7 +814,6 @@ function doRestore() {
   echo "------------------------------------------------------------------------"
   rmDirContents "$MONGODB_DATA_DIR"
   rmDirContents "$CRAFTER_DATA_DIR/repos"
-  rmDirContents "$SOLR_INDEXES_DIR"
   rmDirContents "$ES_INDEXES_DIR"
   rmDirContents "$DEPLOYER_DATA_DIR"
   rmDirContents "$MARIADB_DATA_DIR"
