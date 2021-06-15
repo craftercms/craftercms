@@ -5,7 +5,6 @@ target:
   studioUrl: ${env:STUDIO_URL}
   studioManagementToken: ${env:STUDIO_MANAGEMENT_TOKEN}
   search:
-    serverUrl: ${env:SEARCH_URL}
     elasticsearch:
       # Single Cluster
       urls:
