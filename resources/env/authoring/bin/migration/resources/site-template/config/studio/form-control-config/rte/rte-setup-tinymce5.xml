@@ -44,8 +44,21 @@
         <toolbarItems1>
             formatselect | bold italic strikethrough forecolor backcolor | link | alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | removeformat
         </toolbarItems1>
-        <toolbarItems2></toolbarItems2>
+        <toolbarItems2><!-- my_button --></toolbarItems2>
         <toolbarItems3></toolbarItems3>
         <toolbarItems4></toolbarItems4>
+
+        <!--
+        You may create a TinyMCE plugins and serve them from your site via site plugins. For example, to add
+        a button to one of the toolbars:
+        1. Add your plugin to a toolbarItemsN (see above).
+          <toolbarItems2>my_button</toolbarItems2>
+        2. Tell TinyMCE where to load the plugin from via "external plugins" option
+          <external_plugins>
+            <my_button><![CDATA[/studio/api/2/plugin/file?siteId={site}&type=tinymce&name=my_button&filename=plugin.min.js]]></my_button>
+          </external_plugins>
+        -->
+
+        <codeEditorWrap>false</codeEditorWrap>
     </setup>
 </config>
