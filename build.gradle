@@ -39,7 +39,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.1.14-SNAPSHOT" // craftercms version flag
+project.version = "3.1.15-SNAPSHOT" // craftercms version flag
 
 ext {
     commandLinePrefix = []
@@ -53,7 +53,7 @@ ext {
 
     /** Download Properties **/
     groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "3.0.4"
-    tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.53"
+    tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.66"
     solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
     elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "7.2.1"
     elasticsearchPlatfform =

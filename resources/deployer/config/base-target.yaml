@@ -4,6 +4,8 @@ target:
   engineManagementToken: ${env:ENGINE_MANAGEMENT_TOKEN}
   search:
     serverUrl: ${env:SEARCH_URL}
+    accessToken:
+      value: ${env:SEARCH_ACCESS_TOKEN}
     elasticsearch:
       # Single Cluster
       urls:
