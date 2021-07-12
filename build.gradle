@@ -39,7 +39,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.1.15-SNAPSHOT" // craftercms version flag
+project.version = "3.1.16-SNAPSHOT" // craftercms version flag
 
 ext {
     commandLinePrefix = []
@@ -59,7 +59,7 @@ ext {
     elasticsearchPlatfform =
       project.hasProperty("elasticsearch.plafform") ? project.property("elasticsearch.plafform") :
                                                       SystemUtils.IS_OS_MAC_OSX? "darwin" : "linux"
-    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.8"
+    mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.9"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
 
     /** Environment Building properties **/
