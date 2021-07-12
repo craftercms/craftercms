@@ -133,7 +133,7 @@
         <httpproxy.version>1.11</httpproxy.version>
         <apache.ivy>2.5.0</apache.ivy>
         <tinify.version>1.6.4</tinify.version>
-        <mariadb4j.version>2.4.8</mariadb4j.version>
+        <mariadb4j.version>2.4.9</mariadb4j.version>
         <saxon.version>10.1</saxon.version>
         <apache.cxf.version>3.4.1</apache.cxf.version>
         <nekohtml.version>1.9.22</nekohtml.version>
