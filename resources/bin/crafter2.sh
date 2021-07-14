@@ -602,6 +602,12 @@ fi
 export CRAFTER_BIN_DIR=${CRAFTER_BIN_DIR:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
+# Check if OS is macOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  # Remove com.apple.quarantine flag for elasticsearch files
+  xattr -rd com.apple.quarantine $CRAFTER_BIN_DIR/elasticsearch
+fi
+
 # Set up the environment
 source "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
