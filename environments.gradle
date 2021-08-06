@@ -453,6 +453,12 @@ def updateElasticsearchConf(configFile) {
         'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
         '#discovery.zen.ping.unicast.hosts'
     )
+    content = content.replace(
+        '# ---------------------------------- Various -----------------------------------',
+        '# ---------------------------------- Various -----------------------------------' + System.lineSeparator() +
+        '# Disable ML' + System.lineSeparator() +
+        'xpack.ml.enabled: false' + System.lineSeparator()
+    )
 
     file.write(content)
 }
