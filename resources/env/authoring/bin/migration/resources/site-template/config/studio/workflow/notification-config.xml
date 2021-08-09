@@ -21,22 +21,22 @@
 
 -->
 <notificationConfig>
-    <version>2</version>
+    <version>3</version>
     <lang name="en"> <!-- language specific notifications -->
         <deploymentFailureNotification> <!-- list of email addresses to notify in case of publishing failure -->
-            <email>admin@example.com</email>
-            <email>admin2@example.com</email>
+            <!--<email>admin@example.com</email>-->
+            <!--<email>admin2@example.com</email>-->
         </deploymentFailureNotification>
 
         <approverEmails> <!-- list of content approver emails -->
-            <email>admin@example.com</email>
-            <email>admin2@example.com</email>
+            <!--<email>admin@example.com</email>-->
+            <!--<email>admin2@example.com</email>-->
         </approverEmails>
 
         <!-- list of email addresses to notify in case of repository merge conflict -->
         <repositoryMergeConflictNotification>
-            <email>admin@example.com</email>
-            <email>admin2@example.com</email>
+            <!--<email>admin@example.com</email>-->
+            <!--<email>admin2@example.com</email>-->
         </repositoryMergeConflictNotification>
 
         <generalMessages> <!-- list of general messages -->
