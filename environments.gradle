@@ -277,6 +277,12 @@ ext.commonConfUpdatePatterns = [
                     '# Disable cluster discovery' + System.lineSeparator() +
                     'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
                     '# ---------------------------------- Gateway -----------------------------------'
+            ],
+            [
+                match: '# ---------------------------------- Various -----------------------------------',
+                replace: '# ---------------------------------- Various -----------------------------------' +
+                        System.lineSeparator() + '# Disable ML' + System.lineSeparator() +
+                        'xpack.ml.enabled: false' + System.lineSeparator()
             ]
         ]
     ]
