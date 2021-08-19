@@ -42,10 +42,19 @@ cecho () {
 function killProcess() {
   pid=$1
 
-  pkill -15 -F "$pid"
-  sleep 5 # wait for 5 seconds, then kill -9
-  if [ -s "$pid" ] && pgrep -F "$pid" > /dev/null; then
-    pkill -9 -F "$pid" # force kill
+  # Kill it with sig15 and wait
+  if [ -n "$pid" ]; then
+    # We have a PID, use it
+    pkill -15 "$pid"
+  else
+    cecho "Unable to find nor kill process with PID=$pid." "error"
+  fi
+
+  if pgrep "$pid" > /dev/null; then
+    sleep 5 # wait for 5 seconds, then kill -9
+    pkill -9 "$pid"
+  else
+    cecho "Unable to find nor kill -9 process PID=$pid." "error"
   fi
 }
 
@@ -87,8 +96,32 @@ function runModule() {
 
 	banner "$operation $module"
 
-  createFolders $foldersToCreate
+  createFolders "$foldersToCreate"
 
+  ################## NEW LOGIC ##################
+  # Get PID for the port we want
+  # If PID is not null, someone is using the port
+  #   Check if PID == PID file
+  #     Already started, we're done
+  #   Else, Someone else is binding our port
+  #     Error out
+  # Else, PID is null, no one has our port
+  #   Start process and overwrite PID file
+  # Fi
+
+  runningPid=$(getPidByPort $port)
+
+  if [ -nz "$runningPid" ]; then
+    if [ "$runningPid"="$(cat "$pidFile")" ]
+      # Already started, we're done
+    else
+      # Someone else is holding our port, abort
+    fi
+  else
+    # Start
+  fi
+
+#######################################################################
 	# Check if PID exits already
 	if [ ! -s "$pidFile" ]; then
     runProcessOrHijackExisting $pidFile $port "$executable"
@@ -123,7 +156,7 @@ function stopModule() {
 			# Check if the process is still up
 			if pgrep -F "$pidFile" > /dev/null; then
 				# Kill it
-				KillProcess $pidFile
+				killProcess $(cat "$pidFile")
 			fi
 			# If the process died, then delete the PID file
 			if [ $? -eq 0 ]; then
@@ -135,7 +168,7 @@ function stopModule() {
 		pid=$( getPidByPort $port )
 		if ! [ -z $pid ]; then
 			# Found the process, let's kill it
-			KillProcess $pid
+			killProcess "$pid"
 		else
 			# The process is not running, let the user know
 			cecho "$module already shutdown\n" "warn"
@@ -152,9 +185,9 @@ function runTask() {
 }
 
 function createFolders() {
-	foldersToCreate=$1
+	foldersToCreate="$1"
 
-	for i in "${foldersToCreate[@]}"; do
+	for i in ${foldersToCreate[@]}; do
 		if [ ! -d $i ]; then
 			mkdir -p $i;
 		fi

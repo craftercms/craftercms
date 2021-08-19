@@ -17,7 +17,6 @@
 // Deps
 buildscript {
 	repositories {
-		jcenter()
 		mavenCentral()
 	}
 	dependencies {
