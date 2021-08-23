@@ -21,6 +21,11 @@ else
 	pushd .
 	cd "$HOME/downloads"
 	tar xvzf "$JDK_FILE"
-	mv "$HOME/downloads/$JDK_FOLDER" "$HOME/jdk"
+	if [ -f "$HOME/jdk" ]
+	then
+		mv "$HOME/downloads/$JDK_FOLDER/*" "$HOME/jdk/"
+	else
+		mv "$HOME/downloads/$JDK_FOLDER" "$HOME/jdk"
+	fi
 	popd
 fi
