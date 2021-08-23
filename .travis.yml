@@ -4,7 +4,9 @@ git:
   quiet: true
 language: java
 jdk:
-- openjdk11
+  - openjdk11
+cache:
+  - $HOME/.m2
 branches:
   only:
   - develop
