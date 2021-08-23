@@ -25,3 +25,14 @@ else
 	tar xvzf "$JDK_FILE"
 	popd
 fi
+
+if [ -f "$HOME/jdk" ]
+then
+	echo JDK symlink is present
+else
+	echo Creating JDK symlink
+	pushd .
+	cd "$HOME"
+	ln -sf "$HOME/downloads/$JDK_FOLDER" jdk
+	popd
+fi
