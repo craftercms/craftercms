@@ -6,7 +6,8 @@ language: java
 jdk:
   - openjdk11
 cache:
-  - $HOME/.m2
+  directories:
+    - $HOME/.m2
 branches:
   only:
   - develop
