@@ -15,20 +15,13 @@ else
 	popd
 fi
 
-if [ -f "$HOME/jdk/bin/java" ]
+if [ -f "$HOME/downloads/$JDK_FOLDER/bin/java" ]
 then
-	echo Java already installed
+	echo JDK is present and unzipped, must check symlink
 else
-	echo Unzipping the JDK
+	echo Unzipping JDK
 	pushd .
-	echo Remove old JDK if present
-	rm -rf "$HOME/downloads/$JDK_FOLDER"
-	echo Old JDK Removed, unzip the JDK
+	cd "$HOME/downloads"
 	tar xvzf "$JDK_FILE"
-	cd "$HOME"
-	ln -sf "$HOME/downloads/$JDK_FOLDER" jdk
 	popd
 fi
-
-ls -lh $HOME/downloads
-ls -lh $HOME/jdk
