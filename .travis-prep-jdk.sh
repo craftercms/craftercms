@@ -10,12 +10,8 @@ else
 	echo Downloading JDK from $JDK_URL
 	pushd .
 	mkdir -p "$HOME/downloads"
-	echo ls downloads
-	ls $HOME/downloads
 	cd "$HOME/downloads"
 	wget -q "$JDK_URL"
-	echo ls downloads
-	ls $HOME/downloads
 	popd
 fi
 
@@ -25,30 +21,12 @@ then
 else
 	echo Unzipping the JDK
 	pushd .
-	cd "$HOME/downloads"
-	echo ls downloads
-	pwd
-	ls -lh
-	echo ls jdk
-	ls -lh $JDK_FOLDER
-	echo Remove old JDK
+	echo Remove old JDK if present
 	rm -rf "$HOME/downloads/$JDK_FOLDER"
-	echo Removed
-	echo ls "$HOME/downloads/$JDK_FOLDER/*"
-	ls "$HOME/downloads/$JDK_FOLDER/*"
-	ls -lh $JDK_FOLDER
-	tar xzf "$JDK_FILE"
-	ls "$HOME/downloads/$JDK_FOLDER/*"
-	cd $HOME
-	mkdir -p jdk
-	cd jdk
-	echo ls jdk
-	ls -lh
-	echo Moving the into JDK home
-	echo ls "$HOME/downloads/$JDK_FOLDER/*"
-	ls "$HOME/downloads/$JDK_FOLDER/*"
-	echo mv "$HOME/downloads/$JDK_FOLDER/*" .
-	#mv "$HOME/downloads/$JDK_FOLDER/*" .
+	echo Old JDK Removed, unzip the JDK
+	tar xvzf "$JDK_FILE"
+	cd "$HOME"
+	ln -sf "$HOME/downloads/$JDK_FOLDER" jdk
 	popd
 fi
 
