@@ -37,6 +37,8 @@ else
 	ls -lh
 	echo Moving the into JDK home
 	echo mv "$HOME/downloads/$JDK_FOLDER/*" .
+	echo ls "$HOME/downloads/$JDK_FOLDER/*"
+	ls "$HOME/downloads/$JDK_FOLDER/*"
 	mv "$HOME/downloads/$JDK_FOLDER/*" .
 	popd
 fi
