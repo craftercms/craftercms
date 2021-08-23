@@ -23,14 +23,12 @@ else
 	pushd .
 	cd "$HOME/downloads"
 	tar xzf "$JDK_FILE"
-	if [ -f "$HOME/jdk" ]
-	then
-		echo JDK folder found, moving the into JDK home
-		mv "$HOME/downloads/$JDK_FOLDER/*" "$HOME/jdk/"
-	else
-		echo JDK home not found, creating and moving JDK into home
-		mv "$HOME/downloads/$JDK_FOLDER" "$HOME/jdk"
-	fi
+	cd $HOME
+	mkdir -p jdk
+	cd jdk
+	echo Moving the into JDK home
+	echo mv "$HOME/downloads/$JDK_FOLDER/*" .
+	mv "$HOME/downloads/$JDK_FOLDER/*" .
 	popd
 fi
 
