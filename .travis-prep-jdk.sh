@@ -8,9 +8,9 @@ then
 	echo JDK already downloaded
 else
 	pushd .
-	mkdir -p $HOME/downloads
-	cd $HOME/downloads
-	wget -q $JDK_URL
+	mkdir -p "$HOME/downloads"
+	cd "$HOME/downloads"
+	wget -q "$JDK_URL"
 	popd
 fi
 
@@ -19,8 +19,8 @@ then
 	echo Java already installed
 else
 	pushd .
-	cd $HOME/downloads
-	tar xvzf $JDK_FILE
-	mv $HOME/downloads/$JDK_FOLDER $HOME/jdk
+	cd "$HOME/downloads"
+	tar xvzf "$JDK_FILE"
+	mv "$HOME/downloads/$JDK_FOLDER" "$HOME/jdk"
 	popd
 fi
