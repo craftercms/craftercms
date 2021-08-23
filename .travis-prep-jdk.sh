@@ -29,6 +29,7 @@ else
 	echo ls downloads
 	ls -lh
 	ls -lh $JDK_FOLDER
+	rm -rf "$HOME/downloads/$JDK_FOLDER"
 	tar xzf "$JDK_FILE"
 	cd $HOME
 	mkdir -p jdk
