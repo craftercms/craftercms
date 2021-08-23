@@ -27,20 +27,28 @@ else
 	pushd .
 	cd "$HOME/downloads"
 	echo ls downloads
+	pwd
 	ls -lh
+	echo ls jdk
 	ls -lh $JDK_FOLDER
+	echo Remove old JDK
 	rm -rf "$HOME/downloads/$JDK_FOLDER"
+	echo Removed
+	echo ls "$HOME/downloads/$JDK_FOLDER/*"
+	ls "$HOME/downloads/$JDK_FOLDER/*"
+	ls -lh $JDK_FOLDER
 	tar xzf "$JDK_FILE"
+	ls "$HOME/downloads/$JDK_FOLDER/*"
 	cd $HOME
 	mkdir -p jdk
 	cd jdk
 	echo ls jdk
 	ls -lh
 	echo Moving the into JDK home
-	echo mv "$HOME/downloads/$JDK_FOLDER/*" .
 	echo ls "$HOME/downloads/$JDK_FOLDER/*"
 	ls "$HOME/downloads/$JDK_FOLDER/*"
-	mv "$HOME/downloads/$JDK_FOLDER/*" .
+	echo mv "$HOME/downloads/$JDK_FOLDER/*" .
+	#mv "$HOME/downloads/$JDK_FOLDER/*" .
 	popd
 fi
 
