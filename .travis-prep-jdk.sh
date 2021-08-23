@@ -22,7 +22,7 @@ else
 	echo Unzipping JDK
 	pushd .
 	cd "$HOME/downloads"
-	tar xvzf "$JDK_FILE"
+	tar xzf "$JDK_FILE"
 	popd
 fi
 
