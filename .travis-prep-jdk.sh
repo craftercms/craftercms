@@ -10,8 +10,12 @@ else
 	echo Downloading JDK from $JDK_URL
 	pushd .
 	mkdir -p "$HOME/downloads"
+	echo ls downloads
+	ls $HOME/downloads
 	cd "$HOME/downloads"
 	wget -q "$JDK_URL"
+	echo ls downloads
+	ls $HOME/downloads
 	popd
 fi
 
@@ -22,10 +26,14 @@ else
 	echo Unzipping the JDK
 	pushd .
 	cd "$HOME/downloads"
+	echo ls downloads
+	ls
 	tar xzf "$JDK_FILE"
 	cd $HOME
 	mkdir -p jdk
 	cd jdk
+	echo ls jdk
+	ls
 	echo Moving the into JDK home
 	echo mv "$HOME/downloads/$JDK_FOLDER/*" .
 	mv "$HOME/downloads/$JDK_FOLDER/*" .
