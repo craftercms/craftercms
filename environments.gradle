@@ -309,8 +309,8 @@ ext.authoringConfUpdatePatterns = [
                 replace: "${authoringTomcatHttpsPort}"
             ],
             [
-                match: "8009",
-                replace: "${authoringTomcatAjpPort}"
+                match: "8000",
+                replace: "${authoringTomcatDebugPort}"
             ]
         ]
     ]
@@ -337,19 +337,19 @@ ext.deliveryConfUpdatePatterns = [
                 replace: "${deliveryTomcatHttpsPort}"
             ],
             [
-                match: "8009",
-                replace: "${deliveryTomcatAjpPort}"
+                match: "8000",
+                replace: "${deliveryTomcatDebugPort}"
             ]
         ]
     ]
 ]
 
 def authoringTokens = [
-  TOMCAT_HTTP_PORT     : String.valueOf(authoringTomcatHttpPort),
-  TOMCAT_HTTPS_PORT    : String.valueOf(authoringTomcatHttpsPort),
-  TOMCAT_AJP_PORT      : String.valueOf(authoringTomcatAjpPort),
-  TOMCAT_SHUTDOWN_PORT : String.valueOf(authoringTomcatShutdownPort),
-  TOMCAT_DEBUG_PORT    : String.valueOf(authoringTomcatDebugPort),
+  TOMCAT_HTTP_PORT     : String.valueOf(authoringTomcatHttpPortDefault),
+  TOMCAT_HTTPS_PORT    : String.valueOf(authoringTomcatHttpsPortDefault),
+  TOMCAT_AJP_PORT      : String.valueOf(authoringTomcatAjpPortDefault),
+  TOMCAT_SHUTDOWN_PORT : String.valueOf(authoringTomcatShutdownPortDefault),
+  TOMCAT_DEBUG_PORT    : String.valueOf(authoringTomcatDebugPortDefault),
   ES_PORT              : String.valueOf(authoringElasticsearchPort),
   DEPLOYER_PORT        : String.valueOf(authoringDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(authoringDeployerDebugPort),
@@ -363,11 +363,11 @@ def authoringTokens = [
 ]
 
 def deliveryTokens = [
-  TOMCAT_HTTP_PORT     : String.valueOf(deliveryTomcatHttpPort),
-  TOMCAT_HTTPS_PORT    : String.valueOf(deliveryTomcatHttpsPort),
-  TOMCAT_AJP_PORT      : String.valueOf(deliveryTomcatAjpPort),
-  TOMCAT_SHUTDOWN_PORT : String.valueOf(deliveryTomcatShutdownPort),
-  TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPort),
+  TOMCAT_HTTP_PORT     : String.valueOf(deliveryTomcatHttpPortDefault),
+  TOMCAT_HTTPS_PORT    : String.valueOf(deliveryTomcatHttpsPortDefault),
+  TOMCAT_AJP_PORT      : String.valueOf(deliveryTomcatAjpPortDefault),
+  TOMCAT_SHUTDOWN_PORT : String.valueOf(deliveryTomcatShutdownPortDefault),
+  TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPortDefault),
   ES_PORT              : String.valueOf(deliveryElasticsearchPort),
   DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
