@@ -169,6 +169,7 @@
         <embedmongo.maven.version>0.3.5</embedmongo.maven.version>
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
         <hamcrest.version>2.2</hamcrest.version>
+        <org.xmlunit.version>2.8.2</org.xmlunit.version>
 
         <!-- Build -->
         <maven.compiler.version>3.8.1</maven.compiler.version>
