@@ -4,6 +4,9 @@ target:
   engineManagementToken: ${env:ENGINE_MANAGEMENT_TOKEN}
   studioUrl: ${env:STUDIO_URL}
   studioManagementToken: ${env:STUDIO_MANAGEMENT_TOKEN}
+  translation:
+    # Indicates if the translation features should be enabled for the target
+    enable: false
   search:
     elasticsearch:
       # Single Cluster
