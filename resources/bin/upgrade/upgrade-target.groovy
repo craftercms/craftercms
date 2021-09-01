@@ -51,10 +51,7 @@ import static utils.ScriptUtils.*
     'apache-tomcat/shared/classes/.+': true,
     'crafter-deployer/config/.+': true,
     'crafter-deployer/logging\\.xml': false,
-    'elasticsearch/config/.+': true,
-    'solr/server/resources/.+': true,
-    'solr/server/solr/[^/]+': true,
-    'solr/server/solr/configsets/crafter_configs/.+': true
+    'elasticsearch/config/.+': true
 ]
 // List of patterns for files that shouldn't be deleted
 @Field List<String> shouldNotBeDeletedFilePatterns = [
