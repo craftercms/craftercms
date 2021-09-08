@@ -71,6 +71,8 @@ task download() {
 			}
 
 			if (performDownload) {
+				def artifact = download['name']
+				println "Checking if $artifact needs to be downloaded"
 				downloadArtifact(
 						download['name'],
 						download['url'],
@@ -90,7 +92,11 @@ task clone() {
 	description 'Clones the modules if required.'
 	dependsOn = [ "download" ]
 	doFirst {
-		getAllModules().each { module -> cloneModule(module, gitUrl, shallowClone, gitBranch, gitRemote) }
+		getAllModules().each { module ->
+			println "Checking if $module needs to be cloned"
+
+			cloneModule(module, gitUrl, shallowClone, gitBranch, gitRemote)
+		}
 	}
 }
 
@@ -106,7 +112,11 @@ task update() {
 	description 'Updates the modules.'
 	dependsOn = [ "clone" ]
 	doFirst {
-		getAllModules().each { module -> updateModule(module, gitRemote, gitBranch) }
+		getAllModules().each { module ->
+			println "Updating $module"
+
+			updateModule(module, gitRemote, gitBranch)
+		}
 	}
 }
 
@@ -115,7 +125,11 @@ clean() {
 	mustRunAfter update
 	dependsOn = [ "clone" ]
 	doFirst {
-		getBuildModules().each { module -> cleanModule(module) }
+		getBuildModules().each { module ->
+			println "Cleaning $module"
+
+			cleanModule(module)
+		}
 	}
 }
 
@@ -124,7 +138,11 @@ build() {
 	mustRunAfter clean
 	dependsOn = [ "clone" ]
 	doFirst {
-		getBuildModules().each { module -> buildModule(module, unitTest) }
+		getBuildModules().each { module ->
+			println "Building $module"
+
+			buildModule(module, unitTest)
+		}
 	}
 }
 
@@ -133,6 +151,8 @@ task buildBaseEnvs() {
 	dependsOn = [ "clone" ]
 	doFirst {
 		getEnvironments().each { environment ->
+			println "Deploying the foundation of $environment"
+
 			prepareEnvironment(environment, refreshEnv, overwriteChangedFiles, downloadGrapes, (socialRequired || profileRequired))
 		}
 	}
@@ -144,6 +164,7 @@ task deploy() {
 	dependsOn = [ "buildBaseEnvs" ]
 	doFirst {
 		getEnvironments().each { environment ->
+			println "Deploying $environment"
 			deployEnvironment(environment, getDeployModules(), overwriteChangedFiles, profileRequired, socialRequired)
 		}
 	}
@@ -158,6 +179,8 @@ task start() {
 	description 'Starts Crafter CMS'
 	doFirst {
 		getEnvironments().each { environment ->
+			println "Starting $environment"
+
 			def command = [ startCommand ]
 			if (!startElasticsearch)
 				command += ["skipElasticsearch"]
@@ -172,6 +195,8 @@ task stop() {
 	description 'Stops Crafter CMS'
 	doFirst {
 		getEnvironments().each { environment ->
+			println "Stopping $environment"
+
 			def command = [ stopCommand ]
 			if (!startElasticsearch)
 				command += ["skipElasticsearch"]
@@ -201,6 +226,7 @@ task bundle() {
 	dependsOn = [ "deploy" ]
 	doFirst {
 		getEnvironments().each { environment ->
+			println "Bundling $environment"
 			bundleEnvironment(environment, bundlesDir)
 		}
 	}

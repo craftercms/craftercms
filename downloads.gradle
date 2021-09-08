@@ -19,11 +19,12 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property("commons.lang3.version")
+        classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property('commons.lang3.version')
+        classpath group:'de.undercouch', name:'gradle-download-task', version: project.property('undercouchDownloadVersion')
     }
 }
 
-apply from: "commons.gradle"
+apply from: 'commons.gradle'
 apply plugin: 'de.undercouch.download'
 
 ext.downloads = [
@@ -74,7 +75,7 @@ ext.getDownloads = { ->
 }
 
 ext.extractArtifact = { artifact, extractFolder ->
-    if (file(artifact).exists()){
+    if (file(artifact).exists()) {
         if (artifact.endsWith(".zip")) {
             copy {
                 from zipTree(artifact)
@@ -123,8 +124,12 @@ ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwrit
             algorithm = "MD5"
         else if (checksumAlgorithm == "sha256")
             algorithm = "SHA-256"
-        else
+        else {
+            // The file can't be validated, delete it
+            file(destinationFile).delete()
+            file(destinationFile + "." + checksumAlgorithm).delete()
             throw GradleException("Unknown digest algorithm: \"" + checksumAlgorithm + "\"")
+        }
 
         def calculatedHash = checksumFile(destinationFile, algorithm)
         def downloadedHash = new File(destinationFile + "." + checksumAlgorithm).getText('UTF-8').split(" ")[0]

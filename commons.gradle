@@ -62,6 +62,10 @@ ext.execCommand = { command, dir ->
 
 	proc.consumeProcessOutput(System.out, System.err)
 	proc.waitForOrKill(commandTimeout)
+
+	if (proc.exitValue() != 0) {
+		throw GradleException("$cmd failed.")
+	}
 }
 
 ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFiles ->
@@ -127,7 +131,7 @@ ext.cleanModule = { module ->
 	def dir = srcFolder + module
 
 	try {
-		execCommand(["mvn", "clean"], dir)
+		execCommand(["mvn", "-q", "clean"], dir)
 	} catch (e) {
 		logger.error("Failed to clean module: {}, exception: {}", module, e)
 		throw new GradleException("Failed to clean module.", e)
@@ -139,9 +143,9 @@ ext.buildModule = { module, unitTest ->
 
 	try {
 		if (unitTest)
-			execCommand(["mvn", "install"], dir)
+			execCommand(["mvn", "-q", "install"], dir)
 		else
-			execCommand(["mvn", "install", "-DskipTests"], dir)
+			execCommand(["mvn", "-q", "install", "-DskipTests"], dir)
 	} catch (e) {
 		logger.error("Failed to build module: {}, exception: {}", module, e)
 		throw new GradleException("Failed to build module.", e)
