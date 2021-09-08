@@ -44,6 +44,7 @@ ext.splash = { ->
 ext {
 	srcFolder = getPropertySafelyWithDefaults("projectDir", ".") + "/src/"
 	commandTimeout = getPropertySafelyWithDefaults("commandTimeout", 1000000).toInteger()
+	mavenCmd = getPropertySafelyWithDefaults("quietBuild", "true").toBoolean()? ["mvn", "-q"] : ["mvn"]
 }
 
 ext.execCommand = { command, dir ->
@@ -131,7 +132,7 @@ ext.cleanModule = { module ->
 	def dir = srcFolder + module
 
 	try {
-		execCommand(["mvn", "-q", "clean"], dir)
+		execCommand(mavenCmd + ["clean"], dir)
 	} catch (e) {
 		logger.error("Failed to clean module: {}, exception: {}", module, e)
 		throw new GradleException("Failed to clean module.", e)
@@ -143,9 +144,9 @@ ext.buildModule = { module, unitTest ->
 
 	try {
 		if (unitTest)
-			execCommand(["mvn", "-q", "install"], dir)
+			execCommand(mavenCmd + ["install"], dir)
 		else
-			execCommand(["mvn", "-q", "install", "-DskipTests"], dir)
+			execCommand(mavenCmd + ["install", "-DskipTests"], dir)
 	} catch (e) {
 		logger.error("Failed to build module: {}, exception: {}", module, e)
 		throw new GradleException("Failed to build module.", e)

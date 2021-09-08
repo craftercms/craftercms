@@ -72,7 +72,6 @@ task download() {
 
 			if (performDownload) {
 				def artifact = download['name']
-				println "Checking if $artifact needs to be downloaded"
 				downloadArtifact(
 						download['name'],
 						download['url'],
@@ -93,8 +92,6 @@ task clone() {
 	dependsOn = [ "download" ]
 	doFirst {
 		getAllModules().each { module ->
-			println "Checking if $module needs to be cloned"
-
 			cloneModule(module, gitUrl, shallowClone, gitBranch, gitRemote)
 		}
 	}
