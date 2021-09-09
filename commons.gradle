@@ -65,7 +65,7 @@ ext.execCommand = { command, dir ->
 	proc.waitForOrKill(commandTimeout)
 
 	if (proc.exitValue() != 0) {
-		throw GradleException("$cmd failed.")
+		throw new GradleException("$cmd failed.")
 	}
 }
 
