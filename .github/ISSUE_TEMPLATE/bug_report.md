@@ -5,7 +5,6 @@ about: Create a report to help us improve
 ---
 
 ### Bug Report
-
 #### Crafter CMS Version
 {{Crafter CMS version (copy paste from Help > About).}}
 
