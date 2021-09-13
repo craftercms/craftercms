@@ -30,7 +30,7 @@ apply plugin: 'de.undercouch.download'
 ext.downloads = [
     [
         name: "tomcat",
-        url: "https://archive.apache.org/dist/tomcat/tomcat-8/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip",
+        url: "https://archive.apache.org/dist/tomcat/tomcat-${tomcatMajorVersion}/v${tomcatVersion}/bin/apache-tomcat-${tomcatVersion}.zip",
         destinationFile: "${downloadDir}/apache-tomcat-${tomcatVersion}.zip",
         checksumAlgorithm: "sha512",
         expand: "true",
