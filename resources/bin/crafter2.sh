@@ -45,16 +45,18 @@ function killProcess() {
   # Kill it with sig15 and wait
   if [ -n "$pid" ]; then
     # We have a PID, use it
-    pkill -15 "$pid"
+    kill -15 "$pid"
   else
-    cecho "Unable to find nor kill process with PID=$pid." "error"
+    cecho "Unable to find nor kill process with PID=$pid.\n" "error"
   fi
 
-  if pgrep "$pid" > /dev/null; then
+  still_running=$(ps --pid="$pid" > /dev/null)
+  if [ -n "$still_running" ]; then
     sleep 5 # wait for 5 seconds, then kill -9
-    pkill -9 "$pid"
+    cecho "Process $pid failed to stop gracefully, will try to kill it" "warning"
+    kill -9 "$pid"
   else
-    cecho "Unable to find nor kill -9 process PID=$pid." "error"
+    cecho "Unable to find nor kill -9 process PID=$pid.\n" "error"
   fi
 }
 
@@ -83,57 +85,52 @@ function isCorrectProcessHoldingPort() {
   echo $result
 }
 
-# Run a module (example Apache Tomcat, Elasticsearch, etc.)
-function runModule() {
+# Announce operation and create required folders
+function prepareModule() {
 	module=$1
-	executable=$2
-	port=$3
-	foldersToCreate=$4
-	pidFile=$5
-	operation=$6
+	foldersToCreate=$2
+	operation=$3
 
 	cd $CRAFTER_BIN_DIR
 
 	banner "$operation $module"
 
   createFolders "$foldersToCreate"
+}
 
-  ################## NEW LOGIC ##################
+# Check if a module is already running, or if there is a process holding the port
+function checkIfModuleIsRunning() {
+	module=$1
+	port=$2
+	pidFile=$3
+	result=0
+
+	cd $CRAFTER_BIN_DIR
+
+  ################## LOGIC ##################
   # Get PID for the port we want
   # If PID is not null, someone is using the port
   #   Check if PID == PID file
   #     Already started, we're done
   #   Else, Someone else is binding our port
   #     Error out
-  # Else, PID is null, no one has our port
-  #   Start process and overwrite PID file
   # Fi
 
   runningPid=$(getPidByPort $port)
 
-  if [ -nz "$runningPid" ]; then
-    if [ "$runningPid"="$(cat "$pidFile")" ]
+  if [ -n "$runningPid" ]; then
+    if [ "$runningPid" = "$(cat "$pidFile")" ]; then
       # Already started, we're done
+      cecho "Module $module is already running" "strong"
+      return 1
     else
       # Someone else is holding our port, abort
+      cecho "Process $runningPid is holding port $port, unable to run module $module" "error"
+      return 2
     fi
-  else
-    # Start
   fi
 
-#######################################################################
-	# Check if PID exits already
-	if [ ! -s "$pidFile" ]; then
-    runProcessOrHijackExisting $pidFile $port "$executable"
-	else
-    exitIfPortInUse $port $pidFile
-		if ( isPidFileCorrect "$pidFile" ); then
-			cecho "$module PID file is not correct, forcing startup\n" "warning"
-			rm "$pidFile"
-			runModule "$module" "$executable" "$port" "$foldersToCreate" "$pidFile"
-		fi
-		cecho "$operation: Operation already executed for module: $module\n" "warning"
-	fi
+  return 0
 }
 
 # Stop a module
@@ -151,12 +148,15 @@ function stopModule() {
 	if [ -s "$pidFile" ]; then
 		# Try to stop
 		runTask $executable
+		sleep .5
 		# If PID file still exists
 		if [ -e "$pidFile" ]; then
 			# Check if the process is still up
-			if pgrep -F "$pidFile" > /dev/null; then
-				# Kill it
-				killProcess $(cat "$pidFile")
+			pid=$(cat "$pidFile")
+			still_running=$(ps --pid="$pid" > /dev/null)
+      if [ -n "$still_running" ]; then
+        # Kill it
+				killProcess "$pid"
 			fi
 			# If the process died, then delete the PID file
 			if [ $? -eq 0 ]; then
@@ -178,10 +178,16 @@ function stopModule() {
 
 # Run an external program
 function runTask() {
-  #cecho "Running: $@\n" "error"
-  TASK_PID=bash "$@"
-  #TASK_PID=$!
-  disown -h $TASK_PID 2> /dev/null
+  # TODO Still needs work to disown forked processes in certain cases
+  # cecho "Running: $@\n" "error"
+#  TASK_PID=bash "$@"
+  bash "$@"
+#  TASK_PID=$!
+#  sleep .5
+#  still_running=$(ps --pid="$TASK_PID" > /dev/null)
+#  if [ -n "$still_running" ]; then
+#    disown -h $TASK_PID 2> /dev/null
+#  fi
 }
 
 function createFolders() {
@@ -675,7 +681,6 @@ function help() {
   cecho "    status_studio, Status of Crafter Studio\n" "info"
   cecho "    status_profile, Status of Crafter Profile\n" "info"
   cecho "    status_social, Status of Crafter Social\n" "info"
-  cecho "    status_search, Status of Crafter Search\n" "info"
   cecho "    status_deployer, Status of Deployer\n" "info"
   cecho "    status_elasticsearch, Status of Elasticsearch\n" "info"
   cecho "    status_mariadb, Status of MariaDB\n" "info"
@@ -700,11 +705,39 @@ function printTailInfo(){
 }
 
 function startDeployer() {
-  runModule "Deployer" "$DEPLOYER_HOME/deployer.sh start" $DEPLOYER_PORT "$DEPLOYER_LOGS_DIR" $DEPLOYER_PID "Start"
+  module="Deployer"
+  executable="$DEPLOYER_HOME/deployer.sh start"
+  port=$DEPLOYER_PORT
+  foldersToCreate="$DEPLOYER_LOGS_DIR"
+  pidFile="$DEPLOYER_PID"
+  operation="Start"
+
+  prepareModule $module $foldersToCreate $operation
+  # Check if module is not already running, then run it
+  checkIfModuleIsRunning $module $port $pidFile
+  isModuleRunning=$?
+  if [ $isModuleRunning = 0 ]; then
+    cecho "Starting module $module\n" "info"
+    runTask $executable
+  fi
 }
 
 function debugDeployer() {
-  runModule "Deployer" "$DEPLOYER_HOME/deployer.sh debug" $DEPLOYER_PORT "$DEPLOYER_LOGS_DIR" $DEPLOYER_PID "Debug"
+  module="Deployer"
+  executable="$DEPLOYER_HOME/deployer.sh debug"
+  port=$DEPLOYER_PORT
+  foldersToCreate="$DEPLOYER_LOGS_DIR"
+  pidFile="$DEPLOYER_PID"
+  operation="Debug"
+
+  prepareModule $module $foldersToCreate $operation
+  # Check if module is not already running, then run it
+  checkIfModuleIsRunning $module $port $pidFile
+  isModuleRunning=$?
+  if [ $isModuleRunning = 0 ]; then
+    cecho "Starting module $module\n" "info"
+    runTask $executable
+  fi
 }
 
 function stopDeployer() {
@@ -712,17 +745,44 @@ function stopDeployer() {
 }
 
 function startElasticsearch() {
-  runModule "Elasticsearch" "$ES_HOME/elasticsearch -d -p $ES_PID" $ES_PORT "$ES_INDEXES_DIR" $ES_PID "Start"
+  module="Elasticsearch"
+  executable=("$ES_HOME/elasticsearch -d -p $ES_PID" $ES_PORT "$ES_INDEXES_DIR" $ES_PID)
+  port=$ES_PORT
+  foldersToCreate="$ES_INDEXES_DIR"
+  pidFile="$ES_PID"
+  operation="Start"
+
+  prepareModule $module $foldersToCreate $operation
+  # Check if module is not already running, then run it
+  checkIfModuleIsRunning $module $port $pidFile
+  isModuleRunning=$?
+  if [ $isModuleRunning = 0 ]; then
+    cecho "Starting module $module\n" "info"
+    runTask $executable
+  fi
 }
 
 function debugElasticsearch() {
-  runModule "Elasticsearch"\
-   "ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045\";$ES_HOME/elasticsearch -d -p $ES_PID"\
-   $ES_PORT "$ES_INDEXES_DIR" $ES_PID "Debug"
+  module="Elasticsearch"
+  executable=("ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045\";$ES_HOME/elasticsearch -d -p $ES_PID")
+  port=$ES_PORT
+  foldersToCreate="$ES_INDEXES_DIR"
+  pidFile="$ES_PID"
+  operation="Debug"
+
+  prepareModule $module $foldersToCreate $operation
+  # Check if module is not already running, then run it
+  checkIfModuleIsRunning $module $port $pidFile
+  isModuleRunning=$?
+  if [ $isModuleRunning = 0 ]; then
+    cecho "Starting module $module\n" "info"
+    runTask $executable
+  fi
 }
 
 function stopElasticsearch() {
-	stopModule "Elasticsearch" "killProcess $ES_PID" "$ES_PORT" "$ES_PID"
+  pid=$(cat "$ES_PID" 2>/dev/null)
+	stopModule "Elasticsearch" "kill -15 $pid" "$ES_PORT" "$ES_PID"
 }
 
 function elasticsearchStatus() {
@@ -732,7 +792,21 @@ function elasticsearchStatus() {
 function startTomcat() {
   cd $CRAFTER_BIN_DIR
   if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(getPidByPort "$MARIADB_PORT") ]] || [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]]; then
-    runModule "Tomcat" "$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start" $TOMCAT_HTTP_PORT "$CATALINA_LOGS_DIR $CATALINA_TMPDIR" $CATALINA_PID "Start"
+    module="Tomcat"
+    executable="$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start"
+    port=$TOMCAT_HTTP_PORT
+    foldersToCreate="$CATALINA_LOGS_DIR $CATALINA_TMPDIR"
+    pidFile="$CATALINA_PID"
+    operation="Start"
+
+    prepareModule $module $foldersToCreate $operation
+    # Check if module is not already running, then run it
+    checkIfModuleIsRunning $module $port $pidFile
+    isModuleRunning=$?
+    if [ $isModuleRunning = 0 ]; then
+      cecho "Starting module $module\n" "info"
+      runTask $executable
+    fi
   else
     cecho "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n
             This might be because of a prior unsuccessful or incomplete shut down.\n
@@ -745,7 +819,21 @@ function startTomcat() {
 function debugTomcat() {
   cd $CRAFTER_BIN_DIR
   if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(getPidByPort "$MARIADB_PORT") ]] ;then
-    runModule "Tomcat" "$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda start" $TOMCAT_HTTP_PORT "$CATALINA_LOGS_DIR $CATALINA_TMPDIR" $CATALINA_PID "Debug"
+    module="Tomcat"
+    executable="$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda start"
+    port=$TOMCAT_HTTP_PORT
+    foldersToCreate="$CATALINA_LOGS_DIR $CATALINA_TMPDIR"
+    pidFile="$CATALINA_PID"
+    operation="Debug"
+
+    prepareModule $module $foldersToCreate $operation
+    # Check if module is not already running, then run it
+    checkIfModuleIsRunning $module $port $pidFile
+    isModuleRunning=$?
+    if [ $isModuleRunning = 0 ]; then
+      cecho "Starting module $module\n" "info"
+      runTask $executable
+    fi
   else
     cecho ""
     cecho "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n" "error"
@@ -761,8 +849,21 @@ function stopTomcat() {
 }
 
 function startMongoDB() {
-  runModule "MongoDB" "$MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_DATA_DIR/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT"\
-  $MONGODB_PORT "$MONGODB_DATA_DIR $MONGODB_LOGS_DIR" $MONGODB_PID "Start"
+  module="MongoDB"
+  executable="$MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_DATA_DIR/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT"
+  port=$MONGODB_PORT
+  foldersToCreate="$MONGODB_DATA_DIR $MONGODB_LOGS_DIR"
+  pidFile="$MONGODB_PID"
+  operation="Start"
+
+  prepareModule $module $foldersToCreate $operation
+  # Check if module is not already running, then run it
+  checkIfModuleIsRunning $module $port $pidFile
+  isModuleRunning=$?
+  if [ $isModuleRunning = 0 ]; then
+    cecho "Starting module $module\n" "info"
+    runTask $executable
+  fi
 }
 
 function isMongoNeeded() {
@@ -809,10 +910,6 @@ function getStatus() {
 
 function deployerStatus(){
   getStatus "Crafter Deployer" $DEPLOYER_PORT $DEPLOYER_PID
-}
-
-function searchStatus(){
-  getStatus "Crafter Search" $TOMCAT_HTTP_PORT $CATALINA_PID
 }
 
 function engineStatus(){
@@ -879,7 +976,6 @@ function status() {
   elasticsearchStatus
   deployerStatus
   engineStatus
-  searchStatus
   if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/studio.war" ]; then
     studioStatus
     mariadbStatus
@@ -975,9 +1071,6 @@ case $1 in
   ;;
   status_social)
     socialStatus
-  ;;
-  status_search)
-    searchStatus
   ;;
   status_deployer)
     deployerStatus
