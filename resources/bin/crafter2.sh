@@ -147,7 +147,7 @@ function stopModule() {
 	# If PID file has a value
 	if [ -s "$pidFile" ]; then
 		# Try to stop
-		runTask $executable
+		bash -c "$executable"
 		sleep .5
 		# If PID file still exists
 		if [ -e "$pidFile" ]; then
@@ -782,7 +782,7 @@ function debugElasticsearch() {
 
 function stopElasticsearch() {
   pid=$(cat "$ES_PID" 2>/dev/null)
-	stopModule "Elasticsearch" "kill -15 $pid" "$ES_PORT" "$ES_PID"
+	stopModule "Elasticsearch" "kill $pid" "$ES_PORT" "$ES_PID"
 }
 
 function elasticsearchStatus() {
