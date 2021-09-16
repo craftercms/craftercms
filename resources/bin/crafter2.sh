@@ -712,9 +712,9 @@ function startDeployer() {
   pidFile="$DEPLOYER_PID"
   operation="Start"
 
-  prepareModule $module $foldersToCreate $operation
+  prepareModule "$module" "$foldersToCreate" "$operation"
   # Check if module is not already running, then run it
-  checkIfModuleIsRunning $module $port $pidFile
+  checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
@@ -730,9 +730,9 @@ function debugDeployer() {
   pidFile="$DEPLOYER_PID"
   operation="Debug"
 
-  prepareModule $module $foldersToCreate $operation
+  prepareModule "$module" "$foldersToCreate" "$operation"
   # Check if module is not already running, then run it
-  checkIfModuleIsRunning $module $port $pidFile
+  checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
@@ -752,9 +752,9 @@ function startElasticsearch() {
   pidFile="$ES_PID"
   operation="Start"
 
-  prepareModule $module $foldersToCreate $operation
+  prepareModule "$module" "$foldersToCreate" "$operation"
   # Check if module is not already running, then run it
-  checkIfModuleIsRunning $module $port $pidFile
+  checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
@@ -770,9 +770,9 @@ function debugElasticsearch() {
   pidFile="$ES_PID"
   operation="Debug"
 
-  prepareModule $module $foldersToCreate $operation
+  prepareModule "$module" "$foldersToCreate" "$operation"
   # Check if module is not already running, then run it
-  checkIfModuleIsRunning $module $port $pidFile
+  checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
@@ -799,9 +799,9 @@ function startTomcat() {
     pidFile="$CATALINA_PID"
     operation="Start"
 
-    prepareModule $module $foldersToCreate $operation
+    prepareModule "$module" "$foldersToCreate" "$operation"
     # Check if module is not already running, then run it
-    checkIfModuleIsRunning $module $port $pidFile
+    checkIfModuleIsRunning "$module" "$port" "$pidFile"
     isModuleRunning=$?
     if [ $isModuleRunning = 0 ]; then
       cecho "Starting module $module\n" "info"
@@ -826,9 +826,9 @@ function debugTomcat() {
     pidFile="$CATALINA_PID"
     operation="Debug"
 
-    prepareModule $module $foldersToCreate $operation
+    prepareModule "$module" "$foldersToCreate" "$operation"
     # Check if module is not already running, then run it
-    checkIfModuleIsRunning $module $port $pidFile
+    checkIfModuleIsRunning "$module" "$port" "$pidFile"
     isModuleRunning=$?
     if [ $isModuleRunning = 0 ]; then
       cecho "Starting module $module\n" "info"
@@ -856,9 +856,9 @@ function startMongoDB() {
   pidFile="$MONGODB_PID"
   operation="Start"
 
-  prepareModule $module $foldersToCreate $operation
+  prepareModule "$module" "$foldersToCreate" "$operation"
   # Check if module is not already running, then run it
-  checkIfModuleIsRunning $module $port $pidFile
+  checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
