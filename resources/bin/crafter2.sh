@@ -764,7 +764,8 @@ function startElasticsearch() {
 
 function debugElasticsearch() {
   module="Elasticsearch"
-  executable=("ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045\";$ES_HOME/elasticsearch -d -p $ES_PID")
+  envVars="ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045\""
+  executable="$ES_HOME/elasticsearch -d -p $ES_PID"
   port=$ES_PORT
   foldersToCreate="$ES_INDEXES_DIR"
   pidFile="$ES_PID"
@@ -776,7 +777,7 @@ function debugElasticsearch() {
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
-    runTask $executable
+    bash -c "$envVars; $executable"
   fi
 }
 
