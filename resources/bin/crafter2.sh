@@ -53,7 +53,7 @@ function killProcess() {
   still_running=$(ps --pid="$pid" > /dev/null)
   if [ -n "$still_running" ]; then
     sleep 5 # wait for 5 seconds, then kill -9
-    cecho "Process $pid failed to stop gracefully, will try to kill it" "warning"
+    cecho "Process $pid failed to stop gracefully, will try to kill it\n" "warning"
     kill -9 "$pid"
   else
     cecho "Unable to find nor kill -9 process PID=$pid.\n" "error"
@@ -121,11 +121,11 @@ function checkIfModuleIsRunning() {
   if [ -n "$runningPid" ]; then
     if [ "$runningPid" = "$(cat "$pidFile")" ]; then
       # Already started, we're done
-      cecho "Module $module is already running" "strong"
+      cecho "Module $module is already running\n" "strong"
       return 1
     else
       # Someone else is holding our port, abort
-      cecho "Process $runningPid is holding port $port, unable to run module $module" "error"
+      cecho "Process $runningPid is holding port $port, unable to run module $module\n" "error"
       return 2
     fi
   fi
@@ -615,7 +615,7 @@ function doUpgradeDB() {
 
     cecho "> Upgrade database completed\n" "strong"
   else
-    cecho "No embedded DB found, skipping upgrade" "warning"
+    cecho "No embedded DB found, skipping upgrade\n" "warning"
   fi
 }
 
