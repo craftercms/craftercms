@@ -64,7 +64,7 @@ function killProcess() {
 function getPidByPort() {
   port=$1
 
-  echo $(lsof -i :$port | grep LISTEN | awk '{print $2}' | grep -v PID | uniq)
+  echo $(lsof -i :"$port" | grep LISTEN | awk '{print $2}' | grep -v PID | uniq)
 }
 
 # Check if the process holding the port is ours
@@ -73,7 +73,7 @@ function isCorrectProcessHoldingPort() {
   port=$2
   result=1
 
-  pidOfPort=$(getPidByPort $port)
+  pidOfPort=$(getPidByPort "$port")
   if [ "$pidOfPort"=="$process" ]; then
     # The process holding the port is ours, this is fine
     result=$pidOfPort
@@ -116,7 +116,7 @@ function checkIfModuleIsRunning() {
   #     Error out
   # Fi
 
-  runningPid=$(getPidByPort $port)
+  runningPid=$(getPidByPort "$port")
 
   if [ -n "$runningPid" ]; then
     if [ "$runningPid" = "$(cat "$pidFile")" ]; then
@@ -160,12 +160,12 @@ function stopModule() {
 			fi
 			# If the process died, then delete the PID file
 			if [ $? -eq 0 ]; then
-				rm $pidFile
+				rm "$pidFile"
 			fi
 		fi
 	else
 		# We don't have a PID file, let's try to identify the process
-		pid=$( getPidByPort $port )
+		pid=$( getPidByPort "$port" )
 		if ! [ -z $pid ]; then
 			# Found the process, let's kill it
 			killProcess "$pid"
@@ -194,8 +194,8 @@ function createFolders() {
 	foldersToCreate="$1"
 
 	for i in ${foldersToCreate[@]}; do
-		if [ ! -d $i ]; then
-			mkdir -p $i;
+		if [ ! -d "$i" ]; then
+			mkdir -p "$i";
 		fi
 	done
 }
@@ -220,7 +220,7 @@ function runProcessOrHijackExisting() {
     runTask $executable
   else
     # A process has the file, assume it to be our daemon and grab the PID
-    echo $existingPid > $pidFile
+    echo $existingPid > "$pidFile"
     cecho "Found a process with PID $existingPid listening port $port\n" "warning"
     cecho "Hijacking this PID and saving it into $pidFile\n" "warning"
     exit 0
@@ -420,7 +420,7 @@ function doBackup() {
 
 function doRestore() {
   local pid=$(getPidByPort $TOMCAT_HTTP_PORT)
-  if ! [ -z $pid ]; then
+  if ! [ -z "$pid" ]; then
     cecho "Please stop the system before starting the restore process.\n" "warning"
     exit 1
   fi
@@ -787,7 +787,7 @@ function stopElasticsearch() {
 }
 
 function elasticsearchStatus() {
-  getStatus "Elasticsearch" $ES_PORT "$ES_PID"
+  getStatus "Elasticsearch" "$ES_PORT" "$ES_PID"
 }
 
 function startTomcat() {
@@ -902,7 +902,7 @@ function getStatus() {
   banner "$module status"
 
   pid=$(getPidByPort $port)
-  if [ -z $pid ]; then
+  if [ -z "$pid" ]; then
     cecho "$module is not running\n" "warning"
   else
     cecho "$module is up and running with PID:\t$pid\n" "strong"
@@ -910,31 +910,31 @@ function getStatus() {
 }
 
 function deployerStatus(){
-  getStatus "Crafter Deployer" $DEPLOYER_PORT $DEPLOYER_PID
+  getStatus "Crafter Deployer" "$DEPLOYER_PORT" "$DEPLOYER_PID"
 }
 
 function engineStatus(){
-  getStatus "Crafter Engine" $TOMCAT_HTTP_PORT $CATALINA_PID
+  getStatus "Crafter Engine" "$TOMCAT_HTTP_PORT" "$CATALINA_PID"
 }
 
 function studioStatus(){
-  getStatus "Crafter Studio" $TOMCAT_HTTP_PORT $CATALINA_PID
+  getStatus "Crafter Studio" "$TOMCAT_HTTP_PORT" "$CATALINA_PID"
 }
 
 function profileStatus(){
-  getStatus "Crafter Profile" $TOMCAT_HTTP_PORT $CATALINA_PID
+  getStatus "Crafter Profile" "$TOMCAT_HTTP_PORT" "$CATALINA_PID"
 }
 
 function socialStatus(){
-  getStatus "Crafter Social" $TOMCAT_HTTP_PORT $CATALINA_PID
+  getStatus "Crafter Social" "$TOMCAT_HTTP_PORT" "$CATALINA_PID"
 }
 
 function mariadbStatus() {
-  getStatus "Studio Database" $MARIADB_PORT $MARIADB_PID
+  getStatus "Studio Database" "$MARIADB_PORT" "$MARIADB_PID"
 }
 
 function mongoDbStatus() {
-  getStatus "MongoDB" $MONGODB_PORT "$MONGODB_PID"
+  getStatus "MongoDB" "$MONGODB_PORT" "$MONGODB_PID"
 }
 
 function start() {
