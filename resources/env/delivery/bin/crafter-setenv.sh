@@ -47,7 +47,12 @@ export PROFILE_URL=${PROFILE_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/crafter
 export SOCIAL_URL=${SOCIAL_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/crafter-social"}
 
 # -------------------- Java opts --------------------
-export SOLR_JAVA_OPTS=${SOLR_JAVA_OPTS:="-server -Xss1024K -Xmx1G"}
+# Preferred for memory related parameters such as -Xmx, -Xms
+export SOLR_JAVA_MEM=${SOLR_JAVA_MEM:="-Xmx1G"}
+# Preferred for stack size
+export SOLR_JAVA_STACK_SIZE=${SOLR_JAVA_STACK_SIZE:="-Xss1024K"}
+# Preferred for other Solr's parameters
+export SOLR_JAVA_OPTS=${SOLR_JAVA_OPTS:=""}
 export ES_JAVA_OPTS=${ES_JAVA_OPTS:="-server -Xss1024K -Xmx1G"}
 export DEPLOYER_JAVA_OPTS=${DEPLOYER_JAVA_OPTS:="-server -Xss1024K -Xmx1G"}
 export CATALINA_OPTS=${CATALINA_OPTS:="-server -Xss1024K -Xms1G -Xmx2G"}
