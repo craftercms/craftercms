@@ -285,6 +285,15 @@ ext.commonConfUpdatePatterns = [
                         'xpack.ml.enabled: false' + System.lineSeparator()
             ]
         ]
+    ],
+    [
+            confFile: "/bin/elasticsearch/config/jvm.options",
+            patterns: [
+                    [
+                            match: "-Xm",
+                            replace: '#-Xm'
+                    ]
+            ]
     ]
 ]
 
