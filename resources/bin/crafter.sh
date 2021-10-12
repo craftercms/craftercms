@@ -1110,7 +1110,7 @@ function doRestore() {
         mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
         if [ -f "$tempFolder/users.sql" ]; then
           mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
-        else 
+        else
           echo "Users backup does not exists. Skipping restore users"
         fi
         abortOnError
@@ -1135,7 +1135,7 @@ function doRestore() {
       $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
       if [ -f "$tempFolder/users.sql" ]; then
         $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
-      else 
+      else
         echo "Users backup does not exists. Skipping restore users"
       fi
       abortOnError
