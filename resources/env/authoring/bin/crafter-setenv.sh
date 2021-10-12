@@ -51,7 +51,7 @@ export SOCIAL_URL=${SOCIAL_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/crafter-s
 
 # -------------------- Java opts --------------------
 # Preferred for memory related parameters such as -Xmx, -Xms
-export SOLR_JAVA_MEM=${SOLR_JAVA_MEM:="-Xmx1G"}
+export SOLR_JAVA_MEM=${SOLR_JAVA_MEM:="-Xms1G -Xmx1G"}
 # Preferred for stack size
 export SOLR_JAVA_STACK_SIZE=${SOLR_JAVA_STACK_SIZE:="-Xss1024K"}
 # Preferred for other Solr's parameters
