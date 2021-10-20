@@ -199,9 +199,7 @@ buildModules.each { module ->
             } else if (module.equalsIgnoreCase("profile")) {
                 actualCommandLinePost.add("-pl")
                 if (!includeProfile) {
-                    actualCommandLinePost.add("!admin-console,!integration-tests,!server")
-                } else {
-                    actualCommandLinePost.add("!integration-tests")
+                    actualCommandLinePost.add("!admin-console,!server")
                 }
             }
             if (module.equalsIgnoreCase("studio") && !studioUIFromRepo) {
