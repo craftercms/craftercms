@@ -309,3 +309,5 @@ studio.security.token.password.encrypt: ${env:STUDIO_TOKEN_ENCRYPT_PASSWORD}
 studio.security.token.cookie.name: ${env:STUDIO_REFRESH_TOKEN_NAME}
 # Time in seconds for the expiration of the refresh token cookie
 studio.security.token.cookie.maxAge: ${env:STUDIO_REFRESH_TOKEN_MAX_AGE}
+# Indicates if the refresh token cookie should be secure (should be true for production environments behind HTTPS)
+studio.security.token.cookie.secure: ${env:STUDIO_REFRESH_TOKEN_SECURE}
