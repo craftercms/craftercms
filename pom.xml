@@ -58,118 +58,122 @@
         <!-- Dependency Version Numbers -->
         <!-- Main -->
         <!-- Spring -->
-        <spring.version>5.2.9.RELEASE</spring.version>
-        <spring.security.version>5.3.3.RELEASE</spring.security.version>
+        <spring.version>5.2.18.RELEASE</spring.version>
+        <spring.security.version>5.3.11.RELEASE</spring.security.version>
         <spring.security.saml2.version>1.0.10.RELEASE</spring.security.saml2.version>
-        <spring.data.version>2.3.1.RELEASE</spring.data.version>
-        <spring.ldap.version>2.3.3.RELEASE</spring.ldap.version>
+        <spring.data.version>2.3.9.RELEASE</spring.data.version>
+        <spring.ldap.version>2.3.4.RELEASE</spring.ldap.version>
         <spring.social.version>1.1.6.RELEASE</spring.social.version>
         <spring.social.facebook.version>2.0.3.RELEASE</spring.social.facebook.version>
 
         <!-- Commons -->
-        <commons.lang.version>3.10</commons.lang.version>
-        <commons.lang3.version>3.10</commons.lang3.version>
-        <commons.collections3.version>3.2.2</commons.collections3.version>
+        <commons.lang3.version>3.12.0</commons.lang3.version>
         <commons.collections4.version>4.4</commons.collections4.version>
-        <commons.codec.version>1.14</commons.codec.version>
+        <commons.codec.version>1.15</commons.codec.version>
         <commons.beanutils.version>1.9.4</commons.beanutils.version>
-        <commons.io.version>2.7</commons.io.version>
+        <commons.io.version>2.11.0</commons.io.version>
         <commons.configuration.version>2.7</commons.configuration.version>
         <commons.cli.version>1.4</commons.cli.version>
-        <commons.text.version>1.8</commons.text.version>
-        <commons.dbcp2.version>2.7.0</commons.dbcp2.version>
+        <commons.text.version>1.9</commons.text.version>
+        <commons.dbcp2.version>2.9.0</commons.dbcp2.version>
         <commons.fileupload.version>1.4</commons.fileupload.version>
-        <commons.compress.version>1.20</commons.compress.version>
+        <commons.compress.version>1.21</commons.compress.version>
         
         <httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
         <httpcomponents.httpmime.version>4.5.13</httpcomponents.httpmime.version>
 
-        <jackson.version>2.11.3</jackson.version>
-        <jackson.databind.version>2.11.3</jackson.databind.version>
-        <jackson.dataformat.version>2.11.3</jackson.dataformat.version>
+        <jackson.version>2.11.4</jackson.version>
+        <jackson.databind.version>2.11.4</jackson.databind.version>
+        <jackson.dataformat.version>2.11.4</jackson.dataformat.version>
 
         <mongo.version>3.5.0</mongo.version> <!-- 3.12.6 -->
         <bson.version>3.5.0</bson.version>
-        <jongo.version>1.4.1</jongo.version>
+        <jongo.version>1.5.0</jongo.version>
         <gmongo.version>1.5</gmongo.version>
 
-        <xstream.version>1.4.16</xstream.version>
-        <slf4j.version>1.7.30</slf4j.version>
-        <slf4j.api.version>1.7.30</slf4j.api.version>
+        <xstream.version>1.4.18</xstream.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.api.version>1.7.32</slf4j.api.version>
         <jcl.over.slf4j.version>1.7.30</jcl.over.slf4j.version>
-        <log4j.version>2.13.3</log4j.version>
+        <log4j.version>2.14.1</log4j.version>
         <quartz.version>2.3.2</quartz.version>
-        <freemarker.version>2.3.30</freemarker.version>
-        <aspectj.version>1.9.5</aspectj.version>
-        <bouncycastle.version>1.66</bouncycastle.version>
+        <freemarker.version>2.3.31</freemarker.version>
+        <aspectj.version>1.9.7</aspectj.version>
+        <bouncycastle.version>1.69</bouncycastle.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <javax.mail.api.version>1.6.2</javax.mail.api.version>
         <javax.activation.version>1.2.0</javax.activation.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
-        <jakarta.xml.bind-api.version>2.3.3</jakarta.xml.bind-api.version>
-        <guava.version>29.0-jre</guava.version>
+        <jakarta.xml.bind-api.version>3.0.1</jakarta.xml.bind-api.version>
+        <guava.version>31.0.1-jre</guava.version>
         <guava.collections.version>r03</guava.collections.version>
         <findbugs.version>3.0.1</findbugs.version>
         <caffeine.version>2.8.6</caffeine.version>
-        <jsonpath.version>2.4.0</jsonpath.version>
+        <jsonpath.version>2.6.0</jsonpath.version>
         <reactor.version>1.0.1.RELEASE</reactor.version>
-        <jgit.version>5.12.0.202106070339-r</jgit.version>
-        <snakeyaml.version>1.26</snakeyaml.version>
-        <aws.sdk.version>1.12.64</aws.sdk.version>
-        <box.sdk.version>2.56.0</box.sdk.version>
+        <jgit.version>5.13.0.202109080827-r</jgit.version>
+        <snakeyaml.version>1.29</snakeyaml.version>
+        <aws.sdk.version>1.12.92</aws.sdk.version>
+        <box.sdk.version>2.57.0</box.sdk.version>
         <sardine.version>5.10</sardine.version>
         <dom4j.version>2.1.3</dom4j.version>
         <jaxen.version>1.2.0</jaxen.version>
         <gson.version>2.8.6</gson.version>
         <jta.version>1.1</jta.version>
         <cglib.version>3.3.0</cglib.version>
-        <groovy.version>3.0.8</groovy.version>
+        <groovy.version>3.0.9</groovy.version>
         <script.security.version>${project.version}</script.security.version>
         <rome.version>1.0</rome.version>
         <urlrewrite.version>4.0.4</urlrewrite.version>
-        <graphql.version>12.0</graphql.version> <!-- 15.0 -->
-        <graphql.extended.scalars.version>1.0</graphql.extended.scalars.version> <!-- 1.0.1 -->
-        <xerces.version>2.12.0</xerces.version><!-- consider xerces2 -->
-        <httpproxy.version>1.11</httpproxy.version>
+        <graphql.version>17.3</graphql.version> <!-- 17.3 -->
+        <graphql.extended.scalars.version>17.0</graphql.extended.scalars.version> <!-- 17.3 -->
+        <xerces.version>2.12.1</xerces.version><!-- consider xerces2 -->
+        <httpproxy.version>1.12</httpproxy.version>
         <apache.ivy>2.5.0</apache.ivy>
         <tinify.version>1.6.4</tinify.version>
         <mariadb4j.version>2.4.9</mariadb4j.version>
-        <saxon.version>10.1</saxon.version>
-        <apache.cxf.version>3.4.1</apache.cxf.version>
+        <saxon.version>10.6</saxon.version>
+        <apache.cxf.version>3.4.5</apache.cxf.version>
         <nekohtml.version>1.9.22</nekohtml.version>
-        <tika.version>1.24.1</tika.version>
         <ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
-        <mybatis.spring.version>2.0.5</mybatis.spring.version> <!-- 2.0.5 -->
-        <mybatis.version>3.5.5</mybatis.version> <!-- 3.5.5 -->
+        <mybatis.spring.version>2.0.6</mybatis.spring.version> <!-- 2.0.5 -->
+        <mybatis.version>3.5.7</mybatis.version> <!-- 3.5.5 -->
         <json.lib.version>2.4</json.lib.version>
         <rest.assured.version>2.9.0</rest.assured.version>
-        <mariadb.java.client.version>2.6.1</mariadb.java.client.version>
+        <mariadb.java.client.version>2.7.4</mariadb.java.client.version>
         <greenmail.version>1.5.14</greenmail.version>
         <stax2.api.version>4.2.1</stax2.api.version> <!-- Workaround for jackson-dataformat-xml issue #340 of forgetting to update stax2-api  -->
-        <jodatime.version>2.10.6</jodatime.version>
-        <hibernate.validator.version>6.1.5.Final</hibernate.validator.version>
+        <jodatime.version>2.10.12</jodatime.version>
+        <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
+	<validation.api.version>2.0.1.Final</validation.api.version>
         <elasticsearch.version>7.7.1</elasticsearch.version>
-        <tika.version>1.24.1</tika.version>
-        <metadata.extractors.version>2.14.0</metadata.extractors.version>
-        <jsoup.version>1.13.1</jsoup.version>
-        <google.protobuf.version>3.12.2</google.protobuf.version>
-        <unit.version>2.0</unit.version>
+        <tika.version>1.27</tika.version>
+        <metadata.extractors.version>2.16.0</metadata.extractors.version>
+        <jsoup.version>1.14.3</jsoup.version>
+        <google.protobuf.version>3.19.0</google.protobuf.version>
+        <unit.version>2.1.3</unit.version>
         <javax.inject.version>1</javax.inject.version>
         <jcraft.jsch.version>0.1.55</jcraft.jsch.version>
         <hazelcast.version>4.0</hazelcast.version>
         <hazelcast.kubernetes.version>2.0.1</hazelcast.kubernetes.version>
         <semver4j.version>3.1.0</semver4j.version>
-        <jose4j.version>0.5.5</jose4j.version>
+        <jose4j.version>0.7.9</jose4j.version>
         <httpclient.version>4.5.13</httpclient.version>
+	<picocli.version>4.6.1</picocli.version>
+	<http.builder.version>1.0.4</http.builder.version>
+    	<jaxb.api.version>2.3.1</jaxb.api.version>
+    	<jaxb.core.version>3.0.2</jaxb.core.version>
+    	<jaxb.impl.version>3.0.2</jaxb.impl.version>
+    	<spatial4j.version>0.8</spatial4j.version>
 
         <!-- Testing -->
-        <testng.version>7.1.0</testng.version> <!-- 7.1.0 -->
-        <junit.version>4.13.1</junit.version>
+        <testng.version>7.4.0</testng.version>
+        <junit.version>4.13.2</junit.version>
         <mockito.version>1.10.19</mockito.version>
         <embedmongo.maven.version>0.3.5</embedmongo.maven.version>
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <org.xmlunit.version>2.8.2</org.xmlunit.version>
+        <org.xmlunit.version>2.8.3</org.xmlunit.version>
 
         <!-- Build -->
         <maven.compiler.version>3.8.1</maven.compiler.version>
@@ -187,6 +191,9 @@
         <jacoco.maven.version>0.8.5</jacoco.maven.version>
         <buildnumber.maven.version>1.4</buildnumber.maven.version>
         <grunt.maven.version>1.5.1</grunt.maven.version>
+	<gmavenplus.version>1.13.0</gmavenplus.version>
+	<appassembler.maven.version>2.1.0</appassembler.maven.version>
+	<maven.assembly.version>3.3.0</maven.assembly.version>
     </properties>
 
     <dependencyManagement>

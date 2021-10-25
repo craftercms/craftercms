@@ -69,7 +69,7 @@ ext.execCommand = { command, dir ->
 	}
 }
 
-ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFiles ->
+ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFiles, deleteNonExisting ->
     def command = [];
 
 	command = ["rsync", "-ar"]
@@ -78,10 +78,18 @@ ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFil
         command += ["--update"]
     }
 
+    if (deleteNonExisting) {
+        command += ["--delete"]
+    }
+
 	if (!exclude.isEmpty()) {
 		command += ["--exclude", exclude]
 	}
 
+    // Make sure the destination exists
+    file(destination).mkdirs()
+
+    // Rsync the source to the destination
 	command += [source, destination]
 
 	try {

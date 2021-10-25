@@ -50,34 +50,34 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.3.6.RELEASE</version>
+		<version>2.3.12.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
 		<!-- Version Numbers -->
 		<commons.configuration.version>2.7</commons.configuration.version>
-		<commons.csv.version>1.8</commons.csv.version>
-		<commons.io.version>2.6</commons.io.version>
-		<jgit.version>5.12.0.202106070339-r</jgit.version>
+		<commons.csv.version>1.9.0</commons.csv.version>
+		<commons.io.version>2.11.0</commons.io.version>
+		<jgit.version>5.13.0.202109080827-r</jgit.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
-		<handlebars.version>4.2.0</handlebars.version>
+		<handlebars.version>4.3.0</handlebars.version>
 		<sardine.version>5.10</sardine.version>
-		<xerces.version>2.12.0</xerces.version>
+		<xerces.version>2.12.1</xerces.version>
 		<java.version>11</java.version>
 		<hazelcast.version>4.0</hazelcast.version>
 		<hazelcast.kubernetes.version>2.0.1</hazelcast.kubernetes.version>
 		<script.security.version>${project.version}</script.security.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
-		<jackson.version>2.11.3</jackson.version>
-		<jackson.databind.version>2.11.3</jackson.databind.version>
-		<aws.version>1.12.64</aws.version>
-		<box.sdk.version>2.56.0</box.sdk.version>
+		<jackson.version>2.11.4</jackson.version> <!-- 2.13.0 -->
+		<jackson.databind.version>2.11.4</jackson.databind.version> <!-- 2.13.0 -->
+		<aws.version>1.12.92</aws.version>
+		<box.sdk.version>2.57.0</box.sdk.version>
 		<elasticsearch.version>7.7.1</elasticsearch.version>
 		<tomcat.version>9.0.53</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
-		<groovy.version>3.0.8</groovy.version>
+		<groovy.version>3.0.9</groovy.version>
 		<apache.ivy>2.5.0</apache.ivy>
 
 		<!-- build -->

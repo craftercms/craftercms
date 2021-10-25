@@ -419,7 +419,7 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes,
         }
 
         if (performSync) {
-            syncFolder("${projectDir}", from, envFolder + into, exclude, overwriteChangedFiles)
+            syncFolder("${projectDir}", from, envFolder + into, exclude, overwriteChangedFiles, true)
         }
     }
 
@@ -461,7 +461,7 @@ ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, inclu
         def from = item.from
         def into = item.into
         def exclude = item.exclude
-        syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles)
+        syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles, true)
     }
 
     // Copy Deployer config
@@ -530,7 +530,7 @@ ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes, includ
         def from = item.from
         def into = item.into
         def exclude = item.exclude
-        syncFolder("${projectDir}", from, "${deliveryEnvDir}" + into, exclude, overwriteChangedFiles)
+        syncFolder("${projectDir}", from, "${deliveryEnvDir}" + into, exclude, overwriteChangedFiles, true)
     }
 
     // Copy Deployer config

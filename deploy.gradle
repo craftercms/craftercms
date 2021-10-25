@@ -93,7 +93,7 @@ ext.deployBaseEnvironment = { envFolder, modules, overwriteChangedFiles, profile
         }
 
         if (performSync) {
-            syncFolder("${projectDir}", from, envFolder + into, exclude, overwriteChangedFiles)
+            syncFolder("${projectDir}", from, envFolder + into, exclude, overwriteChangedFiles, true)
         }
     }
 
@@ -130,7 +130,7 @@ ext.deployAuthoringEnvironment = { modules, overwriteChangedFiles, profileRequir
         }
 
         if (performSync) {
-            syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles)
+            syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles, true)
         }
     }
 
@@ -162,7 +162,7 @@ ext.deployDeliveryEnvironment = { modules, overwriteChangedFiles, profileRequire
         }
 
         if (performSync) {
-            syncFolder("${projectDir}", from, "${deliveryEnvDir}" + into, exclude, overwriteChangedFiles)
+            syncFolder("${projectDir}", from, "${deliveryEnvDir}" + into, exclude, overwriteChangedFiles, true)
         }
     }
 
