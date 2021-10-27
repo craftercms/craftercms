@@ -282,7 +282,8 @@ ext.commonConfUpdatePatterns = [
                 match: '# ---------------------------------- Various -----------------------------------',
                 replace: '# ---------------------------------- Various -----------------------------------' +
                         System.lineSeparator() + '# Disable ML' + System.lineSeparator() +
-                        'xpack.ml.enabled: false' + System.lineSeparator()
+                        'xpack.ml.enabled: false' + System.lineSeparator() +
+                        'xpack.security.enabled: false' + System.lineSeparator()
             ]
         ]
     ],
