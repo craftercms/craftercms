@@ -27,6 +27,7 @@ Security Analysts
 | Name | URL | Contribution |
 | --- | --- | --- |
 | Sparsh Kulshrestha | https://github.com/sparshkulshrestha | Pending public disclosure |
+| Carlos Ortiz | https://github.com/cortiz | Pending public disclosure |
 | Faizan Wani | https://github.com/faizanw8 | Pending public disclosure |
 | Kai Zhao <br> (ToTU Security Team) | https://github.com/happyhacking123 | https://docs.craftercms.org/current/security/advisory.html#cv-2020080101 |
 | Alvaro Muñoz <br> (GitHub) | https://github.com/pwntester | https://docs.craftercms.org/current/security/advisory.html#cv-2020080102 |
