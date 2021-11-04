@@ -26,10 +26,12 @@ Security Analysts
 =================
 | Name | URL | Contribution |
 | --- | --- | --- |
-| Kai Zhao <br> (ToTU Security Team) | https://github.com/happyhacking123 | https://docs.craftercms.org/en/3.2/security/advisory.html#cv-2020080101 |
-| Alvaro Muñoz <br> (GitHub) | https://github.com/pwntester | https://docs.craftercms.org/en/3.2/security/advisory.html#cv-2020080102 |
-| Buxu | https://github.com/buxu | https://docs.craftercms.org/en/3.2/security/advisory.html#cv-2018120601 |
-| Jasmin Landry | https://github.com/JR0ch17 | https://docs.craftercms.org/en/3.0/security/advisory.html#cv-2017061501 |
+| Sparsh Kulshrestha | https://github.com/sparshkulshrestha | Pending public disclosure |
+| Faizan Wani | https://github.com/faizanw8 | Pending public disclosure |
+| Kai Zhao <br> (ToTU Security Team) | https://github.com/happyhacking123 | https://docs.craftercms.org/current/security/advisory.html#cv-2020080101 |
+| Alvaro Muñoz <br> (GitHub) | https://github.com/pwntester | https://docs.craftercms.org/current/security/advisory.html#cv-2020080102 |
+| Buxu | https://github.com/buxu | https://docs.craftercms.org/current/security/advisory.html#cv-2018120601 |
+| Jasmin Landry | https://github.com/JR0ch17 | https://docs.craftercms.org/current/security/advisory.html#cv-2017061501 |
 
 External Contributors
 =====================
