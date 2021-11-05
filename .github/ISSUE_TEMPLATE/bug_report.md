@@ -8,6 +8,9 @@ about: Create a report to help us improve
 #### Crafter CMS Version
 {{Crafter CMS version (copy paste from Help > About).}}
 
+#### Date of Build
+{{If you built Crafter CMS from source, when did you pull the source?}}
+
 #### Describe the bug
 {{A clear and concise description of what the bug is.}}
 
