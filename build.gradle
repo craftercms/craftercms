@@ -197,8 +197,8 @@ buildModules.each { module ->
                 actualCommandLinePost.add("-pl")
                 actualCommandLinePost.add("!crafter-search-solr-itest")
             } else if (module.equalsIgnoreCase("profile")) {
-                actualCommandLinePost.add("-pl")
                 if (!includeProfile) {
+                    actualCommandLinePost.add("-pl")
                     actualCommandLinePost.add("!admin-console,!server")
                 }
             }
