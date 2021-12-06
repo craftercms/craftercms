@@ -183,12 +183,12 @@ ext.checksumFile = { filePath, algorithm ->
 }
 
 ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
-	def source
+	def source = "./crafter"
 
 	if (env == "authoring") {
-		source = "${authoringEnvDir}"
+        file("${authoringEnvDir}").renameTo(source)
 	} else if (env == "delivery") {
-		source = "${deliveryEnvDir}"
+        file("${deliveryEnvDir}").renameTo(source)
 	} else {
 		throw new GradleException("Unknown environment " + env)
 	}
@@ -218,9 +218,16 @@ ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
 		new File(bundlePath + ".sha512").withWriter('utf-8') {
 			writer -> writer.writeLine sha512sum + "  " + bundleFilename
 		}
-	}
-	catch (e) {
+	} catch (e) {
 		logger.error("Failed to create bundle for env: {}, bundlesDir: {}", env, bundlesDir, e)
 		throw new GradleException("Failed to create bundle.", e)
-	}
+	} finally {
+        if (env == "authoring") {
+            file(source).renameTo("${authoringEnvDir}")
+        } else if (env == "delivery") {
+            file(source).renameTo("${deliveryEnvDir}")
+        } else {
+            throw new GradleException("Unknown environment " + env)
+        }
+    }
 }
