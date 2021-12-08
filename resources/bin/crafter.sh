@@ -15,6 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################################################################
+REQUIRED_JAVA_VERSION=11
+
 ################################################ COMMONS ###############################################################
 cecho () {
 
@@ -36,6 +38,45 @@ cecho () {
     ENDCOLOR="\e[0m";
 
     printf "$STARTCOLOR%b$ENDCOLOR" "$1";
+}
+
+function preFlightCheck() {
+	# Check Java version
+	if type -p java 2>&1 > /dev/null; then
+		cecho "Found Java executable in PATH\n" "info"
+		_java=java
+	elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+		cecho "Found Java executable in JAVA_HOME\n" "info"
+		_java="$JAVA_HOME/bin/java"
+	else
+		cecho "Unable to find Java, please install Java version $REQUIRED_JAVA_VERSION, aborting.\n" "error"
+		exit -1
+	fi
+	
+	if [[ "$_java" ]]; then
+		version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9/]*/ {print $1}')
+		cecho "Detected Java major version as $version\n" "info"
+		if [[ ! "$version" = "$REQUIRED_JAVA_VERSION" ]]; then
+			cecho "Crafter CMS requires Java version $REQUIRED_JAVA_VERSION, detected Java with major version $version, aborting.\n" "error"
+			exit -1
+		fi
+	fi
+
+	# Check lsof
+	if type -p lsof 2>&1 > /dev/null; then
+		cecho "lsof command found\n" "info"
+	else
+		cecho "lsof command not found, please install 'lsof', aborting.\n" "error"
+	fi
+
+	# If Linux
+		# Check ncurses5
+			# dpkg -l '*ncurses5*'|grep '^ii'
+	# If Mac
+		# Check openssl
+			# brew list openssl
+		# Check ncurses5
+			# ncurses5.4-config --version
 }
 
 # Kill a process given a PID
@@ -991,6 +1032,8 @@ function status() {
     fi
   fi
 }
+
+preFlightCheck
 
 case $1 in
   debug)
