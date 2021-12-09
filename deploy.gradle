@@ -99,7 +99,7 @@ ext.deployBaseEnvironment = { envFolder, modules, overwriteChangedFiles, profile
 
     // Create CLI Symlink
     // TODO: This is a bit messy, clean it up
-    def command = ["ln", "-sf", "${projectDir}/" + envFolder +"/bin/cli/bin/crafter-cli", "${projectDir}/" + envFolder + "/bin/crafter-cli"]
+    def command = ["ln", "-sf", "cli/bin/crafter-cli", "bin/crafter-cli"]
     execCommand(command, envFolder)
 
     commonDeployPermissions.each { group ->
