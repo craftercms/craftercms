@@ -58,10 +58,10 @@
         <!-- Dependency Version Numbers -->
         <!-- Main -->
         <!-- Spring -->
-        <spring.version>5.2.18.RELEASE</spring.version>
-        <spring.security.version>5.3.11.RELEASE</spring.security.version>
+        <spring.version>5.3.13</spring.version>
+        <spring.security.version>5.6.0</spring.security.version>
         <spring.security.saml2.version>1.0.10.RELEASE</spring.security.saml2.version>
-        <spring.data.version>2.3.9.RELEASE</spring.data.version>
+        <spring.data.version>2.6.0</spring.data.version>
         <spring.ldap.version>2.3.4.RELEASE</spring.ldap.version>
         <spring.social.version>1.1.6.RELEASE</spring.social.version>
         <spring.social.facebook.version>2.0.3.RELEASE</spring.social.facebook.version>
