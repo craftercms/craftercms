@@ -19,7 +19,13 @@ import java.nio.file.Path
 
 class PostUpgradeHooks {
 
-    private static final List<PostUpgradeHooks> AUTHORING_3_1_X_HOOKS = [
+    private static final List<PostUpgradeHooks> AUTHORING_3_1_X_NO_DB_HOOKS = [
+            new StartCrafterHook(),
+            new RecreateIndexesHook(),
+            new PostUpgradeCompletedHook(true)
+    ]
+
+    private static final List<PostUpgradeHooks> AUTHORING_3_1_X_WITH_DB_HOOKS = [
             new UpgradeEmbeddedDbHook(),
             new StartCrafterHook(),
             new RecreateIndexesHook(),
@@ -34,13 +40,13 @@ class PostUpgradeHooks {
 
     private static final Map<String, List<PostUpgradeHook>> ALL_HOOKS = [
 
-            'authoring 3.1.9': AUTHORING_3_1_X_HOOKS,
-            'authoring 3.1.12': AUTHORING_3_1_X_HOOKS,
-            'authoring 3.1.13': AUTHORING_3_1_X_HOOKS,
-            'authoring 3.1.17': AUTHORING_3_1_X_HOOKS,
-            'authoring 3.1.18': AUTHORING_3_1_X_HOOKS,
+            'authoring 3.1.9' : AUTHORING_3_1_X_WITH_DB_HOOKS,
+            'authoring 3.1.12': AUTHORING_3_1_X_WITH_DB_HOOKS,
+            'authoring 3.1.13': AUTHORING_3_1_X_WITH_DB_HOOKS,
+            'authoring 3.1.17': AUTHORING_3_1_X_NO_DB_HOOKS,
+            'authoring 3.1.18': AUTHORING_3_1_X_NO_DB_HOOKS,
 
-            'delivery 3.1.9': DELIVERY_3_1_X_HOOKS,
+            'delivery 3.1.9' : DELIVERY_3_1_X_HOOKS,
             'delivery 3.1.12': DELIVERY_3_1_X_HOOKS,
             'delivery 3.1.13': DELIVERY_3_1_X_HOOKS,
             'delivery 3.1.17': DELIVERY_3_1_X_HOOKS,
