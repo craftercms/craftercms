@@ -82,9 +82,9 @@
         <httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
         <httpcomponents.httpmime.version>4.5.13</httpcomponents.httpmime.version>
 
-        <jackson.version>2.11.4</jackson.version>
-        <jackson.databind.version>2.11.4</jackson.databind.version>
-        <jackson.dataformat.version>2.11.4</jackson.dataformat.version>
+        <jackson.version>2.13.0</jackson.version>
+        <jackson.databind.version>2.13.0</jackson.databind.version>
+        <jackson.dataformat.version>2.13.0</jackson.dataformat.version>
 
         <mongo.version>3.5.0</mongo.version> <!-- 3.12.6 -->
         <bson.version>3.5.0</bson.version>
@@ -169,7 +169,7 @@
         <!-- Testing -->
         <testng.version>7.4.0</testng.version>
         <junit.version>4.13.2</junit.version>
-        <mockito.version>1.10.19</mockito.version>
+        <mockito.version>4.1.0</mockito.version>
         <embedmongo.maven.version>0.3.5</embedmongo.maven.version>
         <de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
         <hamcrest.version>2.2</hamcrest.version>

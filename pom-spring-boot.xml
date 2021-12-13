@@ -70,8 +70,8 @@
 		<script.security.version>${project.version}</script.security.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
-		<jackson.version>2.11.4</jackson.version> <!-- 2.13.0 -->
-		<jackson.databind.version>2.11.4</jackson.databind.version> <!-- 2.13.0 -->
+		<jackson.version>2.13.0</jackson.version>
+		<jackson.databind.version>2.13.0</jackson.databind.version>
 		<aws.version>1.12.92</aws.version>
 		<box.sdk.version>2.57.0</box.sdk.version>
 		<elasticsearch.version>7.7.1</elasticsearch.version>
