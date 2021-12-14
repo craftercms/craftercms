@@ -54,7 +54,7 @@ function preFlightCheck() {
 	fi
 	
 	if [[ "$_java" ]]; then
-		version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9/]*/ {print $1}')
+		version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
 		cecho "Detected Java major version as $version\n" "info"
 		if [[ ! "$version" = "$REQUIRED_JAVA_VERSION" ]]; then
 			cecho "Crafter CMS requires Java version $REQUIRED_JAVA_VERSION, detected Java with major version $version, aborting.\n" "error"
