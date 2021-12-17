@@ -38,7 +38,7 @@ plugins {
     id "de.undercouch.download" version "3.1.2"
 }
 
-project.version = "3.1.17.4" // craftercms version flag
+project.version = "3.1.17.5-SNAPSHOT" // craftercms version flag
 
 ext {
     commandLinePrefix = []
