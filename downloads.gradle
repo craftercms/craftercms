@@ -82,7 +82,7 @@ task downloadSolr() {
     description = "Downloads, checks Solr integrity and unzips it"
     doFirst {
         download {
-            src "http://archive.apache.org/dist/lucene/solr/${solrVersion}/solr-${solrVersion}.zip"
+            src "http://downloads.craftercms.org/solr/${solrVersion}/solr-${solrVersion}.zip"
             overwrite false
             dest file("${downloadDir}/solr-${solrVersion}.zip")
         }
