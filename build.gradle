@@ -53,8 +53,8 @@ ext {
     /** Download Properties **/
     groovyVersion = project.hasProperty("groovy.version") ? project.property("groovy.version") : "3.0.4"
     tomcatVersion = project.hasProperty("tomcat.version") ? project.property("tomcat.version") : "8.5.66"
-    solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.1"
-    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.8.21"
+    solrVersion = project.hasProperty("solr.version") ? project.property("solr.version") : "7.7.3"
+    elasticsearchVersion = project.hasProperty("elasticsearch.version") ? project.property("elasticsearch.version") : "6.8.22"
     mariadb4jVersion = project.hasProperty("mariadb4j.version") ? project.property("mariadb4j.version") : "2.4.9"
     downloadDir = project.hasProperty("downloadDir") ? project.property("downloadDir") : "./downloads/"
     
