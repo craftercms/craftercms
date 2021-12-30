@@ -485,7 +485,6 @@
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
                         <version>${nexus.staging.maven.version}</version>
-                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         <executions>
                             <execution>
                                 <id>default-deploy</id>
@@ -498,6 +497,7 @@
                         <configuration>
                             <serverId>sonatype-nexus-staging</serverId>
                             <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
                 </plugins>
