@@ -194,6 +194,7 @@
 	<gmavenplus.version>1.13.0</gmavenplus.version>
 	<appassembler.maven.version>2.1.0</appassembler.maven.version>
 	<maven.assembly.version>3.3.0</maven.assembly.version>
+	<nexus.staging.maven.version>1.6.7</nexus.staging.maven.version>
     </properties>
 
     <dependencyManagement>
