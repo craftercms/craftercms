@@ -15,19 +15,19 @@ You can learn more about Crafter CMS here: https://craftercms.org
 
 Try Crafter CMS using a pre-built AMI (use the `authoring` AMI): https://aws.amazon.com/marketplace/seller-profile?id=6d75ffca-9630-44bd-90b4-ac0e99058995
 
-Download a pre-built bundle here: https://craftercms.org/downloads
+Download a pre-built binary archive here: https://craftercms.org/downloads
 
 Read the docs here: https://docs.craftercms.org/current
 
-This repository is for developers interested in contributing to Crafter CMS, customizing their own release, or building the latest. This parent project helps you build the following:
+This repository is for developers interested in contributing to Crafter CMS, customizing their own release, or building the latest. This parent project helps you build the following: 
 
-1. Deployable Crafter CMS bundle
+1. Deployable Crafter CMS binaries
 2. Docker images
 3. Developer's environment so you can compile and contribute to Crafter CMS
 
-**WARNING:** This project is not intended to be used on Windows. Crafter CMS source code development and building is 
-_only_ supported on Unix based systems. If you want to use Crafter CMS in Windows, please refer to the documentation
-in [Running Crafter CMS in a Docker Container](https://docs.craftercms.org/current/getting-started/quick-start-guide.html#running-crafter-cms-in-a-docker-container).
+**WARNING:** Crafter CMS source code development and building is 
+_only_ supported on Unix based systems. If you want to use Crafter CMS in Windows, install Windows Subsystem for Linux (WSL) by following the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install) then use the WSL 2 terminal for all the commands below.  Please refer to the documentation
+in [Installing Crafter CMS on WSL 2](https://docs.craftercms.org/current/system-administrators/activities/installing-craftercms-on-wsl2.html).
 
 # 1. Initial Setup
 Please make sure your system meets the prerequisites:
@@ -35,7 +35,7 @@ https://docs.craftercms.org/current/system-administrators/requirements-supported
 
 Let's begin :)
 
-If you're building a deployable Crafter CMS bundle, we'll clone the master branch:
+If you're building deployable Crafter CMS binaries, we'll clone the master branch:
 
 ```bash
 git clone -b master https://github.com/craftercms/craftercms.git
@@ -63,7 +63,7 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `start` Start Crafter CMS
 * `stop` Stop Crafter CMS
 * `status` Report status on running environments if any
-* `bundle` Create a deployable bundle
+* `bundle` Create deployable binaries
 
 ## 2.2 Options
 
@@ -79,31 +79,31 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `startMongoDB`: start MongoDB, default `false` unless Profile or Social are enabled. This is automatic.
 * `unitTest`: Run unit tests during build, default `false`
 * `shallowClone`: Clone only the latest commits and not the entire history (faster, but you lose history), default `false`
-* `bundlesDir`: Where to deposit bundles, default `./bundles`
+* `bundlesDir`: Where to deposit binaries, default `./bundles`
 * `downloadGrapes`: Download Grapes ahead of time (useful when no public Internet is available), default `false`
 * `downloadDir`: Where to store downloads, default `./downloads`
 * `authoringEnvDir`: Where to store the authoring environment, default `./crafter-authoring`
 * `deliveryEnvDir`: Where to store the delivery environment, default `./crafter-delivery`
 * `currentPlatform`: What platform to build to (`linux` or `darwin`), default is the build machine's OS
 
-# 3. Build a Deployable Bundle
+# 3. Build Deployable Binaries
 
-To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.tar.gz` files ready to be deployed to any system.
+To build deployable and distributable binaries of Crafter CMS, use the Gradle task `bundle`. This task will generate `.tar.gz` files ready to be deployed to any system.
 
 Before using `bundle` task make sure that the environment has been created and deployed using gradle tasks `build` and `deploy`
 
-Archives will be named `crafter-cms-${environment}.tar.gz` and can be found in the `bundles` folder.
+Archives will be named `crafter-cms-${environment}-VERSION.tar.gz` and can be found in the `bundles` folder.
 
 ```bash
 ./gradlew build deploy bundle
 ```
 
-To run Crafter CMS from the bundle, unzip and follow the instructions in the bundle's `README.txt`.
+To run Crafter CMS from the binary archive, unzip and follow the instructions in the binary archive's `README.txt`.
 
-## 3.1. Build an Environment Specific Bundle
+## 3.1. Build Environment Specific Binaries
 Crafter CMS is a decoupled CMS, and that means you have an `authoring` environment that caters to content creators, and a different environment, `delivery`, that handles the end-users that use the experience created by the former.
 
-To build a bundle for a specific environment:
+To build a binary archive for a specific environment:
 
 ```bash
     ./gradlew bundle -Penv=authoring
@@ -114,7 +114,7 @@ For the `delivery` environment, simply substitute the `env=authoring` with `env=
 
 ## 3.2 Update, Build and Bundle from a Tag/Branch
 
-To download, build and generate a bundle from a given tag or branch of the source code,
+To download, build and generate a binary archive from a given tag or branch of the source code,
 
 1. Clone the branch/tag of craftercms that you want to work with
 ```bash
