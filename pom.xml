@@ -194,6 +194,7 @@
 	<gmavenplus.version>1.13.0</gmavenplus.version>
 	<appassembler.maven.version>2.1.0</appassembler.maven.version>
 	<maven.assembly.version>3.3.0</maven.assembly.version>
+	<nexus.staging.maven.version>1.6.7</nexus.staging.maven.version>
     </properties>
 
     <dependencyManagement>
@@ -462,6 +463,9 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
                         <version>${maven.deploy.version}</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -476,6 +480,25 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${nexus.staging.maven.version}</version>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        <executions>
+                            <execution>
+                                <id>default-deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <serverId>sonatype-nexus-staging</serverId>
+                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
