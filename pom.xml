@@ -128,7 +128,7 @@
         <graphql.version>17.3</graphql.version> <!-- 17.3 -->
         <graphql.extended.scalars.version>17.0</graphql.extended.scalars.version> <!-- 17.3 -->
         <xerces.version>2.12.1</xerces.version><!-- consider xerces2 -->
-        <httpproxy.version>1.12</httpproxy.version>
+        <httpproxy.version>1.12.1</httpproxy.version>
         <apache.ivy>2.5.0</apache.ivy>
         <tinify.version>1.6.4</tinify.version>
         <mariadb4j.version>2.5.1</mariadb4j.version>
