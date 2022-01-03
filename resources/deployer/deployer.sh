@@ -65,7 +65,7 @@ function start() {
     if  [ -z "$possiblePID" ];  then
       pushd . 2>&1 > /dev/null
       cd "$DEPLOYER_HOME"
-      nohup java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"  > "$OUTPUT" 2>&1&
+      nohup java $JAVA_OPTS -jar "$DEPLOYER_HOME/crafter-deployer.jar"  > "$OUTPUT" 2>&1&
       popd 2>&1 > /dev/null
       echo $! > $PID
     else
@@ -93,7 +93,7 @@ function start() {
 function run() {
   pushd . 2>&1 > /dev/null
   cd "$DEPLOYER_HOME"
-  java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"
+  java $JAVA_OPTS -jar "$DEPLOYER_HOME/crafter-deployer.jar"
   popd 2>&1 > /dev/null
 }
 
