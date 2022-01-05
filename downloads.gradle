@@ -131,6 +131,7 @@ ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwrit
             throw GradleException("Unknown digest algorithm: \"" + checksumAlgorithm + "\"")
         }
 
+        // TODO: Use verifyFile from Gradle Download Task
         def calculatedHash = checksumFile(destinationFile, algorithm)
         def downloadedHash = new File(destinationFile + "." + checksumAlgorithm).getText('UTF-8').split(" ")[0]
 
