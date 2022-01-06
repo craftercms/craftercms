@@ -176,11 +176,6 @@ ext.authoringUpdatePermissions = [
             "/debug.sh",
             "/shutdown.sh",
             "/crafter-setenv.sh",
-            "/migration/migrate.sh",
-            "/migration/migrate-bg.sh",
-            "/migration/import.sh",
-            "/migration/import-bg.sh",
-            "/migration/setenv.sh",
             "/upgrade/start-upgrade.sh",
             "/upgrade/upgrade-target.sh"
         ],
