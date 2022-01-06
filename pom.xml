@@ -68,6 +68,7 @@
 
 		<!-- Commons -->
 		<commons.lang3.version>3.12.0</commons.lang3.version>
+		<commons.collections.version>3.2.2</commons.collections.version>
 		<commons.collections4.version>4.4</commons.collections4.version>
 		<commons.codec.version>1.15</commons.codec.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
@@ -91,6 +92,7 @@
 		<jongo.version>1.5.0</jongo.version>
 		<gmongo.version>1.5</gmongo.version>
 
+		<velocity.engine.version>2.3</velocity.engine.version>
 		<xstream.version>1.4.18</xstream.version>
 		<slf4j.version>1.7.32</slf4j.version>
 		<slf4j.api.version>1.7.32</slf4j.api.version>
