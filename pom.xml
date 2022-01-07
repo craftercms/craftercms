@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>craftercms</artifactId>
-	<version>4.0.0-rc1</version><!-- craftercms version flag -->
+	<version>4.0.0-SNAPSHOT</version><!-- craftercms version flag -->
 
 	<name>Crafter CMS</name>
 	<description>Crafter CMS Parent POM</description>
@@ -40,6 +40,13 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+    <developers>
+        <developer>
+            <id>sumerjabri</id>
+            <name>Sumer Jabri</name>
+            <email>sumer.jabri@craftercms.org</email>
+        </developer>
+    </developers>
 
 	<scm>
 		<connection>scm:git:git://github.com/craftercms/craftercms</connection>
@@ -498,10 +505,14 @@
 							</execution>
 						</executions>
 						<configuration>
-							<serverId>sonatype-nexus-staging</serverId>
+							<serverId>sonatype-staging</serverId>
 							<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
 					</plugin>
 				</plugins>
 			</build>
