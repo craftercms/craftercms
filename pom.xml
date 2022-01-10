@@ -41,6 +41,14 @@
 		</license>
 	</licenses>
 
+    <developers>
+        <developer>
+            <id>sumerjabri</id>
+            <name>Sumer Jabri</name>
+            <email>sumer.jabri@craftercms.org</email>
+        </developer>
+    </developers>
+
 	<scm>
 		<connection>scm:git:git://github.com/craftercms/craftercms</connection>
 		<developerConnection>scm:git:git://github.com/craftercms/craftercms</developerConnection>
@@ -498,7 +506,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<serverId>sonatype-nexus-staging</serverId>
+							<serverId>sonatype-staging</serverId>
 							<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
