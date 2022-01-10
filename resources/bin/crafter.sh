@@ -479,7 +479,7 @@ function doRestore() {
   read -p "Warning, you're about to restore CrafterCMS from a backup, which will wipe the\
   existing sites and associated database and replace everything with the restored data. If you\
   care about the existing state of the system then stop this process, backup the system, and then\
-  attempt the restore. Are you sure you want to proceed? (yes/no)\n" "warning"
+  attempt the restore. Are you sure you want to proceed? (yes/no)" REPLY
   if [ "$REPLY" != "yes" ] && [ "$REPLY" != "y" ]; then
     cecho "Canceling restore\n" "strong"
     exit 0
