@@ -49,14 +49,6 @@
 	        </developer>
 	</developers>
 
-    <developers>
-        <developer>
-            <id>sumerjabri</id>
-            <name>Sumer Jabri</name>
-            <email>sumer.jabri@craftercms.org</email>
-        </developer>
-    </developers>
-
 	<scm>
 		<connection>scm:git:git://github.com/craftercms/craftercms</connection>
 		<developerConnection>scm:git:git://github.com/craftercms/craftercms</developerConnection>
