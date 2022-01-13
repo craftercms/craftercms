@@ -13,13 +13,13 @@ Crafter CMS is a modern content management platform for building digital experie
 
 This repository is the parent project that builds everything and helps you build one of two things:
 
-1. Deployable Crafter CMS bundle
+1. Deployable Crafter CMS binaries
 2. Docker images
 3. Developer's environment so you can compile and contribute to Crafter CMS
 
-**WARNING:** This project is not intended to be used on Windows. Crafter CMS source code development and building is 
-_only_ supported on Unix based systems. If you want to use Crafter CMS in Windows, please refer to the documentation
-in [Running Crafter CMS in a Docker Container](https://docs.craftercms.org/en/3.1/getting-started/quick-start-guide.html#running-crafter-cms-in-a-docker-container).
+**WARNING:** Crafter CMS source code development and building is
+_only_ supported on Unix based systems. If you want to use Crafter CMS in Windows, install Windows Subsystem for Linux (WSL) by following the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install) then use the WSL 2 terminal for all the commands below.  Please refer to the documentation
+in [Installing Crafter CMS on WSL 2](https://docs.craftercms.org/en/3.1/system-administrators/activities/installing-craftercms-on-wsl2.html).
 
 # 1. Initial Setup
 You must have these prerequisites on your system before you begin:
@@ -37,7 +37,7 @@ You must have these prerequisites on your system before you begin:
 
 Let's begin :)
 
-If you're building a deployable Crafter CMS bundle, we'll clone the master branch:
+If you're building deployable Crafter CMS binaries, we'll clone the master branch:
 
 ```bash
 git clone https://github.com/craftercms/craftercms.git
@@ -51,35 +51,35 @@ If you would like to contribute to Crafter CMS, to build a developer's environme
 git clone https://github.com/craftercms/craftercms.git -b develop
 ```
 
-# 2. Build a Deployable Bundle
+# 2. Build Deployable Binaries
 
-To build a deployable and distributable bundle of Crafter CMS, use the Gradle task `bundle`. This task will generate `.tar.gz` files ready to be deployed to any system.
+To build deployable and distributable binaries of Crafter CMS, use the Gradle task `bundle`. This task will generate `.tar.gz` files ready to be deployed to any system.
 
-Before using `bundle` task make sure that the enviroment has been created and deployed using gradle tasks `build` and `deploy`
+Before using `bundle` task make sure that the environment has been created and deployed using gradle tasks `build` and `deploy`
 
-Archives will be named `crafter-cms-${environment}.tar.gz` and can be found in the `bundles` folder.
+Archives will be named `crafter-cms-${environment}-${version}.tar.gz` and can be found in the `bundles` folder.
 
 ```bash
 ./gradlew init build deploy bundle
 ```
 
-To run Crafter CMS from the bundle, unzip and follow the instructions in the bundle's `README.txt`.
+To run Crafter CMS from the binary archive, unzip and follow the instructions in the binary archive's `README.txt`.
 
-## 2.1. Build an Environment Specific Bundle
+## 2.1. Build Environment Specific Binaries
 Crafter CMS is a decoupled CMS, and that means you have an `authoring` environment that caters to content creators, and a different environment, `delivery`, that handles the end-users that use the experience created by the former.
 
-To build a bundle for a specific environment:
+To build a binary archive for a specific environment:
 
 ```bash
     ./gradlew bundle -Penv=authoring
 ```
-Archive will be named `crafter-cms-authoring.tar.gz` and can be found in the `bundles` folder.
+Archive will be named `crafter-cms-authoring-${version}.tar.gz` and can be found in the `bundles` folder.
 
 For the `delivery` environment, simply substitute the `env=authoring` with `env=delivery`.
 
 ## 2.2 Init/Update, Build and Bundle from a Tag/Branch
 
-To download, build and generate a bundle from a given tag or branch of the source code,
+To download, build and generate a binary archive from a given tag or branch of the source code,
 
 1. Clone the branch/tag of craftercms that you want to work with
 ```bash

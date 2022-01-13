@@ -63,7 +63,7 @@ function start() {
     ## Before run check if the port is available.
     possiblePID=$(pidOf $PORT)
     if  [ -z "$possiblePID" ];  then
-      nohup java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"  > "$OUTPUT" >&1&
+      nohup java $JAVA_OPTS -jar "$DEPLOYER_HOME/crafter-deployer.jar"  > "$OUTPUT" >&1&
       echo $! > $PID
     else
       echo $possiblePID > $PID
@@ -88,7 +88,7 @@ function start() {
 }
 
 function run() {
-  java -jar $JAVA_OPTS "$DEPLOYER_HOME/crafter-deployer.jar"
+  java $JAVA_OPTS -jar "$DEPLOYER_HOME/crafter-deployer.jar"
 }
 
 function stop() {
