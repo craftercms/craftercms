@@ -73,7 +73,7 @@
 		<sardine.version>5.10</sardine.version>
 		<xerces.version>2.12.1</xerces.version>
 		<java.version>11</java.version>
-		<hazelcast.version>4.0</hazelcast.version>
+		<hazelcast.version>4.2.4</hazelcast.version>
 		<hazelcast.kubernetes.version>2.0.1</hazelcast.kubernetes.version>
 		<script.security.version>${project.version}</script.security.version>
 
