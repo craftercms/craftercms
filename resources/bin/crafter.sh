@@ -622,13 +622,13 @@ function getStatus() {
   echo "------------------------------------------------------------------------"
   echo "$1 status"
   echo "------------------------------------------------------------------------"
-  statusOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/status")
+  statusOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/status?token=$6")
   if [ $? -eq 0 ]; then
     echo -e "PID\t"
     echo `cat "$5"`
     echo -e  "Uptime (in seconds):\t"
     echo "$statusOut"  |  grep -Eo '"uptime":\d+' | awk -F ":" '{print $2}'
-    versionOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/version")
+    versionOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/version?token=$6")
     if [ $? -eq 0 ]; then
       echo -e "Version:\t"
       echo -n $(echo "$versionOut"  |  egrep -Eo '"packageVersion":"[^"]+"' | awk -F ":" '{print $2}')
@@ -663,27 +663,27 @@ function solrStatus(){
 }
 
 function deployerStatus(){
-  getStatus "Crafter Deployer" $DEPLOYER_PORT "" "1" $DEPLOYER_PID
+  getStatus "Crafter Deployer" $DEPLOYER_PORT "" "1" $DEPLOYER_PID $DEPLOYER_MANAGEMENT_TOKEN
 }
 
 function searchStatus(){
-  getStatus "Crafter Search" $TOMCAT_HTTP_PORT "/crafter-search" "1" $CATALINA_PID
+  getStatus "Crafter Search" $TOMCAT_HTTP_PORT "/crafter-search" "1" $CATALINA_PID $SEARCH_MANAGEMENT_TOKEN
 }
 
 function engineStatus(){
-  getStatus "Crafter Engine" $TOMCAT_HTTP_PORT "" "1" $CATALINA_PID
+  getStatus "Crafter Engine" $TOMCAT_HTTP_PORT "" "1" $CATALINA_PID $ENGINE_MANAGEMENT_TOKEN
 }
 
 function studioStatus(){
-  getStatus "Crafter Studio" $TOMCAT_HTTP_PORT "/studio" "2" $CATALINA_PID
+  getStatus "Crafter Studio" $TOMCAT_HTTP_PORT "/studio" "2" $CATALINA_PID $STUDIO_MANAGEMENT_TOKEN
 }
 
 function profileStatus(){
-  getStatus "Crafter Profile" $TOMCAT_HTTP_PORT "/crafter-profile" "1" $CATALINA_PID
+  getStatus "Crafter Profile" $TOMCAT_HTTP_PORT "/crafter-profile" "1" $CATALINA_PID $PROFILE_MANAGEMENT_TOKEN
 }
 
 function socialStatus(){
-  getStatus "Crafter Social" $TOMCAT_HTTP_PORT "/crafter-social" "3" $CATALINA_PID
+  getStatus "Crafter Social" $TOMCAT_HTTP_PORT "/crafter-social" "3" $CATALINA_PID $SOCIAL_MANAGEMENT_TOKEN
 }
 
 
@@ -1110,7 +1110,7 @@ function doRestore() {
         mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
         if [ -f "$tempFolder/users.sql" ]; then
           mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
-        else 
+        else
           echo "Users backup does not exists. Skipping restore users"
         fi
         abortOnError
@@ -1135,7 +1135,7 @@ function doRestore() {
       $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
       if [ -f "$tempFolder/users.sql" ]; then
         $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
-      else 
+      else
         echo "Users backup does not exists. Skipping restore users"
       fi
       abortOnError

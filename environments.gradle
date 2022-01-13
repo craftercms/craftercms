@@ -289,6 +289,7 @@ envs.each { env ->
             updateCatalinaLogging("${resourcesDestDir}/bin/apache-tomcat/conf/logging.properties")
             updateSolrConf("${resourcesDestDir}/bin/solr/server/solr/solr.xml")
             updateElasticsearchConf("${resourcesDestDir}/bin/elasticsearch/config/elasticsearch.yml")
+            updateElasticsearchJvmOptions("${resourcesDestDir}/bin/elasticsearch/config/jvm.options")
 
             // Only sync resource files if it's not a new env
             if (!newEnv) {              
@@ -459,6 +460,14 @@ def updateElasticsearchConf(configFile) {
         '# Disable ML' + System.lineSeparator() +
         'xpack.ml.enabled: false' + System.lineSeparator()
     )
+
+    file.write(content)
+}
+def updateElasticsearchJvmOptions(configFile) {
+    def file = new File(configFile)
+
+    def content = file.text
+    content = content.replace("-Xm", '#-Xm')
 
     file.write(content)
 }
