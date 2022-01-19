@@ -25,6 +25,7 @@ import java.nio.file.Path
 import static groovyx.net.http.HttpBuilder.configure
 import static utils.EnvironmentUtils.getDeployerUrl
 import static utils.EnvironmentUtils.getTomcatUrl
+import static utils.EnvironmentUtils.getSearchAccessToken
 
 class RecreateSolrCoresHook implements PostUpgradeHook {
 
@@ -74,6 +75,9 @@ class RecreateSolrCoresHook implements PostUpgradeHook {
 
         httpClient.post {
             request.uri.path = "/crafter-search/api/2/admin/index/delete/${coreName}"
+            request.uri.query = [
+                token: getSearchAccessToken()
+            ]
             request.contentType = 'application/json'
             response.success { fs ->
                 println "Solr core '${coreName}' deleted successfully"
@@ -91,6 +95,9 @@ class RecreateSolrCoresHook implements PostUpgradeHook {
 
         httpClient.post {
             request.uri.path = "/api/1/target/deploy/${deployerEnv}/${siteName}"
+            request.uri.query = [
+                token: getSearchAccessToken()
+            ]
             request.contentType = 'application/json'
             request.body = [
                     reprocess_all_files: true
