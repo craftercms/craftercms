@@ -175,6 +175,9 @@ studio.security.encryption.key: ${env:CRAFTER_ENCRYPTION_KEY}
 # The salt used for encryption of configuration properties
 studio.security.encryption.salt: ${env:CRAFTER_ENCRYPTION_SALT}
 
+# The path of the folder used for the SSH configuration
+studio.security.ssh.config: ${env:CRAFTER_SSH_CONFIG}
+
 # Defines name used for environment specific configuration. It is used for environment overrides in studio. Default value is default.
 studio.configuration.environment.active: ${env:CRAFTER_ENVIRONMENT}
 

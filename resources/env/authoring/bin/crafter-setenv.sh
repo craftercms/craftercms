@@ -126,6 +126,10 @@ export CRAFTER_SYSTEM_ENCRYPTION_SALT=${CRAFTER_SYSTEM_ENCRYPTION_SALT:="DgGN9xh
 # -------------------- Configuration variables --------------------
 export CRAFTER_ENVIRONMENT=${CRAFTER_ENVIRONMENT:=default}
 
+# -------------------- SSH variables --------------------
+# The path of the folder used for the SSH configuration
+export CRAFTER_SSH_CONFIG=${CRAFTER_SSH_CONFIG:="$CRAFTER_DATA_DIR/ssh"}
+
 # -------------------- Studio's access tokens ---------------------
 # *************************************************************************************
 # ************************* IMPORTANT *************************************************
