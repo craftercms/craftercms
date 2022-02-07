@@ -42,7 +42,23 @@ ext.commonFoldersToCreate = [
     "/bin/apache-tomcat/shared/lib",
     "/bin/apache-tomcat/webapps",
     "/bin/apache-tomcat/lib/org/apache/catalina/util/",
-    "/bin/elasticsearch/logs"
+    "/bin/elasticsearch/logs",
+    "/data"
+]
+
+ext.hostsToScan = [
+    [
+        name: 'Github',
+        host: 'github.com'
+    ],
+    [
+        name: 'Gitlab',
+        host: 'gitlab.com'
+    ],
+    [
+        name: 'Bitbucket',
+        host: 'bitbucket.org'
+    ]
 ]
 
 ext.authoringFoldersToCreate = [
@@ -86,6 +102,12 @@ ext.commonItemsToCopy = [
         name: "license",
         from: "${projectDir}/resources/LICENSE",
         into: "/",
+        exclude: ""
+    ],
+    [
+        name: "ssh",
+        from: "${projectDir}/resources/ssh",
+        into: "/data/",
         exclude: ""
     ]
 ]
@@ -171,7 +193,6 @@ ext.authoringUpdatePermissions = [
             "/crafter-deployer/shutdown.sh",
             "/crafter.sh",
             "/wait-for-it.sh",
-            "/crafter2.sh",
             "/startup.sh",
             "/debug.sh",
             "/shutdown.sh",
@@ -193,7 +214,6 @@ ext.deliveryUpdatePermissions = [
             "/crafter-deployer/startup.sh",
             "/crafter-deployer/shutdown.sh",
             "/crafter.sh",
-            "/crafter2.sh",
             "/startup.sh",
             "/debug.sh",
             "/shutdown.sh",
@@ -442,6 +462,9 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes,
 	commonConfUpdatePatterns.each { conf ->
 		updateConfFile(envFolder + conf['confFile'], conf['patterns'])
 	}
+
+    // Update known_hosts
+    updateKnownHosts(envFolder)
 }
 
 ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, includeMongodb ->
@@ -607,4 +630,11 @@ ext.updateConfFile = { confFile, patterns ->
     }
 
     file.write(content)
+}
+
+ext.updateKnownHosts = { envDir ->
+    def knownHostsFile = file("${envDir}/data/ssh/known_hosts")
+    hostsToScan.each { entry ->
+        knownHostsFile << "# ${entry.name}" << "ssh-keyscan ${entry.host}".execute().getText() << System.lineSeparator()
+    }
 }

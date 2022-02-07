@@ -1,0 +1,9 @@
+# SSH Configuration File
+
+# CrafterCMS will use this file instead of the default ~/.ssh/config when using SSH authentication.
+
+# Uncomment the following setting to allow connections to any server without checking the known_hosts file, for
+# production environments it is recommended to properly register the servers instead.
+
+# Host *
+#    StrictHostKeyChecking no

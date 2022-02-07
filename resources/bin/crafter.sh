@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -447,6 +447,14 @@ function doBackup() {
    abortOnError
   fi
 
+  # ZIP SSH data
+  if [ -d "$CRAFTER_SSH_CONFIG" ]; then
+   banner "Backing up SSH data"
+   cd "$CRAFTER_SSH_CONFIG"
+   tar cvf "$tempFolder/ssh.tar" .
+   abortOnError
+  fi
+
   # ZIP everything (without compression)
   banner "Packaging everything"
   cd "$tempFolder"
@@ -574,6 +582,15 @@ function doRestore() {
       unzip "$tempFolder/deployer.zip" "$DEPLOYER_DATA_DIR"
       abortOnError
     fi
+  fi
+
+  # UNZIP SSH data
+  if [ -f "$tempFolder/ssh.tar" ]; then
+    mkdir -p "$CRAFTER_SSH_CONFIG"
+
+    banner "Restoring SSH data"
+    tar xvf "$tempFolder/ssh.tar" -C "$CRAFTER_SSH_CONFIG"
+    abortOnError
   fi
 
   # Restore DB

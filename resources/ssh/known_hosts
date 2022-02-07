@@ -1,0 +1,4 @@
+# SSH Known Hosts File
+
+# CrafterCMS will use this file instead of the default ~/.ssh/known_hosts when using SSH authentication.
+

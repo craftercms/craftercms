@@ -23,3 +23,6 @@ deployer:
         key: ${CRAFTER_ENCRYPTION_KEY}
         # The salt used for encryption of configuration properties
         salt: ${CRAFTER_ENCRYPTION_SALT}
+      ssh:
+        # The path of the folder used for the SSH configuration
+        config: ${CRAFTER_SSH_CONFIG}

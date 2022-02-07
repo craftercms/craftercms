@@ -177,6 +177,7 @@
 		<jaxb.impl.version>3.0.2</jaxb.impl.version>
 		<spatial4j.version>0.8</spatial4j.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
+		<eddsa.version>0.3.0</eddsa.version>
 
 		<!-- Testing -->
 		<testng.version>7.4.0</testng.version>
