@@ -635,6 +635,7 @@ ext.updateConfFile = { confFile, patterns ->
 ext.updateKnownHosts = { envDir ->
     def knownHostsFile = file("${envDir}/data/ssh/known_hosts")
     hostsToScan.each { entry ->
-        knownHostsFile << "# ${entry.name}" << "ssh-keyscan ${entry.host}".execute().getText() << System.lineSeparator()
+        knownHostsFile << "# ${entry.name}" << System.lineSeparator()
+                       << "ssh-keyscan ${entry.host}".execute().getText() << System.lineSeparator()
     }
 }
