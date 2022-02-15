@@ -57,7 +57,7 @@ function preFlightCheck() {
 		version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
 		cecho "Detected Java major version as $version\n" "info"
 		if [[ ! "$version" = "$REQUIRED_JAVA_VERSION" ]]; then
-			cecho "Crafter CMS requires Java version $REQUIRED_JAVA_VERSION, detected Java with major version $version, aborting.\n" "error"
+			cecho "CrafterCMS requires Java version $REQUIRED_JAVA_VERSION, detected Java with major version $version, aborting.\n" "error"
 			exit -1
 		fi
 	fi
@@ -313,12 +313,12 @@ function abortOnError() {
 function splash() {
   # TODO: Switch this to the new output system
   echo -e "\033[38;5;196m"
-  echo " ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗"
-  echo "██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗    ██╔════╝ ████╗ ████║ ██╔════╝"
-  echo "██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝    ██║      ██╔████╔██║ ███████╗"
-  echo "██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗    ██║      ██║╚██╔╝██║ ╚════██║"
-  echo "╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║    ╚██████╗ ██║ ╚═╝ ██║ ███████║"
-  echo " ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝     ╚═╝ ╚══════╝"
+  echo " ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗   ██████╗ ███╗   ███╗ ███████╗"
+  echo "██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗ ██╔════╝ ████╗ ████║ ██╔════╝"
+  echo "██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝ ██║      ██╔████╔██║ ███████╗"
+  echo "██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗ ██║      ██║╚██╔╝██║ ╚════██║"
+  echo "╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║ ╚██████╗ ██║ ╚═╝ ██║ ███████║"
+  echo " ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝     ╚═╝ ╚══════╝"
   echo -e "\033[0m"
 }
 
@@ -682,7 +682,7 @@ function doUpgradeDB() {
 
 # Do not run as root
 if [ "$(whoami)" == "root" ]; then
-  cecho "Crafter CMS cowardly refuses to run as root.\n
+  cecho "CrafterCMS cowardly refuses to run as root.\n
   Running as root is dangerous and is not supported.\n" "error"
 
   exit 1
@@ -691,7 +691,7 @@ fi
 # Do not run on 32-bit arch
 OSARCH=$(getconf LONG_BIT)
 if [[ $OSARCH -eq "32" ]]; then
-  cecho "Crafter CMS is not supported on 32-bit architecture\n" "error"
+  cecho "CrafterCMS is not supported on 32-bit architecture\n" "error"
   exit 5
 fi
 
@@ -867,9 +867,9 @@ function startTomcat() {
       runTask $executable
     fi
   else
-    cecho "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n
+    cecho "CrafterCMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n
             This might be because of a prior unsuccessful or incomplete shut down.\n
-            Please terminate that process before attempting to start Crafter CMS.\n" "error"
+            Please terminate that process before attempting to start CrafterCMS.\n" "error"
     read -t 10 # Timeout for the read, (if gradle start)
     exit -7
   fi
@@ -895,9 +895,9 @@ function debugTomcat() {
     fi
   else
     cecho ""
-    cecho "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n" "error"
+    cecho "CrafterCMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n" "error"
     cecho "This might be because of a prior unsuccessful or incomplete shut down.\n" "error"
-    cecho "Please terminate that process before attempting to start Crafter CMS.\n" "error"
+    cecho "Please terminate that process before attempting to start CrafterCMS.\n" "error"
     read -t 10 # Timeout for the read, (if gradle start)
     exit -7
   fi

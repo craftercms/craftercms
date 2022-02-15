@@ -1,20 +1,20 @@
-# Crafter CMS Contribution Guidelines
+# CrafterCMS Contribution Guidelines
 
 ## General Policy
-Crafter CMS is happy to accept outside contributions of code, documentation, artistic work or other work that helps the project.
+CrafterCMS is happy to accept outside contributions of code, documentation, artistic work or other work that helps the project.
 
 Contributing to the project means:
 * You'll be given full credit for your work
-* The contribution must be owned by the contributor or has a compatible license that Crafter CMS deems acceptable
-* The contribution must meet code quality standards including: [Travis CI](https://travis-ci.org/craftercms), [Codacy](https://www.codacy.com/app/CrafterCMS), Crafter CMS core team's code review
-* The contribution becomes irrevocably owned by Crafter CMS
+* The contribution must be owned by the contributor or has a compatible license that CrafterCMS deems acceptable
+* The contribution must meet code quality standards including: [Travis CI](https://travis-ci.org/craftercms), [Codacy](https://www.codacy.com/app/CrafterCMS), CrafterCMS core team's code review
+* The contribution becomes irrevocably owned by CrafterCMS
 
 ## Details
-When contributing to Crafter CMS, please first discuss the change you wish to make via IRC (freenode.net, 
+When contributing to CrafterCMS, please first discuss the change you wish to make via IRC (freenode.net, 
 \#craftercms), Slack, GitHub issue, email, or any other method with the owners of this repository before making a 
 change.
 
-Please review GIT_WORKFLOW.md thoroughly to understand the workflow used to develop Crafter CMS. Contributions not following this workflow may not be accepted.
+Please review GIT_WORKFLOW.md thoroughly to understand the workflow used to develop CrafterCMS. Contributions not following this workflow may not be accepted.
 
 ## Pull Request Process
 1. Please resolve any conflicts before sending your PR.

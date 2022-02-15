@@ -1,8 +1,8 @@
 ----------
-Crafter CMS
------------
+CrafterCMS
+----------
 
-Crafter CMS is an open-source, Java-based, Web content management system for
+CrafterCMS is an open-source, Java-based, Web content management system for
 Web sites, mobile apps, VR and more, designed for ease of development and scaling.
 
 Requirements
@@ -16,8 +16,8 @@ To run this bundle you must have Java 1.8 installed.
     To install `lsof` for RedHat-based Linux distros: `yum install lsof`
 
 
-Starting Crafter CMS Server
----------------------------
+Starting CrafterCMS Server
+--------------------------
 From the command line, navigate to the INSTALL_PATH/ directory, and execute the startup script:
 
     On Linux/Unix:
@@ -51,8 +51,8 @@ Once logged in:
 Studio will create your new site and redirect you to a preview where you can preview and edit your site. 
 
 
-Stopping Crafter CMS Server
----------------------------
+Stopping CrafterCMS Server
+--------------------------
 From the command line, navigate to the INSTALL_PATH/ directory, and execute the startup script:
 
     On Linux/Unix:

@@ -1,12 +1,12 @@
-# Crafter CMS Git Workflow
-Crafter CMS uses a Git workflow that's based on Gitflow: http://nvie.com/posts/a-successful-git-branching-model
+# CrafterCMS Git Workflow
+CrafterCMS uses a Git workflow that's based on Gitflow: http://nvie.com/posts/a-successful-git-branching-model
 
 ## High-level
-For every Crafter CMS repository, there are two main long-running branches:
+For every CrafterCMS repository, there are two main long-running branches:
 * `develop`: this is where development activities happen, and this branch is not meant to be stable
 * `master`: this is stable and deployable
 
-There are long-running branches for every supported version of Crafter CMS:
+There are long-running branches for every supported version of CrafterCMS:
 * support/v{VERSION}
 
 There are several other branches that are created and deleted over time, these include:

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -18,7 +18,7 @@
 
 if [ "$(whoami)" == "root" ]; then
   echo -e "\033[38;5;196m"
-  echo -e "Crafter CMS cowardly refuses to run as root."
+  echo -e "CrafterCMS cowardly refuses to run as root."
   echo -e "Running as root is dangerous and is not supported."
   echo -e "\033[0m"
   exit 1

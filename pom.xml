@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -23,8 +23,8 @@
 	<artifactId>craftercms</artifactId>
 	<version>4.0.0-SNAPSHOT</version><!-- craftercms version flag -->
 
-	<name>Crafter CMS</name>
-	<description>Crafter CMS Parent POM</description>
+	<name>CrafterCMS</name>
+	<description>CrafterCMS Parent POM</description>
 	<packaging>pom</packaging>
 	<url>https://craftercms.org</url>
 

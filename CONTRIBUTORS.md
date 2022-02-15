@@ -1,9 +1,9 @@
 Contributors
 ============
 
-Crafter CMS is an open source project and wouldn't have been possible without the contributions of great developers, users, and other open source projects.
+CrafterCMS is an open source project and wouldn't have been possible without the contributions of great developers, users, and other open source projects.
 
-If you've contributed to Crafter CMS, send us a PR with your information and your contribution to get added. List contribution towards the top of External Contributors since that list is sorted in reverse chronological order (more recent goes first).
+If you've contributed to CrafterCMS, send us a PR with your information and your contribution to get added. List contribution towards the top of External Contributors since that list is sorted in reverse chronological order (more recent goes first).
 
 Core Developers
 ===============

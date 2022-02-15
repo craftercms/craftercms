@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -98,7 +98,7 @@ task clone() {
 }
 
 task selfUpdate() {
-	description 'Updates the Crafter CMS parent project.'
+	description 'Updates the CrafterCMS parent project.'
 	dependsOn = [ "clone" ]
 	doFirst {
 		execCommand(["git", "pull", gitRemote, gitBranch], "${projectDir}")
@@ -173,7 +173,7 @@ task upgrade() {
 }
 
 task start() {
-	description 'Starts Crafter CMS'
+	description 'Starts CrafterCMS'
 	doFirst {
 		getEnvironments().each { environment ->
 			println "Starting $environment"
@@ -189,7 +189,7 @@ task start() {
 }
 
 task stop() {
-	description 'Stops Crafter CMS'
+	description 'Stops CrafterCMS'
 	doFirst {
 		getEnvironments().each { environment ->
 			println "Stopping $environment"
@@ -205,7 +205,7 @@ task stop() {
 }
 
 task status() {
-	description 'Reports Crafter CMS status'
+	description 'Reports CrafterCMS status'
 	doFirst {
 		getEnvironments().each { environment ->
 			def command = [ statusCommand ]

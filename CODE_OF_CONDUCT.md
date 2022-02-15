@@ -1,4 +1,4 @@
-# Crafter CMS Code of Conduct
+# CrafterCMS Code of Conduct
 
 ## Our Pledge
 

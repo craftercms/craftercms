@@ -20,7 +20,7 @@ import static utils.EnvironmentUtils.*
 import static utils.ScriptUtils.*
 
 /**
- * Infers the repo path assuming a developer installation of Crafter CMS (both Crafter Authoring and Delivery at the
+ * Infers the repo path assuming a developer installation of CrafterCMS (both Crafter Authoring and Delivery at the
  * same location).
  */
 def getDefaultRepoPath(siteName) {
