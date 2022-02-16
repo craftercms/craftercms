@@ -751,7 +751,7 @@ function help() {
 
 # Version info
 function version() {
-  cecho "Copyright (C) 2007-2021 Crafter Software Corporation. All rights reserved.\n" "info"
+  cecho "Copyright (C) 2007-2022 Crafter Software Corporation. All rights reserved.\n" "info"
   cecho "Version @VERSION@-@GIT_BUILD_ID@\n" "info"
 }
 
