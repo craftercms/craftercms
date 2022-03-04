@@ -89,11 +89,6 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 # studio.security.sessionTimeout: 480
 # Time in minutes after which inactive users will be required to login again
 # studio.security.inactivityTimeout: 30
-# Defines security provider for accessing repository. Possible values
-# - db (users are stored in database)
-# - ldap (users are imported from LDAP into the database)
-# - headers (use when authenticating via headers)
-# studio.security.type: ldap
 #
 # Salt for encrypting
 studio.security.cipher.salt: ${env:CRAFTER_SYSTEM_ENCRYPTION_SALT}
@@ -110,65 +105,6 @@ studio.security.cipher.key: ${env:CRAFTER_SYSTEM_ENCRYPTION_KEY}
 #   maxLength
 #   minMaxLength
 # studio.security.passwordRequirements.validationRegex: ^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;\/@#$%^&+=]))(?<minLength>.{8,})$
-# Studio authentication chain configuration
-# studio.authentication.chain:
-  # Authentication provider type
-  # - provider: HEADERS
-    # Authentication via headers enabled
-    # enabled: false
-    # Authentication header for secure key
-    # secureKeyHeader: secure_key
-    # Authentication headers secure key that is expected to match secure key value from headers
-    # Typically this is placed in the header by the authentication agent
-    # secureKeyHeaderValue: secure
-    # Authentication header for username
-    # usernameHeader: username
-    # Authentication header for first name
-    # firstNameHeader: firstname
-    # Authentication header for last name
-    # lastNameHeader: lastname
-    # Authentication header for email
-    # emailHeader: email
-    # Authentication header for groups: comma separated list of sites and groups
-    #   Example:
-    #   site_author,site_xyz_developer
-    # groupsHeader: groups
-    # Enable/disable logout for headers authenticated users (SSO)
-    # logoutEnabled: false
-    # If logout is enabled for headers authenticated users (SSO), set the endpoint of the SP or IdP logout, which should
-    # be called after local logout. The {baseUrl} macro is provided so that the browser is redirected back to Studio
-    # after logout (https://STUDIO_SERVER:STUDIO_PORT/studio)
-    # logoutUrl: /YOUR_DOMAIN/logout?ReturnTo={baseUrl}
-  # Authentication provider type
-  # - provider: LDAP
-    # Authentication via LDAP enabled
-    # enabled: false
-    # LDAP Server url
-    # ldapUrl: ldap://localhost:389
-    # LDAP bind DN (user)
-    # ldapUsername: cn=Manager,dc=my-domain,dc=com
-    # LDAP bind password
-    # ldapPassword: secret
-    # LDAP base context (directory root)
-    # ldapBaseContext: dc=my-domain,dc=com
-    # LDAP username attribute
-    # usernameLdapAttribute: uid
-    # LDAP first name attribute
-    # firstNameLdapAttribute: cn
-    # LDAP last name attribute
-    # lastNameLdapAttribute: sn
-    # Authentication header for email
-    # emailLdapAttribute: mail
-    # LDAP groups attribute
-    # groupNameLdapAttribute: crafterGroup
-    # LDAP groups attribute name regex
-    # groupNameLdapAttributeRegex: .*
-    # LDAP groups attribute match index
-    # groupNameLdapAttributeMatchIndex: 0
-# Authentication provider type
-  # - provider: DB
-    # Authentication via DB enabled
-    # enabled: true
 
 # The key used for encryption of configuration properties
 studio.security.encryption.key: ${env:CRAFTER_ENCRYPTION_KEY}
