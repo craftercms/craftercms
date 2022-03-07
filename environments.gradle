@@ -217,7 +217,9 @@ ext.deliveryUpdatePermissions = [
             "/startup.sh",
             "/debug.sh",
             "/shutdown.sh",
-            "/crafter-setenv.sh"
+            "/crafter-setenv.sh",
+            "/upgrade/start-upgrade.sh",
+            "/upgrade/upgrade-target.sh"
         ],
         permissions: [
             "+x"
