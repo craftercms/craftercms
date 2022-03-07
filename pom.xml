@@ -101,11 +101,11 @@
 		<gmongo.version>1.5</gmongo.version>
 
 		<velocity.engine.version>2.3</velocity.engine.version>
-		<xstream.version>1.4.18</xstream.version>
+		<xstream.version>1.4.19</xstream.version>
 		<slf4j.version>1.7.32</slf4j.version>
 		<slf4j.api.version>1.7.32</slf4j.api.version>
 		<jcl.over.slf4j.version>1.7.30</jcl.over.slf4j.version>
-		<log4j.version>2.17.1</log4j.version>
+		<log4j.version>2.17.2</log4j.version>
 		<quartz.version>2.3.2</quartz.version>
 		<freemarker.version>2.3.31</freemarker.version>
 		<aspectj.version>1.9.7</aspectj.version>
@@ -131,13 +131,13 @@
 		<gson.version>2.8.9</gson.version>
 		<jta.version>1.1</jta.version>
 		<cglib.version>3.3.0</cglib.version>
-		<groovy.version>3.0.9</groovy.version>
+		<groovy.version>3.0.10</groovy.version>
 		<script.security.version>${project.version}</script.security.version>
 		<rome.version>1.0</rome.version>
 		<urlrewrite.version>4.0.4</urlrewrite.version>
-		<graphql.version>17.3</graphql.version> <!-- 17.3 -->
+		<graphql.version>17.3</graphql.version>
 		<graphql.extended.scalars.version>17.0</graphql.extended.scalars.version> <!-- 17.3 -->
-		<xerces.version>2.12.1</xerces.version><!-- consider xerces2 -->
+		<xerces.version>2.12.2</xerces.version><!-- consider xerces2 -->
 		<httpproxy.version>1.12.1</httpproxy.version>
 		<apache.ivy>2.5.0</apache.ivy>
 		<tinify.version>1.6.4</tinify.version>
@@ -156,9 +156,9 @@
 		<jodatime.version>2.10.12</jodatime.version>
 		<hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
 		<validation.api.version>2.0.1.Final</validation.api.version>
-		<elasticsearch.version>7.7.1</elasticsearch.version>
+		<elasticsearch.version>7.15.2</elasticsearch.version>
 		<elasticsearch.client.version>7.16.3</elasticsearch.client.version>
-		<tika.version>1.28</tika.version>
+		<tika.version>1.28.1</tika.version>
 		<metadata.extractors.version>2.16.0</metadata.extractors.version>
 		<jsoup.version>1.14.3</jsoup.version>
 		<google.protobuf.version>3.19.3</google.protobuf.version>
