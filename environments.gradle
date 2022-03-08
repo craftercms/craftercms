@@ -214,6 +214,8 @@ ext.deliveryUpdatePermissions = [
             "/crafter-deployer/startup.sh",
             "/crafter-deployer/shutdown.sh",
             "/crafter.sh",
+            "/wait-for-it.sh",
+            "/remove-site.sh",
             "/startup.sh",
             "/debug.sh",
             "/shutdown.sh",
