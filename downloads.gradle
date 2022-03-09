@@ -62,7 +62,7 @@ ext.downloads = [
     ],
     [
         name: "mongodb",
-        url: "https://downloads.mongodb.org/${mongodbPlatform}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}.tgz",
+        url: "https://fastdl.mongodb.org/${mongodbPlatform}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}.tgz",
         destinationFile: "${downloadDir}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}.tar.gz",
         checksumAlgorithm: "sha256",
         expand: "true",
@@ -99,6 +99,8 @@ ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwrit
     def downloaded = false
 
     if (!file(destinationFile).exists() || overwriteArtifact) {
+        println "Downloading $name from $url"
+
         download {
             src url
             dest destinationFile
@@ -110,6 +112,7 @@ ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwrit
     }
 
     if (verifyArtifact && downloaded) {
+        println "Downloading checksum for $name to validate the downloaded artifact"
         download {
             src url + "." + checksumAlgorithm
             dest destinationFile + "." + checksumAlgorithm
