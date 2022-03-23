@@ -44,19 +44,29 @@ function preFlightCheck() {
 	# Check Java version
 	if type -p java 2>&1 > /dev/null; then
 		_java=java
-	elif [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
-		_java="$JAVA_HOME/bin/java"
 	else
-		cecho "Unable to find Java, please install Java version $REQUIRED_JAVA_VERSION, aborting.\n" "error"
+		cecho "Unable to find Java, please install Java version $REQUIRED_JAVA_VERSION and set JAVA_HOME, aborting.\n" "error"
+		exit -1
+	fi
+
+	version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
+	if [[ ! "$version" = "$REQUIRED_JAVA_VERSION" ]]; then
+		cecho "CrafterCMS requires Java version $REQUIRED_JAVA_VERSION, detected Java with major version $version, aborting.\n" "error"
+		exit -1
+	fi
+
+	# Check if JAVA_HOME is set, and set to the correct Java version
+	if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+		_java_in_javahome="$JAVA_HOME/bin/java"
+	else
+		cecho "JAVA_HOME is not set correctly, please set JAVA_HOME, aborting.\n" "error"
 		exit -1
 	fi
 	
-	if [[ "$_java" ]]; then
-		version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
-		if [[ ! "$version" = "$REQUIRED_JAVA_VERSION" ]]; then
-			cecho "CrafterCMS requires Java version $REQUIRED_JAVA_VERSION, detected Java with major version $version, aborting.\n" "error"
-			exit -1
-		fi
+	javahome_version=$("$_java_in_javahome" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
+	if [[ ! "$javahome_version" = "$version" ]]; then
+		cecho "The Java version in PATH doesn't match the Java version in JAVA_HOME, this means JAVA_HOME is not pointing to the right Java installation, please set JAVA_HOME to point to the Java version $REQUIRED_JAVA_VERSION and try again, aborting.\n" "error"
+		exit -1
 	fi
 
 	# Check lsof
