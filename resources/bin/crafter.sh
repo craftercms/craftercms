@@ -905,7 +905,7 @@ function stopTomcat() {
 
 function startMongoDB() {
   module="MongoDB"
-  executable="$MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_DATA_DIR/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT"
+  executable="\$0/bin/mongod --dbpath=\$1/mongodb --directoryperdb --fork --journal --logpath=\$2/mongod.log --port \$3"
   port=$MONGODB_PORT
   foldersToCreate="$MONGODB_DATA_DIR $MONGODB_LOGS_DIR"
   pidFile="$MONGODB_PID"
@@ -917,7 +917,7 @@ function startMongoDB() {
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
-    runTask $executable
+    runTask -c "$executable" $MONGODB_HOME $CRAFTER_DATA_DIR $MONGODB_LOGS_DIR $MONGODB_PORT
   fi
 }
 
