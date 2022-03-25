@@ -92,8 +92,6 @@ function killProcess() {
     sleep 5 # wait for 5 seconds, then kill -9
     cecho "Process $pid failed to stop gracefully, will try to kill it\n" "warning"
     kill -9 "$pid"
-  else
-    cecho "Unable to find nor kill -9 process PID=$pid.\n" "error"
   fi
 }
 
@@ -173,9 +171,10 @@ function checkIfModuleIsRunning() {
 # Stop a module
 function stopModule() {
 	module=$1
-	executable=$2
-	port=$3
-	pidFile=$4
+	port=$2
+	pidFile=$3
+	executable=$4
+	executable_args=$5
 
 	cd $CRAFTER_BIN_DIR
 
@@ -184,8 +183,8 @@ function stopModule() {
 	# If PID file has a value
 	if [ -s "$pidFile" ]; then
 		# Try to stop
-		bash -c "$executable"
-		sleep .5
+		bash -c "$executable" $executable_args
+		sleep 1
 		# If PID file still exists
 		if [ -e "$pidFile" ]; then
 			# Check if the process is still up
@@ -795,7 +794,7 @@ function debugDeployer() {
 }
 
 function stopDeployer() {
-	stopModule "Deployer" "$DEPLOYER_HOME/deployer.sh stop" "$DEPLOYER_PORT" "$DEPLOYER_PID"
+	stopModule "Deployer" "$DEPLOYER_PORT" "$DEPLOYER_PID" "\$0/deployer.sh stop" "$DEPLOYER_HOME"
 }
 
 function startElasticsearch() {
@@ -837,7 +836,7 @@ function debugElasticsearch() {
 
 function stopElasticsearch() {
   pid=$(cat "$ES_PID" 2>/dev/null)
-	stopModule "Elasticsearch" "kill $pid" "$ES_PORT" "$ES_PID"
+	stopModule "Elasticsearch" "$ES_PORT" "$ES_PID" "kill \$0" "$pid"
 }
 
 function elasticsearchStatus() {
@@ -900,7 +899,7 @@ function debugTomcat() {
 }
 
 function stopTomcat() {
-	stopModule "Tomcat" "$CRAFTER_BIN_DIR/apache-tomcat/bin/shutdown.sh 10 -force" "$TOMCAT_HTTP_PORT" "$CATALINA_PID"
+	stopModule "Tomcat" "$TOMCAT_HTTP_PORT" "$CATALINA_PID" "\$0/apache-tomcat/bin/shutdown.sh 10 -force" "$CRAFTER_BIN_DIR"
 }
 
 function startMongoDB() {
@@ -936,7 +935,7 @@ function isMongoNeeded() {
 }
 
 function stopMongoDB() {
-	stopModule "MongoDB" "$MONGODB_HOME/bin/mongod --shutdown --dbpath=$CRAFTER_DATA_DIR/mongodb --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT" "$MONGODB_PORT" "$MONGODB_PID"
+	stopModule "MongoDB" "$MONGODB_PORT" "$MONGODB_PID" "\$0/bin/mongod --shutdown --dbpath=\$1/mongodb --logpath=\$2/mongod.log --port \$3" "$MONGODB_HOME $CRAFTER_DATA_DIR $MONGODB_LOGS_DIR $MONGODB_PORT"
 }
 
 function skipElasticsearch() {
