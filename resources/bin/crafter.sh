@@ -92,7 +92,7 @@ function version(){
 }
 
 function pidOf(){
-  pid=$(lsof -i :$1 | grep LISTEN | awk '{print $2}' | grep -v PID | uniq)
+  pid=$(lsof -iTCP -sTCP:LISTEN | grep "$1" | awk '{print $2}' | sort | uniq)
   echo $pid
 }
 
