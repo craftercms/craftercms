@@ -99,7 +99,7 @@ function killProcess() {
 function getPidByPort() {
   port=$1
 
-  echo $(lsof -i :"$port" | grep LISTEN | awk '{print $2}' | grep -v PID | uniq)
+  echo $(lsof -iTCP -sTCP:LISTEN | grep "$port" | awk '{print $2}' | sort | uniq)
 }
 
 # Check if the process holding the port is ours
