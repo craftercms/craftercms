@@ -15,8 +15,7 @@
  */
 
 plugins {
-    id "de.undercouch.download" version "3.4.3"
-	id "base"
+    id "de.undercouch.download" version "${undercouchDownloadVersion}"
 }
 
 apply plugin: "groovy"
