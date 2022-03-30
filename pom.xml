@@ -91,9 +91,9 @@
 		<httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
 		<httpcomponents.httpmime.version>4.5.13</httpcomponents.httpmime.version>
 
-		<jackson.version>2.13.1</jackson.version>
-		<jackson.databind.version>2.13.1</jackson.databind.version>
-		<jackson.dataformat.version>2.13.1</jackson.dataformat.version>
+		<jackson.version>2.13.2</jackson.version>
+		<jackson.databind.version>2.13.2.2</jackson.databind.version>
+		<jackson.dataformat.version>2.13.2</jackson.dataformat.version>
 
 		<mongo.version>3.5.0</mongo.version> <!-- 3.12.6 -->
 		<bson.version>3.5.0</bson.version>
@@ -159,6 +159,7 @@
 		<elasticsearch.version>7.15.2</elasticsearch.version>
 		<elasticsearch.client.version>7.16.3</elasticsearch.client.version>
 		<tika.version>2.3.0</tika.version>
+		<poi.version>5.2.1</poi.version>
 		<metadata.extractors.version>2.16.0</metadata.extractors.version>
 		<jsoup.version>1.14.3</jsoup.version>
 		<google.protobuf.version>3.19.3</google.protobuf.version>
