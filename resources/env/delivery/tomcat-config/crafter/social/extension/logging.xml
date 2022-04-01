@@ -37,7 +37,7 @@
         <logger name="org.craftercms" level="info"/>
 
         <!-- 3rdparty Loggers -->
-        <Logger name="org.springframework.scheduling" level="info"/>
+        <Logger name="org.springframework" level="warn"/>
         <Logger name="org.mongodb.driver" level="error"/>
 
         <!-- Root Logger -->

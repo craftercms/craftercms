@@ -49,13 +49,7 @@
         <!-- 3rdparty Loggers -->
         <Logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="error"/>
 
-        <Logger name="org.springframework.core" level="info"/>
-
-        <Logger name="org.springframework.beans" level="info"/>
-
-        <Logger name="org.springframework.context" level="info"/>
-
-        <Logger name="org.springframework.web" level="info"/>
+        <Logger name="org.springframework" level="warn"/>
 
         <Logger name="org.mongodb.driver" level="warn"/>
 
