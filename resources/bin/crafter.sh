@@ -16,6 +16,7 @@
 
 ########################################################################################################################
 REQUIRED_JAVA_VERSION=11
+REQUIRED_GIT_VERSION=2.20.0
 
 ################################################ COMMONS ###############################################################
 cecho () {
@@ -72,6 +73,18 @@ function preFlightCheck() {
 	# Check lsof
 	if ! type -p lsof 2>&1 > /dev/null; then
 		cecho "lsof command not found, please install 'lsof', aborting.\n" "error"
+	fi
+
+	# Check git
+	if ! type -p git 2>&1 > /dev/null; then
+		cecho "Unable to find Git, please install Git version $REQUIRED_GIT_VERSION or higher, aborting.\n" "error"
+		exit -1
+	fi
+
+	git_version=$(git --version 2>&1 | awk -F ' ' '/version/ {print $3}')
+	if [[ ! "$git_version" > "$REQUIRED_GIT_VERSION" ]]; then
+		cecho "CrafterCMS requires Git version $REQUIRED_GIT_VERSION or higher, detected Git with major version $git_version, aborting.\n" "error"
+		exit -1
 	fi
 }
 
