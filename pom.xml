@@ -154,7 +154,8 @@
 		<greenmail.version>1.5.14</greenmail.version>
 		<stax2.api.version>4.2.1</stax2.api.version>
 		<jodatime.version>2.10.12</jodatime.version>
-		<hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
+		<!-- Spring 5.x doesn't support Hibernate Validator 7.x -->
+		<hibernate.validator.version>6.2.3.Final</hibernate.validator.version>
 		<validation.api.version>2.0.1.Final</validation.api.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
 		<elasticsearch.client.version>7.16.3</elasticsearch.client.version>
