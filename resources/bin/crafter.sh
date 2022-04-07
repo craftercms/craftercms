@@ -97,13 +97,24 @@ function killProcess() {
     # We have a PID, use it
     kill -15 "$pid"
   else
-    cecho "Unable to find nor kill process with PID=$pid.\n" "error"
+    cecho "Unable to find process with PID=$pid.\n" "error"
   fi
 
-  still_running=$(ps --pid="$pid" > /dev/null)
-  if [ -n "$still_running" ]; then
-    sleep 5 # wait for 5 seconds, then kill -9
-    cecho "Process $pid failed to stop gracefully, will try to kill it\n" "warning"
+  # Check if the process is still alive, poll it for a while before killing it
+  # The loop is structured to give the process 2 seconds if it doesn't stop right away
+  # Maximum wait is 20 seconds before kill -9
+  if $(ps --pid="$pid" > /dev/null); then
+    for i in `seq 1 10`; do
+      sleep 2 # wait and then check
+      if ! $(ps --pid="$pid" > /dev/null); then
+        # We're done, the process has terminated, break out
+        break
+      fi
+      cecho "Waiting on process $pid to stop gracefully\n" "info"
+    done
+
+    # The process is still running, kill it with -9
+    cecho "Process $pid failed to stop gracefully, issuing kill -9\n" "warning"
     kill -9 "$pid"
   fi
 }
