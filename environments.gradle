@@ -150,9 +150,9 @@ ext.authoringGrapesDownloads = [
 
 ext.deliveryGrapesDownloads = [
     ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
-        "${projectDir}/resources/bin/init-site.groovy"],
+        "${projectDir}/resources/env/delivery/bin/init-site.groovy"],
     ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
-        "${projectDir}/resources/bin/remove-site.groovy"]
+        "${projectDir}/resources/env/delivery/bin/remove-site.groovy"]
 ]
 
 ext.commonUpdatePermissions = [
