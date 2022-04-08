@@ -104,7 +104,7 @@ function killProcess() {
   # The loop is structured to give the process 2 seconds if it doesn't stop right away
   # Maximum wait is 20 seconds before kill -9
   if $(ps --pid="$pid" > /dev/null); then
-    for i in `seq 1 10`; do
+    for i in $(seq 1 10); do
       sleep 2 # wait and then check
       if ! $(ps --pid="$pid" > /dev/null); then
         # We're done, the process has terminated, break out
