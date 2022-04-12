@@ -26,7 +26,7 @@ Security Analysts
 =================
 | Name                               | URL                                  | Contribution                                                                              |
 |------------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------|
-| Kai Zhao <br> (ToTU Security Team) | https://github.com/happyhacking123   | [CV-2020080101](https://docs.craftercms.org/current/security/advisory.html#cv-2020080101) |
+| Kai Zhao <br> (ToTU Security Team) | https://github.com/happyhacking-k    | [CV-2020080101](https://docs.craftercms.org/current/security/advisory.html#cv-2020080101) |
 |                                    |                                      | [CV-2021120101](https://docs.craftercms.org/current/security/advisory.html#cv-2021120101) | 
 |                                    |                                      | [CV-2021120102](https://docs.craftercms.org/current/security/advisory.html#cv-2021120102) |
 |                                    |                                      | [CV-2021120103](https://docs.craftercms.org/current/security/advisory.html#cv-2021120103) |
