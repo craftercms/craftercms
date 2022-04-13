@@ -291,7 +291,7 @@ ext.commonConfUpdatePatterns = [
                 replace: 'http.port: ${ES_PORT}'
             ],
             [
-                match: '# ---------------------------------- Gateway -----------------------------------',
+                match: '# --------------------------------- Discovery ----------------------------------',
                 replace: System.lineSeparator() + 
                     '# Disable cluster discovery' + System.lineSeparator() +
                     'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
