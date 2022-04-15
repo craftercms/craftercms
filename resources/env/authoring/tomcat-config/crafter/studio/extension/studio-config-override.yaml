@@ -10,6 +10,8 @@ studio.repo.basePath: ${env:CRAFTER_DATA_DIR}/repos
 # studio.repo.published.live: live
 # Git repository branch for the `staging` publishing target, default "staging"
 # studio.repo.published.staging: staging
+# If Git CLI should be used for some Git operations, for better performance (Git CLI needs to be installed beforehand)
+# studio.repo.git.cli.enabled: true
 
 ############################################################
 ##                   Site Configuration                   ##
@@ -39,6 +41,7 @@ studio.configuration.management.previewProtectedUrls: >-
   /api/1/site/context/graphql/rebuild,
   /api/1/site/cache/clear,
   /api/1/site/cache/statistics
+
 ############################################################
 ##                    Preview Deployer                    ##
 ############################################################
