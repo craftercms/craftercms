@@ -113,9 +113,11 @@ function killProcess() {
       cecho "Waiting on process $pid to stop gracefully\n" "info"
     done
 
-    # The process is still running, kill it with -9
-    cecho "Process $pid failed to stop gracefully, issuing kill -9\n" "warning"
-    kill -9 "$pid"
+    # If the process is still running, kill it with -9
+    if $(ps --pid="$pid" > /dev/null); then
+      cecho "Process $pid failed to stop gracefully, issuing kill -9\n" "warning"
+      kill -9 "$pid"
+    fi
   fi
 }
 
