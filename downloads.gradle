@@ -98,8 +98,6 @@ ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwrit
     def downloaded = false
 
     if (!file(destinationFile).exists() || overwriteArtifact) {
-        println "Downloading $name from $url"
-
         download.run {
             src url
             dest destinationFile
@@ -111,7 +109,6 @@ ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwrit
     }
 
     if (verifyArtifact && downloaded) {
-        println "Downloading checksum for $name to validate the downloaded artifact"
         download.run {
             src url + "." + checksumAlgorithm
             dest destinationFile + "." + checksumAlgorithm
