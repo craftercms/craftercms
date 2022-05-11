@@ -94,7 +94,7 @@ ext.commonItemsToCopy = [
     ],
     [
         name: "mongodb",
-        from: "${downloadDir}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}/",
+        from: "${downloadDir}/mongodb-${mongodbBinary}-x86_64-${mongodbVersion}/",
         into: "/bin/mongodb/",
         exclude: ""
     ],

@@ -61,8 +61,8 @@ ext.downloads = [
     ],
     [
         name: "mongodb",
-        url: "https://fastdl.mongodb.org/${mongodbPlatform}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}.tgz",
-        destinationFile: "${downloadDir}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}.tar.gz",
+        url: "https://fastdl.mongodb.org/${mongodbPlatform}/mongodb-${mongodbBinary}-x86_64-${mongodbVersion}.tgz",
+        destinationFile: "${downloadDir}/mongodb-${mongodbBinary}-x86_64-${mongodbVersion}.tar.gz",
         checksumAlgorithm: "sha256",
         expand: "true",
         expandFolder: "${downloadDir}"
