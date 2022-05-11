@@ -103,10 +103,10 @@ function killProcess() {
   # Check if the process is still alive, poll it for a while before killing it
   # The loop is structured to give the process 2 seconds if it doesn't stop right away
   # Maximum wait is 20 seconds before kill -9
-  if $(ps --pid="$pid" > /dev/null); then
+  if $(ps -p "$pid" > /dev/null); then
     for i in $(seq 1 10); do
       sleep 2 # wait and then check
-      if ! $(ps --pid="$pid" > /dev/null); then
+      if ! $(ps -p "$pid" > /dev/null); then
         # We're done, the process has terminated, break out
         break
       fi
@@ -114,7 +114,7 @@ function killProcess() {
     done
 
     # If the process is still running, kill it with -9
-    if $(ps --pid="$pid" > /dev/null); then
+    if $(ps -p "$pid" > /dev/null); then
       cecho "Process $pid failed to stop gracefully, issuing kill -9\n" "warning"
       kill -9 "$pid"
     fi
@@ -215,7 +215,7 @@ function stopModule() {
 		if [ -e "$pidFile" ]; then
 			# Check if the process is still up
 			pid=$(cat "$pidFile")
-			still_running=$(ps --pid="$pid" > /dev/null)
+			still_running=$(ps -p "$pid" > /dev/null)
       if [ -n "$still_running" ]; then
         # Kill it
 				killProcess "$pid"
@@ -246,7 +246,7 @@ function runTask() {
   bash "$@"
 #  TASK_PID=$!
 #  sleep .5
-#  still_running=$(ps --pid="$TASK_PID" > /dev/null)
+#  still_running=$(ps -p "$TASK_PID" > /dev/null)
 #  if [ -n "$still_running" ]; then
 #    disown -h $TASK_PID 2> /dev/null
 #  fi
