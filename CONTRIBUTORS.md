@@ -13,11 +13,9 @@ Core Developers
 | Mike Vertal | https://github.com/mikevertal |
 | Russ Danner | https://github.com/russdanner | 
 | Alfonso Vasquez | https://github.com/avasquez614 |
-| Dejan Brkic | https://github.com/dejan-brkic |
 | Roy Art | https://github.com/rart |
 | Jose Ross | https://github.com/jdrossl |
 | Jose Vega | https://github.com/jvega190 |
-| Aaron Chavarria | https://github.com/aachavarria |
 | Vita Alhambra | https://github.com/alhambrav |
 | Yacdaniel Hurtado | https://github.com/yacdaniel |
 | Andy Reiter | https://github.com/AndyReiter |
@@ -51,6 +49,8 @@ External Contributors
 =====================
 | Name | URL | Contribution |
 | --- | --- | --- |
+| Dejan Brkic | https://github.com/dejan-brkic | Crafter Studio development |
+| Aaron Chavarria | https://github.com/aachavarria | Crafter Studio UI development |
 | Tony Field | https://github.com/tfield | Issue reporting and training content contributions |
 | Phil Nguyen | https://github.com/phuongnq | Issue reporting |
 | Ethan Vertal | https://github.com/ethanvert | Amazon Alexa blueprint |
@@ -58,7 +58,7 @@ External Contributors
 | Mohammed Y. Alnajdi | https://github.com/malnajdi | Issue reporting |
 | Manuel Calvo | https://github.com/shiriuki | Several blueprints |
 | Veronica Estrada | https://github.com/vestrada | Studio UI development |
-| Carlos Ortiz | https://github.com/cortiz | Gradle build harness, Social development, and more. |
+| Carlos Ortiz | https://github.com/cortiz | Gradle build harness, Social development, and more |
 | Michael Chen | https://github.com/mcgitty | Documentation and Issue reporting |
 | Luis Hernandez | https://github.com/luishernandezmonge | Integration testing framework |
 | Jeff Rosler | https://github.com/jrosler | Issue reporting |
