@@ -257,4 +257,4 @@ studio.security.token.cookie.maxAge: ${env:STUDIO_REFRESH_TOKEN_MAX_AGE}
 studio.security.token.cookie.secure: ${env:STUDIO_REFRESH_TOKEN_SECURE}
 
 # Use base domain instead of subdomain for the crafterSite cookie
-studio.cookie.useBaseDomain: true
+studio.cookie.useBaseDomain: false
