@@ -86,6 +86,18 @@ function preFlightCheck() {
 		cecho "CrafterCMS requires Git version $REQUIRED_GIT_VERSION or higher, detected Git with major version $git_version, aborting.\n" "error"
 		exit -1
 	fi
+
+	# Check if git has user.name and user.email configured
+	git_config=$( git config --global user.name )
+	if ! [ $? -eq 0 ]; then
+		cecho "git user.name is not set, setting default 'git_repo_user'\n" "warning"
+		git config --global user.name "git_repo_user"
+	fi
+	git_config=$( git config --global user.email )
+	if ! [ $? -eq 0 ]; then
+		cecho "git user.email is not set, setting default 'evalgit@example.com'\n" "warning"
+		git config --global user.email "evalgit@example.com"
+	fi
 }
 
 # Kill a process given a PID
