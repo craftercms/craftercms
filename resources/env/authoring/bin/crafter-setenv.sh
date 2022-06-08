@@ -155,3 +155,5 @@ export STUDIO_REFRESH_TOKEN_NAME=${STUDIO_REFRESH_TOKEN_NAME:="refresh_token"}
 export STUDIO_REFRESH_TOKEN_MAX_AGE=${STUDIO_REFRESH_TOKEN_MAX_AGE:=300}
 # Indicates if the refresh token cookie should be secure
 export STUDIO_REFRESH_TOKEN_SECURE=${STUDIO_REFRESH_TOKEN_SECURE:="false"}
+# The domain used to set the refresh token cookie (if set to empty the domain will be detected from the request)
+export STUDIO_REFRESH_TOKEN_DOMAIN=${STUDIO_REFRESH_TOKEN_DOMAIN:=""}
