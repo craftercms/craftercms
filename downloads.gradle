@@ -45,8 +45,8 @@ ext.downloads = [
     ],
     [
         name: "elasticsearch",
-        url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-x86_64.tar.gz",
-        destinationFile: "${downloadDir}/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-x86_64.tar.gz",
+        url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-${currentArch}.tar.gz",
+        destinationFile: "${downloadDir}/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-${currentArch}.tar.gz",
         checksumAlgorithm: "sha512",
         expand: "true",
         expandFolder: "${downloadDir}"

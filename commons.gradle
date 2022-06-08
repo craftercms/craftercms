@@ -202,7 +202,7 @@ ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
 */
 	// Tar and package
 	file(bundlesDir).mkdir()
-	def bundleFilename = "crafter-cms-${env}-${project.version}-${currentPlatform}-x86_64.tar.gz"
+	def bundleFilename = "crafter-cms-${env}-${project.version}-${currentPlatform}-${currentArch}.tar.gz"
 	def bundlePath = "${bundlesDir}/" + bundleFilename
 
 	try {
