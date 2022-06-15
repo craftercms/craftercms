@@ -1,4 +1,4 @@
-name: Bug report
+name: CrafterCMS Bug Report
 description: Create a bug report for CrafterCMS
 labels: ['triage']
 body:
