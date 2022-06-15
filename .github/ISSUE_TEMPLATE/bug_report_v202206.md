@@ -1,0 +1,50 @@
+name: Bug report
+description: Create a bug report for CrafterCMS
+labels: ['triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please provide a searchable summary of the issue in the title above.
+
+  - type: checkboxes
+    attributes:
+      label: Duplicates
+      description: Please [search the history](https://github.com/craftercms/craftercms/issues) to see if an issue already exists for the same problem.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: checkboxes
+    attributes:
+      label: Latest version
+      description: We roll bug fixes, performance enhancements, and other improvements into new releases.
+      options:
+        - label: The issue is in the latest released 4.0.x
+        - label: The issue is in the latest released 3.1.x
+  - type: textarea
+    attributes:
+      label: Describe the issue
+      description: Describe what happens instead of the expected behavior
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Provide a set of unambiguous steps to reproduce the issue
+      value: |
+        Steps:
+
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See the issue
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: textarea
+    attributes:
+      label: Screenshots and/or videos
+      description: |
+        Add screenshots and/or videos to help demonstrate the issue
