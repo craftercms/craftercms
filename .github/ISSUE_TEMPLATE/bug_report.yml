@@ -25,6 +25,7 @@ body:
     attributes:
       label: Describe the issue
       description: Describe what happens instead of the expected behavior
+      placeholder: Describe the issue
   - type: textarea
     attributes:
       label: Steps to reproduce
@@ -43,8 +44,10 @@ body:
       label: Relevant log output
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
+      placeholder: Paste in any relevant logs or a link to https://gist.github.com/
   - type: textarea
     attributes:
       label: Screenshots and/or videos
       description: |
         Add screenshots and/or videos to help demonstrate the issue
+      placeholder: Paste in any images or videos that show the issue
