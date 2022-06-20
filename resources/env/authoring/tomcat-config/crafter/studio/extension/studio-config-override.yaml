@@ -251,7 +251,12 @@ studio.security.token.password.sign: ${env:STUDIO_TOKEN_SIGN_PASSWORD}
 studio.security.token.password.encrypt: ${env:STUDIO_TOKEN_ENCRYPT_PASSWORD}
 # Name of the cookie to store the refresh token
 studio.security.token.cookie.name: ${env:STUDIO_REFRESH_TOKEN_NAME}
+# The domain used to set the refresh token cookie (if set to empty the domain will be detected from the request)
+studio.security.token.cookie.domain: ${env:STUDIO_REFRESH_TOKEN_DOMAIN}
 # Time in seconds for the expiration of the refresh token cookie
 studio.security.token.cookie.maxAge: ${env:STUDIO_REFRESH_TOKEN_MAX_AGE}
 # Indicates if the refresh token cookie should be secure (should be true for production environments behind HTTPS)
 studio.security.token.cookie.secure: ${env:STUDIO_REFRESH_TOKEN_SECURE}
+
+# Use base domain instead of subdomain for the crafterSite cookie
+studio.cookie.useBaseDomain: false

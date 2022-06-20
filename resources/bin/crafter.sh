@@ -86,6 +86,18 @@ function preFlightCheck() {
 		cecho "CrafterCMS requires Git version $REQUIRED_GIT_VERSION or higher, detected Git with major version $git_version, aborting.\n" "error"
 		exit -1
 	fi
+
+	# Check if git has user.name and user.email configured
+	git_config=$( git config --global user.name )
+	if ! [ $? -eq 0 ]; then
+		cecho "git user.name is not set, setting default 'git_repo_user'\n" "warning"
+		git config --global user.name "git_repo_user"
+	fi
+	git_config=$( git config --global user.email )
+	if ! [ $? -eq 0 ]; then
+		cecho "git user.email is not set, setting default 'evalgit@example.com'\n" "warning"
+		git config --global user.email "evalgit@example.com"
+	fi
 }
 
 # Kill a process given a PID
@@ -103,19 +115,21 @@ function killProcess() {
   # Check if the process is still alive, poll it for a while before killing it
   # The loop is structured to give the process 2 seconds if it doesn't stop right away
   # Maximum wait is 20 seconds before kill -9
-  if $(ps --pid="$pid" > /dev/null); then
+  if $(ps -p "$pid" > /dev/null); then
     for i in $(seq 1 10); do
       sleep 2 # wait and then check
-      if ! $(ps --pid="$pid" > /dev/null); then
+      if ! $(ps -p "$pid" > /dev/null); then
         # We're done, the process has terminated, break out
         break
       fi
       cecho "Waiting on process $pid to stop gracefully\n" "info"
     done
 
-    # The process is still running, kill it with -9
-    cecho "Process $pid failed to stop gracefully, issuing kill -9\n" "warning"
-    kill -9 "$pid"
+    # If the process is still running, kill it with -9
+    if $(ps -p "$pid" > /dev/null); then
+      cecho "Process $pid failed to stop gracefully, issuing kill -9\n" "warning"
+      kill -9 "$pid"
+    fi
   fi
 }
 
@@ -213,7 +227,7 @@ function stopModule() {
 		if [ -e "$pidFile" ]; then
 			# Check if the process is still up
 			pid=$(cat "$pidFile")
-			still_running=$(ps --pid="$pid" > /dev/null)
+			still_running=$(ps -p "$pid" > /dev/null)
       if [ -n "$still_running" ]; then
         # Kill it
 				killProcess "$pid"
@@ -244,7 +258,7 @@ function runTask() {
   bash "$@"
 #  TASK_PID=$!
 #  sleep .5
-#  still_running=$(ps --pid="$TASK_PID" > /dev/null)
+#  still_running=$(ps -p "$TASK_PID" > /dev/null)
 #  if [ -n "$still_running" ]; then
 #    disown -h $TASK_PID 2> /dev/null
 #  fi

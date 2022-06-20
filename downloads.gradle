@@ -45,8 +45,8 @@ ext.downloads = [
     ],
     [
         name: "elasticsearch",
-        url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-x86_64.tar.gz",
-        destinationFile: "${downloadDir}/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-x86_64.tar.gz",
+        url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-${currentArch}.tar.gz",
+        destinationFile: "${downloadDir}/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-${currentArch}.tar.gz",
         checksumAlgorithm: "sha512",
         expand: "true",
         expandFolder: "${downloadDir}"
@@ -61,8 +61,8 @@ ext.downloads = [
     ],
     [
         name: "mongodb",
-        url: "https://fastdl.mongodb.org/${mongodbPlatform}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}.tgz",
-        destinationFile: "${downloadDir}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}.tar.gz",
+        url: "https://fastdl.mongodb.org/${mongodbPlatform}/mongodb-${mongodbBinary}-x86_64-${mongodbVersion}.tgz",
+        destinationFile: "${downloadDir}/mongodb-${mongodbBinary}-x86_64-${mongodbVersion}.tar.gz",
         checksumAlgorithm: "sha256",
         expand: "true",
         expandFolder: "${downloadDir}"
@@ -98,8 +98,6 @@ ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwrit
     def downloaded = false
 
     if (!file(destinationFile).exists() || overwriteArtifact) {
-        println "Downloading $name from $url"
-
         download.run {
             src url
             dest destinationFile
@@ -111,7 +109,6 @@ ext.downloadArtifact = { name, url, destinationFile, checksumAlgorithm, overwrit
     }
 
     if (verifyArtifact && downloaded) {
-        println "Downloading checksum for $name to validate the downloaded artifact"
         download.run {
             src url + "." + checksumAlgorithm
             dest destinationFile + "." + checksumAlgorithm

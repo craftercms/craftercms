@@ -21,7 +21,7 @@ plugins {
 apply plugin: "groovy"
 apply plugin: 'de.undercouch.download'
 
-project.version = "4.0.0-SNAPSHOT" // craftercms version flag
+project.version = "4.0.1-SNAPSHOT" // craftercms version flag
 
 apply from: "global-settings.gradle"
 apply from: "commons.gradle"
