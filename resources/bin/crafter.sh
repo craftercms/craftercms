@@ -253,15 +253,7 @@ function stopModule() {
 # Run an external program
 function runTask() {
   # TODO Still needs work to disown forked processes in certain cases
-  # cecho "Running: $@\n" "error"
-#  TASK_PID=bash "$@"
   bash "$@"
-#  TASK_PID=$!
-#  sleep .5
-#  still_running=$(ps -p "$TASK_PID" > /dev/null)
-#  if [ -n "$still_running" ]; then
-#    disown -h $TASK_PID 2> /dev/null
-#  fi
 }
 
 function createFolders() {
@@ -310,8 +302,7 @@ function exitIfPortInUse() {
 	# if the process holding the port is not the one in PID file, fail
 	if ! [ "$pid"==$( cat "$pidFile" ) ]; then
 		# A process holding the port we need, inform the user and exit
-		cecho " Port $port is in use by another process with PID $pid\n
-			Please shutdown process with PID $pid and try again\n" "error"
+		cecho " Port $port is in use by another process with PID $pid\n Please shutdown process with PID $pid and try again\n" "error"
 		exit 6
 	fi
 }
@@ -715,8 +706,7 @@ function doUpgradeDB() {
 
 # Do not run as root
 if [ "$(whoami)" == "root" ]; then
-  cecho "CrafterCMS cowardly refuses to run as root.\n
-  Running as root is dangerous and is not supported.\n" "error"
+  cecho "CrafterCMS cowardly refuses to run as root.\nRunning as root is dangerous and is not supported.\n" "error"
 
   exit 1
 fi
@@ -900,9 +890,7 @@ function startTomcat() {
       runTask $executable
     fi
   else
-    cecho "CrafterCMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n
-            This might be because of a prior unsuccessful or incomplete shut down.\n
-            Please terminate that process before attempting to start CrafterCMS.\n" "error"
+    cecho "CrafterCMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n This might be because of a prior unsuccessful or incomplete shut down.\n Please terminate that process before attempting to start CrafterCMS.\n" "error"
     read -t 10 # Timeout for the read, (if gradle start)
     exit -7
   fi
