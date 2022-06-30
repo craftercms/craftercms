@@ -100,6 +100,8 @@
 		<jongo.version>1.5.0</jongo.version>
 		<gmongo.version>1.5</gmongo.version>
 
+		<thumbnailator.version>0.4.17</thumbnailator.version>
+
 		<velocity.engine.version>2.3</velocity.engine.version>
 		<xstream.version>1.4.19</xstream.version>
 		<slf4j.version>1.7.32</slf4j.version>
