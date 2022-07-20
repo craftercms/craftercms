@@ -91,9 +91,9 @@
 		<httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
 		<httpcomponents.httpmime.version>4.5.13</httpcomponents.httpmime.version>
 
-		<jackson.version>2.13.2</jackson.version>
-		<jackson.databind.version>2.13.2.2</jackson.databind.version>
-		<jackson.dataformat.version>2.13.2</jackson.dataformat.version>
+		<jackson.version>2.13.3</jackson.version>
+		<jackson.databind.version>2.13.3</jackson.databind.version>
+		<jackson.dataformat.version>2.13.3</jackson.dataformat.version>
 
 		<mongo.version>3.5.0</mongo.version> <!-- 3.12.6 -->
 		<bson.version>3.5.0</bson.version>
@@ -141,7 +141,7 @@
 		<httpproxy.version>1.12.1</httpproxy.version>
 		<apache.ivy>2.5.0</apache.ivy>
 		<tinify.version>1.6.4</tinify.version>
-		<mariadb4j.version>2.5.1</mariadb4j.version>
+		<mariadb4j.version>2.5.3</mariadb4j.version>
 		<saxon.version>10.6</saxon.version>
 		<apache.cxf.version>3.4.5</apache.cxf.version>
 		<ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
@@ -158,7 +158,7 @@
 		<validation.api.version>2.0.1.Final</validation.api.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
 		<elasticsearch.client.version>7.16.3</elasticsearch.client.version>
-		<tika.version>2.3.0</tika.version>
+		<tika.version>2.4.0</tika.version>
 		<poi.version>5.2.1</poi.version>
 		<metadata.extractors.version>2.16.0</metadata.extractors.version>
 		<jsoup.version>1.14.3</jsoup.version>
