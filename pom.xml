@@ -135,8 +135,8 @@
 		<script.security.version>${project.version}</script.security.version>
 		<rome.version>1.0</rome.version>
 		<urlrewrite.version>4.0.4</urlrewrite.version>
-		<graphql.version>19.1</graphql.version>
-		<graphql.extended.scalars.version>18.1</graphql.extended.scalars.version>
+		<graphql.version>17.3</graphql.version>
+		<graphql.extended.scalars.version>17.0</graphql.extended.scalars.version> <!-- 17.3 -->
 		<xerces.version>2.12.2</xerces.version><!-- consider xerces2 -->
 		<httpproxy.version>1.12.1</httpproxy.version>
 		<apache.ivy>2.5.0</apache.ivy>
