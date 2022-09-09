@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>craftercms-spring-boot</artifactId>
-	<version>4.0.1-SNAPSHOT</version><!-- craftercms version flag -->
+	<version>4.0.2-SNAPSHOT</version><!-- craftercms version flag -->
 
 	<name>CrafterCMS - Springboot</name>
 	<description>CrafterCMS Parent POM - Springboot</description>
@@ -58,7 +58,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.6.9</version>
+		<version>2.7.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -67,7 +67,7 @@
 		<commons.configuration.version>2.7</commons.configuration.version>
 		<commons.csv.version>1.9.0</commons.csv.version>
 		<commons.io.version>2.11.0</commons.io.version>
-		<jgit.version>6.0.0.202111291000-r</jgit.version>
+		<jgit.version>6.2.0.202206071550-r</jgit.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<handlebars.version>4.3.0</handlebars.version>
 		<sardine.version>5.10</sardine.version>
@@ -79,16 +79,16 @@
 		<jakarta.json.version>2.0.1</jakarta.json.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
-		<jackson.version>2.13.2</jackson.version>
-		<jackson.databind.version>2.13.2.2</jackson.databind.version>
+		<jackson.version>2.13.3</jackson.version>
+		<jackson.databind.version>2.13.3</jackson.databind.version>
 		<aws.version>1.12.139</aws.version>
 		<box.sdk.version>2.58.0</box.sdk.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
-		<tomcat.version>9.0.59</tomcat.version>
+		<tomcat.version>9.0.64</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
 		<groovy.version>3.0.10</groovy.version>
 		<apache.ivy>2.5.0</apache.ivy>
-		<log4j2.version>2.17.2</log4j2.version>
+		<log4j2.version>2.18.0</log4j2.version>
 
 		<!-- build -->
 		<maven.javadoc.version>3.2.0</maven.javadoc.version>
