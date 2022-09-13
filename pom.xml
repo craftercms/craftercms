@@ -184,7 +184,7 @@
 		<!-- Testing -->
 		<testng.version>7.4.0</testng.version>
 		<junit.version>4.13.2</junit.version>
-		<mockito.version>4.1.0</mockito.version>
+		<mockito.version>4.8.0</mockito.version>
 		<embedmongo.maven.version>0.3.5</embedmongo.maven.version>
 		<de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
