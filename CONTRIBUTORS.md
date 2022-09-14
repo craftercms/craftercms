@@ -24,6 +24,8 @@ Security Analysts
 =================
 | Name                               | URL                                  | Contribution                                                                              |
 |------------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------|
+| Matei "Mal" Badanoiu               | https://github.com/mbadanoiu         | [CV-2022091301](https://docs.craftercms.org/current/security/advisory.html#cv-2022091301) |
+|                                    |                                      | [CV-2022091302](https://docs.craftercms.org/current/security/advisory.html#cv-2022091302) |
 | Kai Zhao <br> (ToTU Security Team) | https://github.com/happyhacking-k    | [CV-2020080101](https://docs.craftercms.org/current/security/advisory.html#cv-2020080101) |
 |                                    |                                      | [CV-2021120101](https://docs.craftercms.org/current/security/advisory.html#cv-2021120101) | 
 |                                    |                                      | [CV-2021120102](https://docs.craftercms.org/current/security/advisory.html#cv-2021120102) |
