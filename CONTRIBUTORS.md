@@ -14,16 +14,18 @@ Core Developers
 | Russ Danner | https://github.com/russdanner | 
 | Alfonso Vasquez | https://github.com/avasquez614 |
 | Roy Art | https://github.com/rart |
-| Jose Ross | https://github.com/jdrossl |
 | Jose Vega | https://github.com/jvega190 |
 | Vita Alhambra | https://github.com/alhambrav |
 | Yacdaniel Hurtado | https://github.com/yacdaniel |
+| Phil Nguyen | https://github.com/phuongnq |
 | Andy Reiter | https://github.com/AndyReiter |
+| Juan Vasquez | https://github.com/Euquimides |
 
 Security Analysts
 =================
 | Name                               | URL                                  | Contribution                                                                              |
 |------------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------|
+| Gil Correia                        |                                      | PENDING                                                                                   |
 | Matei "Mal" Badanoiu               | https://github.com/mbadanoiu         | [CV-2022091301](https://docs.craftercms.org/current/security/advisory.html#cv-2022091301) |
 |                                    |                                      | [CV-2022091302](https://docs.craftercms.org/current/security/advisory.html#cv-2022091302) |
 | Kai Zhao <br> (ToTU Security Team) | https://github.com/happyhacking-k    | [CV-2020080101](https://docs.craftercms.org/current/security/advisory.html#cv-2020080101) |
@@ -51,10 +53,10 @@ External Contributors
 =====================
 | Name | URL | Contribution |
 | --- | --- | --- |
+| Jose Ross | https://github.com/jdrossl | Crafter Studio, Engine, Search, Deployer development |
 | Dejan Brkic | https://github.com/dejan-brkic | Crafter Studio development |
 | Aaron Chavarria | https://github.com/aachavarria | Crafter Studio UI development |
 | Tony Field | https://github.com/tfield | Issue reporting and training content contributions |
-| Phil Nguyen | https://github.com/phuongnq | Issue reporting |
 | Ethan Vertal | https://github.com/ethanvert | Amazon Alexa blueprint |
 | grundmann-thalia | https://github.com/grundmann-thalia | Issue reporting |
 | Mohammed Y. Alnajdi | https://github.com/malnajdi | Issue reporting |
