@@ -21,7 +21,7 @@ package upgrade
         @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.1'),
         @Grab(group = 'org.apache.commons', module = 'commons-configuration2', version = '2.7'),
         @Grab(group = 'commons-beanutils', module = 'commons-beanutils', version = '1.9.3'),
-        @Grab(group = 'org.yaml', module = 'snakeyaml', version = '1.24'),
+        @Grab(group = 'org.yaml', module = 'snakeyaml', version = '1.33'),
         @Grab(group = 'io.github.http-builder-ng', module = 'http-builder-ng-core', version = '1.0.3')
 ])
 
