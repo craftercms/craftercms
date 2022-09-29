@@ -237,7 +237,7 @@ def printMenuBorder(int length) {
 
 /**
  * Prints the interactive "menu" that asks for the user input when the new version of a file differs from the old
- * version. 
+ * version.
  */
 def showSyncFileMenu(Path filePath, String configPattern) {
     def firstLine = "Config file [${filePath}] is different in the new release. Please choose:".toString()
@@ -322,8 +322,8 @@ def syncFile(Path binFolder, Path newBinFolder, Path filePath, boolean alwaysOve
                             System.exit(0)
                         default:
                             println "[!] Unrecognized option '${selectedOption}'"
-                            break                       
-                    }                       
+                            break
+                    }
                 }
             }
         } else if (!compareFiles(oldFile, newFile)) {
@@ -365,13 +365,13 @@ def showDeleteFileMenu(Path filePath) {
 
     println ''
 
-    return option    
+    return option
 }
 
 /**
- * Checks if an old file needs to be deleted if it doesn't appear in the new release. 
+ * Checks if an old file needs to be deleted if it doesn't appear in the new release.
  */
-def deleteFileIfAbsentInNewRelease(Path binFolder, Path newBinFolder, Path filePath, boolean alwaysDelete) {
+def deleteFileIfAbsentInNewRelease(Path binFolder, Path newBinFolder, Path filePath, boolean alwaysDelete, ArrayList keepDirectories) {
     def oldFile = binFolder.resolve(filePath)
     def newFile = newBinFolder.resolve(filePath)
     def delete = false
@@ -385,6 +385,7 @@ def deleteFileIfAbsentInNewRelease(Path binFolder, Path newBinFolder, Path fileP
                 switch (selectedOption) {
                     case 'n':
                         done = true
+                        keepDirectories.add(filePath.getParent().toString())
                         break
                     case 'y':
                         delete = true
@@ -400,9 +401,12 @@ def deleteFileIfAbsentInNewRelease(Path binFolder, Path newBinFolder, Path fileP
                         System.exit(0)
                     default:
                         println "[!] Unrecognized option '${selectedOption}'"
-                        break                            
-                }                
+                        break
+                }
             }
+        } else if (Files.isDirectory(oldFile) && keepDirectories.contains(filePath.toString())) {
+            println "[k] Keep directory ${filePath} as it contains files should not be deleted."
+            delete = false
         } else {
             delete = true
         }
@@ -459,6 +463,7 @@ def doUpgrade(String oldVersion, String newVersion, Path binFolder, Path newBinF
 
     def alwaysOverwrite = false
     def alwaysDelete = false
+    def keepDirectories = []
 
     // Delete files in the old bundle that are absent in the new bundle
     Files.walk(binFolder).withCloseable { files ->
@@ -466,9 +471,9 @@ def doUpgrade(String oldVersion, String newVersion, Path binFolder, Path newBinF
             .sorted(Comparator.reverseOrder())
             .each { file ->
                 alwaysDelete = deleteFileIfAbsentInNewRelease(
-                    binFolder, newBinFolder, binFolder.relativize(file), alwaysDelete)
+                    binFolder, newBinFolder, binFolder.relativize(file), alwaysDelete, keepDirectories)
             }
-    }    
+    }
 
     // Sync the files between the old bundle and the new bundle
     Files.walk(newBinFolder).withCloseable { files ->
@@ -528,7 +533,7 @@ if (options) {
     if (options.help) {
         printHelp(cli)
         return
-    }    
+    }
 
     // Parse the options and arguments
     def extraArguments = options.arguments()
