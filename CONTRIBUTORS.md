@@ -53,7 +53,7 @@ External Contributors
 =====================
 | Name | URL | Contribution |
 | --- | --- | --- |
-| René Muhl | https://github.com/rm-- | Docker Images |
+| René Muhl | https://github.com/rm-- | Docker Images improvements |
 | Jose Ross | https://github.com/jdrossl | Crafter Studio, Engine, Search, Deployer development |
 | Dejan Brkic | https://github.com/dejan-brkic | Crafter Studio development |
 | Aaron Chavarria | https://github.com/aachavarria | Crafter Studio UI development |
