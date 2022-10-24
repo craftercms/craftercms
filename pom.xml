@@ -91,9 +91,9 @@
 		<httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
 		<httpcomponents.httpmime.version>4.5.13</httpcomponents.httpmime.version>
 
-		<jackson.version>2.13.3</jackson.version>
-		<jackson.databind.version>2.13.3</jackson.databind.version>
-		<jackson.dataformat.version>2.13.3</jackson.dataformat.version>
+		<jackson.version>2.13.4</jackson.version>
+		<jackson.databind.version>2.13.4</jackson.databind.version>
+		<jackson.dataformat.version>2.13.4</jackson.dataformat.version>
 
 		<mongo.version>3.5.0</mongo.version> <!-- 3.12.6 -->
 		<bson.version>3.5.0</bson.version>
@@ -135,8 +135,8 @@
 		<script.security.version>${project.version}</script.security.version>
 		<rome.version>1.0</rome.version>
 		<urlrewrite.version>4.0.4</urlrewrite.version>
-		<graphql.version>17.3</graphql.version>
-		<graphql.extended.scalars.version>17.0</graphql.extended.scalars.version> <!-- 17.3 -->
+		<graphql.version>17.4</graphql.version>
+		<graphql.extended.scalars.version>17.1</graphql.extended.scalars.version>
 		<xerces.version>2.12.2</xerces.version><!-- consider xerces2 -->
 		<httpproxy.version>1.12.1</httpproxy.version>
 		<apache.ivy>2.5.0</apache.ivy>
