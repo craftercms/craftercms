@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>craftercms-spring-boot</artifactId>
-	<version>4.0.2-SNAPSHOT</version><!-- craftercms version flag -->
+	<version>4.0.2</version><!-- craftercms version flag -->
 
 	<name>CrafterCMS - Springboot</name>
 	<description>CrafterCMS Parent POM - Springboot</description>
