@@ -56,9 +56,8 @@ def buildCli(cli) {
 			'authentication')
 	cli.p(longOpt: 'password', args: 1, argName: 'password', 'The password for the remote Git repo, when using basic ' +
 			'authentication')
-	cli.k(longOpt: 'private-key', args: 1, argName: 'path', 'The path to the private key, if it\'s not under the ' +
-			'default path (~/.ssh/id_rsa), when authenticating ' +
-			'through SSH to the remote Git repo')
+	cli.k(longOpt: 'private-key', args: 1, argName: 'path', 'The path to the private key, when using private-key ' +
+			'authentication through SSH to the remote Git repo')
 	cli.f(longOpt: 'passphrase', args: 1, argName: 'passphrase', 'The passphrase of the private key (when the key is ' +
 			'passphrase protected)')
 	cli.a(longOpt: 'notification-addresses', args: 1, argName: 'addresses', 'A comma-separated list of email ' +
@@ -80,10 +79,7 @@ def printHelp(cli) {
 	println '     init-site -b master mysite /opt/crafter/authoring/data/repos/sites/mysite/published'
 	println ' Init a site that is in a remote HTTPS repo with username/password authentication'
 	println '     init-site -u jdoe -p jdoe1234 mysite https://github.com/jdoe/mysite.git'
-	println ' Init a site that is in a remote SSH repo with public/private key authentication (default private key path '
-	println ' with no passphrase)'
-	println '     init-site mysite ssh://myserver/opt/crater/sites/mysite'
-	println ' Init a site that is in a remote SSH repo with public/private key authentication (specific private key path '
+	println ' Init a site that is in a remote SSH repo with public/private key authentication (private key path '
 	println ' with no passphrase)'
 	println '     init-site -k ~/.ssh/jdoe_key mysite ssh://myserver/opt/crater/sites/mysite'
 	println ' Init a site that is in a remote SSH repo with public/private key authentication (specific private key path '
