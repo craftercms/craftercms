@@ -80,10 +80,10 @@ def printHelp(cli) {
 	println ' Init a site that is in a remote HTTPS repo with username/password authentication'
 	println '     init-site -u jdoe -p jdoe1234 mysite https://github.com/jdoe/mysite.git'
 	println ' Init a site that is in a remote SSH repo with public/private key authentication (private key path '
-	println ' with no passphrase)'
+	println '     with no passphrase)'
 	println '     init-site -k ~/.ssh/jdoe_key mysite ssh://myserver/opt/crater/sites/mysite'
 	println ' Init a site that is in a remote SSH repo with public/private key authentication (specific private key path '
-	println ' with passphrase)'
+	println '     with passphrase)'
 	println '     init-site -k ~/.ssh/jdoe_key -f jdoe123 mysite ssh://myserver/opt/crater/sites/mysite'
 }
 
