@@ -67,8 +67,7 @@
 		<!-- Main -->
 		<!-- Spring -->
 		<spring.version>5.3.22</spring.version>
-		<spring.security.version>5.7.2</spring.security.version>
-		<spring.security.saml2.version>1.0.10.RELEASE</spring.security.saml2.version>
+		<spring.security.version>5.7.5</spring.security.version>
 		<spring.data.version>2.7.2</spring.data.version>
 		<spring.ldap.version>2.4.1</spring.ldap.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
