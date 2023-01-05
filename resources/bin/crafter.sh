@@ -38,7 +38,11 @@ cecho () {
     STARTCOLOR="\e[$COLOR";
     ENDCOLOR="\e[0m";
 
-    printf "$STARTCOLOR%b$ENDCOLOR" "$1";
+    if [ -z "$CRAFTERCMS_SCRIPT_LOG" ]; then
+      printf "$STARTCOLOR%b$ENDCOLOR" "$1"
+    else
+      printf "$STARTCOLOR%b$ENDCOLOR" "$1" >> $CRAFTERCMS_SCRIPT_LOG
+    fi
 }
 
 function preFlightCheck() {
@@ -769,6 +773,8 @@ function help() {
   cecho "    backup <name>, Perform a backup of all data\n" "info"
   cecho "    restore <file>, Perform a restore of all data\n" "info"
   cecho "    upgradedb, Perform database upgrade (mysql_upgrade)\n" "info"
+  cecho "    \n" "info"
+  cecho "    To log output to a file, set the environment variable CRAFTERCMS_SCRIPT_LOG to point to a log file\n" "info"
   exit 2;
 }
 
