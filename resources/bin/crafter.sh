@@ -41,7 +41,7 @@ cecho () {
     if [ -z "$CRAFTERCMS_SCRIPT_LOG" ]; then
       printf "$STARTCOLOR%b$ENDCOLOR" "$1"
     else
-      printf "$STARTCOLOR%b$ENDCOLOR" "$1" >> $CRAFTERCMS_SCRIPT_LOG
+      printf "$STARTCOLOR%b$ENDCOLOR" "$1" >> "$CRAFTERCMS_SCRIPT_LOG"
     fi
 }
 
