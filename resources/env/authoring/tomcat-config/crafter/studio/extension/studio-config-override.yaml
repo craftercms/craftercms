@@ -97,17 +97,19 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 studio.security.cipher.salt: ${env:CRAFTER_SYSTEM_ENCRYPTION_SALT}
 # Key for encrypting
 studio.security.cipher.key: ${env:CRAFTER_SYSTEM_ENCRYPTION_KEY}
-# Password requirements validation regular expression
-# The supported capture group keys are:
-#   hasNumbers
-#   hasLowercase
-#   hasUppercase
-#   hasSpecialChars
-#   noSpaces
-#   minLength
-#   maxLength
-#   minMaxLength
-# studio.security.passwordRequirements.validationRegex: ^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;\/@#$%^&+=]))(?<minLength>.{8,})$
+
+# Password requirements minimum complexity
+# This is based on https://github.com/dropbox/zxcvbn
+# The minimum complexity corresponds to the password score
+# You can try this out here https://lowe.github.io/tryzxcvbn/
+#  score      # Integer from 0-4 (useful for implementing a strength bar)
+#  0 # too guessable: risky password. (guesses < 10^3)
+#  1 # very guessable: protection from throttled online attacks. (guesses < 10^6)
+#  2 # somewhat guessable: protection from unthrottled online attacks. (guesses < 10^8)
+#  3 # safely unguessable: moderate protection from offline slow-hash scenario. (guesses < 10^10)
+#  4 # very unguessable: strong protection from offline slow-hash scenario. (guesses >= 10^10)
+# The default value is 3
+# studio.security.passwordRequirements.minimumComplexity: 3
 
 # The key used for encryption of configuration properties
 studio.security.encryption.key: ${env:CRAFTER_ENCRYPTION_KEY}
