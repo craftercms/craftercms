@@ -92,8 +92,9 @@ function version(){
 }
 
 function pidOf(){
-  pid=$(lsof -iTCP -sTCP:LISTEN | grep "$1" | awk '{print $2}' | sort | uniq)
-  echo $pid
+  port=$1
+
+  echo $(lsof -iTCP -sTCP:LISTEN -P | grep "$port" | awk '{print $2}' | sort | uniq)
 }
 
 function killPID(){
