@@ -58,7 +58,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
+		<version>2.7.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -87,7 +87,7 @@
 		<tomcat.version>9.0.64</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
 		<groovy.version>3.0.10</groovy.version>
-		<apache.ivy>2.5.0</apache.ivy>
+		<apache.ivy>2.5.1</apache.ivy>
 		<log4j2.version>2.18.0</log4j2.version>
 
 		<!-- build -->
