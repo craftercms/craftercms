@@ -68,7 +68,7 @@
 		<commons.csv.version>1.9.0</commons.csv.version>
 		<commons.io.version>2.11.0</commons.io.version>
 		<commons.text.version>1.10.0</commons.text.version>
-		<jgit.version>6.2.0.202206071550-r</jgit.version>
+		<jgit.version>6.4.0.202211300538-r</jgit.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<handlebars.version>4.3.0</handlebars.version>
 		<sardine.version>5.10</sardine.version>
@@ -84,9 +84,9 @@
 		<aws.version>1.12.139</aws.version>
 		<box.sdk.version>2.58.0</box.sdk.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
-		<tomcat.version>9.0.64</tomcat.version>
+		<tomcat.version>9.0.71</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
-		<groovy.version>3.0.10</groovy.version>
+		<groovy.version>3.0.14</groovy.version>
 		<apache.ivy>2.5.1</apache.ivy>
 		<log4j2.version>2.18.0</log4j2.version>
 
