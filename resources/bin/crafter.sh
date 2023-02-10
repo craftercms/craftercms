@@ -14,19 +14,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+cecho () {
+    if [ -z "$CRAFTERCMS_SCRIPT_LOG" ]; then
+      echo "$1"
+    else
+      echo "$1" >> "$CRAFTERCMS_SCRIPT_LOG"
+    fi
+}
+
 if [ "$(whoami)" == "root" ]; then
-  echo -e "\033[38;5;196m"
-  echo -e "Crafter CMS cowardly refuses to run as root."
-  echo -e "Running as root is dangerous and is not supported."
-  echo -e "\033[0m"
+  cecho -e "\033[38;5;196m"
+  cecho -e "Crafter CMS cowardly refuses to run as root."
+  cecho -e "Running as root is dangerous and is not supported."
+  cecho -e "\033[0m"
   exit 1
 fi
 
 OSARCH=$(getconf LONG_BIT)
 if [[ $OSARCH -eq "32" ]]; then
-  echo -e "\033[38;5;196m"
-  echo "CrafterCMS is not supported in a 32bit os"
-  echo -e "\033[0m"
+  cecho -e "\033[38;5;196m"
+  cecho "CrafterCMS is not supported in a 32bit os"
+  cecho -e "\033[0m"
   read -r
   exit 5
 fi
@@ -43,52 +51,52 @@ fi
 . "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
 function help() {
-  echo $(basename $BASH_SOURCE)
-  echo "    start [withMongoDB] [withSolr] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
+  cecho $(basename $BASH_SOURCE)
+  cecho "    start [withMongoDB] [withSolr] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
   Elasticsearch. If withMongoDB is specified MongoDB will be started, if withSolr is specified Solr will be started,\
   if skipElasticsearch is specified Elasticsearch will not be started, if skipMongoDB is specified MongoDB will not be\
   started even if the Crafter Profile war is present"
-  echo "    stop, Stops Tomcat, Deployer, Elasticsearch (if started), Solr (if started) and Mongo (if started)"
-  echo "    debug [withMongoDB] [withSolr] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
+  cecho "    stop, Stops Tomcat, Deployer, Elasticsearch (if started), Solr (if started) and Mongo (if started)"
+  cecho "    debug [withMongoDB] [withSolr] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and\
   Elasticsearch in debug mode. If withMongoDB is specified MongoDB will be started, if withSolr is specified Solr will\
   be started, if skipElasticsearch is specified Elasticsearch will not be started, if skipMongoDB is specified MongoDB\
   will not be started even if the Crafter Profile war is present"
-  echo "    start_deployer, Starts Deployer"
-  echo "    stop_deployer, Stops Deployer"
-  echo "    debug_deployer, Starts Deployer in debug mode"
-  echo "    start_solr, Starts Solr"
-  echo "    stop_solr, Stops Solr"
-  echo "    debug_solr, Starts Solr in debug mode"
-  echo "    start_elasticsearch, Starts Elasticsearch"
-  echo "    stop_elasticsearch, Stops Elasticsearch"
-  echo "    debug_elasticsearch, Starts Elasticsearch in debug mode"
-  echo "    start_tomcat, Starts Tomcat"
-  echo "    stop_tomcat, Stops Tomcat"
-  echo "    debug_tomcat, Starts Tomcat in debug mode"
-  echo "    start_mongodb, Starts Mongo DB"
-  echo "    stop_mongodb, Stops Mongo DB"
-  echo "    status, Status of all CrafterCms subsystems"
-  echo "    status_engine, Status of Crafter Engine"
-  echo "    status_studio, Status of Crafter Studio"
-  echo "    status_profile, Status of Crafter Profile"
-  echo "    status_social, Status of Crafter Social"
-  echo "    status_search, Status of Crafter Search"
-  echo "    status_deployer, Status of Deployer"
-  echo "    status_solr, Status of Solr"
-  echo "    status_elasticsearch, Status of Elasticsearch"
-  echo "    status_mariadb, Status of MariaDB"
-  echo "    status_mongodb, Status of MonoDb"
-  echo "    backup <name>, Perform a backup of all data"
-  echo "    restore <file>, Perform a restore of all data"
-  echo "    upgradedb, Perform database upgrade (mysql_upgrade)"
-  echo ""
-  echo "For more information use '$(basename $BASH_SOURCE) man'"
+  cecho "    start_deployer, Starts Deployer"
+  cecho "    stop_deployer, Stops Deployer"
+  cecho "    debug_deployer, Starts Deployer in debug mode"
+  cecho "    start_solr, Starts Solr"
+  cecho "    stop_solr, Stops Solr"
+  cecho "    debug_solr, Starts Solr in debug mode"
+  cecho "    start_elasticsearch, Starts Elasticsearch"
+  cecho "    stop_elasticsearch, Stops Elasticsearch"
+  cecho "    debug_elasticsearch, Starts Elasticsearch in debug mode"
+  cecho "    start_tomcat, Starts Tomcat"
+  cecho "    stop_tomcat, Stops Tomcat"
+  cecho "    debug_tomcat, Starts Tomcat in debug mode"
+  cecho "    start_mongodb, Starts Mongo DB"
+  cecho "    stop_mongodb, Stops Mongo DB"
+  cecho "    status, Status of all CrafterCms subsystems"
+  cecho "    status_engine, Status of Crafter Engine"
+  cecho "    status_studio, Status of Crafter Studio"
+  cecho "    status_profile, Status of Crafter Profile"
+  cecho "    status_social, Status of Crafter Social"
+  cecho "    status_search, Status of Crafter Search"
+  cecho "    status_deployer, Status of Deployer"
+  cecho "    status_solr, Status of Solr"
+  cecho "    status_elasticsearch, Status of Elasticsearch"
+  cecho "    status_mariadb, Status of MariaDB"
+  cecho "    status_mongodb, Status of MonoDb"
+  cecho "    backup <name>, Perform a backup of all data"
+  cecho "    restore <file>, Perform a restore of all data"
+  cecho "    upgradedb, Perform database upgrade (mysql_upgrade)"
+  cecho ""
+  cecho "For more information use '$(basename $BASH_SOURCE) man'"
   exit 2;
 }
 
 function version(){
-  echo "Copyright (C) 2007-2020 Crafter Software Corporation. All rights reserved."
-  echo "Version @VERSION@-@GIT_BUILD_ID@"
+  cecho "Copyright (C) 2007-2020 Crafter Software Corporation. All rights reserved."
+  cecho "Version @VERSION@-@GIT_BUILD_ID@"
 }
 
 function pidOf(){
@@ -106,14 +114,24 @@ function killPID(){
   fi
 }
 
+# Run an external program with logging
+function runCmd() {
+  # TODO Still needs work to disown forked processes in certain cases
+  if [ -z "$CRAFTERCMS_SCRIPT_LOG" ]; then
+    bash -c "$@"
+  else
+    bash -c "$@" 2>&1 >> "$CRAFTERCMS_SCRIPT_LOG"
+  fi
+}
+
 function checkPortForRunning(){
   result=1
   pidForOpenPort=$(pidOf $1)
   if ! [ "$pidForOpenPort"=="$2" ]; then
-    echo -e "\033[38;5;196m"
-    echo " Port $1 is taken by PID $pidForOpenPort"
-    echo " Please shutdown process with PID $pidForOpenPort"
-    echo -e "\033[0m"
+    cecho -e "\033[38;5;196m"
+    cecho " Port $1 is taken by PID $pidForOpenPort"
+    cecho " Please shutdown process with PID $pidForOpenPort"
+    cecho -e "\033[0m"
   else
     result=0
   fi
@@ -121,17 +139,17 @@ function checkPortForRunning(){
 }
 
 function printTailInfo(){
-  echo -e "\033[38;5;196m"
-  echo "Log files live here: \"$CRAFTER_LOGS_DIR\". "
-  echo "To follow the main tomcat log, you can \"tail -f $CRAFTER_LOGS_DIR/tomcat/catalina.out\""
-  echo -e "\033[0m"
+  cecho -e "\033[38;5;196m"
+  cecho "Log files live here: \"$CRAFTER_LOGS_DIR\". "
+  cecho "To follow the main tomcat log, you can \"tail -f $CRAFTER_LOGS_DIR/tomcat/catalina.out\""
+  cecho -e "\033[0m"
 }
 
 function startDeployer() {
   cd $DEPLOYER_HOME
-  echo "------------------------------------------------------------------------"
-  echo "Starting Deployer"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting Deployer"
+  cecho "------------------------------------------------------------------------"
   if [ ! -d $DEPLOYER_LOGS_DIR ]; then
     mkdir -p $DEPLOYER_LOGS_DIR;
   fi
@@ -140,9 +158,9 @@ function startDeployer() {
 
 function debugDeployer() {
   cd $DEPLOYER_HOME
-  echo "------------------------------------------------------------------------"
-  echo "Starting Deployer"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting Deployer"
+  cecho "------------------------------------------------------------------------"
   if [ ! -d $DEPLOYER_LOGS_DIR ]; then
     mkdir -p $DEPLOYER_LOGS_DIR;
   fi
@@ -151,17 +169,17 @@ function debugDeployer() {
 
 function stopDeployer() {
   cd $DEPLOYER_HOME
-  echo "------------------------------------------------------------------------"
-  echo "Stopping Deployer"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Stopping Deployer"
+  cecho "------------------------------------------------------------------------"
   $DEPLOYER_HOME/deployer.sh stop;
 }
 
 function startSolr() {
   cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Starting Solr"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting Solr"
+  cecho "------------------------------------------------------------------------"
   if [ ! -d $SOLR_INDEXES_DIR ]; then
     mkdir -p $SOLR_INDEXES_DIR;
   fi
@@ -177,8 +195,8 @@ function startSolr() {
       echo $(pidOf $SOLR_PORT) > $SOLR_PID
     else
       echo $possiblePID > $SOLR_PID
-      echo "Process PID $possiblePID is listening port $SOLR_PORT"
-      echo "Hijacking PID and saving into $SOLR_PID"
+      cecho "Process PID $possiblePID is listening port $SOLR_PORT"
+      cecho "Hijacking PID and saving into $SOLR_PID"
       exit 0
     fi
   else
@@ -188,19 +206,19 @@ function startSolr() {
     fi
     if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
     then
-      echo "Solr Pid file is not ok, forcing startup"
+      cecho "Solr Pid file is not ok, forcing startup"
       rm "$SOLR_PID"
       startSolr
     fi
-    echo "Solr already started"
+    cecho "Solr already started"
   fi
 }
 
 function debugSolr() {
   cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Starting Solr"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting Solr"
+  cecho "------------------------------------------------------------------------"
   if [ ! -d $SOLR_INDEXES_DIR ]; then
     mkdir -p $SOLR_INDEXES_DIR;
   fi
@@ -217,8 +235,8 @@ function debugSolr() {
       echo $(pidOf $SOLR_PORT) > $SOLR_PID
     else
       echo $possiblePID > $SOLR_PID
-      echo "Process PID $possiblePID is listening port $SOLR_PORT"
-      echo "Hijacking PID and saving into $SOLR_PID"
+      cecho "Process PID $possiblePID is listening port $SOLR_PORT"
+      cecho "Hijacking PID and saving into $SOLR_PID"
       exit
     fi
   else
@@ -228,19 +246,19 @@ function debugSolr() {
     fi
     if ! pgrep -u `whoami` -F "$SOLR_PID" >/dev/null
     then
-      echo "Solr Pid file is not ok, forcing startup"
+      cecho "Solr Pid file is not ok, forcing startup"
       rm "$SOLR_PID"
       debugSolr
     fi
-    echo "Solr already started"
+    cecho "Solr already started"
   fi
 }
 
 function stopSolr() {
   cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Stopping Solr"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Stopping Solr"
+  cecho "------------------------------------------------------------------------"
   if [ -s "$SOLR_PID" ]; then
     $CRAFTER_BIN_DIR/solr/bin/solr stop
     if pgrep -F "$SOLR_PID" > /dev/null
@@ -257,15 +275,15 @@ function stopSolr() {
       # No pid file but we found the process
       killPID $SOLR_PID
     fi
-    echo "Solr already shutdown or pid $SOLR_PID file not found";
+    cecho "Solr already shutdown or pid $SOLR_PID file not found";
   fi
 }
 
 function startElasticsearch() {
   cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Starting Elasticsearch"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting Elasticsearch"
+  cecho "------------------------------------------------------------------------"
   if [ ! -d $ES_INDEXES_DIR ]; then
     mkdir -p $ES_INDEXES_DIR;
   fi
@@ -280,8 +298,8 @@ function startElasticsearch() {
       $ES_HOME/elasticsearch -d -p $ES_PID
     else
       echo $possiblePID > $ES_PID
-      echo "Process PID $possiblePID is listening port $ES_PORT"
-      echo "Hijacking PID and saving into $ES_PID"
+      cecho "Process PID $possiblePID is listening port $ES_PORT"
+      cecho "Hijacking PID and saving into $ES_PID"
       exit 0
     fi
   else
@@ -291,19 +309,19 @@ function startElasticsearch() {
     fi
     if ! pgrep -u `whoami` -F "$ES_PID" >/dev/null
     then
-      echo "Elasticsearch Pid file is not ok, forcing startup"
+      cecho "Elasticsearch Pid file is not ok, forcing startup"
       rm "$ES_PID"
       startElasticsearch
     fi
-    echo "Elasticsearch already started"
+    cecho "Elasticsearch already started"
   fi
 }
 
 function debugElasticsearch() {
   cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Starting Elasticsearch"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting Elasticsearch"
+  cecho "------------------------------------------------------------------------"
   if [ ! -d $ES_INDEXES_DIR ]; then
     mkdir -p $ES_INDEXES_DIR;
   fi
@@ -319,8 +337,8 @@ function debugElasticsearch() {
       $ES_HOME/elasticsearch -d -p $ES_PID
     else
       echo $possiblePID > $ES_PID
-      echo "Process PID $possiblePID is listening port $ES_PORT"
-      echo "Hijacking PID and saving into $ES_PID"
+      cecho "Process PID $possiblePID is listening port $ES_PORT"
+      cecho "Hijacking PID and saving into $ES_PID"
       exit 0
     fi
   else
@@ -330,19 +348,19 @@ function debugElasticsearch() {
     fi
     if ! pgrep -u `whoami` -F "$ES_PID" >/dev/null
     then
-      echo "Elasticsearch Pid file is not ok, forcing startup"
+      cecho "Elasticsearch Pid file is not ok, forcing startup"
       rm "$ES_PID"
       startElasticsearch
     fi
-    echo "Elasticsearch already started"
+    cecho "Elasticsearch already started"
   fi
 }
 
 function stopElasticsearch() {
   cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Stopping Elasticsearch"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Stopping Elasticsearch"
+  cecho "------------------------------------------------------------------------"
   if [ -s "$ES_PID" ]; then
     if pgrep -F "$ES_PID" > /dev/null
     then
@@ -355,36 +373,36 @@ function stopElasticsearch() {
       # No pid file but we found the process
       killPID $ES_PID
     fi
-    echo "Elasticsearch already shutdown or pid $ES_PID file not found";
+    cecho "Elasticsearch already shutdown or pid $ES_PID file not found";
   fi
 }
 
 function elasticsearchStatus(){
-  echo "------------------------------------------------------------------------"
-  echo "Elasticsearch status"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Elasticsearch status"
+  cecho "------------------------------------------------------------------------"
 
   esStatusOut=$(curl --silent  -f "http://localhost:$ES_PORT/_cat/nodes?h=uptime,version")
   if [ $? -eq 0 ]; then
-    echo -e "PID\t"
-    echo `cat "$ES_PID"`
-    echo -e  "uptime:\t"
+    cecho -e "PID\t"
+    cecho `cat "$ES_PID"`
+    cecho -e  "uptime:\t"
     echo "$esStatusOut" | awk '{print $1}'
-    echo -e  "Elasticsearch Version:\t"
+    cecho -e  "Elasticsearch Version:\t"
     echo "$esStatusOut" | awk '{print $2}'
   else
-    echo -e "\033[38;5;196m"
-    echo "Elasticsearch is not running or is unreachable on port $ES_PORT"
-    echo -e "\033[0m"
+    cecho -e "\033[38;5;196m"
+    cecho "Elasticsearch is not running or is unreachable on port $ES_PORT"
+    cecho -e "\033[0m"
   fi
 }
 
 function startTomcat() {
   cd $CRAFTER_BIN_DIR
   if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] || [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]] ;then
-    echo "------------------------------------------------------------------------"
-    echo "Starting Tomcat"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Starting Tomcat"
+    cecho "------------------------------------------------------------------------"
     if [ ! -d $CATALINA_LOGS_DIR ]; then
       mkdir -p $CATALINA_LOGS_DIR;
     fi
@@ -400,8 +418,8 @@ function startTomcat() {
         $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start
       else
         echo $possiblePID > $CATALINA_PID
-        echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
-        echo "Hijacking PID and saving into $CATALINA_PID"
+        cecho "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
+        cecho "Hijacking PID and saving into $CATALINA_PID"
         exit
       fi
     else
@@ -411,17 +429,17 @@ function startTomcat() {
       fi
       if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
       then
-        echo "Tomcat Pid file is not ok, forcing startup"
+        cecho "Tomcat Pid file is not ok, forcing startup"
         rm "$CATALINA_PID"
         startTomcat
       fi
-      echo "Tomcat already started"
+      cecho "Tomcat already started"
     fi
   else
-    echo ""
-    echo "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(pidOf "$MARIADB_PORT")."
-    echo "This might be because of a prior unsuccessful or incomplete shut down."
-    echo "Please terminate that process before attempting to start Crafter CMS."
+    cecho ""
+    cecho "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(pidOf "$MARIADB_PORT")."
+    cecho "This might be because of a prior unsuccessful or incomplete shut down."
+    cecho "Please terminate that process before attempting to start Crafter CMS."
     read -t 10 #Time out for the read, (if gradle start)
     exit -7
   fi
@@ -430,9 +448,9 @@ function startTomcat() {
 function debugTomcat() {
   cd $CRAFTER_BIN_DIR
   if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(pidOf "$MARIADB_PORT") ]] ;then
-    echo "------------------------------------------------------------------------"
-    echo "Starting Tomcat"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Starting Tomcat"
+    cecho "------------------------------------------------------------------------"
     if [ ! -d $CATALINA_LOGS_DIR ]; then
       mkdir -p $CATALINA_LOGS_DIR;
     fi
@@ -448,8 +466,8 @@ function debugTomcat() {
         $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda start
       else
         echo $possiblePID > $CATALINA_PID
-        echo "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
-        echo "Hijacking PID and saving into $CATALINA_PID"
+        cecho "Process PID $possiblePID is listening port $TOMCAT_HTTP_PORT"
+        cecho "Hijacking PID and saving into $CATALINA_PID"
         exit
       fi
     else
@@ -459,17 +477,17 @@ function debugTomcat() {
       fi
       if ! pgrep -u `whoami` -F "$CATALINA_PID" >/dev/null
       then
-        echo "Tomcat Pid file is not ok, forcing startup"
+        cecho "Tomcat Pid file is not ok, forcing startup"
         rm "$CATALINA_PID"
         startTomcat
       fi
-      echo "Tomcat already started"
+      cecho "Tomcat already started"
     fi
   else
-    echo ""
-    echo "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(pidOf "$MARIADB_PORT")."
-    echo "This might be because of a prior unsuccessful or incomplete shut down."
-    echo "Please terminate that process before attempting to start Crafter CMS."
+    cecho ""
+    cecho "Crafter CMS Database Port: $MARIADB_PORT is in use by process id $(pidOf "$MARIADB_PORT")."
+    cecho "This might be because of a prior unsuccessful or incomplete shut down."
+    cecho "Please terminate that process before attempting to start Crafter CMS."
     read -t 10 #Time out for the read, (if gradle start)
     exit -7
   fi
@@ -477,9 +495,9 @@ function debugTomcat() {
 
 function stopTomcat() {
   cd $CRAFTER_BIN_DIR
-  echo "------------------------------------------------------------------------"
-  echo "Stopping Tomcat"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Stopping Tomcat"
+  cecho "------------------------------------------------------------------------"
   if [ -s "$CATALINA_PID" ]; then
     $CRAFTER_BIN_DIR/apache-tomcat/bin/shutdown.sh 10 -force
     if [ -e "$CATALINA_PID" ]; then
@@ -498,23 +516,23 @@ function stopTomcat() {
       echo "$pid" > $CATALINA_PID
       killPID $CATALINA_PID
     fi
-    echo "Tomcat already shutdown or pid $CATALINA_PID file not found";
+    cecho "Tomcat already shutdown or pid $CATALINA_PID file not found";
   fi
 }
 
 
 function startMongoDB(){
-  echo "------------------------------------------------------------------------"
-  echo "Starting MongoDB"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting MongoDB"
+  cecho "------------------------------------------------------------------------"
   if [ ! -s "$MONGODB_PID" ]; then
     if [ ! -d "$MONGODB_DATA_DIR" ]; then
-      echo "Creating : ${MONGODB_DATA_DIR}"
+      cecho "Creating : ${MONGODB_DATA_DIR}"
       mkdir -p "$MONGODB_DATA_DIR"
     fi
 
     if [ ! -d $MONGODB_LOGS_DIR ]; then
-      echo "Creating : ${MONGODB_LOGS_DIR}"
+      cecho "Creating : ${MONGODB_LOGS_DIR}"
       mkdir -p $MONGODB_LOGS_DIR;
     fi
 
@@ -522,7 +540,7 @@ function startMongoDB(){
       cd $CRAFTER_BIN_DIR
       mkdir $MONGODB_HOME
       cd $MONGODB_HOME
-      echo "MongoDB not found"
+      cecho "MongoDB not found"
       java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar download mongodb
       tar xvf mongodb.tgz --strip 1
       rm mongodb.tgz
@@ -534,8 +552,8 @@ function startMongoDB(){
       $MONGODB_HOME/bin/mongod --dbpath=$CRAFTER_DATA_DIR/mongodb --directoryperdb --journal --fork --logpath=$MONGODB_LOGS_DIR/mongod.log --port $MONGODB_PORT
     else
       echo $possiblePID > $MONGODB_PID
-      echo "Process PID $possiblePID is listening port $MONGODB_PORT"
-      echo "Hijacking PID and saving into $MONGODB_PID"
+      cecho "Process PID $possiblePID is listening port $MONGODB_PORT"
+      cecho "Hijacking PID and saving into $MONGODB_PID"
     fi
   else
     # Is it really up?
@@ -545,11 +563,11 @@ function startMongoDB(){
 
     if ! pgrep -u `whoami` -F "$MONGODB_PID" >/dev/null
     then
-      echo "Mongo Pid file is not ok, forcing startup"
+      cecho "Mongo Pid file is not ok, forcing startup"
       rm "$MONGODB_PID"
       startMongoDB
     else
-      echo "MongoDB already started"
+      cecho "MongoDB already started"
     fi
   fi
 }
@@ -569,9 +587,9 @@ function isMongoNeeded() {
 }
 
 function stopMongoDB(){
-  echo "------------------------------------------------------------------------"
-  echo "Stopping MongoDB"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Stopping MongoDB"
+  cecho "------------------------------------------------------------------------"
   if [ -s "$MONGODB_PID" ]; then
     case "$(uname -s)" in
       Linux)
@@ -596,7 +614,7 @@ function stopMongoDB(){
       echo "$pid" > $MONGODB_PID
       killPID $MONGODB_PID
     else
-      echo "MongoDB already shutdown or pid $MONGODB_PID file not found";
+      cecho "MongoDB already shutdown or pid $MONGODB_PID file not found";
     fi
   fi
 }
@@ -620,46 +638,46 @@ function isSolrNeeded() {
 }
 
 function getStatus() {
-  echo "------------------------------------------------------------------------"
-  echo "$1 status"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "$1 status"
+  cecho "------------------------------------------------------------------------"
   statusOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/status?token=$6")
   if [ $? -eq 0 ]; then
-    echo -e "PID\t"
-    echo `cat "$5"`
-    echo -e  "Uptime (in seconds):\t"
+    cecho -e "PID\t"
+    cecho `cat "$5"`
+    cecho -e  "Uptime (in seconds):\t"
     echo "$statusOut"  |  grep -Eo '"uptime":\d+' | awk -F ":" '{print $2}'
     versionOut=$(curl --silent  -f  "http://localhost:$2$3/api/$4/monitoring/version?token=$6")
     if [ $? -eq 0 ]; then
-      echo -e "Version:\t"
-      echo -n $(echo "$versionOut"  |  egrep -Eo '"packageVersion":"[^"]+"' | awk -F ":" '{print $2}')
-      echo -n " "
+      cecho -e "Version:\t"
+      cecho -n $(cecho "$versionOut"  |  egrep -Eo '"packageVersion":"[^"]+"' | awk -F ":" '{print $2}')
+      cecho -n " "
       echo "$versionOut"|  grep -Eo '"packageBuild":"[^"]+"' | awk -F ":" '{print $2}'
     fi
   else
-    echo -e "\033[38;5;196m"
-    echo "$1 is not running or is unreachable on port $2"
-    echo -e "\033[0m"
+    cecho -e "\033[38;5;196m"
+    cecho "$1 is not running or is unreachable on port $2"
+    cecho -e "\033[0m"
   fi
 }
 
 function solrStatus(){
-  echo "------------------------------------------------------------------------"
-  echo "Solr status"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Solr status"
+  cecho "------------------------------------------------------------------------"
 
   solrStatusOut=$(curl --silent  -f "http://localhost:$SOLR_PORT/solr/admin/info/system?wt=json")
   if [ $? -eq 0 ]; then
-    echo -e "PID\t"
-    echo `cat "$CRAFTER_HOME/bin/solr/bin/solr-$SOLR_PORT.pid"`
-    echo -e  "Uptime (in minutes):\t"
+    cecho -e "PID\t"
+    cecho `cat "$CRAFTER_HOME/bin/solr/bin/solr-$SOLR_PORT.pid"`
+    cecho -e  "Uptime (in minutes):\t"
     echo "$solrStatusOut"  |  grep -Eo '"upTimeMS":\d+' | awk -F ":" '{print ($2/1000)/60}' | bc
-    echo -e  "Solr Version:\t"
+    cecho -e  "Solr Version:\t"
     echo "$solrStatusOut"  |  grep -Eo '"solr-spec-version":"[^"]+"' | awk -F ":" '{print $2}'
   else
-    echo -e "\033[38;5;196m"
-    echo "Solr is not running or is unreachable on port $SOLR_PORT"
-    echo -e "\033[0m"
+    cecho -e "\033[38;5;196m"
+    cecho "Solr is not running or is unreachable on port $SOLR_PORT"
+    cecho -e "\033[0m"
   fi
 }
 
@@ -689,34 +707,34 @@ function socialStatus(){
 
 
 function mariadbStatus(){
-  echo "------------------------------------------------------------------------"
-  echo "MariaDB status"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "MariaDB status"
+  cecho "------------------------------------------------------------------------"
   if [ -s "$MARIADB_PID" ]; then
-    echo -e "PID \t"
-    echo $(cat "$MARIADB_PID")
+    cecho -e "PID \t"
+    cecho $(cat "$MARIADB_PID")
   else
-    echo "MariaDB is not running."
+    cecho "MariaDB is not running."
   fi
 }
 
 function mongoDbStatus(){
-  echo "------------------------------------------------------------------------"
-  echo "MongoDB status"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "MongoDB status"
+  cecho "------------------------------------------------------------------------"
  if $(isMongoNeeded "$@") || [ ! -z $(pidOf $MONGODB_PORT) ]; then
     if [ -e "$MONGODB_PID" ]; then
-      echo -e "MongoDB PID"
-      echo $(cat $MONGODB_PID)
+      cecho -e "MongoDB PID"
+      cecho $(cat $MONGODB_PID)
     else
-      echo -e "\033[38;5;196m"
-      echo " MongoDB is not running"
-      echo -e "\033[0m"
+      cecho -e "\033[38;5;196m"
+      cecho " MongoDB is not running"
+      cecho -e "\033[0m"
     fi
  elif [ ! -d "$MONGODB_HOME" ]; then
-    echo "MongoDB is not installed."
+    cecho "MongoDB is not installed."
   else
-    echo "MongoDB is not running"
+    cecho "MongoDB is not running"
   fi
 }
 
@@ -799,9 +817,9 @@ function doBackup() {
   local targetFile="$targetFolder/$targetName.$currentDate.tar.gz"
   local tempFolder="$CRAFTER_BACKUPS_DIR/temp"
 
-  echo "------------------------------------------------------------------------"
-  echo "Starting backup"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting backup"
+  cecho "------------------------------------------------------------------------"
 
   if [ -d "$tempFolder" ]; then
     rm -r "$tempFolder"
@@ -816,9 +834,9 @@ function doBackup() {
 
   # MySQL Dump
   if [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]]; then
-    echo "------------------------------------------------------------------------"
-    echo "Backing up external DB"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Backing up external DB"
+    cecho "------------------------------------------------------------------------"
 
     # Check that the mysqldump is in the path
     if type "mysqldump" >/dev/null 2>&1; then
@@ -827,7 +845,7 @@ function doBackup() {
       mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
       abortOnError
     else
-      echo "External DB backup failed, unable to find mysqldump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
+      cecho "External DB backup failed, unable to find mysqldump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
       exit 1
     fi
   elif [ -d "$MARIADB_DATA_DIR" ]; then
@@ -835,18 +853,18 @@ function doBackup() {
     DB_STARTED=false
     if [ -z $(pidOf "$MARIADB_PORT") ]; then
       mkdir -p "$CRAFTER_BIN_DIR/dbms"
-      echo "------------------------------------------------------------------------"
-      echo "Starting DB"
-      echo "------------------------------------------------------------------------"
+      cecho "------------------------------------------------------------------------"
+      cecho "Starting DB"
+      cecho "------------------------------------------------------------------------"
       java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
       $CRAFTER_BIN_DIR/wait-for-it.sh -h "$MARIADB_HOST" -p "$MARIADB_PORT" -t $MARIADB_TCP_TIMEOUT
       DB_STARTED=true
     fi
 
     #Do dump
-    echo "------------------------------------------------------------------------"
-    echo "Backing up embedded DB"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Backing up embedded DB"
+    cecho "------------------------------------------------------------------------"
     export MYSQL_PWD=$MARIADB_ROOT_PASSWD
     $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
     $CRAFTER_BIN_DIR/dbms/bin/mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
@@ -854,9 +872,9 @@ function doBackup() {
 
     if [ "$DB_STARTED" = true ]; then
       # Stop DB
-      echo "------------------------------------------------------------------------"
-      echo "Stopping DB"
-      echo "------------------------------------------------------------------------"
+      cecho "------------------------------------------------------------------------"
+      cecho "Stopping DB"
+      cecho "------------------------------------------------------------------------"
       kill $(cat mariadb4j.pid)
       sleep 10
     fi
@@ -872,9 +890,9 @@ function doBackup() {
       MONGODB_STARTED=true
     fi
 
-    echo "------------------------------------------------------------------------"
-    echo "Backing up mongodb"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Backing up mongodb"
+    cecho "------------------------------------------------------------------------"
 
     $MONGODB_HOME/bin/mongodump --port $MONGODB_PORT --out "$tempFolder/mongodb"
     abortOnError
@@ -882,7 +900,7 @@ function doBackup() {
     CURRENT_DIR=$(pwd)
 
     cd "$tempFolder/mongodb"
-    tar cvf "$tempFolder/mongodb.tar" .
+    runCmd "tar cvf \"$tempFolder/mongodb.tar\" ."
     abortOnError
 
     cd $CURRENT_DIR
@@ -896,71 +914,71 @@ function doBackup() {
 
   # ZIP git repos
   if [ -d "$CRAFTER_DATA_DIR/repos" ]; then
-    echo "------------------------------------------------------------------------"
-    echo "Backing up git repos"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Backing up git repos"
+    cecho "------------------------------------------------------------------------"
     cd "$CRAFTER_DATA_DIR/repos"
-    tar cvf "$tempFolder/repos.tar" .
+    runCmd "tar cvf \"$tempFolder/repos.tar\" ."
     abortOnError
   fi
 
   # ZIP solr indexes
-  echo "------------------------------------------------------------------------"
-  echo "Backing up solr indexes"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Backing up solr indexes"
+  cecho "------------------------------------------------------------------------"
   if [ -d "$SOLR_INDEXES_DIR" ]; then
-    echo "Adding solr indexes"
+    cecho "Adding solr indexes"
     cd "$SOLR_INDEXES_DIR"
-    tar cvf "$tempFolder/indexes.tar" .
+    runCmd "tar cvf \"$tempFolder/indexes.tar\" ."
     abortOnError
   fi
 
   # ZIP elasticsearch indexes
-  echo "------------------------------------------------------------------------"
-  echo "Backing up elasticsearch indexes"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Backing up elasticsearch indexes"
+  cecho "------------------------------------------------------------------------"
   if [ -d "$ES_INDEXES_DIR" ]; then
-    echo "Adding elasticsearch indexes"
+    cecho "Adding elasticsearch indexes"
     cd "$ES_INDEXES_DIR"
-    tar cvf "$tempFolder/indexes-es.tar" .
+    runCmd "tar cvf \"$tempFolder/indexes-es.tar\" ."
     abortOnError
   fi
 
   # ZIP deployer data
   if [ -d "$DEPLOYER_DATA_DIR" ]; then
-   echo "------------------------------------------------------------------------"
-   echo "Backing up deployer data"
-   echo "------------------------------------------------------------------------"
+   cecho "------------------------------------------------------------------------"
+   cecho "Backing up deployer data"
+   cecho "------------------------------------------------------------------------"
    cd "$DEPLOYER_DATA_DIR"
-   tar cvf "$tempFolder/deployer.tar" .
+   runCmd "tar cvf \"$tempFolder/deployer.tar\" ."
    abortOnError
   fi
 
   # ZIP everything (without compression)
-  echo "------------------------------------------------------------------------"
-  echo "Packaging everything"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Packaging everything"
+  cecho "------------------------------------------------------------------------"
   cd "$tempFolder"
-  tar czvf "$targetFile" .
+  runCmd "tar czvf \"$targetFile\" ."
   abortOnError
 
   rmDirContents "$tempFolder"
   rmdir "$tempFolder"
 
-  echo "------------------------------------------------------------------------"
-  echo "> Backup completed and saved to $targetFile"
+  cecho "------------------------------------------------------------------------"
+  cecho "> Backup completed and saved to $targetFile"
 }
 
 function doRestore() {
   local pid=$(pidOf $TOMCAT_HTTP_PORT)
   if ! [ -z $pid ]; then
-    echo "Please stop the system before starting the restore process."
+    cecho "Please stop the system before starting the restore process."
     exit 1
   fi
 
   local sourceFile=$1
   if [ ! -f "$sourceFile" ]; then
-    echo "The source file $sourceFile does not exist"
+    cecho "The source file $sourceFile does not exist"
     help
     exit 1
   fi
@@ -973,13 +991,13 @@ function doRestore() {
   care about the existing state of the system then stop this process, backup the system, and then\
   attempt the restore. Are you sure you want to proceed? (yes/no) "
   if [ "$REPLY" != "yes" ] && [ "$REPLY" != "y" ]; then
-    echo "Canceling restore"
+    cecho "Canceling restore"
     exit 0
   fi
 
-  echo "------------------------------------------------------------------------"
-  echo "Clearing all existing data"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Clearing all existing data"
+  cecho "------------------------------------------------------------------------"
   rmDirContents "$MONGODB_DATA_DIR"
   rmDirContents "$CRAFTER_DATA_DIR/repos"
   rmDirContents "$SOLR_INDEXES_DIR"
@@ -987,14 +1005,14 @@ function doRestore() {
   rmDirContents "$DEPLOYER_DATA_DIR"
   rmDirContents "$MARIADB_DATA_DIR"
 
-  echo "------------------------------------------------------------------------"
-  echo "Starting restore from $sourceFile"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting restore from $sourceFile"
+  cecho "------------------------------------------------------------------------"
   mkdir -p "$tempFolder"
 
   # UNZIP everything
   if [[ "$sourceFile" == *.tar.gz ]]; then
-    tar xzvf "$sourceFile" -C "$tempFolder"
+    runCmd "tar xzvf \"$sourceFile\" -C \"$tempFolder\""
     abortOnError
 
     packageExt="tar"
@@ -1012,19 +1030,19 @@ function doRestore() {
     startMongoDB
     sleep 15
 
-    echo "------------------------------------------------------------------------"
-    echo "Restoring MongoDB"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Restoring MongoDB"
+    cecho "------------------------------------------------------------------------"
 
     if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/mongodb.tar" -C "$tempFolder/mongodb"
+      runCmd "tar xvf \"$tempFolder/mongodb.tar\" -C \"$tempFolder/mongodb\""
       abortOnError
     else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/mongodb.zip" "$tempFolder/mongodb"
+      runCmd "java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip \"$tempFolder/mongodb.zip\" \"$tempFolder/mongodb\""
       abortOnError
     fi
 
-    $CRAFTER_BIN_DIR/mongodb/bin/mongorestore --port $MONGODB_PORT "$tempFolder/mongodb"
+    runCmd "$CRAFTER_BIN_DIR/mongodb/bin/mongorestore --port $MONGODB_PORT \"$tempFolder/mongodb\""
     abortOnError
 
     stopMongoDB
@@ -1034,15 +1052,15 @@ function doRestore() {
   if [ -f "$tempFolder/repos.$packageExt" ]; then
     mkdir -p "$CRAFTER_DATA_DIR/repos"
 
-    echo "------------------------------------------------------------------------"
-    echo "Restoring git repos"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Restoring git repos"
+    cecho "------------------------------------------------------------------------"
 
     if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/repos.tar" -C "$CRAFTER_DATA_DIR/repos"
+      runCmd "tar xvf \"$tempFolder/repos.tar\" -C \"$CRAFTER_DATA_DIR/repos\""
       abortOnError
     else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/repos.zip" "$CRAFTER_DATA_DIR/repos"
+      runCmd "java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip \"$tempFolder/repos.zip\" \"$CRAFTER_DATA_DIR/repos\""
       abortOnError
     fi
   fi
@@ -1051,15 +1069,15 @@ function doRestore() {
   if [ -f "$tempFolder/indexes.$packageExt" ]; then
     mkdir -p "$SOLR_INDEXES_DIR"
 
-    echo "------------------------------------------------------------------------"
-    echo "Restoring solr indexes"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Restoring solr indexes"
+    cecho "------------------------------------------------------------------------"
 
     if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/indexes.tar" -C "$SOLR_INDEXES_DIR"
+      runCmd "tar xvf \"$tempFolder/indexes.tar\" -C \"$SOLR_INDEXES_DIR\""
       abortOnError
     else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/indexes.zip" "$SOLR_INDEXES_DIR"
+      runCmd "java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip \"$tempFolder/indexes.zip\" \"$SOLR_INDEXES_DIR\""
       abortOnError
     fi
   fi
@@ -1068,15 +1086,15 @@ function doRestore() {
   if [ -f "$tempFolder/indexes-es.$packageExt" ]; then
     mkdir -p "$ES_INDEXES_DIR"
 
-    echo "------------------------------------------------------------------------"
-    echo "Restoring elasticsearch indexes"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Restoring elasticsearch indexes"
+    cecho "------------------------------------------------------------------------"
 
     if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/indexes-es.tar" -C "$ES_INDEXES_DIR"
+      runCmd "tar xvf \"$tempFolder/indexes-es.tar\" -C \"$ES_INDEXES_DIR\""
       abortOnError
     else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/indexes-es.zip" "$ES_INDEXES_DIR"
+      runCmd "java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip \"$tempFolder/indexes-es.zip\" \"$ES_INDEXES_DIR\""
       abortOnError
     fi
   fi
@@ -1085,15 +1103,15 @@ function doRestore() {
   if [ -f "$tempFolder/deployer.$packageExt" ]; then
     mkdir -p "$DEPLOYER_DATA_DIR"
 
-    echo "------------------------------------------------------------------------"
-    echo "Restoring deployer data"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Restoring deployer data"
+    cecho "------------------------------------------------------------------------"
 
     if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/deployer.tar" -C "$DEPLOYER_DATA_DIR"
+      runCmd "tar xvf \"$tempFolder/deployer.tar\" -C \"$DEPLOYER_DATA_DIR\""
       abortOnError
     else
-      java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip "$tempFolder/deployer.zip" "$DEPLOYER_DATA_DIR"
+      runCmd "java -jar $CRAFTER_BIN_DIR/craftercms-utils.jar unzip \"$tempFolder/deployer.zip\" \"$DEPLOYER_DATA_DIR\""
       abortOnError
     fi
   fi
@@ -1101,9 +1119,9 @@ function doRestore() {
   # Restore DB
   if [ -f "$tempFolder/crafter.sql" ]; then
     if [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]]; then
-      echo "------------------------------------------------------------------------"
-      echo "Restoring external DB"
-      echo "------------------------------------------------------------------------"
+      cecho "------------------------------------------------------------------------"
+      cecho "Restoring external DB"
+      cecho "------------------------------------------------------------------------"
 
       # Check that the mysql is in the path
       if type "mysql" >/dev/null 2>&1; then
@@ -1112,53 +1130,53 @@ function doRestore() {
         if [ -f "$tempFolder/users.sql" ]; then
           mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
         else
-          echo "Users backup does not exists. Skipping restore users"
+          cecho "Users backup does not exists. Skipping restore users"
         fi
         abortOnError
       else
-        echo "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
+        cecho "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed"
         exit 1
       fi
     else
       mkdir -p "$MARIADB_DATA_DIR"
       #Start DB
-      echo "------------------------------------------------------------------------"
-      echo "Starting DB"
-      echo "------------------------------------------------------------------------"
+      cecho "------------------------------------------------------------------------"
+      cecho "Starting DB"
+      cecho "------------------------------------------------------------------------"
       java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
       $CRAFTER_BIN_DIR/wait-for-it.sh -h "$MARIADB_HOST" -p "$MARIADB_PORT" -t $MARIADB_TCP_TIMEOUT
 
       # Import
-      echo "------------------------------------------------------------------------"
-      echo "Restoring embedded DB"
-      echo "------------------------------------------------------------------------"
+      cecho "------------------------------------------------------------------------"
+      cecho "Restoring embedded DB"
+      cecho "------------------------------------------------------------------------"
       export MYSQL_PWD=$MARIADB_ROOT_PASSWD
       $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
       if [ -f "$tempFolder/users.sql" ]; then
         $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
       else
-        echo "Users backup does not exists. Skipping restore users"
+        cecho "Users backup does not exists. Skipping restore users"
       fi
       abortOnError
 
       # Stop DB
-      echo "------------------------------------------------------------------------"
-      echo "Stopping DB"
-      echo "------------------------------------------------------------------------"
+      cecho "------------------------------------------------------------------------"
+      cecho "Stopping DB"
+      cecho "------------------------------------------------------------------------"
       kill $(cat mariadb4j.pid)
       sleep 10
     fi
   fi
 
   rm -r "$tempFolder"
-  echo "------------------------------------------------------------------------"
-  echo "> Restore complete, you may now start the system"
+  cecho "------------------------------------------------------------------------"
+  cecho "> Restore complete, you may now start the system"
 }
 
 function doUpgradeDB() {
-  echo "------------------------------------------------------------------------"
-  echo "Starting upgrade of embedded database $MARIADB_DATA_DIR"
-  echo "------------------------------------------------------------------------"
+  cecho "------------------------------------------------------------------------"
+  cecho "Starting upgrade of embedded database $MARIADB_DATA_DIR"
+  cecho "------------------------------------------------------------------------"
 
   # Upgrade database
   if [ -d "$MARIADB_DATA_DIR" ]; then
@@ -1166,35 +1184,35 @@ function doUpgradeDB() {
     DB_STARTED=false
     if [ -z $(pidOf "$MARIADB_PORT") ]; then
       mkdir -p "$CRAFTER_BIN_DIR/dbms"
-      echo "------------------------------------------------------------------------"
-      echo "Starting DB"
-      echo "------------------------------------------------------------------------"
+      cecho "------------------------------------------------------------------------"
+      cecho "Starting DB"
+      cecho "------------------------------------------------------------------------"
       java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
       sleep 30
       DB_STARTED=true
     fi
 
     # Do upgrade
-    echo "------------------------------------------------------------------------"
-    echo "Upgrading embedded DB"
-    echo "------------------------------------------------------------------------"
+    cecho "------------------------------------------------------------------------"
+    cecho "Upgrading embedded DB"
+    cecho "------------------------------------------------------------------------"
     export MYSQL_PWD=$MARIADB_ROOT_PASSWD
     $CRAFTER_BIN_DIR/dbms/bin/mysql_upgrade --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp
     abortOnError
 
     if [ "$DB_STARTED" = true ]; then
       # Stop DB
-      echo "------------------------------------------------------------------------"
-      echo "Stopping DB"
-      echo "------------------------------------------------------------------------"
+      cecho "------------------------------------------------------------------------"
+      cecho "Stopping DB"
+      cecho "------------------------------------------------------------------------"
       kill $(cat mariadb4j.pid)
       sleep 10
     fi
 
-    echo "------------------------------------------------------------------------"
-    echo "> Upgrade database completed"
+    cecho "------------------------------------------------------------------------"
+    cecho "> Upgrade database completed"
   else
-    echo 'No embedded DB found, skipping upgrade'
+    cecho 'No embedded DB found, skipping upgrade'
   fi
 }
 
@@ -1209,20 +1227,20 @@ function rmDirContents() {
 function abortOnError() {
   EXIT_CODE=$?
   if [ $EXIT_CODE != 0 ]; then
-    echo "Unable to continue, an error occurred or the script was forcefully stopped"
+    cecho "Unable to continue, an error occurred or the script was forcefully stopped"
     exit 1
   fi
 }
 
 function logo() {
-  echo -e "\033[38;5;196m"
-  echo " ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗"
-  echo "██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗    ██╔════╝ ████╗ ████║ ██╔════╝"
-  echo "██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝    ██║      ██╔████╔██║ ███████╗"
-  echo "██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗    ██║      ██║╚██╔╝██║ ╚════██║"
-  echo "╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║    ╚██████╗ ██║ ╚═╝ ██║ ███████║"
-  echo " ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝     ╚═╝ ╚══════╝"
-  echo -e "\033[0m"
+  cecho -e "\033[38;5;196m"
+  cecho " ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗"
+  cecho "██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗    ██╔════╝ ████╗ ████║ ██╔════╝"
+  cecho "██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝    ██║      ██╔████╔██║ ███████╗"
+  cecho "██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗    ██║      ██║╚██╔╝██║ ╚════██║"
+  cecho "╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║    ╚██████╗ ██║ ╚═╝ ██║ ███████║"
+  cecho " ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝     ╚═╝ ╚══════╝"
+  cecho -e "\033[0m"
 }
 
 case $1 in
