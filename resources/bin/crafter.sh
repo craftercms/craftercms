@@ -260,6 +260,16 @@ function runTask() {
   bash "$@"
 }
 
+# Run an external program with logging
+function runCmd() {
+  # TODO Still needs work to disown forked processes in certain cases
+  if [ -z "$CRAFTERCMS_SCRIPT_LOG" ]; then
+    bash -c "$@"
+  else
+    bash -c "$@" 2>&1 >> "$CRAFTERCMS_SCRIPT_LOG"
+  fi
+}
+
 function createFolders() {
 	foldersToCreate="$1"
 
@@ -438,7 +448,7 @@ function doBackup() {
     CURRENT_DIR=$(pwd)
 
     cd "$tempFolder/mongodb"
-    tar cvf "$tempFolder/mongodb.tar" .
+    runCmd "tar cvf \"$tempFolder/mongodb.tar\" ."
     abortOnError
 
     cd $CURRENT_DIR
@@ -454,7 +464,7 @@ function doBackup() {
   if [ -d "$CRAFTER_DATA_DIR/repos" ]; then
     banner "Backing up git repos"
     cd "$CRAFTER_DATA_DIR/repos"
-    tar cvf "$tempFolder/repos.tar" .
+    runCmd "tar cvf \"$tempFolder/repos.tar\" ."
     abortOnError
   fi
 
@@ -463,7 +473,7 @@ function doBackup() {
   if [ -d "$ES_INDEXES_DIR" ]; then
     cecho "Adding elasticsearch indexes\n" "info"
     cd "$ES_INDEXES_DIR"
-    tar cvf "$tempFolder/indexes-es.tar" .
+    runCmd "tar cvf \"$tempFolder/indexes-es.tar\" ."
     abortOnError
   fi
 
@@ -471,7 +481,7 @@ function doBackup() {
   if [ -d "$DEPLOYER_DATA_DIR" ]; then
    banner "Backing up Deployer data"
    cd "$DEPLOYER_DATA_DIR"
-   tar cvf "$tempFolder/deployer.tar" .
+   runCmd "tar cvf \"$tempFolder/deployer.tar\" ."
    abortOnError
   fi
 
@@ -479,14 +489,14 @@ function doBackup() {
   if [ -d "$CRAFTER_SSH_CONFIG" ]; then
    banner "Backing up SSH data"
    cd "$CRAFTER_SSH_CONFIG"
-   tar cvf "$tempFolder/ssh.tar" .
+   runCmd "tar cvf \"$tempFolder/ssh.tar\" ."
    abortOnError
   fi
 
   # ZIP everything (without compression)
   banner "Packaging everything"
   cd "$tempFolder"
-  tar czvf "$targetFile" .
+  runCmd "tar czvf \"$targetFile\" ."
   abortOnError
 
   rmDirContents "$tempFolder"
@@ -533,7 +543,7 @@ function doRestore() {
 
   # UNZIP everything
   if [[ "$sourceFile" == *.tar.gz ]]; then
-    tar xzvf "$sourceFile" -C "$tempFolder"
+    runCmd "tar xzvf \"$sourceFile\" -C \"$tempFolder\""
     abortOnError
 
     packageExt="tar"
@@ -554,14 +564,14 @@ function doRestore() {
     banner "Restoring MongoDB"
 
     if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/mongodb.tar" -C "$tempFolder/mongodb"
+      runCmd "tar xvf \"$tempFolder/mongodb.tar\" -C \"$tempFolder/mongodb\""
       abortOnError
     else
-      unzip "$tempFolder/mongodb.zip" "$tempFolder/mongodb"
+      runCmd "unzip \"$tempFolder/mongodb.zip\" \"$tempFolder/mongodb\""
       abortOnError
     fi
 
-    $CRAFTER_BIN_DIR/mongodb/bin/mongorestore --port $MONGODB_PORT "$tempFolder/mongodb"
+    runCmd "$CRAFTER_BIN_DIR/mongodb/bin/mongorestore --port $MONGODB_PORT \"$tempFolder/mongodb\""
     abortOnError
 
     stopMongoDB
@@ -574,10 +584,10 @@ function doRestore() {
     banner "Restoring git repos"
 
     if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/repos.tar" -C "$CRAFTER_DATA_DIR/repos"
+      runCmd "tar xvf \"$tempFolder/repos.tar\" -C \"$CRAFTER_DATA_DIR/repos\""
       abortOnError
     else
-      unzip "$tempFolder/repos.zip" "$CRAFTER_DATA_DIR/repos"
+      runCmd "unzip \"$tempFolder/repos.zip\" \"$CRAFTER_DATA_DIR/repos\""
       abortOnError
     fi
   fi
@@ -589,10 +599,10 @@ function doRestore() {
     banner "Restoring Elasticsearch indexes"
 
     if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/indexes-es.tar" -C "$ES_INDEXES_DIR"
+      runCmd "tar xvf \"$tempFolder/indexes-es.tar\" -C \"$ES_INDEXES_DIR\""
       abortOnError
     else
-      unzip "$tempFolder/indexes-es.zip" "$ES_INDEXES_DIR"
+      runCmd "unzip \"$tempFolder/indexes-es.zip\" \"$ES_INDEXES_DIR\""
       abortOnError
     fi
   fi
@@ -604,10 +614,10 @@ function doRestore() {
     banner "Restoring Deployer data"
 
     if [ "$packageExt" == "tar" ]; then
-      tar xvf "$tempFolder/deployer.tar" -C "$DEPLOYER_DATA_DIR"
+      runCmd "tar xvf \"$tempFolder/deployer.tar\" -C \"$DEPLOYER_DATA_DIR\""
       abortOnError
     else
-      unzip "$tempFolder/deployer.zip" "$DEPLOYER_DATA_DIR"
+      runCmd "unzip \"$tempFolder/deployer.zip\" \"$DEPLOYER_DATA_DIR\""
       abortOnError
     fi
   fi
@@ -617,7 +627,7 @@ function doRestore() {
     mkdir -p "$CRAFTER_SSH_CONFIG"
 
     banner "Restoring SSH data"
-    tar xvf "$tempFolder/ssh.tar" -C "$CRAFTER_SSH_CONFIG"
+    runCmd "tar xvf \"$tempFolder/ssh.tar\" -C \"$CRAFTER_SSH_CONFIG\""
     abortOnError
   fi
 
