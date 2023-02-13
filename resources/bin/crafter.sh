@@ -15,10 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cecho () {
-    if [ -z "$CRAFTERCMS_SCRIPT_LOG" ]; then
+    if [ -z "$CRAFTER_SCRIPT_LOG" ]; then
       echo "$1"
     else
-      echo "$1" >> "$CRAFTERCMS_SCRIPT_LOG"
+      echo "$1" >> "$CRAFTER_SCRIPT_LOG"
     fi
 }
 
@@ -117,10 +117,10 @@ function killPID(){
 # Run an external program with logging
 function runCmd() {
   # TODO Still needs work to disown forked processes in certain cases
-  if [ -z "$CRAFTERCMS_SCRIPT_LOG" ]; then
+  if [ -z "$CRAFTER_SCRIPT_LOG" ]; then
     bash -c "$@"
   else
-    bash -c "$@" 2>&1 >> "$CRAFTERCMS_SCRIPT_LOG"
+    bash -c "$@" 2>&1 >> "$CRAFTER_SCRIPT_LOG"
   fi
 }
 
