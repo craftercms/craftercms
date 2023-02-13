@@ -19,6 +19,7 @@ export CRAFTER_LOGS_DIR=${CRAFTER_LOGS_DIR:="$CRAFTER_HOME/logs"}
 export CRAFTER_DATA_DIR=${CRAFTER_DATA_DIR:="$CRAFTER_HOME/data"}
 export CRAFTER_TEMP_DIR=${CRAFTER_TEMP_DIR:="$CRAFTER_HOME/temp"}
 export CRAFTER_BACKUPS_DIR=${CRAFTER_BACKUPS_DIR:="$CRAFTER_HOME/backups"}
+#export CRAFTER_SCRIPT_LOG=${CRAFTER_SCRIPT_LOG:="$CRAFTER_LOGS_DIR/crafter-script-output.log"}
 
 # -------------------- Hosts and ports --------------------
 export MAIL_HOST=${MAIL_HOST:="localhost"}
