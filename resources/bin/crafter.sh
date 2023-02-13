@@ -38,10 +38,10 @@ cecho () {
     STARTCOLOR="\e[$COLOR";
     ENDCOLOR="\e[0m";
 
-    if [ -z "$CRAFTERCMS_SCRIPT_LOG" ]; then
+    if [ -z "$CRAFTER_SCRIPT_LOG" ]; then
       printf "$STARTCOLOR%b$ENDCOLOR" "$1"
     else
-      printf "$STARTCOLOR%b$ENDCOLOR" "$1" >> "$CRAFTERCMS_SCRIPT_LOG"
+      printf "$STARTCOLOR%b$ENDCOLOR" "$1" >> "$CRAFTER_SCRIPT_LOG"
     fi
 }
 
@@ -263,10 +263,10 @@ function runTask() {
 # Run an external program with logging
 function runCmd() {
   # TODO Still needs work to disown forked processes in certain cases
-  if [ -z "$CRAFTERCMS_SCRIPT_LOG" ]; then
+  if [ -z "$CRAFTER_SCRIPT_LOG" ]; then
     bash -c "$@"
   else
-    bash -c "$@" 2>&1 >> "$CRAFTERCMS_SCRIPT_LOG"
+    bash -c "$@" 2>&1 >> "$CRAFTER_SCRIPT_LOG"
   fi
 }
 
@@ -784,7 +784,7 @@ function help() {
   cecho "    restore <file>, Perform a restore of all data\n" "info"
   cecho "    upgradedb, Perform database upgrade (mysql_upgrade)\n" "info"
   cecho "    \n" "info"
-  cecho "    To log output to a file, set the environment variable CRAFTERCMS_SCRIPT_LOG to point to a log file\n" "info"
+  cecho "    To log output to a file, set the environment variable CRAFTER_SCRIPT_LOG to point to a log file\n" "info"
   exit 2;
 }
 
