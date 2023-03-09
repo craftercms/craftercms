@@ -58,7 +58,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.6</version>
+		<version>3.0.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -85,7 +85,7 @@
 		<aws.version>1.12.139</aws.version>
 		<box.sdk.version>2.58.0</box.sdk.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
-		<tomcat.version>9.0.71</tomcat.version>
+		<tomcat.version>10.1.17</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
 		<groovy.version>4.0.9</groovy.version>
 		<apache.ivy>2.5.1</apache.ivy>
