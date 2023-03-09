@@ -48,12 +48,13 @@ export SOCIAL_URL=${SOCIAL_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/crafter-s
 
 # -------------------- Java opts --------------------
 export ES_JAVA_OPTS=${ES_JAVA_OPTS:="-server -Xss1024K -Xms1G -Xmx1G -Dlog4j2.formatMsgNoLookups=true"}
+export OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:=$ES_JAVA_OPTS}
 export DEPLOYER_JAVA_OPTS=${DEPLOYER_JAVA_OPTS:="-server -Xss1024K -Xmx1G -Dlog4j2.formatMsgNoLookups=true"}
 export CATALINA_OPTS=${CATALINA_OPTS:="-server -Xss1024K -Xms1G -Xmx4G -Dlog4j2.formatMsgNoLookups=true"}
 
-# -------------------- Elasticsearch variables --------------------
+# -------------------- OpenSearch variables --------------------
 export ES_JAVA_HOME=${ES_JAVA_HOME:="$JAVA_HOME"}
-export ES_HOME=${ES_HOME:="$CRAFTER_BIN_DIR/elasticsearch/bin"}
+export ES_HOME=${ES_HOME:="$CRAFTER_BIN_DIR/opensearch/bin"}
 export ES_INDEXES_DIR=${ES_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes-es"}
 export ES_LOGS_DIR=${ES_LOGS_DIR:="$CRAFTER_LOGS_DIR/elasticsearch"}
 export ES_PID=${ES_PID:="$ES_HOME/elasticsearch.pid"}

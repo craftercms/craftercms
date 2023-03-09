@@ -468,10 +468,10 @@ function doBackup() {
     abortOnError
   fi
 
-  # ZIP elasticsearch indexes
-  banner "Backing up elasticsearch indexes"
+  # ZIP OpenSearch indexes
+  banner "Backing up OpenSearch indexes"
   if [ -d "$ES_INDEXES_DIR" ]; then
-    cecho "Adding elasticsearch indexes\n" "info"
+    cecho "Adding OpenSearch indexes\n" "info"
     cd "$ES_INDEXES_DIR"
     runCmd "tar cvf \"$tempFolder/indexes-es.tar\" ."
     abortOnError
@@ -592,11 +592,11 @@ function doRestore() {
     fi
   fi
 
-  # UNZIP elasticsearch indexes
+  # UNZIP OpenSearch indexes
   if [ -f "$tempFolder/indexes-es.$packageExt" ]; then
     mkdir -p "$ES_INDEXES_DIR"
 
-    banner "Restoring Elasticsearch indexes"
+    banner "Restoring OpenSearch indexes"
 
     if [ "$packageExt" == "tar" ]; then
       runCmd "tar xvf \"$tempFolder/indexes-es.tar\" -C \"$ES_INDEXES_DIR\""
@@ -738,8 +738,8 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
 # Check if OS is macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  # Remove com.apple.quarantine flag for elasticsearch files
-  xattr -rd com.apple.quarantine $CRAFTER_BIN_DIR/elasticsearch
+  # Remove com.apple.quarantine flag for OpenSearch files
+  xattr -rd com.apple.quarantine $CRAFTER_BIN_DIR/opensearch
 fi
 
 # Set up the environment
@@ -790,7 +790,7 @@ function help() {
 
 # Version info
 function version() {
-  cecho "Copyright (C) 2007-2022 Crafter Software Corporation. All rights reserved.\n" "info"
+  cecho "Copyright (C) 2007-2023 Crafter Software Corporation. All rights reserved.\n" "info"
   cecho "Version @VERSION@-@GIT_BUILD_ID@\n" "info"
 }
 
@@ -843,7 +843,7 @@ function stopDeployer() {
 
 function startElasticsearch() {
   module="Elasticsearch"
-  executable=("$ES_HOME/elasticsearch -d -p $ES_PID" $ES_PORT "$ES_INDEXES_DIR" $ES_PID)
+  executable=("$ES_HOME/opensearch -d -p $ES_PID" $ES_PORT "$ES_INDEXES_DIR" $ES_PID)
   port=$ES_PORT
   foldersToCreate="$ES_INDEXES_DIR"
   pidFile="$ES_PID"
@@ -862,7 +862,7 @@ function startElasticsearch() {
 function debugElasticsearch() {
   module="Elasticsearch"
   envVars="ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045\""
-  executable="$ES_HOME/elasticsearch -d -p $ES_PID"
+  executable="$ES_HOME/opensearch -d -p $ES_PID"
   port=$ES_PORT
   foldersToCreate="$ES_INDEXES_DIR"
   pidFile="$ES_PID"

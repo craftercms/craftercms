@@ -156,8 +156,8 @@
 		<!-- Spring 5.x doesn't support Hibernate Validator 7.x -->
 		<hibernate.validator.version>6.2.3.Final</hibernate.validator.version>
 		<validation.api.version>2.0.1.Final</validation.api.version>
-		<elasticsearch.version>7.15.2</elasticsearch.version>
-		<elasticsearch.client.version>7.16.3</elasticsearch.client.version>
+		<opensearch.version>2.6.0</opensearch.version>
+		<opensearch.client.version>2.2.0</opensearch.client.version>
 		<tika.version>2.4.0</tika.version>
 		<poi.version>5.2.1</poi.version>
 		<metadata.extractors.version>2.16.0</metadata.extractors.version>
