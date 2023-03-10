@@ -92,7 +92,7 @@
 		<log4j2.version>2.18.0</log4j2.version>
 
 		<!-- build -->
-		<maven.javadoc.version>3.2.0</maven.javadoc.version>
+		<maven.javadoc.version>3.5.0</maven.javadoc.version>
 		<maven.source.version>3.2.1</maven.source.version>
 		<maven.jar.version>3.2.0</maven.jar.version>
 		<buildnumber.maven.version>1.4</buildnumber.maven.version>

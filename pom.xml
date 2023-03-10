@@ -66,9 +66,9 @@
 		<!-- Dependency Version Numbers -->
 		<!-- Main -->
 		<!-- Spring -->
-		<spring.version>5.3.23</spring.version>
-		<spring.security.version>5.7.5</spring.security.version>
-		<spring.data.version>2.7.2</spring.data.version>
+		<spring.version>5.3.25</spring.version>
+		<spring.security.version>5.8.2</spring.security.version>
+		<spring.data.version>2.7.9</spring.data.version>
 		<spring.ldap.version>2.4.1</spring.ldap.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
 		<spring.social.facebook.version>2.0.3.RELEASE</spring.social.facebook.version>
@@ -195,18 +195,18 @@
 		<!-- Build -->
 		<maven.compiler.version>3.8.1</maven.compiler.version>
 		<maven.source.version>3.2.1</maven.source.version>
-		<maven.javadoc.version>3.2.0</maven.javadoc.version>
+		<maven.javadoc.version>3.5.0</maven.javadoc.version>
 		<maven.resources.version>3.1.0</maven.resources.version>
 		<maven.jar.version>3.2.0</maven.jar.version>
 		<maven.war.version>3.3.1</maven.war.version>
 		<maven.deploy.version>3.0.0-M1</maven.deploy.version>
 		<maven.gpg.version>1.6</maven.gpg.version>
-		<maven.shade.version>3.2.4</maven.shade.version>
-		<maven.clean.version>3.1.0</maven.clean.version>
-		<maven.surefire.version>3.0.0-M5</maven.surefire.version>
-		<maven.failsafe.version>3.0.0-M5</maven.failsafe.version>
-		<jacoco.maven.version>0.8.5</jacoco.maven.version>
-		<buildnumber.maven.version>1.4</buildnumber.maven.version>
+		<maven.shade.version>3.3.0</maven.shade.version>
+		<maven.clean.version>3.2.0</maven.clean.version>
+		<maven.surefire.version>3.0.0-M9</maven.surefire.version>
+		<maven.failsafe.version>3.0.0-M9</maven.failsafe.version>
+		<jacoco.maven.version>0.8.8</jacoco.maven.version>
+		<buildnumber.maven.version>3.0.0</buildnumber.maven.version>
 		<grunt.maven.version>1.5.1</grunt.maven.version>
 		<gmavenplus.version>1.13.0</gmavenplus.version>
 		<appassembler.maven.version>2.1.0</appassembler.maven.version>
