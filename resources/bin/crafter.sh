@@ -842,7 +842,7 @@ function stopDeployer() {
 }
 
 function startElasticsearch() {
-  module="Elasticsearch"
+  module="OpenSearch"
   executable=("$ES_HOME/opensearch -d -p $ES_PID" $ES_PORT "$ES_INDEXES_DIR" $ES_PID)
   port=$ES_PORT
   foldersToCreate="$ES_INDEXES_DIR"
@@ -880,11 +880,11 @@ function debugElasticsearch() {
 
 function stopElasticsearch() {
   pid=$(cat "$ES_PID" 2>/dev/null)
-	stopModule "Elasticsearch" "$ES_PORT" "$ES_PID" "kill \$0" "$pid"
+	stopModule "OpenSearch" "$ES_PORT" "$ES_PID" "kill \$0" "$pid"
 }
 
 function elasticsearchStatus() {
-  getStatus "Elasticsearch" "$ES_PORT" "$ES_PID"
+  getStatus "OpenSearch" "$ES_PORT" "$ES_PID"
 }
 
 function startTomcat() {

@@ -8,7 +8,7 @@ target:
     # Indicates if the translation features should be enabled for the target
     enable: false
   search:
-    elasticsearch:
+    openSearch:
       # Single Cluster
       urls:
         - ${env:ES_URL}

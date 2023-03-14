@@ -54,12 +54,6 @@ studio.preview.deleteTargetUrl: ${env:DEPLOYER_URL}/api/1/target/delete-if-exist
 # URL to the preview repository (aka Sandbox) where authors save work-in-progress
 studio.preview.repoUrl: ${env:CRAFTER_DATA_DIR}/repos/sites/{siteName}/sandbox
 
-############################################################
-##                   Preview Search                       ##
-############################################################
-studio.preview.search.createUrl: ${env:SEARCH_URL}/api/2/admin/index/create
-studio.preview.search.deleteUrl: ${env:SEARCH_URL}/api/2/admin/index/delete/{siteName}
-
 ##################################################
 ##                   Database                   ##
 ##################################################
@@ -203,10 +197,10 @@ studio.search.keepAlive: false
 # studio.serverless.delivery.deployer.target.localRepoPath: ${env:CRAFTER_DATA_DIR}/repos/aws/{siteName}
 # Parameters for the target template. Please check the deployer template documentation for the possible parameters.
 # The following parameters will be sent automatically, and you don't need to specify them: env, site_name, replace,
-# disable_deploy_cron, local_repo_path, repo_url, use_crafter_search
+# disable_deploy_cron, local_repo_path, repo_url
 # studio.serverless.delivery.deployer.target.template.params:
-#   # The delivery Elasticsearch endpoint (optional is authoring is using the same one, specified in the ES_URL env variable)
-#   elastic_search_url:
+#   # The delivery search endpoint (optional is authoring is using the same one, specified in the ES_URL env variable)
+#   search_url:
 #   aws:
 #     # AWS region (optional if specified through default AWS chain)
 #     region: us-east-1
