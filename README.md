@@ -75,7 +75,7 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
 * `socialRequired` or `crafter.social`: Include Social in the build, default `false`
 * `profileRequired` or `crafter.profile`: Include Profile in the build, default `false`
-* `startElasticsearch` or `withElasticsearch`: start OpenSearch, default `true`
+* `startSearch` or `withSearch`: start OpenSearch, default `true`
 * `startMongoDB`: start MongoDB, default `false` unless Profile or Social are enabled. This is automatic.
 * `unitTest`: Run unit tests during build, default `false`
 * `shallowClone`: Clone only the latest commits and not the entire history (faster, but you lose history), default `false`

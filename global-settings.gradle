@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.SystemUtils
 ext.getPropertySafelyWithDefaults = {
 	prop, propDefault ->
 
-		project.ext.set("ret", project.hasProperty(prop)? project.property(prop).toString(): propDefault)
+		project.ext.set("ret", project.hasProperty(prop) ? project.property(prop).toString() : propDefault)
 
 		return ret
 }
@@ -41,7 +41,7 @@ project.ext.set("socialRequired", getPropertySafelyWithDefaults("crafter.social"
 project.ext.set("profileRequired", (getPropertySafelyWithDefaults("crafter.profile", "false").toBoolean() || socialRequired))
 project.ext.set("unitTest", getPropertySafelyWithDefaults("unitTest", "false").toBoolean())
 project.ext.set("startMongoDB", getPropertySafelyWithDefaults("startMongodb", (profileRequired || socialRequired)).toBoolean())
-project.ext.set("startElasticsearch", getPropertySafelyWithDefaults("withElasticsearch", "true").toBoolean())
+project.ext.set("startSearch", getPropertySafelyWithDefaults("startSearch", getPropertySafelyWithDefaults("withSearch", "true")).toBoolean())
 project.ext.set("startCommand", project.hasProperty("debug") ? "debug" : "start")
 project.ext.set("stopCommand", "stop")
 project.ext.set("statusCommand", "status")

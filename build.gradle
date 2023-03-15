@@ -178,8 +178,8 @@ task start() {
 			println "Starting $environment"
 
 			def command = [ startCommand ]
-			if (!startElasticsearch)
-				command += ["skipElasticsearch"]
+			if (!startSearch)
+				command += ["skipSearch"]
 			if (startMongoDB)
 				command += ["forceMongo"]
 			runEnvironment(environment, command, profileRequired, socialRequired)
@@ -194,8 +194,8 @@ task stop() {
 			println "Stopping $environment"
 
 			def command = [ stopCommand ]
-			if (!startElasticsearch)
-				command += ["skipElasticsearch"]
+			if (!startSearch)
+				command += ["skipSearch"]
 			if (startMongoDB)
 				command += ["forceMongo"]
 			runEnvironment(environment, command, profileRequired, socialRequired)
@@ -208,8 +208,8 @@ task status() {
 	doFirst {
 		getEnvironments().each { environment ->
 			def command = [ statusCommand ]
-			if (!startElasticsearch)
-				command += ["skipElasticsearch"]
+			if (!startSearch)
+				command += ["skipSearch"]
 			if (startMongoDB)
 				command += ["forceMongo"]
 			runEnvironment(environment, command, profileRequired, socialRequired)
