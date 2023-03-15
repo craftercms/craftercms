@@ -23,8 +23,8 @@ export CRAFTER_BACKUPS_DIR=${CRAFTER_BACKUPS_DIR:="$CRAFTER_HOME/backups"}
 # -------------------- Hosts and ports --------------------
 export MAIL_HOST=${MAIL_HOST:="localhost"}
 export MAIL_PORT=${MAIL_PORT:="@SMTP_PORT@"}
-export ES_HOST=${ES_HOST:="localhost"}
-export ES_PORT=${ES_PORT:="@ES_PORT@"}
+export SEARCH_HOST=${SEARCH_HOST:="localhost"}
+export SEARCH_PORT=${SEARCH_PORT:="@SEARCH_PORT@"}
 export DEPLOYER_HOST=${DEPLOYER_HOST:="localhost"}
 export DEPLOYER_PORT=${DEPLOYER_PORT:="@DEPLOYER_PORT@"}
 export MONGODB_HOST=${MONGODB_HOST:="localhost"}
@@ -39,7 +39,7 @@ export TOMCAT_SHUTDOWN_PORT=${TOMCAT_SHUTDOWN_PORT:="@TOMCAT_SHUTDOWN_PORT@"}
 export TOMCAT_DEBUG_PORT=${TOMCAT_DEBUG_PORT:="@TOMCAT_DEBUG_PORT@"}
 
 # -------------------- URLs --------------------
-export ES_URL=${ES_URL:="http://$ES_HOST:$ES_PORT"}
+export SEARCH_URL=${SEARCH_URL:="http://$SEARCH_HOST:$SEARCH_PORT"}
 export DEPLOYER_URL=${DEPLOYER_URL:="http://$DEPLOYER_HOST:$DEPLOYER_PORT"}
 export STUDIO_URL=${STUDIO_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/studio"}
 export ENGINE_URL=${ENGINE_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT"}
@@ -54,12 +54,13 @@ export CATALINA_OPTS=${CATALINA_OPTS:="-server -Xss1024K -Xms1G -Xmx4G -Dlog4j2.
 
 # -------------------- OpenSearch variables --------------------
 export ES_JAVA_HOME=${ES_JAVA_HOME:="$JAVA_HOME"}
-export ES_HOME=${ES_HOME:="$CRAFTER_BIN_DIR/opensearch/bin"}
-export ES_INDEXES_DIR=${ES_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes-es"}
-export ES_LOGS_DIR=${ES_LOGS_DIR:="$CRAFTER_LOGS_DIR/elasticsearch"}
-export ES_PID=${ES_PID:="$ES_HOME/elasticsearch.pid"}
-export ES_USERNAME=${ES_USERNAME:=""}
-export ES_PASSWORD=${ES_PASSWORD:=""}
+export OPENSEARCH_JAVA_HOME=${ES_JAVA_HOME}
+export SEARCH_HOME=${SEARCH_HOME:="$CRAFTER_BIN_DIR/opensearch/bin"}
+export SEARCH_INDEXES_DIR=${SEARCH_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes"}
+export SEARCH_LOGS_DIR=${SEARCH_LOGS_DIR:="$CRAFTER_LOGS_DIR/search"}
+export SEARCH_PID=${SEARCH_PID:="$SEARCH_HOME/opensearch.pid"}
+export SEARCH_USERNAME=${SEARCH_USERNAME:=""}
+export SEARCH_PASSWORD=${SEARCH_PASSWORD:=""}
 
 # -------------------- Deployer variables --------------------
 export DEPLOYER_HOME=${DEPLOYER_HOME:="$CRAFTER_BIN_DIR/crafter-deployer"}

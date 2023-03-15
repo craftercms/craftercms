@@ -280,15 +280,15 @@ ext.commonConfUpdatePatterns = [
         patterns: [
             [
                 match: "#path.data: /path/to/data",
-                replace: 'path.data: ${ES_INDEXES_DIR}'
+                replace: 'path.data: ${SEARCH_INDEXES_DIR}'
             ],
             [
                 match: "#path.logs: /path/to/logs",
-                replace: 'path.logs: ${ES_LOGS_DIR}'
+                replace: 'path.logs: ${SEARCH_LOGS_DIR}'
             ],
             [
                 match: "#http.port: 9200",
-                replace: 'http.port: ${ES_PORT}'
+                replace: 'http.port: ${SEARCH_PORT}'
             ],
             [
                 match: '# --------------------------------- Discovery ----------------------------------',
@@ -378,7 +378,7 @@ def authoringTokens = [
   TOMCAT_AJP_PORT      : String.valueOf(authoringTomcatAjpPortDefault),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(authoringTomcatShutdownPortDefault),
   TOMCAT_DEBUG_PORT    : String.valueOf(authoringTomcatDebugPortDefault),
-  ES_PORT              : String.valueOf(authoringOpenSearchPort),
+  SEARCH_PORT          : String.valueOf(authoringSearchPort),
   DEPLOYER_PORT        : String.valueOf(authoringDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(authoringDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(authoringDeploymentDir),
@@ -396,7 +396,7 @@ def deliveryTokens = [
   TOMCAT_AJP_PORT      : String.valueOf(deliveryTomcatAjpPortDefault),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(deliveryTomcatShutdownPortDefault),
   TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPortDefault),
-  ES_PORT              : String.valueOf(deliveryOpenSearchPort),
+  SEARCH_PORT          : String.valueOf(deliverySearchPort),
   DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(deliveryDeploymentDir),

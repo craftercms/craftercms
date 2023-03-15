@@ -470,10 +470,10 @@ function doBackup() {
 
   # ZIP OpenSearch indexes
   banner "Backing up OpenSearch indexes"
-  if [ -d "$ES_INDEXES_DIR" ]; then
+  if [ -d "$SEARCH_INDEXES_DIR" ]; then
     cecho "Adding OpenSearch indexes\n" "info"
-    cd "$ES_INDEXES_DIR"
-    runCmd "tar cvf \"$tempFolder/indexes-es.tar\" ."
+    cd "$SEARCH_INDEXES_DIR"
+    runCmd "tar cvf \"$tempFolder/indexes.tar\" ."
     abortOnError
   fi
 
@@ -534,7 +534,7 @@ function doRestore() {
   banner "Clearing all existing data"
   rmDirContents "$MONGODB_DATA_DIR"
   rmDirContents "$CRAFTER_DATA_DIR/repos"
-  rmDirContents "$ES_INDEXES_DIR"
+  rmDirContents "$SEARCH_INDEXES_DIR"
   rmDirContents "$DEPLOYER_DATA_DIR"
   rmDirContents "$MARIADB_DATA_DIR"
 
@@ -593,16 +593,16 @@ function doRestore() {
   fi
 
   # UNZIP OpenSearch indexes
-  if [ -f "$tempFolder/indexes-es.$packageExt" ]; then
-    mkdir -p "$ES_INDEXES_DIR"
+  if [ -f "$tempFolder/indexes.$packageExt" ]; then
+    mkdir -p "$SEARCH_INDEXES_DIR"
 
     banner "Restoring OpenSearch indexes"
 
     if [ "$packageExt" == "tar" ]; then
-      runCmd "tar xvf \"$tempFolder/indexes-es.tar\" -C \"$ES_INDEXES_DIR\""
+      runCmd "tar xvf \"$tempFolder/indexes.tar\" -C \"$SEARCH_INDEXES_DIR\""
       abortOnError
     else
-      runCmd "unzip \"$tempFolder/indexes-es.zip\" \"$ES_INDEXES_DIR\""
+      runCmd "unzip \"$tempFolder/indexes.zip\" \"$SEARCH_INDEXES_DIR\""
       abortOnError
     fi
   fi
@@ -752,20 +752,20 @@ function help() {
   cecho "$(basename $BASH_SOURCE)\n\n" "strong"
   cecho "    start [withMongoDB] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and Elasticsearch.
              If withMongoDB is specified MongoDB will be started,
-             if skipElasticsearch is specified Elasticsearch will not be started,
+             if skipElasticsearch is specified OpenSearch will not be started,
              if skipMongoDB is specified MongoDB will not be started even if
              the Crafter Profile WAR file is present.\n" "info"
-  cecho "    stop, Stops Tomcat, Deployer, Elasticsearch (if started), Mongo (if started)\n" "info"
+  cecho "    stop, Stops Tomcat, Deployer, OpenSearch (if started), Mongo (if started)\n" "info"
   cecho "    debug [withMongoDB] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and
-             Elasticsearch in debug mode. If withMongoDB is specified MongoDB will be started,
-             if skipElasticsearch is specified Elasticsearch will not be started, if skipMongoDB is specified MongoDB
+             OpenSearch in debug mode. If withMongoDB is specified MongoDB will be started,
+             if skipElasticsearch is specified OpenSearch will not be started, if skipMongoDB is specified MongoDB
              will not be started even if the Crafter Profile war is present\n" "info"
   cecho "    start_deployer, Starts Deployer\n" "info"
   cecho "    stop_deployer, Stops Deployer\n" "info"
   cecho "    debug_deployer, Starts Deployer in debug mode\n" "info"
-  cecho "    start_elasticsearch, Starts Elasticsearch\n" "info"
-  cecho "    stop_elasticsearch, Stops Elasticsearch\n" "info"
-  cecho "    debug_elasticsearch, Starts Elasticsearch in debug mode\n" "info"
+  cecho "    start_elasticsearch, Starts OpenSearch\n" "info"
+  cecho "    stop_elasticsearch, Stops OpenSearch\n" "info"
+  cecho "    debug_elasticsearch, Starts OpenSearch in debug mode\n" "info"
   cecho "    start_tomcat, Starts Tomcat\n" "info"
   cecho "    stop_tomcat, Stops Tomcat\n" "info"
   cecho "    debug_tomcat, Starts Tomcat in debug mode\n" "info"
@@ -843,10 +843,10 @@ function stopDeployer() {
 
 function startElasticsearch() {
   module="OpenSearch"
-  executable=("$ES_HOME/opensearch -d -p $ES_PID" $ES_PORT "$ES_INDEXES_DIR" $ES_PID)
-  port=$ES_PORT
-  foldersToCreate="$ES_INDEXES_DIR"
-  pidFile="$ES_PID"
+  executable=("$SEARCH_HOME/opensearch -d -p $SEARCH_PID")
+  port=$SEARCH_PORT
+  foldersToCreate="$SEARCH_INDEXES_DIR"
+  pidFile="$SEARCH_PID"
   operation="Start"
 
   prepareModule "$module" "$foldersToCreate" "$operation"
@@ -860,12 +860,12 @@ function startElasticsearch() {
 }
 
 function debugElasticsearch() {
-  module="Elasticsearch"
+  module="OpenSearch"
   envVars="ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045\""
-  executable="$ES_HOME/opensearch -d -p $ES_PID"
-  port=$ES_PORT
-  foldersToCreate="$ES_INDEXES_DIR"
-  pidFile="$ES_PID"
+  executable="$SEARCH_HOME/opensearch -d -p $SEARCH_PID"
+  port=$SEARCH_PORT
+  foldersToCreate="$SEARCH_INDEXES_DIR"
+  pidFile="$SEARCH_PID"
   operation="Debug"
 
   prepareModule "$module" "$foldersToCreate" "$operation"
@@ -879,12 +879,12 @@ function debugElasticsearch() {
 }
 
 function stopElasticsearch() {
-  pid=$(cat "$ES_PID" 2>/dev/null)
-	stopModule "OpenSearch" "$ES_PORT" "$ES_PID" "kill \$0" "$pid"
+  pid=$(cat "$SEARCH_PID" 2>/dev/null)
+	stopModule "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID" "kill \$0" "$pid"
 }
 
 function elasticsearchStatus() {
-  getStatus "OpenSearch" "$ES_PORT" "$ES_PID"
+  getStatus "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID"
 }
 
 function startTomcat() {
@@ -1062,7 +1062,7 @@ function stop() {
      stopMongoDB
   fi
   stopDeployer
-  if [ ! -z "$(getPidByPort $ES_PORT)" ]; then
+  if [ ! -z "$(getPidByPort $SEARCH_PORT)" ]; then
     stopElasticsearch
   fi
 }

@@ -11,9 +11,9 @@ target:
     openSearch:
       # Single Cluster
       urls:
-        - ${env:ES_URL}
-      username: ${env:ES_USERNAME}
-      password: ${env:ES_PASSWORD}
+        - ${env:SEARCH_URL}
+      username: ${env:SEARCH_USERNAME}
+      password: ${env:SEARCH_PASSWORD}
       timeout:
         # The connection timeout in milliseconds, if set to -1 the default will be used
         connect: -1
