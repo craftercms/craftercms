@@ -70,7 +70,6 @@ task download() {
 			}
 
 			if (performDownload) {
-				def artifact = download['name']
 				downloadArtifact(
 						download['name'],
 						download['url'],
