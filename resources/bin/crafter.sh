@@ -843,7 +843,7 @@ function stopDeployer() {
 
 function startSearch() {
   module="OpenSearch"
-  executable=("$SEARCH_HOME/opensearch -d -p $SEARCH_PID")
+  executable=("$OPENSEARCH_HOME/opensearch -d -p $SEARCH_PID")
   port=$SEARCH_PORT
   foldersToCreate="$SEARCH_INDEXES_DIR"
   pidFile="$SEARCH_PID"
@@ -862,7 +862,7 @@ function startSearch() {
 function debugSearch() {
   module="OpenSearch"
   envVars="ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045\""
-  executable="$SEARCH_HOME/opensearch -d -p $SEARCH_PID"
+  executable="$OPENSEARCH_HOME/opensearch -d -p $SEARCH_PID"
   port=$SEARCH_PORT
   foldersToCreate="$SEARCH_INDEXES_DIR"
   pidFile="$SEARCH_PID"
