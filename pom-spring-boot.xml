@@ -85,6 +85,8 @@
 		<aws.version>1.12.139</aws.version>
 		<box.sdk.version>2.58.0</box.sdk.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
+		<opensearch.version>2.6.0</opensearch.version>
+                <opensearch.client.version>2.2.0</opensearch.client.version>
 		<tomcat.version>10.1.17</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
 		<groovy.version>4.0.9</groovy.version>
