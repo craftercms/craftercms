@@ -86,7 +86,7 @@
 		<box.sdk.version>2.58.0</box.sdk.version>
 		<opensearch.version>2.6.0</opensearch.version>
 		<opensearch.client.version>2.2.0</opensearch.client.version>
-		<tomcat.version>10.1.17</tomcat.version>
+		<tomcat.version>10.1.7</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
 		<groovy.version>4.0.9</groovy.version>
 		<apache.ivy>2.5.1</apache.ivy>
