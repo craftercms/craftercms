@@ -739,7 +739,7 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 # Check if OS is macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
   # Remove com.apple.quarantine flag for OpenSearch files
-  xattr -rd com.apple.quarantine $CRAFTER_BIN_DIR/opensearch
+  xattr -rd com.apple.quarantine "$CRAFTER_BIN_DIR/opensearch"
 fi
 
 # Set up the environment
