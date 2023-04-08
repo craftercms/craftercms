@@ -73,8 +73,8 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `gitRemote`: Git remote name to use in cloned modules, default `origin`
 * `gitBranch`: Git branch to use when cloning modules, default `develop` (for develop branch)
 * `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
-* `socialRequired` or `crafter.social`: Include Social in the build, default `false`
-* `profileRequired` or `crafter.profile`: Include Profile in the build, default `false`
+* `socialRequired`: Include Social in the build, default `false`
+* `profileRequired`: Include Profile in the build, default `false`
 * `startElasticsearch` or `withElasticsearch`: start Elasticsearch, default `true`
 * `startMongoDB`: start MongoDB, default `false` unless Profile or Social are enabled. This is automatic.
 * `unitTest`: Run unit tests during build, default `false`
