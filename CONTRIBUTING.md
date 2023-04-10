@@ -19,7 +19,7 @@ Please review GIT_WORKFLOW.md thoroughly to understand the workflow used to deve
 ## Pull Request Process
 1. Please resolve any conflicts before sending your PR.
 2. Please include enough information with your PR to describe the work you're contributing.
-3. If the work you're contributing requires documentation, please make sure you you send an accompanying PR to the [documentation project.](https://github.com/craftercms/docs)
+3. If the work you're contributing requires documentation, please make sure you send an accompanying PR to the [documentation project.](https://github.com/craftercms/docs)
 4. PRs that don't pass the necessary quality checks can't be accepted. These include: [Travis CI](https://travis-ci.org/craftercms), [Codacy](https://www.codacy.com/app/CrafterCMS), code review.
 
 ## Rejected Contributions
