@@ -42,7 +42,7 @@ ext.commonFoldersToCreate = [
     "/bin/apache-tomcat/shared/lib",
     "/bin/apache-tomcat/webapps",
     "/bin/apache-tomcat/lib/org/apache/catalina/util/",
-    "/bin/elasticsearch/logs",
+    "/bin/opensearch/logs",
     "/data"
 ]
 
@@ -87,9 +87,9 @@ ext.commonItemsToCopy = [
         exclude: ""
     ],
     [
-        name: "elasticsearch",
-        from: "${downloadDir}/elasticsearch-${elasticsearchVersion}/",
-        into: "/bin/elasticsearch/",
+        name: "opensearch",
+        from: "${downloadDir}/opensearch-${openSearchVersion}/",
+        into: "/bin/opensearch/",
         exclude: ""
     ],
     [
@@ -174,8 +174,8 @@ ext.commonUpdatePermissions = [
     ],
     [
         items: [
-            "/elasticsearch/bin/",
-            "/elasticsearch/modules"
+            "/opensearch/bin/",
+            "/opensearch/modules"
         ],
         permissions: [
             "-R",
@@ -276,19 +276,19 @@ ext.commonConfUpdatePatterns = [
         ]
     ],
     [
-        confFile: "/bin/elasticsearch/config/elasticsearch.yml",
+        confFile: "/bin/opensearch/config/opensearch.yml",
         patterns: [
             [
                 match: "#path.data: /path/to/data",
-                replace: 'path.data: ${ES_INDEXES_DIR}'
+                replace: 'path.data: ${SEARCH_INDEXES_DIR}'
             ],
             [
                 match: "#path.logs: /path/to/logs",
-                replace: 'path.logs: ${ES_LOGS_DIR}'
+                replace: 'path.logs: ${SEARCH_LOGS_DIR}'
             ],
             [
                 match: "#http.port: 9200",
-                replace: 'http.port: ${ES_PORT}'
+                replace: 'http.port: ${SEARCH_PORT}'
             ],
             [
                 match: '# --------------------------------- Discovery ----------------------------------',
@@ -300,14 +300,13 @@ ext.commonConfUpdatePatterns = [
             [
                 match: '# ---------------------------------- Various -----------------------------------',
                 replace: '# ---------------------------------- Various -----------------------------------' +
-                        System.lineSeparator() + '# Disable ML' + System.lineSeparator() +
-                        'xpack.ml.enabled: false' + System.lineSeparator() +
-                        'xpack.security.enabled: false' + System.lineSeparator()
+                        System.lineSeparator() +
+                        'plugins.security.disabled: true' + System.lineSeparator()
             ]
         ]
     ],
     [
-            confFile: "/bin/elasticsearch/config/jvm.options",
+            confFile: "/bin/opensearch/config/jvm.options",
             patterns: [
                     [
                             match: "-Xm",
@@ -379,7 +378,7 @@ def authoringTokens = [
   TOMCAT_AJP_PORT      : String.valueOf(authoringTomcatAjpPortDefault),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(authoringTomcatShutdownPortDefault),
   TOMCAT_DEBUG_PORT    : String.valueOf(authoringTomcatDebugPortDefault),
-  ES_PORT              : String.valueOf(authoringElasticsearchPort),
+  SEARCH_PORT          : String.valueOf(authoringSearchPort),
   DEPLOYER_PORT        : String.valueOf(authoringDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(authoringDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(authoringDeploymentDir),
@@ -397,7 +396,7 @@ def deliveryTokens = [
   TOMCAT_AJP_PORT      : String.valueOf(deliveryTomcatAjpPortDefault),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(deliveryTomcatShutdownPortDefault),
   TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPortDefault),
-  ES_PORT              : String.valueOf(deliveryElasticsearchPort),
+  SEARCH_PORT          : String.valueOf(deliverySearchPort),
   DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(deliveryDeploymentDir),

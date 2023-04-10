@@ -11,8 +11,7 @@ PROCESSED_COMMITS=$DATA_DIR/processed-commits
 EVENTS_DIR=$DATA_DIR/deployment-events
 PORT=${DEPLOYER_PORT:="9191"}
 ENGINE_URL=${ENGINE_URL:="http://localhost:8080"}
-SEARCH_URL=${SEARCH_URL:="http://localhost:8080/crafter-search"}
-ES_URL=${ES_URL:="http://localhost:9200"}
+SEARCH_URL=${SEARCH_URL:="http://localhost:9200"}
 JAVA_OPTS="$DEPLOYER_JAVA_OPTS -Dserver.port=$PORT -Dlogging.config=$DEPLOYER_HOME/logging.xml -Dlogs.dir=$LOGS_DIR \
   -Ddeployments.dir=$DEPLOYMENTS_DIR -Dtargets.dir=$TARGETS_DIR -DprocessedCommits.dir=$PROCESSED_COMMITS \
   -DdeploymentEvents.dir=$EVENTS_DIR -Dloader.path=$DEPLOYER_HOME/lib -Dgrape.root=$CRAFTER_BIN_DIR"

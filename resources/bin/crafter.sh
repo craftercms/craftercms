@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################################################################
-REQUIRED_JAVA_VERSION=11
+REQUIRED_JAVA_VERSION=17
 REQUIRED_GIT_VERSION=2.15.0
 
 ################################################ COMMONS ###############################################################
@@ -468,12 +468,12 @@ function doBackup() {
     abortOnError
   fi
 
-  # ZIP elasticsearch indexes
-  banner "Backing up elasticsearch indexes"
-  if [ -d "$ES_INDEXES_DIR" ]; then
-    cecho "Adding elasticsearch indexes\n" "info"
-    cd "$ES_INDEXES_DIR"
-    runCmd "tar cvf \"$tempFolder/indexes-es.tar\" ."
+  # ZIP OpenSearch indexes
+  banner "Backing up OpenSearch indexes"
+  if [ -d "$SEARCH_INDEXES_DIR" ]; then
+    cecho "Adding OpenSearch indexes\n" "info"
+    cd "$SEARCH_INDEXES_DIR"
+    runCmd "tar cvf \"$tempFolder/indexes.tar\" ."
     abortOnError
   fi
 
@@ -534,7 +534,7 @@ function doRestore() {
   banner "Clearing all existing data"
   rmDirContents "$MONGODB_DATA_DIR"
   rmDirContents "$CRAFTER_DATA_DIR/repos"
-  rmDirContents "$ES_INDEXES_DIR"
+  rmDirContents "$SEARCH_INDEXES_DIR"
   rmDirContents "$DEPLOYER_DATA_DIR"
   rmDirContents "$MARIADB_DATA_DIR"
 
@@ -592,17 +592,17 @@ function doRestore() {
     fi
   fi
 
-  # UNZIP elasticsearch indexes
-  if [ -f "$tempFolder/indexes-es.$packageExt" ]; then
-    mkdir -p "$ES_INDEXES_DIR"
+  # UNZIP OpenSearch indexes
+  if [ -f "$tempFolder/indexes.$packageExt" ]; then
+    mkdir -p "$SEARCH_INDEXES_DIR"
 
-    banner "Restoring Elasticsearch indexes"
+    banner "Restoring OpenSearch indexes"
 
     if [ "$packageExt" == "tar" ]; then
-      runCmd "tar xvf \"$tempFolder/indexes-es.tar\" -C \"$ES_INDEXES_DIR\""
+      runCmd "tar xvf \"$tempFolder/indexes.tar\" -C \"$SEARCH_INDEXES_DIR\""
       abortOnError
     else
-      runCmd "unzip \"$tempFolder/indexes-es.zip\" \"$ES_INDEXES_DIR\""
+      runCmd "unzip \"$tempFolder/indexes.zip\" \"$SEARCH_INDEXES_DIR\""
       abortOnError
     fi
   fi
@@ -738,8 +738,8 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
 # Check if OS is macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  # Remove com.apple.quarantine flag for elasticsearch files
-  xattr -rd com.apple.quarantine $CRAFTER_BIN_DIR/elasticsearch
+  # Remove com.apple.quarantine flag for OpenSearch files
+  xattr -rd com.apple.quarantine "$CRAFTER_BIN_DIR/opensearch"
 fi
 
 # Set up the environment
@@ -750,22 +750,22 @@ function help() {
   # TODO: Review and redo
 
   cecho "$(basename $BASH_SOURCE)\n\n" "strong"
-  cecho "    start [withMongoDB] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and Elasticsearch.
+  cecho "    start [withMongoDB] [skipSearch] [skipMongoDB], Starts Tomcat, Deployer and OpenSearch.
              If withMongoDB is specified MongoDB will be started,
-             if skipElasticsearch is specified Elasticsearch will not be started,
+             if skipSearch is specified OpenSearch will not be started,
              if skipMongoDB is specified MongoDB will not be started even if
              the Crafter Profile WAR file is present.\n" "info"
-  cecho "    stop, Stops Tomcat, Deployer, Elasticsearch (if started), Mongo (if started)\n" "info"
-  cecho "    debug [withMongoDB] [skipElasticsearch] [skipMongoDB], Starts Tomcat, Deployer and
-             Elasticsearch in debug mode. If withMongoDB is specified MongoDB will be started,
-             if skipElasticsearch is specified Elasticsearch will not be started, if skipMongoDB is specified MongoDB
+  cecho "    stop, Stops Tomcat, Deployer, OpenSearch (if started), Mongo (if started)\n" "info"
+  cecho "    debug [withMongoDB] [skipSearch] [skipMongoDB], Starts Tomcat, Deployer and
+             OpenSearch in debug mode. If withMongoDB is specified MongoDB will be started,
+             if skipSearch is specified OpenSearch will not be started, if skipMongoDB is specified MongoDB
              will not be started even if the Crafter Profile war is present\n" "info"
   cecho "    start_deployer, Starts Deployer\n" "info"
   cecho "    stop_deployer, Stops Deployer\n" "info"
   cecho "    debug_deployer, Starts Deployer in debug mode\n" "info"
-  cecho "    start_elasticsearch, Starts Elasticsearch\n" "info"
-  cecho "    stop_elasticsearch, Stops Elasticsearch\n" "info"
-  cecho "    debug_elasticsearch, Starts Elasticsearch in debug mode\n" "info"
+  cecho "    start_search, Starts OpenSearch\n" "info"
+  cecho "    stop_search, Stops OpenSearch\n" "info"
+  cecho "    debug_search, Starts OpenSearch in debug mode\n" "info"
   cecho "    start_tomcat, Starts Tomcat\n" "info"
   cecho "    stop_tomcat, Stops Tomcat\n" "info"
   cecho "    debug_tomcat, Starts Tomcat in debug mode\n" "info"
@@ -777,7 +777,7 @@ function help() {
   cecho "    status_profile, Status of Crafter Profile\n" "info"
   cecho "    status_social, Status of Crafter Social\n" "info"
   cecho "    status_deployer, Status of Deployer\n" "info"
-  cecho "    status_elasticsearch, Status of Elasticsearch\n" "info"
+  cecho "    status_search, Status of OpenSearch\n" "info"
   cecho "    status_mariadb, Status of MariaDB\n" "info"
   cecho "    status_mongodb, Status of MonoDb\n" "info"
   cecho "    backup <name>, Perform a backup of all data\n" "info"
@@ -790,7 +790,7 @@ function help() {
 
 # Version info
 function version() {
-  cecho "Copyright (C) 2007-2022 Crafter Software Corporation. All rights reserved.\n" "info"
+  cecho "Copyright (C) 2007-2023 Crafter Software Corporation. All rights reserved.\n" "info"
   cecho "Version @VERSION@-@GIT_BUILD_ID@\n" "info"
 }
 
@@ -841,12 +841,12 @@ function stopDeployer() {
 	stopModule "Deployer" "$DEPLOYER_PORT" "$DEPLOYER_PID" "\$0/deployer.sh stop" "$DEPLOYER_HOME"
 }
 
-function startElasticsearch() {
-  module="Elasticsearch"
-  executable=("$ES_HOME/elasticsearch -d -p $ES_PID" $ES_PORT "$ES_INDEXES_DIR" $ES_PID)
-  port=$ES_PORT
-  foldersToCreate="$ES_INDEXES_DIR"
-  pidFile="$ES_PID"
+function startSearch() {
+  module="OpenSearch"
+  executable=("$OPENSEARCH_HOME/opensearch -d -p $SEARCH_PID")
+  port=$SEARCH_PORT
+  foldersToCreate="$SEARCH_INDEXES_DIR"
+  pidFile="$SEARCH_PID"
   operation="Start"
 
   prepareModule "$module" "$foldersToCreate" "$operation"
@@ -859,13 +859,13 @@ function startElasticsearch() {
   fi
 }
 
-function debugElasticsearch() {
-  module="Elasticsearch"
+function debugSearch() {
+  module="OpenSearch"
   envVars="ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045\""
-  executable="$ES_HOME/elasticsearch -d -p $ES_PID"
-  port=$ES_PORT
-  foldersToCreate="$ES_INDEXES_DIR"
-  pidFile="$ES_PID"
+  executable="$OPENSEARCH_HOME/opensearch -d -p $SEARCH_PID"
+  port=$SEARCH_PORT
+  foldersToCreate="$SEARCH_INDEXES_DIR"
+  pidFile="$SEARCH_PID"
   operation="Debug"
 
   prepareModule "$module" "$foldersToCreate" "$operation"
@@ -878,13 +878,13 @@ function debugElasticsearch() {
   fi
 }
 
-function stopElasticsearch() {
-  pid=$(cat "$ES_PID" 2>/dev/null)
-	stopModule "Elasticsearch" "$ES_PORT" "$ES_PID" "kill \$0" "$pid"
+function stopSearch() {
+  pid=$(cat "$SEARCH_PID" 2>/dev/null)
+	stopModule "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID" "kill \$0" "$pid"
 }
 
-function elasticsearchStatus() {
-  getStatus "Elasticsearch" "$ES_PORT" "$ES_PID"
+function searchStatus() {
+  getStatus "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID"
 }
 
 function startTomcat() {
@@ -980,8 +980,11 @@ function stopMongoDB() {
 	stopModule "MongoDB" "$MONGODB_PORT" "$MONGODB_PID" "\$0/bin/mongod --shutdown --dbpath=\$1/mongodb --logpath=\$2/mongod.log --port \$3" "$MONGODB_HOME $CRAFTER_DATA_DIR $MONGODB_LOGS_DIR $MONGODB_PORT"
 }
 
-function skipElasticsearch() {
+function skipSearch() {
   for o in "$@"; do
+    if [ $o = "skipSearch" ]; then
+      return 0
+    fi
     if [ $o = "skipElasticsearch" ]; then
       return 0
     fi
@@ -1034,8 +1037,8 @@ function mongoDbStatus() {
 
 function start() {
   startDeployer
-  if ! skipElasticsearch "$@"; then
-    startElasticsearch
+  if ! skipSearch "$@"; then
+    startSearch
   fi
   if isMongoNeeded "$@"; then
     startMongoDB
@@ -1046,8 +1049,8 @@ function start() {
 
 function debug() {
   debugDeployer
-  if ! skipElasticsearch "$@"; then
-    debugElasticsearch
+  if ! skipSearch "$@"; then
+    debugSearch
   fi
   if isMongoNeeded "$@"; then
     startMongoDB
@@ -1062,14 +1065,14 @@ function stop() {
      stopMongoDB
   fi
   stopDeployer
-  if [ ! -z "$(getPidByPort $ES_PORT)" ]; then
-    stopElasticsearch
+  if [ ! -z "$(getPidByPort $SEARCH_PORT)" ]; then
+    stopSearch
   fi
 }
 
 # shellcheck disable=SC2120
 function status() {
-  elasticsearchStatus
+  searchStatus
   deployerStatus
   engineStatus
   if [ -f "$CRAFTER_BIN_DIR/apache-tomcat/webapps/studio.war" ]; then
@@ -1114,17 +1117,17 @@ case $1 in
     splash
     stopDeployer
   ;;
-  start_elasticsearch)
+  start_search)
     splash
-    startElasticsearch
+    startSearch
   ;;
-  debug_elasticsearch)
+  debug_search)
     splash
-    debugElasticsearch
+    debugSearch
   ;;
-  stop_elasticsearch)
+  stop_search)
     splash
-    stopElasticsearch
+    stopSearch
   ;;
   debug_tomcat)
     splash
@@ -1173,8 +1176,8 @@ case $1 in
   status_deployer)
     deployerStatus
   ;;
-  status_elasticsearch)
-    elasticsearchStatus
+  status_search)
+    searchStatus
   ;;
   status_mongodb)
     mongoDbStatus
@@ -1184,6 +1187,22 @@ case $1 in
   ;;
   --v | --version)
     version
+  ;;
+  # Deprecated options, to be removed
+  start_elasticsearch)
+    splash
+    startSearch
+  ;;
+  debug_elasticsearch)
+    splash
+    debugSearch
+  ;;
+  stop_elasticsearch)
+    splash
+    stopSearch
+  ;;
+  status_elasticsearch)
+    searchStatus
   ;;
   *)
     help
