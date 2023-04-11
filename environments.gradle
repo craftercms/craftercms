@@ -94,8 +94,14 @@ ext.commonItemsToCopy = [
     ],
     [
         name: "mongodb",
-        from: "${downloadDir}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}/",
+        from: "${downloadDir}/mongodb-${mongodbBinary}-${mongodbArch}-${mongodbVersion}/",
         into: "/bin/mongodb/",
+        exclude: ""
+    ],
+    [
+        name: "mongosh",
+        from: "${downloadDir}/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}/bin/mongosh",
+        into: "/bin/mongodb/bin/",
         exclude: ""
     ],
     [
@@ -261,7 +267,7 @@ ext.commonConfUpdatePatterns = [
         confFile: "/bin/apache-tomcat/conf/catalina.properties",
         patterns: [
             [
-                match: 'shared.loader=', 
+                match: 'shared.loader=',
                 replace: 'shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar'
             ]
         ]
@@ -292,7 +298,7 @@ ext.commonConfUpdatePatterns = [
             ],
             [
                 match: '# --------------------------------- Discovery ----------------------------------',
-                replace: System.lineSeparator() + 
+                replace: System.lineSeparator() +
                     '# Disable cluster discovery' + System.lineSeparator() +
                     'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
                     '# ---------------------------------- Gateway -----------------------------------'

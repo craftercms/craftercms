@@ -61,9 +61,17 @@ ext.downloads = [
     ],
     [
         name: "mongodb",
-        url: "https://fastdl.mongodb.org/${mongodbPlatform}/mongodb-${mongodbBinary}-x86_64-${mongodbVersion}.tgz",
-        destinationFile: "${downloadDir}/mongodb-${mongodbBinary}-x86_64-${mongodbVersion}.tar.gz",
+        url: "https://fastdl.mongodb.org/${mongodbPlatform}/mongodb-${mongodbBinary}-${mongodbArch}-${mongodbVersion}.tgz",
+        destinationFile: "${downloadDir}/mongodb-${mongodbBinary}-${mongodbArch}-${mongodbVersion}.tar.gz",
         checksumAlgorithm: "sha256",
+        expand: "true",
+        expandFolder: "${downloadDir}"
+    ],
+    [
+        name: "mongosh",
+        url: "https://downloads.mongodb.com/compass/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}.${mongoshExtention}",
+        destinationFile: "${downloadDir}/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}.${mongoshExtention}".replace(".tgz", ".tar.gz"),
+        verifyArtifact: false,
         expand: "true",
         expandFolder: "${downloadDir}"
     ]

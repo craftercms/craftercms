@@ -94,9 +94,9 @@
 		<jackson.databind.version>2.14.2</jackson.databind.version>
 		<jackson.dataformat.version>2.14.2</jackson.dataformat.version>
 
-		<mongo.version>3.5.0</mongo.version> <!-- 3.12.6 -->
-		<bson.version>3.5.0</bson.version>
-		<jongo.version>1.5.0</jongo.version>
+		<mongo.version>4.9.1</mongo.version>
+		<bson.version>4.9.1</bson.version>
+		<jongo.version>1.5.1</jongo.version>
 		<gmongo.version>1.5</gmongo.version>
 
 		<velocity.engine.version>2.3</velocity.engine.version>
