@@ -1044,6 +1044,7 @@ function mongoDbStatus() {
 # Display instructions for tailing logs
 function tailTomcatLog() {
     tail -n 100 -F "$CRAFTER_LOGS_DIR"/tomcat/catalina.out
+    stop
 }
 
 function isTailTomcat() {
