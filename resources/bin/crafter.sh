@@ -795,10 +795,15 @@ function version() {
 }
 
 # Display instructions for tailing logs
-function printTailInfo(){
-  cecho "Log files live here: \"$CRAFTER_LOGS_DIR\".\n" "strong"
-  cecho "To follow the main tomcat log, you can run:\n" "strong"
-  cecho "tail -F $CRAFTER_LOGS_DIR/tomcat/catalina.out\n" "info"
+function printTailInfo() {
+  if [ -z "$CRAFTER_TAIL_TOMCAT_LOG" ]; then
+    cecho "Log files live here: \"$CRAFTER_LOGS_DIR\".\n" "strong"
+    cecho "To follow the main tomcat log, you can run:\n" "strong"
+    cecho "tail -F $CRAFTER_LOGS_DIR/tomcat/catalina.out\n" "info"
+  else
+    tail -F $CRAFTER_LOGS_DIR/tomcat/catalina.out
+    stop
+  fi
 }
 
 function startDeployer() {
