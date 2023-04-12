@@ -796,14 +796,15 @@ function version() {
 
 # Display instructions for tailing logs
 function printTailInfo() {
-  if [ -z "$CRAFTER_TAIL_TOMCAT_LOG" ]; then
-    cecho "Log files live here: \"$CRAFTER_LOGS_DIR\".\n" "strong"
-    cecho "To follow the main tomcat log, you can run:\n" "strong"
-    cecho "tail -F $CRAFTER_LOGS_DIR/tomcat/catalina.out\n" "info"
-  else
-    tail -F $CRAFTER_LOGS_DIR/tomcat/catalina.out
+  cecho "Log files live here: \"$CRAFTER_LOGS_DIR\".\n" "strong"
+  cecho "To follow the main tomcat log, you can run:\n" "strong"
+  cecho "tail -F $CRAFTER_LOGS_DIR/tomcat/catalina.out\n" "info"
+}
+
+# Display instructions for tailing logs
+function tailTomcat() {
+    tail -F "$CRAFTER_LOGS_DIR"/tomcat/catalina.out
     stop
-  fi
 }
 
 function startDeployer() {
@@ -1052,6 +1053,18 @@ function start() {
   printTailInfo
 }
 
+function startTail() {
+  startDeployer
+  if ! skipSearch "$@"; then
+    startSearch
+  fi
+  if isMongoNeeded "$@"; then
+    startMongoDB
+  fi
+  startTomcat
+  tailTomcat
+}
+
 function debug() {
   debugDeployer
   if ! skipSearch "$@"; then
@@ -1105,6 +1118,10 @@ case $1 in
   start)
     splash
     start "$@"
+  ;;
+  startTail)
+    splash
+    startTail
   ;;
   stop)
     splash
