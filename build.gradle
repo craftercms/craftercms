@@ -76,7 +76,7 @@ task download() {
 						download['destinationFile'],
 						download['checksumAlgorithm'],
 						overwriteArtifact,
-						true /* verify artifact */,
+						download['verifyArtifact'] == false ? false : true /* verify artifact */,
 						download['expand'].toBoolean(),
 						download['expandFolder']
 				)
