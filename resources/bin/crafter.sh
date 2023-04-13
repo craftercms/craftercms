@@ -19,6 +19,10 @@ REQUIRED_JAVA_VERSION=17
 REQUIRED_GIT_VERSION=2.15.0
 
 ################################################ COMMONS ###############################################################
+
+# trap ctrl-c and call ctrl_c()
+trap ctrl_c INT SIGTERM
+
 cecho () {
 
     if [ "$2" == "info" ] ; then
@@ -739,7 +743,7 @@ export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 # Check if OS is macOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
   # Remove com.apple.quarantine flag for OpenSearch files
-  xattr -rd com.apple.quarantine $CRAFTER_BIN_DIR/opensearch
+  xattr -rd com.apple.quarantine "$CRAFTER_BIN_DIR/opensearch"
 fi
 
 # Set up the environment
@@ -750,11 +754,13 @@ function help() {
   # TODO: Review and redo
 
   cecho "$(basename $BASH_SOURCE)\n\n" "strong"
-  cecho "    start [withMongoDB] [skipSearch] [skipMongoDB], Starts Tomcat, Deployer and OpenSearch.
+  cecho "    start [withMongoDB] [skipSearch] [skipMongoDB] [tailTomcat], Starts Tomcat, Deployer and OpenSearch.
              If withMongoDB is specified MongoDB will be started,
              if skipSearch is specified OpenSearch will not be started,
              if skipMongoDB is specified MongoDB will not be started even if
-             the Crafter Profile WAR file is present.\n" "info"
+             the Crafter Profile WAR file is present,
+             if tailTomcat is specified, Tomcat will be tailed and Crafter will shutdown when
+             this script terminates.\n" "info"
   cecho "    stop, Stops Tomcat, Deployer, OpenSearch (if started), Mongo (if started)\n" "info"
   cecho "    debug [withMongoDB] [skipSearch] [skipMongoDB], Starts Tomcat, Deployer and
              OpenSearch in debug mode. If withMongoDB is specified MongoDB will be started,
@@ -795,7 +801,7 @@ function version() {
 }
 
 # Display instructions for tailing logs
-function printTailInfo(){
+function printTailInfo() {
   cecho "Log files live here: \"$CRAFTER_LOGS_DIR\".\n" "strong"
   cecho "To follow the main tomcat log, you can run:\n" "strong"
   cecho "tail -F $CRAFTER_LOGS_DIR/tomcat/catalina.out\n" "info"
@@ -1035,16 +1041,41 @@ function mongoDbStatus() {
   getStatus "MongoDB" "$MONGODB_PORT" "$MONGODB_PID"
 }
 
+# Display instructions for tailing logs
+function tailTomcatLog() {
+    tail -n 100 -F "$CRAFTER_LOGS_DIR"/tomcat/catalina.out
+    stop
+}
+
+function isTailTomcat() {
+  cecho "Looping through the params: $@\n" "strong"
+  for o in "$@"; do
+    if [ $o = "tailTomcat" ]; then
+      cecho "Found tailTomcat param\n" "strong"
+      return 0
+    fi
+  done
+  cecho "Did not find tailTomcat param\n" "strong"
+  return 1
+}
+
 function start() {
   startDeployer
+
   if ! skipSearch "$@"; then
     startSearch
   fi
   if isMongoNeeded "$@"; then
     startMongoDB
   fi
+
   startTomcat
   printTailInfo
+
+  if isTailTomcat "$@"; then
+    cecho "Tailing Tomcat log\n" "strong"
+    tailTomcatLog
+  fi
 }
 
 function debug() {
@@ -1060,6 +1091,17 @@ function debug() {
 }
 
 function stop() {
+  stopTomcat
+  if [ ! -z "$(getPidByPort $MONGODB_PORT)" ]; then
+     stopMongoDB
+  fi
+  stopDeployer
+  if [ ! -z "$(getPidByPort $SEARCH_PORT)" ]; then
+    stopSearch
+  fi
+}
+
+function ctrl_c() {
   stopTomcat
   if [ ! -z "$(getPidByPort $MONGODB_PORT)" ]; then
      stopMongoDB

@@ -33,12 +33,41 @@ ext.getPropertySafelyWithDefaults = {
 		return ret
 }
 
+def commandTimeout = getPropertySafelyWithDefaults("commandTimeout", 1000000).toInteger()
+
+ext.execDetermineLinuxOS = {
+	def cmd = "lsb_release -si"
+	def proc = cmd.execute()
+	proc.waitForOrKill(commandTimeout)
+
+	if (proc.exitValue() != 0) {
+		return "unknown"
+	}
+
+	return proc.in.text.toLowerCase().trim()
+}
+
+ext.execDetermineLinuxVersion = {
+	def cmd = "lsb_release -sr"
+	def proc = cmd.execute()
+	proc.waitForOrKill(commandTimeout)
+
+	if (proc.exitValue() != 0) {
+		return "unknown-version"
+	}
+
+	return proc.in.text.replace(".", "").trim()
+}
+
 project.ext.set("overwriteArtifact", getPropertySafelyWithDefaults("refreshDownloads", "false").toBoolean())
 project.ext.set("overwriteChangedFiles", getPropertySafelyWithDefaults("overwriteChangedFiles", "true").toBoolean())
 project.ext.set("refreshEnv", getPropertySafelyWithDefaults("refreshEnv", "false").toBoolean())
 project.ext.set("downloadGrapes", getPropertySafelyWithDefaults("downloadGrapes", "false").toBoolean())
-project.ext.set("socialRequired", getPropertySafelyWithDefaults("crafter.social", "false").toBoolean())
-project.ext.set("profileRequired", (getPropertySafelyWithDefaults("crafter.profile", "false").toBoolean() || socialRequired))
+project.ext.set("socialRequired", getPropertySafelyWithDefaults("crafter.social", "false").toBoolean()
+		|| getPropertySafelyWithDefaults("socialRequired", "false").toBoolean())
+project.ext.set("profileRequired", (getPropertySafelyWithDefaults("crafter.profile", "false").toBoolean()
+		|| (getPropertySafelyWithDefaults("profileRequired", "false").toBoolean()
+		|| socialRequired)))
 project.ext.set("unitTest", getPropertySafelyWithDefaults("unitTest", "false").toBoolean())
 project.ext.set("startMongoDB", getPropertySafelyWithDefaults("startMongodb", (profileRequired || socialRequired)).toBoolean())
 project.ext.set("startSearch", getPropertySafelyWithDefaults("startSearch", getPropertySafelyWithDefaults("withSearch", "true")).toBoolean())
@@ -55,4 +84,12 @@ project.ext.set("currentPlatform", getPropertySafelyWithDefaults("currentPlatfor
 project.ext.set("openSearchPlatform", getPropertySafelyWithDefaults("openSearchPlatform", currentPlatform))
 project.ext.set("currentArch", getPropertySafelyWithDefaults("currentArch", SystemUtils.OS_ARCH == "aarch64" ? "aarch64" : "x64"))
 project.ext.set("mongodbPlatform", getPropertySafelyWithDefaults("mongodbPlatform", currentPlatform == "darwin" ? "osx" : currentPlatform))
-project.ext.set("mongodbBinary", getPropertySafelyWithDefaults("mongodbBinary", currentPlatform == "darwin" ? "osx-ssl" : currentPlatform))
+project.ext.set("mongodbBinary", getPropertySafelyWithDefaults("mongodbBinary", currentPlatform == "darwin" ? "macos" : currentPlatform))
+project.ext.set("mongoshExtention", getPropertySafelyWithDefaults("mongoshExtention", SystemUtils.IS_OS_MAC_OSX ? "zip" : "tgz"))
+if (currentPlatform == "darwin") {
+	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", SystemUtils.OS_ARCH == "aarch64" ? "arm64" : "x86_64"))
+	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", SystemUtils.OS_ARCH == "aarch64" ? "arm64" : "x64"))
+} else {
+	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", "x86_64-${execDetermineLinuxOS()}${execDetermineLinuxVersion()}"))
+	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", "x64"))
+}
