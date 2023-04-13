@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -235,6 +235,7 @@ def reindex(RestHighLevelClient client, String indexName) {
  * Reindex all existing indices
  */
 def reindexAll(esClient, optionValues) {
+    // TODO: Review this and add username/password ?
     String esUrl = "${getESUrl(optionValues)}/_cat/indices?h=index"
     def indices = esUrl.toURL().readLines()
     println "Prepare to reindex ${indices.size()} indices"
@@ -260,12 +261,10 @@ def upgradeSearch(Path targetFolder, Map optionValues) {
         println "tail -F ${upgradeTmpFolder.resolve(ES_LOG_FILE).toFile().getCanonicalPath()}"
 
         println "Create ElasticSearch client"
-        // TODO: Add username and password params
         RestHighLevelClient esClient = createESClient(optionValues)
         if (waitForES(esClient, optionValues)) {
             println "ES cluster started. Preparing to reindex"
             reindexAll(esClient, optionValues)
-            sleep(600000)
         } else {
             println "ES cluster did not start properly. Review configs and start timeout"
         }
