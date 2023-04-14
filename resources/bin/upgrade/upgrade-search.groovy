@@ -30,8 +30,9 @@ import org.apache.commons.io.FileUtils
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.Files
-
+import java.time.temporal.ChronoUnit
 import java.util.stream.Stream
+import java.time.ZonedDateTime
 
 import static upgrade.utils.UpgradeUtils.*
 import static utils.EnvironmentUtils.*
@@ -41,6 +42,7 @@ import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
 import org.elasticsearch.action.admin.cluster.health.*
 import org.elasticsearch.client.*
+import org.elasticsearch.client.tasks.*
 import org.elasticsearch.cluster.health.ClusterHealthStatus
 import org.elasticsearch.index.reindex.ReindexRequest
 import org.elasticsearch.index.reindex.BulkByScrollResponse
@@ -58,6 +60,7 @@ ES_VERSION = '7.10.0'
 ES_DOWNLOAD_URL_BASE = 'https://artifacts.elastic.co/downloads/elasticsearch'
 ES_URL_BASE = 'http://localhost'
 ES_LOG_FILE = 'update-es.log'
+REINDEXED = '_reindexed_710'
 
 /**
  * Builds the CLI and adds the possible options
@@ -71,6 +74,7 @@ def static buildCli(CliBuilder cli) {
     cli._(longOpt: 'port', args: 1, argName: 'port', defaultValue: '9201', 'Elasticsearch port to use for upgrade ES temporary instance')
     cli._(longOpt: 'status-retries', args: 1, argName: 'max status retries', defaultValue: '5', type: Integer.class, 'How many times to try to get a yellow status from the ES cluster (waiting 10s between retries)')
     cli._(longOpt: 'status-timeout', args: 1, argName: 'seconds', defaultValue: 60, type: Integer.class, 'Timeout in seconds for the status check of the ES cluster')
+    cli._(longOpt: 'stay-alive', argName: 'stayAlive', defaultValue: false, 'Set to true to keep the process alive after reindexing is complete. This allows to query the ES server and review.')
 }
 
 /**
@@ -165,7 +169,7 @@ boolean waitForES(RestHighLevelClient esClient, Map optionValues) {
             return false
         }
         println "ES not ready yet, will retry after 5s"
-        sleep(5000)
+        sleep(TimeUnit.SECONDS.toMillis(5))
     }
 
     return false
@@ -194,26 +198,51 @@ RestHighLevelClient createESClient(Map optionValues, int connectTimeout = 0, int
     return new RestHighLevelClient(clientBuilder)
 }
 
-def reindex(RestHighLevelClient client, String indexName) {
+def submitReindexAndWait(RestHighLevelClient client, String indexName, String newIndexName) {
+    TaskSubmissionResponse reindexTask = client.submitReindexTask(
+            new ReindexRequest().setSourceIndices(indexName).setDestIndex(newIndexName).setRefresh(true),
+            RequestOptions.DEFAULT)
+    TaskId taskId = new TaskId(reindexTask.getTask())
+    GetTaskRequest getTaskRequest = new GetTaskRequest(taskId.getNodeId(), taskId.getId())
+
+    long waitPeriod = TimeUnit.SECONDS.toMillis(2)
+    long maxWaitPeriodMillis = TimeUnit.MINUTES.toMillis(1)
+    do {
+        sleep(waitPeriod)
+        GetTaskResponse taskStatus = client.tasks()
+                .get(getTaskRequest, RequestOptions.DEFAULT)
+                .orElseThrow(() -> new IllegalStateException("Failed to retrieve task with id=$taskId"))
+        if (taskStatus.isCompleted()) {
+            return
+        }
+        println "Waiting for reindex task for index '$indexName' to be completed"
+        waitPeriod = Math.min(waitPeriod * 2, maxWaitPeriodMillis)
+    } while (true)
+}
+
+def reindex(RestHighLevelClient client, String alias, String indexName) {
     println "Reindexing index '${indexName}'"
+
+    if (indexName.contains(REINDEXED)) {
+        println "Index '${indexName}' already upgraded. Skipping..."
+        return
+    }
+
     String[] tokens = indexName.split("_v")
     if (tokens.length != 2) {
         println "Could not find current version for index: ${indexName}. Skipping..."
         return
     }
-    String alias = tokens[0]
     int currentVersion = Integer.parseInt(tokens[1])
 
     // create a new index
     String newVersion = "_v" + (currentVersion + 1)
-    String newIndexName = "${alias}${newVersion}"
+    String newIndexName = "${alias}${REINDEXED}${newVersion}"
     println "Using new version ${newVersion} for index ${indexName}. Alias '${alias}'"
 
     // Reindex
     println "Reindex '${indexName}' -> '${newIndexName}'"
-    BulkByScrollResponse reindexResponse = client.reindex(
-            new ReindexRequest().setSourceIndices(indexName).setDestIndex(newIndexName).setRefresh(true),
-            RequestOptions.DEFAULT)
+    submitReindexAndWait(client, indexName, newIndexName)
 
     // Delete old
     println "Delete old index '${indexName}'"
@@ -236,11 +265,14 @@ def reindex(RestHighLevelClient client, String indexName) {
  */
 def reindexAll(esClient, optionValues) {
     // TODO: Review this and add username/password ?
-    String esUrl = "${getESUrl(optionValues)}/_cat/indices?h=index"
+    String esUrl = "${getESUrl(optionValues)}/_cat/aliases?h=alias,index"
     def indices = esUrl.toURL().readLines()
     println "Prepare to reindex ${indices.size()} indices"
     println "Create ElasticSearch client"
-    indices.each { indexName -> reindex(esClient, indexName) }
+    indices.each { aliasIndexString ->
+        String[] aliasIndex = aliasIndexString.split('\\s+')
+        reindex(esClient, aliasIndex[0], aliasIndex[1])
+    }
     println "All indices reindex complete"
 }
 
@@ -264,17 +296,25 @@ def upgradeSearch(Path targetFolder, Map optionValues) {
         RestHighLevelClient esClient = createESClient(optionValues)
         if (waitForES(esClient, optionValues)) {
             println "ES cluster started. Preparing to reindex"
+            ZonedDateTime start = ZonedDateTime.now()
             reindexAll(esClient, optionValues)
+            ZonedDateTime end = ZonedDateTime.now()
+            double durationSeconds = start.until(end, ChronoUnit.MILLIS) / 1000.0
+            println "Reindex finished in ${String.format("%.3f", durationSeconds)} seconds"
         } else {
             println "ES cluster did not start properly. Review configs and start timeout"
         }
     } finally {
-        println "End process. Stop Elasticsearch"
-        if (esProcess) {
-            esProcess.destroy()
+        if (esProcess && esProcess.isAlive()) {
+            if (optionValues['stay-alive']){
+                println "'stay-alive' flag on, waiting for parent process to be stopped"
+                esProcess.waitFor()
+            } else {
+                println "End process. Stop Elasticsearch"
+                esProcess.destroy()
+            }
         }
     }
-
     println "========================================================================"
     println "Search upgrade completed"
     println "========================================================================"
@@ -297,7 +337,7 @@ if (options) {
 
     Map optionValues = typedOptions.values()
         .collectEntries {
-            [(it.longOpt): (options.hasOption(it) ? options[it] : it.defaultValue())]
+            [(it.longOpt): (options.hasOption(it) ? options.getProperty(it.longOpt) : it.defaultValue())]
         }
 
     if (options.getProperty('password-prompt')){
@@ -314,4 +354,5 @@ if (options) {
     } else {
         exitWithError(cli, 'No <target-installation-path> was specified')
     }
+    System.exit(0)
 }
