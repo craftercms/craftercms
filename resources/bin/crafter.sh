@@ -18,10 +18,10 @@
 REQUIRED_JAVA_VERSION=17
 REQUIRED_GIT_VERSION=2.15.0
 
-################################################ COMMONS ###############################################################
+################################################ GLOBALS ###############################################################
+OPERATING_SYSTEM=""
 
-# trap ctrl-c and call ctrl_c()
-trap ctrl_c INT SIGTERM
+################################################ COMMONS ###############################################################
 
 cecho () {
 
@@ -106,6 +106,32 @@ function preFlightCheck() {
 		cecho "git user.email is not set, setting default 'evalgit@example.com'\n" "warning"
 		git config --global user.email "evalgit@example.com"
 	fi
+
+	# Check if the operating system is Mac or Windows, then check for Docker
+	unameOut="$(uname -s)"
+  case "${unameOut}" in
+      Linux*)     OPERATING_SYSTEM=Linux;;
+      Darwin*)    OPERATING_SYSTEM=Mac;;
+      CYGWIN*)    OPERATING_SYSTEM=Cygwin;;
+      MINGW*)     OPERATING_SYSTEM=MinGw;;
+      *)          OPERATING_SYSTEM="UNKNOWN:${unameOut}"
+  esac
+  #OPERATING_SYSTEM="Mac" # TODO Remove this line
+  if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+    cecho "Operating system is $OPERATING_SYSTEM, must use Docker to run OpenSearch.\n" "warning"
+    cecho "Running in this mode is for development purposes only.\n" "warning"
+    cecho "Press any key to continue...\n" "strong"
+    read -n 1 -s
+    if ! type -p docker 2>&1 > /dev/null; then
+      cecho "Unable to find Docker which is required for this operating system, please install Docker, aborting.\n" "error"
+      exit -1
+    fi
+  fi
+
+  if isTailTomcat "$@"; then
+    # trap ctrl-c and call ctrl_c()
+    trap ctrl_c INT SIGTERM
+  fi
 }
 
 # Kill a process given a PID
@@ -740,12 +766,6 @@ fi
 export CRAFTER_BIN_DIR=${CRAFTER_BIN_DIR:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
 export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
 
-# Check if OS is macOS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  # Remove com.apple.quarantine flag for OpenSearch files
-  xattr -rd com.apple.quarantine "$CRAFTER_BIN_DIR/opensearch"
-fi
-
 # Set up the environment
 source "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
@@ -861,7 +881,13 @@ function startSearch() {
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
-    runTask $executable
+    if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+      mkdir -p SEARCH_INDEXES_DIR
+      DOCKER_ID=$(docker run -p 9201:9200 -p 9600:9600 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v $SEARCH_INDEXES_DIR:/usr/share/opensearch/data/ -d opensearchproject/opensearch:2.6.0)
+      echo $DOCKER_ID > $SEARCH_PID
+    else
+        runTask $executable
+    fi
   fi
 }
 
@@ -885,8 +911,13 @@ function debugSearch() {
 }
 
 function stopSearch() {
-  pid=$(cat "$SEARCH_PID" 2>/dev/null)
-	stopModule "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID" "kill \$0" "$pid"
+  if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+   	banner "Stop Search"
+    docker stop $(cat $SEARCH_PID)
+  else
+    pid=$(cat "$SEARCH_PID" 2>/dev/null)
+  	stopModule "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID" "kill \$0" "$pid"
+  fi
 }
 
 function searchStatus() {
@@ -1091,24 +1122,35 @@ function debug() {
   printTailInfo
 }
 
+isServiceRunning() {
+  SERVICE_PORT=$1
+
+  if [[ $( ss -pant4H "( sport = $SERVICE_PORT )"|grep $SERVICE_PORT ) ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
 function stop() {
   stopTomcat
-  if [ ! -z "$(getPidByPort $MONGODB_PORT)" ]; then
+  if isServiceRunning $MONGODB_PORT; then
      stopMongoDB
   fi
   stopDeployer
-  if [ ! -z "$(getPidByPort $SEARCH_PORT)" ]; then
+#  if [ ! -z "$(getPidByPort $SEARCH_PORT)" ]; then
+   if isServiceRunning $SEARCH_PORT; then
     stopSearch
   fi
 }
 
 function ctrl_c() {
   stopTomcat
-  if [ ! -z "$(getPidByPort $MONGODB_PORT)" ]; then
+  if isServiceRunning $MONGODB_PORT; then
      stopMongoDB
   fi
   stopDeployer
-  if [ ! -z "$(getPidByPort $SEARCH_PORT)" ]; then
+  if isServiceRunning $SEARCH_PORT; then
     stopSearch
   fi
 }
