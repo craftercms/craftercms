@@ -117,7 +117,7 @@ function preFlightCheck() {
       MINGW*)     OPERATING_SYSTEM=MinGw;;
       *)          OPERATING_SYSTEM="UNKNOWN:${unameOut}"
   esac
-  #OPERATING_SYSTEM="Mac" # TODO Remove this line
+
   if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
     cecho "Operating system is $OPERATING_SYSTEM, must use Docker to run OpenSearch.\n" "warning"
     cecho "Running in this mode is for development purposes only.\n" "warning"
