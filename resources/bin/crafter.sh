@@ -15,11 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################################################################
+################################################ GLOBALS ###############################################################
 REQUIRED_JAVA_VERSION=17
 REQUIRED_GIT_VERSION=2.15.0
-
-################################################ GLOBALS ###############################################################
-OPERATING_SYSTEM=""
 
 ################################################ COMMONS ###############################################################
 
@@ -49,8 +47,18 @@ cecho () {
     fi
 }
 
+function isTailTomcat() {
+  for o in "$@"; do
+    if [ "$o" = "tailTomcat" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 # shellcheck disable=SC2120
 function preFlightCheck() {
+  cecho "Preflight check.\n" "info"
 	# Check Java version
 	if type -p java 2>&1 > /dev/null; then
 		_java=java
@@ -97,26 +105,16 @@ function preFlightCheck() {
 	fi
 
 	# Check if git has user.name and user.email configured
-	git config --global user.name
+	git config --global user.name 2>&1 > /dev/null
 	if ! [ $? -eq 0 ]; then
 		cecho "git user.name is not set, setting default 'git_repo_user'\n" "warning"
 		git config --global user.name "git_repo_user"
 	fi
-	git config --global user.email
+	git config --global user.email 2>&1 > /dev/null
 	if ! [ $? -eq 0 ]; then
 		cecho "git user.email is not set, setting default 'evalgit@example.com'\n" "warning"
 		git config --global user.email "evalgit@example.com"
 	fi
-
-	# Check if the operating system is Mac or Windows, then check for Docker
-	unameOut="$(uname -s)"
-  case "${unameOut}" in
-      Linux*)     OPERATING_SYSTEM=Linux;;
-      Darwin*)    OPERATING_SYSTEM=Mac;;
-      CYGWIN*)    OPERATING_SYSTEM=Cygwin;;
-      MINGW*)     OPERATING_SYSTEM=MinGw;;
-      *)          OPERATING_SYSTEM="UNKNOWN:${unameOut}"
-  esac
 
   if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
     cecho "Operating system is $OPERATING_SYSTEM, must use Docker to run OpenSearch.\n" "warning"
@@ -127,11 +125,6 @@ function preFlightCheck() {
       cecho "Unable to find Docker which is required for this operating system, please install Docker, aborting.\n" "error"
       exit -1
     fi
-  fi
-
-  if isTailTomcat "$@"; then
-    # trap ctrl-c and call ctrl_c()
-    trap ctrl_c INT SIGTERM
   fi
 }
 
@@ -746,30 +739,6 @@ function doUpgradeDB() {
   fi
 }
 
-########################################################################################################################
-################################################## MAIN ################################################################
-
-# Do not run as root
-if [ "$(whoami)" == "root" ]; then
-  cecho "CrafterCMS cowardly refuses to run as root.\nRunning as root is dangerous and is not supported.\n" "error"
-
-  exit 1
-fi
-
-# Do not run on 32-bit arch
-OSARCH=$(getconf LONG_BIT)
-if [[ $OSARCH -eq "32" ]]; then
-  cecho "CrafterCMS is not supported on 32-bit architecture\n" "error"
-  exit 5
-fi
-
-# Export our coordinates
-export CRAFTER_BIN_DIR=${CRAFTER_BIN_DIR:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
-export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
-
-# Set up the environment
-source "$CRAFTER_BIN_DIR/crafter-setenv.sh"
-
 # Help for those who need it
 function help() {
   cecho "$(basename $BASH_SOURCE)\n\n" "strong"
@@ -1079,18 +1048,9 @@ function mongoDbStatus() {
 
 # Display instructions for tailing logs
 function tailTomcatLog() {
-    #tail -n 100 -F "$CRAFTER_LOGS_DIR"/tomcat/catalina.out
-    wait -n
+    tail -n 100 -F "$CRAFTER_LOGS_DIR"/tomcat/catalina.out
+    # wait -n # TODO Look into this as an option
     stop
-}
-
-function isTailTomcat() {
-  for o in "$@"; do
-    if [ "$o" = "tailTomcat" ]; then
-      return 0
-    fi
-  done
-  return 1
 }
 
 function start() {
@@ -1146,6 +1106,7 @@ function stop() {
 }
 
 function ctrl_c() {
+  cecho "Term signal detected, stopping services...\n" "strong"
   stopTomcat
   if isServiceRunning $MONGODB_PORT; then
      stopMongoDB
@@ -1176,122 +1137,167 @@ function status() {
   fi
 }
 
+function runCmd() {
+  case $1 in
+    debug)
+      splash
+      debug "$@"
+    ;;
+    start)
+      splash
+      start "$@"
+    ;;
+    stop)
+      splash
+      stop $2
+    ;;
+    debug_deployer)
+      splash
+      debugDeployer
+    ;;
+    start_deployer)
+      splash
+      startDeployer
+    ;;
+    stop_deployer)
+      splash
+      stopDeployer
+    ;;
+    start_search)
+      splash
+      startSearch
+    ;;
+    debug_search)
+      splash
+      debugSearch
+    ;;
+    stop_search)
+      splash
+      stopSearch
+    ;;
+    debug_tomcat)
+      splash
+      debugTomcat
+    ;;
+    start_tomcat)
+      splash
+      startTomcat start
+    ;;
+    stop_tomcat)
+      splash
+      stopTomcat
+    ;;
+    start_mongodb)
+      splash
+      startMongoDB
+    ;;
+    stop_mongodb)
+      splash
+      stopMongoDB
+    ;;
+    status)
+      status
+    ;;
+    backup)
+      doBackup $2
+    ;;
+    restore)
+      doRestore $2
+    ;;
+    upgradedb)
+      doUpgradeDB $2
+    ;;
+    status_engine)
+      engineStatus
+    ;;
+    status_studio)
+      studioStatus
+    ;;
+    status_profile)
+      profileStatus
+    ;;
+    status_social)
+      socialStatus
+    ;;
+    status_deployer)
+      deployerStatus
+    ;;
+    status_search)
+      searchStatus
+    ;;
+    status_mongodb)
+      mongoDbStatus
+    ;;
+    status_mariadb)
+      mariadbStatus
+    ;;
+    --v | --version)
+      version
+    ;;
+    # Deprecated options, to be removed
+    start_elasticsearch)
+      splash
+      startSearch
+    ;;
+    debug_elasticsearch)
+      splash
+      debugSearch
+    ;;
+    stop_elasticsearch)
+      splash
+      stopSearch
+    ;;
+    status_elasticsearch)
+      searchStatus
+    ;;
+    *)
+      help
+    ;;
+  esac
+}
+
+########################################################################################################################
+################################################## MAIN ################################################################
+
+# Do not run as root
+if [ "$(whoami)" == "root" ]; then
+  cecho "CrafterCMS cowardly refuses to run as root.\nRunning as root is dangerous and is not supported.\n" "error"
+
+  exit 1
+fi
+
+# Do not run on 32-bit arch
+OSARCH=$(getconf LONG_BIT)
+if [[ $OSARCH -eq "32" ]]; then
+  cecho "CrafterCMS is not supported on 32-bit architecture\n" "error"
+  exit 5
+fi
+
+# Check if the operating system is Mac or Windows, then check for Docker
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     OPERATING_SYSTEM=Linux;;
+    Darwin*)    OPERATING_SYSTEM=Mac;;
+    CYGWIN*)    OPERATING_SYSTEM=Cygwin;;
+    MINGW*)     OPERATING_SYSTEM=MinGw;;
+    *)          OPERATING_SYSTEM="UNKNOWN:${unameOut}"
+esac
+
+# Export our coordinates
+export CRAFTER_BIN_DIR=${CRAFTER_BIN_DIR:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
+export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
+
+# Set up the environment
+source "$CRAFTER_BIN_DIR/crafter-setenv.sh"
+
 preFlightCheck
 
-case $1 in
-  debug)
-    splash
-    debug "$@"
-  ;;
-  start)
-    splash
-    start "$@"
-  ;;
-  stop)
-    splash
-    stop $2
-  ;;
-  debug_deployer)
-    splash
-    debugDeployer
-  ;;
-  start_deployer)
-    splash
-    startDeployer
-  ;;
-  stop_deployer)
-    splash
-    stopDeployer
-  ;;
-  start_search)
-    splash
-    startSearch
-  ;;
-  debug_search)
-    splash
-    debugSearch
-  ;;
-  stop_search)
-    splash
-    stopSearch
-  ;;
-  debug_tomcat)
-    splash
-    debugTomcat
-  ;;
-  start_tomcat)
-    splash
-    startTomcat start
-  ;;
-  stop_tomcat)
-    splash
-    stopTomcat
-  ;;
-  start_mongodb)
-    splash
-    startMongoDB
-  ;;
-  stop_mongodb)
-    splash
-    stopMongoDB
-  ;;
-  status)
-    status
-  ;;
-  backup)
-    doBackup $2
-  ;;
-  restore)
-    doRestore $2
-  ;;
-  upgradedb)
-    doUpgradeDB $2
-  ;;
-  status_engine)
-    engineStatus
-  ;;
-  status_studio)
-    studioStatus
-  ;;
-  status_profile)
-    profileStatus
-  ;;
-  status_social)
-    socialStatus
-  ;;
-  status_deployer)
-    deployerStatus
-  ;;
-  status_search)
-    searchStatus
-  ;;
-  status_mongodb)
-    mongoDbStatus
-  ;;
-  status_mariadb)
-    mariadbStatus
-  ;;
-  --v | --version)
-    version
-  ;;
-  # Deprecated options, to be removed
-  start_elasticsearch)
-    splash
-    startSearch
-  ;;
-  debug_elasticsearch)
-    splash
-    debugSearch
-  ;;
-  stop_elasticsearch)
-    splash
-    stopSearch
-  ;;
-  status_elasticsearch)
-    searchStatus
-  ;;
-  *)
-    help
-  ;;
-esac
+if isTailTomcat "$@"
+then
+  # trap ctrl-c and call ctrl_c()
+  cecho "Running with tailing Tomcat logs on, press Ctrl+C to stop.\n" "strong"
+  trap ctrl_c INT SIGTERM
+fi
+
+runCmd "$@"
 ########################################################################################################################
