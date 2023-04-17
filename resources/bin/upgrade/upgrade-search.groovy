@@ -53,7 +53,6 @@ import org.apache.http.HttpHost
 import org.apache.http.client.CredentialsProvider
 import org.apache.http.impl.client.BasicCredentialsProvider
 import org.apache.http.auth.AuthScope
-import org.apache.http.auth.UsernamePasswordCredentials
 import org.apache.commons.lang3.StringUtils
 
 ES_VERSION = '7.10.0'
@@ -68,9 +67,6 @@ REINDEXED = '_reindexed_710'
 def static buildCli(CliBuilder cli) {
     cli.setStopAtNonOption(false)
     cli.h(longOpt: 'help', 'Show usage information')
-    cli.u(longOpt: 'username', args: 1, argName: 'username', 'Elasticsearch username')
-    cli._(longOpt: 'password-prompt', argName: 'passPrompt', 'Flag to indicate that ES password should be read from stdin')
-    cli._(longOpt: 'password', args: 1, argName: 'password', 'Elasticsearch password')
     cli._(longOpt: 'port', args: 1, argName: 'port', defaultValue: '9201', 'Elasticsearch port to use for upgrade ES temporary instance')
     cli._(longOpt: 'status-retries', args: 1, argName: 'max status retries', defaultValue: '5', type: Integer.class, 'How many times to try to get a yellow status from the ES cluster (waiting 10s between retries)')
     cli._(longOpt: 'status-timeout', args: 1, argName: 'seconds', defaultValue: 60, type: Integer.class, 'Timeout in seconds for the status check of the ES cluster')
@@ -184,13 +180,6 @@ RestHighLevelClient createESClient(Map optionValues, int connectTimeout = 0, int
     HttpHost[] hosts = Stream.of(serverUrls).map(HttpHost::create).toArray(HttpHost[]::new)
     RestClientBuilder clientBuilder = RestClient.builder(hosts)
     RestClientBuilder.HttpClientConfigCallback httpClientConfigCallback = builder -> {
-        String username = optionValues.username
-        String password = optionValues.password
-        if (StringUtils.isNoneEmpty(username, password)) {
-            CredentialsProvider credentialsProvider = new BasicCredentialsProvider()
-            credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password))
-            builder.setDefaultCredentialsProvider(credentialsProvider)
-        }
         return builder
     }
 
@@ -264,11 +253,9 @@ def reindex(RestHighLevelClient client, String alias, String indexName) {
  * Reindex all existing indices
  */
 def reindexAll(esClient, optionValues) {
-    // TODO: Review this and add username/password ?
     String esUrl = "${getESUrl(optionValues)}/_cat/aliases?h=alias,index"
     def indices = esUrl.toURL().readLines()
     println "Prepare to reindex ${indices.size()} indices"
-    println "Create ElasticSearch client"
     indices.each { aliasIndexString ->
         String[] aliasIndex = aliasIndexString.split('\\s+')
         reindex(esClient, aliasIndex[0], aliasIndex[1])
@@ -284,7 +271,7 @@ def upgradeSearch(Path targetFolder, Map optionValues) {
     println "Search upgrade started"
     println "========================================================================"
     String fileName = "elasticsearch-${ES_VERSION}-linux-x86_64.tar.gz"
-//    downloadES(Paths.get(fileName))
+    downloadES(Paths.get(fileName))
     Process esProcess = null
     try {
         esProcess = startES7(targetFolder, optionValues)
@@ -339,11 +326,6 @@ if (options) {
         .collectEntries {
             [(it.longOpt): (options.hasOption(it) ? options.getProperty(it.longOpt) : it.defaultValue())]
         }
-
-    if (options.getProperty('password-prompt')){
-        def password = System.console().readPassword 'Enter ES password:'
-        optionValues.put('password', password)
-    }
 
     // Parse the options and arguments
     def extraArguments = options.arguments()
