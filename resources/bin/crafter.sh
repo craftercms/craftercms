@@ -49,6 +49,7 @@ cecho () {
     fi
 }
 
+# shellcheck disable=SC2120
 function preFlightCheck() {
 	# Check Java version
 	if type -p java 2>&1 > /dev/null; then
@@ -96,12 +97,12 @@ function preFlightCheck() {
 	fi
 
 	# Check if git has user.name and user.email configured
-	git_config=$( git config --global user.name )
+	git config --global user.name
 	if ! [ $? -eq 0 ]; then
 		cecho "git user.name is not set, setting default 'git_repo_user'\n" "warning"
 		git config --global user.name "git_repo_user"
 	fi
-	git_config=$( git config --global user.email )
+	git config --global user.email
 	if ! [ $? -eq 0 ]; then
 		cecho "git user.email is not set, setting default 'evalgit@example.com'\n" "warning"
 		git config --global user.email "evalgit@example.com"
@@ -149,10 +150,10 @@ function killProcess() {
   # Check if the process is still alive, poll it for a while before killing it
   # The loop is structured to give the process 2 seconds if it doesn't stop right away
   # Maximum wait is 20 seconds before kill -9
-  if $(ps -p "$pid" > /dev/null); then
+  if ps -p "$pid" > /dev/null; then
     for i in $(seq 1 10); do
       sleep 2 # wait and then check
-      if ! $(ps -p "$pid" > /dev/null); then
+      if ! ps -p "$pid" > /dev/null; then
         # We're done, the process has terminated, break out
         break
       fi
@@ -160,7 +161,7 @@ function killProcess() {
     done
 
     # If the process is still running, kill it with -9
-    if $(ps -p "$pid" > /dev/null); then
+    if ps -p "$pid" > /dev/null; then
       cecho "Process $pid failed to stop gracefully, issuing kill -9\n" "warning"
       kill -9 "$pid"
     fi
@@ -198,7 +199,7 @@ function prepareModule() {
 	foldersToCreate=$2
 	operation=$3
 
-	cd $CRAFTER_BIN_DIR
+	cd "$CRAFTER_BIN_DIR"
 
 	banner "$operation $module"
 
@@ -212,7 +213,7 @@ function checkIfModuleIsRunning() {
 	pidFile=$3
 	result=0
 
-	cd $CRAFTER_BIN_DIR
+	cd "$CRAFTER_BIN_DIR"
 
   ################## LOGIC ##################
   # Get PID for the port we want
@@ -248,7 +249,7 @@ function stopModule() {
 	executable=$4
 	executable_args=$5
 
-	cd $CRAFTER_BIN_DIR
+	cd "$CRAFTER_BIN_DIR"
 
 	banner "Stop $module"
 
@@ -344,7 +345,7 @@ function exitIfPortInUse() {
 	# get PID of process holding the port
 	pid=$( getPidByPort "$port" )
 	# if the process holding the port is not the one in PID file, fail
-	if ! [ "$pid"==$( cat "$pidFile" ) ]; then
+	if ! [ "$pid" == $( cat "$pidFile" ) ]; then
 		# A process holding the port we need, inform the user and exit
 		cecho " Port $port is in use by another process with PID $pid\n Please shutdown process with PID $pid and try again\n" "error"
 		exit 6
@@ -440,16 +441,16 @@ function doBackup() {
     if [ -z $(getPidByPort "$MARIADB_PORT") ]; then
       mkdir -p "$CRAFTER_BIN_DIR/dbms"
       banner "Starting DB"
-      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-      $CRAFTER_BIN_DIR/wait-for-it.sh -h "$MARIADB_HOST" -p "$MARIADB_PORT" -t $MARIADB_TCP_TIMEOUT
+      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" "$CRAFTER_BIN_DIR"/mariaDB4j-app.jar &
+      "$CRAFTER_BIN_DIR"/wait-for-it.sh -h "$MARIADB_HOST" -p "$MARIADB_PORT" -t $MARIADB_TCP_TIMEOUT
       DB_STARTED=true
     fi
 
     #Do dump
     banner "Backing up embedded DB"
     export MYSQL_PWD=$MARIADB_ROOT_PASSWD
-    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
-    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
+    "$CRAFTER_BIN_DIR"/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
+    "$CRAFTER_BIN_DIR"/dbms/bin/mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
     abortOnError
 
     if [ "$DB_STARTED" = true ]; then
@@ -472,7 +473,7 @@ function doBackup() {
 
     banner "Backing up MongoDB"
 
-    $MONGODB_HOME/bin/mongodump --port $MONGODB_PORT --out "$tempFolder/mongodb"
+    "$MONGODB_HOME"/bin/mongodump --port $MONGODB_PORT --out "$tempFolder/mongodb"
     abortOnError
 
     CURRENT_DIR=$(pwd)
@@ -481,7 +482,7 @@ function doBackup() {
     runCmd "tar cvf \"$tempFolder/mongodb.tar\" ."
     abortOnError
 
-    cd $CURRENT_DIR
+    cd "$CURRENT_DIR"
     rm -r "$tempFolder/mongodb"
 
     if [ "$MONGODB_STARTED" = true ]; then
@@ -771,8 +772,6 @@ source "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
 # Help for those who need it
 function help() {
-  # TODO: Review and redo
-
   cecho "$(basename $BASH_SOURCE)\n\n" "strong"
   cecho "    start [withMongoDB] [skipSearch] [skipMongoDB] [tailTomcat], Starts Tomcat, Deployer and OpenSearch.
              If withMongoDB is specified MongoDB will be started,
@@ -906,14 +905,20 @@ function debugSearch() {
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
-    bash -c "$envVars; $executable"
+        if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+          mkdir -p SEARCH_INDEXES_DIR
+          DOCKER_ID=$(docker run -p 9201:9200 -p 9600:9600 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v $SEARCH_INDEXES_DIR:/usr/share/opensearch/data/ -d opensearchproject/opensearch:2.6.0)
+          echo $DOCKER_ID > $SEARCH_PID
+        else
+            bash -c "$envVars; $executable"
+        fi
   fi
 }
 
 function stopSearch() {
   if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
    	banner "Stop Search"
-    docker stop $(cat $SEARCH_PID)
+    docker stop $(cat $SEARCH_PID) 2>&1 > /dev/null
   else
     pid=$(cat "$SEARCH_PID" 2>/dev/null)
   	stopModule "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID" "kill \$0" "$pid"
@@ -1080,14 +1085,11 @@ function tailTomcatLog() {
 }
 
 function isTailTomcat() {
-  cecho "Looping through the params: $@\n" "strong"
   for o in "$@"; do
-    if [ $o = "tailTomcat" ]; then
-      cecho "Found tailTomcat param\n" "strong"
+    if [ "$o" = "tailTomcat" ]; then
       return 0
     fi
   done
-  cecho "Did not find tailTomcat param\n" "strong"
   return 1
 }
 
