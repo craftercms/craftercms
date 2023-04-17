@@ -1127,7 +1127,7 @@ function debug() {
 isServiceRunning() {
   SERVICE_PORT=$1
 
-  if [[ $( ss -pant4H "( sport = $SERVICE_PORT )"|grep $SERVICE_PORT ) ]]; then
+  if [[ $( ss -pantH "( sport = $SERVICE_PORT )" | grep $SERVICE_PORT ) ]]; then
     return 0
   else
     return 1
@@ -1140,8 +1140,7 @@ function stop() {
      stopMongoDB
   fi
   stopDeployer
-#  if [ ! -z "$(getPidByPort $SEARCH_PORT)" ]; then
-   if isServiceRunning $SEARCH_PORT; then
+  if isServiceRunning $SEARCH_PORT; then
     stopSearch
   fi
 }
