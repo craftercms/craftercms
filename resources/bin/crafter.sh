@@ -1107,7 +1107,7 @@ function start() {
   printTailInfo
 
   if isTailTomcat "$@"; then
-    cecho "Tailing Tomcat log\n" "strong"
+    cecho "Tailing the Tomcat log.\n" "strong"
     tailTomcatLog
   fi
 }
