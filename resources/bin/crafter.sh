@@ -1087,7 +1087,7 @@ function debug() {
 isServiceRunning() {
   SERVICE_PORT=$1
 
-  if [[ $( ss -pantH "( sport = $SERVICE_PORT )" | grep $SERVICE_PORT ) ]]; then
+  if [[ $( lsof -nP -iTCP:$SERVICE_PORT ) ]]; then
     return 0
   else
     return 1
