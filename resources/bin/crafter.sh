@@ -120,7 +120,7 @@ function preFlightCheck() {
     cecho "Operating system is $OPERATING_SYSTEM, must use Docker to run OpenSearch.\n" "warning"
     cecho "Running in this mode is for development purposes only.\n" "warning"
     cecho "Press any key to continue...\n" "strong"
-    read -n 1 -s
+    read -t 5
     if ! type -p docker 2>&1 > /dev/null; then
       cecho "Unable to find Docker which is required for this operating system, please install Docker, aborting.\n" "error"
       exit -1
