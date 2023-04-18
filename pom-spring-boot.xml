@@ -40,7 +40,7 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-    
+
 	<developers>
 	        <developer>
         	    <id>sumerjabri</id>
@@ -58,7 +58,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.1</version>
+		<version>3.0.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -79,23 +79,23 @@
 		<snakeyaml.version>1.33</snakeyaml.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
-		<jackson.version>2.13.4</jackson.version>
-		<jackson.databind.version>2.13.4</jackson.databind.version>
+		<jackson.version>2.14.2</jackson.version>
+		<jackson.databind.version>2.14.2</jackson.databind.version>
 		<aws.version>1.12.139</aws.version>
 		<box.sdk.version>2.58.0</box.sdk.version>
 		<opensearch.version>2.6.0</opensearch.version>
 		<opensearch.client.version>2.2.0</opensearch.client.version>
-		<tomcat.version>9.0.71</tomcat.version>
+		<tomcat.version>10.1.7</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
-		<groovy.version>3.0.14</groovy.version>
+		<groovy.version>4.0.11</groovy.version>
 		<apache.ivy>2.5.1</apache.ivy>
-		<log4j2.version>2.18.0</log4j2.version>
+		<log4j2.version>2.19.0</log4j2.version>
 
 		<!-- build -->
 		<maven.javadoc.version>3.5.0</maven.javadoc.version>
 		<maven.source.version>3.2.1</maven.source.version>
 		<maven.jar.version>3.2.0</maven.jar.version>
-		<buildnumber.maven.version>1.4</buildnumber.maven.version>
+		<buildnumber.maven.version>3.0.0</buildnumber.maven.version>
 		<maven.deploy.version>3.0.0-M1</maven.deploy.version>
 		<maven.gpg.version>1.6</maven.gpg.version>
 		<maven.antrun.version>1.8</maven.antrun.version>
@@ -169,6 +169,7 @@
                                         <plugin>
                                                 <groupId>org.codehaus.mojo</groupId>
                                                 <artifactId>buildnumber-maven-plugin</artifactId>
+                                                <version>${buildnumber.maven.version}</version>
                                         </plugin>
                                         <plugin>
                                                 <groupId>org.apache.maven.plugins</groupId>
