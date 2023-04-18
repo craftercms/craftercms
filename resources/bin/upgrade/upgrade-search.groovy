@@ -293,7 +293,7 @@ def upgradeSearch(Path targetFolder, Map optionValues) {
         }
     } finally {
         if (esProcess && esProcess.isAlive()) {
-            if (optionValues['stay-alive']){
+            if (optionValues['stay-alive']) {
                 println "'stay-alive' flag on, waiting for parent process to be stopped"
                 esProcess.waitFor()
             } else {
