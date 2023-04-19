@@ -15,45 +15,41 @@
  */
 package upgrade.hooks
 
+@Grapes(
+    @Grab(group='com.vdurmont', module='semver4j', version='3.1.0')
+)
+
 import java.nio.file.Path
+import com.vdurmont.semver4j.Semver
+import upgrade.exceptions.UpgradeException
 
 class PostUpgradeHooks {
 
     private static final List<PostUpgradeHooks> AUTHORING_3_1_X_NO_DB_HOOKS = [
-            new StartCrafterHook(),
-            new RecreateIndexesHook(),
-            new PostUpgradeCompletedHook(true)
+            new PostUpgradeCompletedHook(false)
     ]
 
     private static final List<PostUpgradeHooks> AUTHORING_3_1_X_WITH_DB_HOOKS = [
             new UpgradeEmbeddedDbHook(),
-            new StartCrafterHook(),
-            new RecreateIndexesHook(),
-            new PostUpgradeCompletedHook(true)
+            new PostUpgradeCompletedHook(false)
     ]
 
     private static final List<PostUpgradeHooks> DELIVERY_3_1_X_HOOKS = [
-            new StartCrafterHook(),
-            new RecreateIndexesHook(),
-            new PostUpgradeCompletedHook(true)
+            new PostUpgradeCompletedHook(false)
     ]
 
-    private static final Map<String, List<PostUpgradeHook>> ALL_HOOKS = [
-
-            'authoring 3.1.9' : AUTHORING_3_1_X_WITH_DB_HOOKS,
-            'authoring 3.1.12': AUTHORING_3_1_X_WITH_DB_HOOKS,
-            'authoring 3.1.13': AUTHORING_3_1_X_WITH_DB_HOOKS,
-            'authoring 3.1.17': AUTHORING_3_1_X_NO_DB_HOOKS,
-            'authoring 3.1.18': AUTHORING_3_1_X_NO_DB_HOOKS,
-
-            'delivery 3.1.9' : DELIVERY_3_1_X_HOOKS,
-            'delivery 3.1.12': DELIVERY_3_1_X_HOOKS,
-            'delivery 3.1.13': DELIVERY_3_1_X_HOOKS,
-            'delivery 3.1.17': DELIVERY_3_1_X_HOOKS,
-            'delivery 3.1.18': DELIVERY_3_1_X_HOOKS,
-
-            '*': [
-                    new PostUpgradeCompletedHook(false)
+    private static final Map ALL_HOOKS = [
+            'authoring': [
+                    '3.1.9' : AUTHORING_3_1_X_WITH_DB_HOOKS,
+                    '3.1.12': AUTHORING_3_1_X_WITH_DB_HOOKS,
+                    '3.1.13': AUTHORING_3_1_X_WITH_DB_HOOKS,
+                    '>=3.1.17': AUTHORING_3_1_X_NO_DB_HOOKS
+                    ],
+            'delivery': [
+                    '3.1.9' : DELIVERY_3_1_X_HOOKS,
+                    '3.1.12': DELIVERY_3_1_X_HOOKS,
+                    '3.1.13': DELIVERY_3_1_X_HOOKS,
+                    '>=3.1.17': DELIVERY_3_1_X_HOOKS
             ]
     ]
 
@@ -72,7 +68,7 @@ class PostUpgradeHooks {
         this.newVersion = newVersion
         this.environment = environment
 
-        resolveHooks()
+        hooks = resolveHooks()
     }
 
     def execute() {
@@ -85,17 +81,20 @@ class PostUpgradeHooks {
         }
     }
 
-    private def resolveHooks() {
-        hooks = ALL_HOOKS["${environment} ${oldVersion} -> ${newVersion}".toString()]
-        if (!hooks) {
-            hooks = ALL_HOOKS["${environment} ${oldVersion}".toString()]
-            if (!hooks) {
-                hooks = ALL_HOOKS["${oldVersion}".toString()]
-                if (!hooks) {
-                    hooks = ALL_HOOKS['*']
-                }
-            }
+    private List<PostUpgradeHook> resolveHooks() {
+        def envHooks = ALL_HOOKS[environment]
+        // NPM mode to support ranges
+        // withClearedSuffixAndBuild() because only major.minor.patch can be properly compared
+        var semverOldVersion = new Semver(oldVersion, Semver.SemverType.NPM).withClearedSuffixAndBuild();
+        var hooksEntry = envHooks?.find { version, versionHooks ->
+            semverOldVersion.satisfies(version)
         }
+        if (hooksEntry) {
+            println "Found hooks match for version ${hooksEntry.key}"
+            return hooksEntry.value
+        }
+
+        throw new UpgradeException("Upgrade path not supported from ${oldVersion} to ${newVersion}")
     }
 
 }

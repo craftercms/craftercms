@@ -26,11 +26,8 @@ fi
 
 export UPGRADE_HOME=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export UPGRADE_BIN_DIR=$( cd "$UPGRADE_HOME/.." && pwd )
-#export CRAFTER_HOME=$( cd "$CRAFTER_BIN_DIR/.." && pwd )
 export ENVIRONMENT_NAME="@ENV@"
 export UPGRADE_TMP_DIR="$UPGRADE_HOME/../../temp/upgrade"
-
-#. "$CRAFTER_BIN_DIR/crafter-setenv.sh"
 
 # Execute Groovy scripts
 "$UPGRADE_BIN_DIR/groovy/bin/groovy" -cp "$UPGRADE_BIN_DIR" -Dgrape.root="$UPGRADE_BIN_DIR" "$UPGRADE_HOME/upgrade-search.groovy" "$@"

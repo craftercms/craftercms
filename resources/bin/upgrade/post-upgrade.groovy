@@ -87,14 +87,14 @@ if (options) {
 
     // Parse the options and arguments
     def extraArguments = options.arguments()
-    if (CollectionUtils.isNotEmpty(extraArguments)) {
+    if (CollectionUtils.isNotEmpty(extraArguments) && extraArguments.size() == 3) {
         def oldVersion = extraArguments[0]
         def newVersion = extraArguments[1]
         def environment = extraArguments[2]
 
         postUpgrade(oldVersion, newVersion, environment)
     } else {
-        exitWithError(cli, 'No <target-installation-path> was specified')
+        exitWithError(cli, 'Invalid list of arguments')
     }
 }
 
