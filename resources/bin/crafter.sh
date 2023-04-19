@@ -59,18 +59,33 @@ function isTailTomcat() {
 # shellcheck disable=SC2120
 function preFlightCheck() {
   cecho "Preflight check.\n" "info"
+
+  # Do not run as root
+  if [ "$(whoami)" == "root" ]; then
+    cecho "CrafterCMS cowardly refuses to run as root.\nRunning as root is dangerous and is not supported.\n" "error"
+
+    exit 1
+  fi
+
+  # Do not run on 32-bit arch
+  OSARCH=$(getconf LONG_BIT)
+  if [[ $OSARCH -eq "32" ]]; then
+    cecho "CrafterCMS is not supported on 32-bit architecture\n" "error"
+    exit 2
+  fi
+
 	# Check Java version
-	if type -p java 2>&1 > /dev/null; then
+	if type -p java > /dev/null 2>&1; then
 		_java=java
 	else
 		cecho "Unable to find Java, please install Java version $REQUIRED_JAVA_VERSION and set JAVA_HOME, aborting.\n" "error"
-		exit -1
+		exit 3
 	fi
 
 	version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
 	if [[ ! "$version" = "$REQUIRED_JAVA_VERSION" ]]; then
 		cecho "CrafterCMS requires Java version $REQUIRED_JAVA_VERSION, detected Java with major version $version, aborting.\n" "error"
-		exit -1
+		exit 4
 	fi
 
 	# Check if JAVA_HOME is set, and set to the correct Java version
@@ -78,39 +93,39 @@ function preFlightCheck() {
 		_java_in_javahome="$JAVA_HOME/bin/java"
 	else
 		cecho "JAVA_HOME is not set correctly, please set JAVA_HOME, aborting.\n" "error"
-		exit -1
+		exit 5
 	fi
 	
 	javahome_version=$("$_java_in_javahome" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
 	if [[ ! "$javahome_version" = "$version" ]]; then
 		cecho "The Java version in PATH doesn't match the Java version in JAVA_HOME, this means JAVA_HOME is not pointing to the right Java installation, please set JAVA_HOME to point to the Java version $REQUIRED_JAVA_VERSION and try again, aborting.\n" "error"
-		exit -1
+		exit 6
 	fi
 
 	# Check lsof
-	if ! type -p lsof 2>&1 > /dev/null; then
+	if ! type -p lsof > /dev/null 2>&1; then
 		cecho "lsof command not found, please install 'lsof', aborting.\n" "error"
 	fi
 
 	# Check git
-	if ! type -p git 2>&1 > /dev/null; then
+	if ! type -p git > /dev/null 2>&1; then
 		cecho "Unable to find Git, please install Git version $REQUIRED_GIT_VERSION or higher, aborting.\n" "error"
-		exit -1
+		exit 7
 	fi
 
 	git_version=$(git --version 2>&1 | awk -F ' ' '/version/ {print $3}')
 	if [[ ! "$git_version" > "$REQUIRED_GIT_VERSION" ]]; then
 		cecho "CrafterCMS requires Git version $REQUIRED_GIT_VERSION or higher, detected Git with major version $git_version, aborting.\n" "error"
-		exit -1
+		exit 8
 	fi
 
 	# Check if git has user.name and user.email configured
-	git config --global user.name 2>&1 > /dev/null
+	git config --global user.name > /dev/null 2>&1
 	if ! [ $? -eq 0 ]; then
 		cecho "git user.name is not set, setting default 'git_repo_user'\n" "warning"
 		git config --global user.name "git_repo_user"
 	fi
-	git config --global user.email 2>&1 > /dev/null
+	git config --global user.email > /dev/null 2>&1
 	if ! [ $? -eq 0 ]; then
 		cecho "git user.email is not set, setting default 'evalgit@example.com'\n" "warning"
 		git config --global user.email "evalgit@example.com"
@@ -121,9 +136,9 @@ function preFlightCheck() {
     cecho "Running in this mode is for development purposes only.\n" "warning"
     cecho "Press any key to continue...\n" "strong"
     read -t 5
-    if ! type -p docker 2>&1 > /dev/null; then
+    if ! type -p docker > /dev/null 2>&1; then
       cecho "Unable to find Docker which is required for this operating system, please install Docker, aborting.\n" "error"
-      exit -1
+      exit 9
     fi
   fi
 }
@@ -175,7 +190,7 @@ function isCorrectProcessHoldingPort() {
   result=1
 
   pidOfPort=$(getPidByPort "$port")
-  if [ "$pidOfPort"=="$process" ]; then
+  if [ "$pidOfPort" == "$process" ]; then
     # The process holding the port is ours, this is fine
     result=$pidOfPort
   else
@@ -196,7 +211,7 @@ function prepareModule() {
 
 	banner "$operation $module"
 
-  createFolders "$foldersToCreate"
+  createFolders $foldersToCreate
 }
 
 # Check if a module is already running, or if there is a process holding the port
@@ -297,7 +312,7 @@ function runCmd() {
 function createFolders() {
 	foldersToCreate="$1"
 
-	for i in ${foldersToCreate[@]}; do
+	for i in "${foldersToCreate[@]}"; do
 		if [ ! -d "$i" ]; then
 			mkdir -p "$i";
 		fi
@@ -327,7 +342,7 @@ function runProcessOrHijackExisting() {
     echo $existingPid > "$pidFile"
     cecho "Found a process with PID $existingPid listening port $port\n" "warning"
     cecho "Hijacking this PID and saving it into $pidFile\n" "warning"
-    exit 0
+    exit 10
   fi
 }
 
@@ -341,7 +356,7 @@ function exitIfPortInUse() {
 	if ! [ "$pid" == $( cat "$pidFile" ) ]; then
 		# A process holding the port we need, inform the user and exit
 		cecho " Port $port is in use by another process with PID $pid\n Please shutdown process with PID $pid and try again\n" "error"
-		exit 6
+		exit 11
 	fi
 }
 
@@ -368,7 +383,7 @@ function abortOnError() {
   EXIT_CODE=$?
   if [ $EXIT_CODE != 0 ]; then
     cecho "Unable to continue, an error occurred or the script was forcefully stopped\n" "error"
-    exit 1
+    exit 12
   fi
 }
 
@@ -426,7 +441,7 @@ function doBackup() {
       abortOnError
     else
       cecho "External DB backup failed, unable to find mysqldump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed\n" "error"
-      exit 1
+      exit 13
     fi
   elif [ -d "$MARIADB_DATA_DIR" ]; then
     # Start DB if necessary
@@ -533,14 +548,14 @@ function doRestore() {
   local pid=$(getPidByPort $TOMCAT_HTTP_PORT)
   if ! [ -z "$pid" ]; then
     cecho "Please stop the system before starting the restore process.\n" "warning"
-    exit 1
+    exit 14
   fi
 
   local sourceFile=$1
   if [ ! -f "$sourceFile" ]; then
     cecho "The source file $sourceFile does not exist\n" "error"
     help
-    exit 1
+    exit 15
   fi
 
   local tempFolder="$CRAFTER_BACKUPS_DIR/temp"
@@ -552,7 +567,7 @@ function doRestore() {
   attempt the restore. Are you sure you want to proceed? (yes/no)" REPLY
   if [ "$REPLY" != "yes" ] && [ "$REPLY" != "y" ]; then
     cecho "Canceling restore\n" "strong"
-    exit 0
+    exit 16
   fi
 
   banner "Clearing all existing data"
@@ -672,7 +687,7 @@ function doRestore() {
         abortOnError
       else
         cecho "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed\n" "error"
-        exit 1
+        exit 17
       fi
     else
       mkdir -p "$MARIADB_DATA_DIR"
@@ -779,7 +794,7 @@ function help() {
   cecho "    upgradedb, Perform database upgrade (mysql_upgrade)\n" "info"
   cecho "    \n" "info"
   cecho "    To log output to a file, set the environment variable CRAFTER_SCRIPT_LOG to point to a log file\n" "info"
-  exit 2;
+  exit 18;
 }
 
 # Version info
@@ -835,6 +850,12 @@ function stopDeployer() {
 	stopModule "Deployer" "$DEPLOYER_PORT" "$DEPLOYER_PID" "\$0/deployer.sh stop" "$DEPLOYER_HOME"
 }
 
+function createOpenSearchDocker() {
+  if ! [[ $( docker inspect "$SEARCH_DOCKER_NAME" > /dev/null 2>&1 ) ]]; then
+    docker create -p 9201:9200 -p 9600:9600 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v "$SEARCH_INDEXES_DIR":/usr/share/opensearch/data/ --name "$SEARCH_DOCKER_NAME" opensearchproject/opensearch:2.6.0 > /dev/null 2>&1
+  fi
+}
+
 function startSearch() {
   module="OpenSearch"
   executable=("$OPENSEARCH_HOME/opensearch -d -p $SEARCH_PID")
@@ -851,7 +872,8 @@ function startSearch() {
     cecho "Starting module $module\n" "info"
     if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
       mkdir -p SEARCH_INDEXES_DIR
-      DOCKER_ID=$(docker run -p 9201:9200 -p 9600:9600 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v $SEARCH_INDEXES_DIR:/usr/share/opensearch/data/ -d opensearchproject/opensearch:2.6.0)
+      createOpenSearchDocker
+      DOCKER_ID=$( docker start "$SEARCH_DOCKER_NAME" )
       echo $DOCKER_ID > $SEARCH_PID
     else
         runTask $executable
@@ -876,7 +898,8 @@ function debugSearch() {
     cecho "Starting module $module\n" "info"
         if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
           mkdir -p SEARCH_INDEXES_DIR
-          DOCKER_ID=$(docker run -p 9201:9200 -p 9600:9600 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v $SEARCH_INDEXES_DIR:/usr/share/opensearch/data/ -d opensearchproject/opensearch:2.6.0)
+          createOpenSearchDocker
+          DOCKER_ID=$( docker start "$SEARCH_DOCKER_NAME" )
           echo $DOCKER_ID > $SEARCH_PID
         else
             bash -c "$envVars; $executable"
@@ -887,7 +910,7 @@ function debugSearch() {
 function stopSearch() {
   if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
    	banner "Stop Search"
-    docker stop $(cat $SEARCH_PID) 2>&1 > /dev/null
+    docker stop $(cat $SEARCH_PID) > /dev/null 2>&1
   else
     pid=$(cat "$SEARCH_PID" 2>/dev/null)
   	stopModule "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID" "kill \$0" "$pid"
@@ -919,7 +942,7 @@ function startTomcat() {
   else
     cecho "CrafterCMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n This might be because of a prior unsuccessful or incomplete shut down.\n Please terminate that process before attempting to start CrafterCMS.\n" "error"
     read -t 10 # Timeout for the read, (if gradle start)
-    exit -7
+    exit 19
   fi
 }
 
@@ -947,7 +970,7 @@ function debugTomcat() {
     cecho "This might be because of a prior unsuccessful or incomplete shut down.\n" "error"
     cecho "Please terminate that process before attempting to start CrafterCMS.\n" "error"
     read -t 10 # Timeout for the read, (if gradle start)
-    exit -7
+    exit 20
   fi
 }
 
@@ -1087,10 +1110,20 @@ function debug() {
 isServiceRunning() {
   SERVICE_PORT=$1
 
-  if [[ $( lsof -nP -iTCP:$SERVICE_PORT ) ]]; then
-    return 0
+  if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+    # This is not Linux, use netstat to check if the port is in use
+    if [[ $( netstat -an | grep LISTEN | grep $SERVICE_PORT ) ]]; then
+      return 0
+    else
+      return 1
+    fi
   else
-    return 1
+    # This is a Linux machine, use ss
+    if [[ $( ss -pantH "( sport = $SERVICE_PORT )" ) ]]; then
+        return 0
+    else
+      return 1
+    fi
   fi
 }
 
@@ -1259,21 +1292,9 @@ function runCmd() {
 ########################################################################################################################
 ################################################## MAIN ################################################################
 
-# Do not run as root
-if [ "$(whoami)" == "root" ]; then
-  cecho "CrafterCMS cowardly refuses to run as root.\nRunning as root is dangerous and is not supported.\n" "error"
+# TODO: Some of this can be moved to preFlightCheck
 
-  exit 1
-fi
-
-# Do not run on 32-bit arch
-OSARCH=$(getconf LONG_BIT)
-if [[ $OSARCH -eq "32" ]]; then
-  cecho "CrafterCMS is not supported on 32-bit architecture\n" "error"
-  exit 5
-fi
-
-# Check if the operating system is Mac or Windows, then check for Docker
+# Identify the operating system
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     OPERATING_SYSTEM=Linux;;
