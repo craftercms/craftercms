@@ -51,13 +51,16 @@ class ScriptUtils {
     /**
      * Executes a command line process.
      */
-    static void executeCommand(List<String> command, Path workingDir = null, Closure<?> setupCallback = null,
-                               List<Integer> successExitValues = [ 0 ]) {
+    static executeCommand(List<String> command, Path workingDir = null, Closure<?> setupCallback = null,
+                               List<Integer> successExitValues = [ 0 ], boolean waitFor = true) {
         if (SystemUtils.IS_OS_WINDOWS) {
             command = ["cmd", "/c"] + command
         }
 
         def processBuilder = new ProcessBuilder(command)
+        processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
+        processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
+        processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
 
         if (workingDir) {
             processBuilder.directory(workingDir.toFile())
@@ -67,16 +70,15 @@ class ScriptUtils {
             setupCallback(processBuilder)
         }
 
-        processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT)
-        processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT)
-        processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT)
-
         def process = processBuilder.start()
-        process.waitFor()
-
-        def exitValue = process.exitValue()
-        if (!successExitValues.contains(exitValue)) {
-            throw new RuntimeException("Process '${command}' exited with non-successful value ${exitValue}")
+        if (waitFor) {
+            process.waitFor()
+            def exitValue = process.exitValue()
+            if (!successExitValues.contains(exitValue)) {
+                throw new RuntimeException("Process '${command}' exited with non-successful value ${exitValue}")
+            }
+        } else {
+            return process
         }
     }
 

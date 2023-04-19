@@ -34,7 +34,7 @@ class RecreateIndexesHook implements PostUpgradeHook {
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
         println "WARNING: This will delete the current Search site indexes and recreate them."
-        println "This is necessary because of a major Ssearch upgrade. Don't proceed "
+        println "This is necessary because of a major Search upgrade. Don't proceed "
         println "if you can't have any search downtime."
 
         def cont = System.console().readLine '> Proceed? [(Y)es/(N)o]: '
