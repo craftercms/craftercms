@@ -856,6 +856,12 @@ function createOpenSearchDocker() {
   fi
 }
 
+function destroyOpenSearchDocker() {
+  if ! [[ $( docker inspect "$SEARCH_DOCKER_NAME" > /dev/null 2>&1 ) ]]; then
+    docker rm "$SEARCH_DOCKER_NAME" > /dev/null 2>&1
+  fi
+}
+
 function startSearch() {
   module="OpenSearch"
   executable=("$OPENSEARCH_HOME/opensearch -d -p $SEARCH_PID")
@@ -911,6 +917,7 @@ function stopSearch() {
   if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
    	banner "Stop Search"
     docker stop $(cat $SEARCH_PID) > /dev/null 2>&1
+    destroyOpenSearchDocker
   else
     pid=$(cat "$SEARCH_PID" 2>/dev/null)
   	stopModule "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID" "kill \$0" "$pid"
