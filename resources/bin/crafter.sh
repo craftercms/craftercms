@@ -851,7 +851,10 @@ function stopDeployer() {
 }
 
 function createOpenSearchDocker() {
-  if ! [[ $( docker inspect "$SEARCH_DOCKER_NAME" > /dev/null 2>&1 ) ]]; then
+  if docker inspect "$SEARCH_DOCKER_NAME" > /dev/null 2>&1; then
+    cecho "Docker image $SEARCH_DOCKER_NAME found, unable to start. Please remove this image before starting.\n To remove the image, run: docker rm $SEARCH_DOCKER_NAME\n" "error"
+    exit 21
+  else
     docker create -p 9201:9200 -p 9600:9600 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v "$SEARCH_INDEXES_DIR":/usr/share/opensearch/data/ --name "$SEARCH_DOCKER_NAME" opensearchproject/opensearch:2.6.0 > /dev/null 2>&1
   fi
 }
@@ -1041,10 +1044,11 @@ function getStatus() {
   banner "$module status"
 
   pid=$(getPidByPort $port)
-  if [ -z "$pid" ]; then
-    cecho "$module is not running\n" "warning"
-  else
+  pid=${pid:-"UNKNOWN"}
+  if isServiceRunning $port; then
     cecho "$module is up and running with PID:\t$pid\n" "strong"
+  else
+    cecho "$module is not running\n" "warning"
   fi
 }
 
