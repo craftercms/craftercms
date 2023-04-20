@@ -95,7 +95,7 @@ function preFlightCheck() {
 		cecho "JAVA_HOME is not set correctly, please set JAVA_HOME, aborting.\n" "error"
 		exit 5
 	fi
-	
+
 	javahome_version=$("$_java_in_javahome" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
 	if [[ ! "$javahome_version" = "$version" ]]; then
 		cecho "The Java version in PATH doesn't match the Java version in JAVA_HOME, this means JAVA_HOME is not pointing to the right Java installation, please set JAVA_HOME to point to the Java version $REQUIRED_JAVA_VERSION and try again, aborting.\n" "error"
@@ -937,7 +937,7 @@ function startTomcat() {
     module="Tomcat"
     executable="$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start"
     port=$TOMCAT_HTTP_PORT
-    foldersToCreate="$CATALINA_LOGS_DIR $CATALINA_TMPDIR"
+    foldersToCreate=("$CATALINA_LOGS_DIR" "$CATALINA_TMPDIR")
     pidFile="$CATALINA_PID"
     operation="Start"
 
@@ -962,7 +962,7 @@ function debugTomcat() {
     module="Tomcat"
     executable="$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda start"
     port=$TOMCAT_HTTP_PORT
-    foldersToCreate="$CATALINA_LOGS_DIR $CATALINA_TMPDIR"
+    foldersToCreate=("$CATALINA_LOGS_DIR" "$CATALINA_TMPDIR")
     pidFile="$CATALINA_PID"
     operation="Debug"
 
@@ -992,7 +992,7 @@ function startMongoDB() {
   module="MongoDB"
   executable="\$0/bin/mongod --dbpath=\$1/mongodb --directoryperdb --fork --journal --logpath=\$2/mongod.log --port \$3"
   port=$MONGODB_PORT
-  foldersToCreate="$MONGODB_DATA_DIR $MONGODB_LOGS_DIR"
+  foldersToCreate=("$MONGODB_DATA_DIR" "$MONGODB_LOGS_DIR")
   pidFile="$MONGODB_PID"
   operation="Start"
 
