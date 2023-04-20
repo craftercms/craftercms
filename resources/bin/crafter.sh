@@ -134,7 +134,7 @@ function preFlightCheck() {
   if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
     cecho "Operating system is $OPERATING_SYSTEM, must use Docker to run OpenSearch.\n" "warning"
     cecho "Running in this mode is for development purposes only.\n" "warning"
-    cecho "Press any key to continue...\n" "strong"
+    cecho "Press any key or wait 5 seconds to continue...\n" "strong"
     read -t 5
     if ! type -p docker > /dev/null 2>&1; then
       cecho "Unable to find Docker which is required for this operating system, please install Docker, aborting.\n" "error"
