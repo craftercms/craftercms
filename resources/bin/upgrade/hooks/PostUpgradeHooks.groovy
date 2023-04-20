@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -38,8 +38,16 @@ class PostUpgradeHooks {
             new PostUpgradeCompletedHook(false)
     ]
 
+    private static final List<PostUpgradeHooks> AUTHORING_4_0_X = [
+            new RemoveOldSearchIndexesDirHook(),
+            new StartCrafterHook(),
+            new ReindexAllTargetsHook(),
+            new PostUpgradeCompletedHook(true)
+    ]
+
     private static final Map ALL_HOOKS = [
             'authoring': [
+                    '4.0': AUTHORING_4_0_X,
                     '3.1.9' : AUTHORING_3_1_X_WITH_DB_HOOKS,
                     '3.1.12': AUTHORING_3_1_X_WITH_DB_HOOKS,
                     '3.1.13': AUTHORING_3_1_X_WITH_DB_HOOKS,
