@@ -45,6 +45,8 @@ class PostUpgradeHooks {
             new PostUpgradeCompletedHook(true)
     ]
 
+    private static final List<PostUpgradeHooks> DELIVERY_4_0_X = AUTHORING_4_0_X
+
     private static final Map ALL_HOOKS = [
             'authoring': [
                     '4.0': AUTHORING_4_0_X,
@@ -54,6 +56,7 @@ class PostUpgradeHooks {
                     '>=3.1.17': AUTHORING_3_1_X_NO_DB_HOOKS
                     ],
             'delivery': [
+                    '4.0': DELIVERY_4_0_X,
                     '3.1.9' : DELIVERY_3_1_X_HOOKS,
                     '3.1.12': DELIVERY_3_1_X_HOOKS,
                     '3.1.13': DELIVERY_3_1_X_HOOKS,
