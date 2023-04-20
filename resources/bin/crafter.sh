@@ -15,13 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ########################################################################################################################
+################################################ GLOBALS ###############################################################
 REQUIRED_JAVA_VERSION=17
 REQUIRED_GIT_VERSION=2.15.0
 
 ################################################ COMMONS ###############################################################
-
-# trap ctrl-c and call ctrl_c()
-trap ctrl_c INT SIGTERM
 
 cecho () {
 
@@ -49,19 +47,45 @@ cecho () {
     fi
 }
 
+function isTailTomcat() {
+  for o in "$@"; do
+    if [ "$o" = "tailTomcat" ]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+# shellcheck disable=SC2120
 function preFlightCheck() {
+  cecho "Preflight check.\n" "info"
+
+  # Do not run as root
+  if [ "$(whoami)" == "root" ]; then
+    cecho "CrafterCMS cowardly refuses to run as root.\nRunning as root is dangerous and is not supported.\n" "error"
+
+    exit 1
+  fi
+
+  # Do not run on 32-bit arch
+  OSARCH=$(getconf LONG_BIT)
+  if [[ $OSARCH -eq "32" ]]; then
+    cecho "CrafterCMS is not supported on 32-bit architecture\n" "error"
+    exit 2
+  fi
+
 	# Check Java version
-	if type -p java 2>&1 > /dev/null; then
+	if type -p java > /dev/null 2>&1; then
 		_java=java
 	else
 		cecho "Unable to find Java, please install Java version $REQUIRED_JAVA_VERSION and set JAVA_HOME, aborting.\n" "error"
-		exit -1
+		exit 3
 	fi
 
 	version=$("$_java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
 	if [[ ! "$version" = "$REQUIRED_JAVA_VERSION" ]]; then
 		cecho "CrafterCMS requires Java version $REQUIRED_JAVA_VERSION, detected Java with major version $version, aborting.\n" "error"
-		exit -1
+		exit 4
 	fi
 
 	# Check if JAVA_HOME is set, and set to the correct Java version
@@ -69,43 +93,54 @@ function preFlightCheck() {
 		_java_in_javahome="$JAVA_HOME/bin/java"
 	else
 		cecho "JAVA_HOME is not set correctly, please set JAVA_HOME, aborting.\n" "error"
-		exit -1
+		exit 5
 	fi
-	
+
 	javahome_version=$("$_java_in_javahome" -version 2>&1 | awk -F '"' '/version/ {print $2}' | awk -F '.' '/[0-9]+/ {print $1}')
 	if [[ ! "$javahome_version" = "$version" ]]; then
 		cecho "The Java version in PATH doesn't match the Java version in JAVA_HOME, this means JAVA_HOME is not pointing to the right Java installation, please set JAVA_HOME to point to the Java version $REQUIRED_JAVA_VERSION and try again, aborting.\n" "error"
-		exit -1
+		exit 6
 	fi
 
 	# Check lsof
-	if ! type -p lsof 2>&1 > /dev/null; then
+	if ! type -p lsof > /dev/null 2>&1; then
 		cecho "lsof command not found, please install 'lsof', aborting.\n" "error"
 	fi
 
 	# Check git
-	if ! type -p git 2>&1 > /dev/null; then
+	if ! type -p git > /dev/null 2>&1; then
 		cecho "Unable to find Git, please install Git version $REQUIRED_GIT_VERSION or higher, aborting.\n" "error"
-		exit -1
+		exit 7
 	fi
 
 	git_version=$(git --version 2>&1 | awk -F ' ' '/version/ {print $3}')
 	if [[ ! "$git_version" > "$REQUIRED_GIT_VERSION" ]]; then
 		cecho "CrafterCMS requires Git version $REQUIRED_GIT_VERSION or higher, detected Git with major version $git_version, aborting.\n" "error"
-		exit -1
+		exit 8
 	fi
 
 	# Check if git has user.name and user.email configured
-	git_config=$( git config --global user.name )
+	git config --global user.name > /dev/null 2>&1
 	if ! [ $? -eq 0 ]; then
 		cecho "git user.name is not set, setting default 'git_repo_user'\n" "warning"
 		git config --global user.name "git_repo_user"
 	fi
-	git_config=$( git config --global user.email )
+	git config --global user.email > /dev/null 2>&1
 	if ! [ $? -eq 0 ]; then
 		cecho "git user.email is not set, setting default 'evalgit@example.com'\n" "warning"
 		git config --global user.email "evalgit@example.com"
 	fi
+
+  if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+    cecho "Operating system is $OPERATING_SYSTEM, must use Docker to run OpenSearch.\n" "warning"
+    cecho "Running in this mode is for development purposes only.\n" "warning"
+    cecho "Press any key or wait 5 seconds to continue...\n" "strong"
+    read -t 5
+    if ! type -p docker > /dev/null 2>&1; then
+      cecho "Unable to find Docker which is required for this operating system, please install Docker, aborting.\n" "error"
+      exit 9
+    fi
+  fi
 }
 
 # Kill a process given a PID
@@ -123,10 +158,10 @@ function killProcess() {
   # Check if the process is still alive, poll it for a while before killing it
   # The loop is structured to give the process 2 seconds if it doesn't stop right away
   # Maximum wait is 20 seconds before kill -9
-  if $(ps -p "$pid" > /dev/null); then
+  if ps -p "$pid" > /dev/null; then
     for i in $(seq 1 10); do
       sleep 2 # wait and then check
-      if ! $(ps -p "$pid" > /dev/null); then
+      if ! ps -p "$pid" > /dev/null; then
         # We're done, the process has terminated, break out
         break
       fi
@@ -134,7 +169,7 @@ function killProcess() {
     done
 
     # If the process is still running, kill it with -9
-    if $(ps -p "$pid" > /dev/null); then
+    if ps -p "$pid" > /dev/null; then
       cecho "Process $pid failed to stop gracefully, issuing kill -9\n" "warning"
       kill -9 "$pid"
     fi
@@ -155,7 +190,7 @@ function isCorrectProcessHoldingPort() {
   result=1
 
   pidOfPort=$(getPidByPort "$port")
-  if [ "$pidOfPort"=="$process" ]; then
+  if [ "$pidOfPort" == "$process" ]; then
     # The process holding the port is ours, this is fine
     result=$pidOfPort
   else
@@ -172,11 +207,11 @@ function prepareModule() {
 	foldersToCreate=$2
 	operation=$3
 
-	cd $CRAFTER_BIN_DIR
+	cd "$CRAFTER_BIN_DIR"
 
 	banner "$operation $module"
 
-  createFolders "$foldersToCreate"
+  createFolders $foldersToCreate
 }
 
 # Check if a module is already running, or if there is a process holding the port
@@ -186,7 +221,7 @@ function checkIfModuleIsRunning() {
 	pidFile=$3
 	result=0
 
-	cd $CRAFTER_BIN_DIR
+	cd "$CRAFTER_BIN_DIR"
 
   ################## LOGIC ##################
   # Get PID for the port we want
@@ -222,7 +257,7 @@ function stopModule() {
 	executable=$4
 	executable_args=$5
 
-	cd $CRAFTER_BIN_DIR
+	cd "$CRAFTER_BIN_DIR"
 
 	banner "Stop $module"
 
@@ -277,7 +312,7 @@ function runCmd() {
 function createFolders() {
 	foldersToCreate="$1"
 
-	for i in ${foldersToCreate[@]}; do
+	for i in "${foldersToCreate[@]}"; do
 		if [ ! -d "$i" ]; then
 			mkdir -p "$i";
 		fi
@@ -307,7 +342,7 @@ function runProcessOrHijackExisting() {
     echo $existingPid > "$pidFile"
     cecho "Found a process with PID $existingPid listening port $port\n" "warning"
     cecho "Hijacking this PID and saving it into $pidFile\n" "warning"
-    exit 0
+    exit 10
   fi
 }
 
@@ -318,10 +353,10 @@ function exitIfPortInUse() {
 	# get PID of process holding the port
 	pid=$( getPidByPort "$port" )
 	# if the process holding the port is not the one in PID file, fail
-	if ! [ "$pid"==$( cat "$pidFile" ) ]; then
+	if ! [ "$pid" == $( cat "$pidFile" ) ]; then
 		# A process holding the port we need, inform the user and exit
 		cecho " Port $port is in use by another process with PID $pid\n Please shutdown process with PID $pid and try again\n" "error"
-		exit 6
+		exit 11
 	fi
 }
 
@@ -348,7 +383,7 @@ function abortOnError() {
   EXIT_CODE=$?
   if [ $EXIT_CODE != 0 ]; then
     cecho "Unable to continue, an error occurred or the script was forcefully stopped\n" "error"
-    exit 1
+    exit 12
   fi
 }
 
@@ -406,7 +441,7 @@ function doBackup() {
       abortOnError
     else
       cecho "External DB backup failed, unable to find mysqldump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed\n" "error"
-      exit 1
+      exit 13
     fi
   elif [ -d "$MARIADB_DATA_DIR" ]; then
     # Start DB if necessary
@@ -414,16 +449,16 @@ function doBackup() {
     if [ -z $(getPidByPort "$MARIADB_PORT") ]; then
       mkdir -p "$CRAFTER_BIN_DIR/dbms"
       banner "Starting DB"
-      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" $CRAFTER_BIN_DIR/mariaDB4j-app.jar &
-      $CRAFTER_BIN_DIR/wait-for-it.sh -h "$MARIADB_HOST" -p "$MARIADB_PORT" -t $MARIADB_TCP_TIMEOUT
+      java -jar -DmariaDB4j.port=$MARIADB_PORT -DmariaDB4j.baseDir="$CRAFTER_BIN_DIR/dbms" -DmariaDB4j.dataDir="$MARIADB_DATA_DIR" "$CRAFTER_BIN_DIR"/mariaDB4j-app.jar &
+      "$CRAFTER_BIN_DIR"/wait-for-it.sh -h "$MARIADB_HOST" -p "$MARIADB_PORT" -t $MARIADB_TCP_TIMEOUT
       DB_STARTED=true
     fi
 
     #Do dump
     banner "Backing up embedded DB"
     export MYSQL_PWD=$MARIADB_ROOT_PASSWD
-    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
-    $CRAFTER_BIN_DIR/dbms/bin/mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
+    "$CRAFTER_BIN_DIR"/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
+    "$CRAFTER_BIN_DIR"/dbms/bin/mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
     abortOnError
 
     if [ "$DB_STARTED" = true ]; then
@@ -446,7 +481,7 @@ function doBackup() {
 
     banner "Backing up MongoDB"
 
-    $MONGODB_HOME/bin/mongodump --port $MONGODB_PORT --out "$tempFolder/mongodb"
+    "$MONGODB_HOME"/bin/mongodump --port $MONGODB_PORT --out "$tempFolder/mongodb"
     abortOnError
 
     CURRENT_DIR=$(pwd)
@@ -455,7 +490,7 @@ function doBackup() {
     runCmd "tar cvf \"$tempFolder/mongodb.tar\" ."
     abortOnError
 
-    cd $CURRENT_DIR
+    cd "$CURRENT_DIR"
     rm -r "$tempFolder/mongodb"
 
     if [ "$MONGODB_STARTED" = true ]; then
@@ -513,14 +548,14 @@ function doRestore() {
   local pid=$(getPidByPort $TOMCAT_HTTP_PORT)
   if ! [ -z "$pid" ]; then
     cecho "Please stop the system before starting the restore process.\n" "warning"
-    exit 1
+    exit 14
   fi
 
   local sourceFile=$1
   if [ ! -f "$sourceFile" ]; then
     cecho "The source file $sourceFile does not exist\n" "error"
     help
-    exit 1
+    exit 15
   fi
 
   local tempFolder="$CRAFTER_BACKUPS_DIR/temp"
@@ -532,7 +567,7 @@ function doRestore() {
   attempt the restore. Are you sure you want to proceed? (yes/no)" REPLY
   if [ "$REPLY" != "yes" ] && [ "$REPLY" != "y" ]; then
     cecho "Canceling restore\n" "strong"
-    exit 0
+    exit 16
   fi
 
   banner "Clearing all existing data"
@@ -652,7 +687,7 @@ function doRestore() {
         abortOnError
       else
         cecho "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed\n" "error"
-        exit 1
+        exit 17
       fi
     else
       mkdir -p "$MARIADB_DATA_DIR"
@@ -719,40 +754,8 @@ function doUpgradeDB() {
   fi
 }
 
-########################################################################################################################
-################################################## MAIN ################################################################
-
-# Do not run as root
-if [ "$(whoami)" == "root" ]; then
-  cecho "CrafterCMS cowardly refuses to run as root.\nRunning as root is dangerous and is not supported.\n" "error"
-
-  exit 1
-fi
-
-# Do not run on 32-bit arch
-OSARCH=$(getconf LONG_BIT)
-if [[ $OSARCH -eq "32" ]]; then
-  cecho "CrafterCMS is not supported on 32-bit architecture\n" "error"
-  exit 5
-fi
-
-# Export our coordinates
-export CRAFTER_BIN_DIR=${CRAFTER_BIN_DIR:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
-export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
-
-# Check if OS is macOS
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  # Remove com.apple.quarantine flag for OpenSearch files
-  xattr -rd com.apple.quarantine "$CRAFTER_BIN_DIR/opensearch"
-fi
-
-# Set up the environment
-source "$CRAFTER_BIN_DIR/crafter-setenv.sh"
-
 # Help for those who need it
 function help() {
-  # TODO: Review and redo
-
   cecho "$(basename $BASH_SOURCE)\n\n" "strong"
   cecho "    start [withMongoDB] [skipSearch] [skipMongoDB] [tailTomcat], Starts Tomcat, Deployer and OpenSearch.
              If withMongoDB is specified MongoDB will be started,
@@ -791,7 +794,7 @@ function help() {
   cecho "    upgradedb, Perform database upgrade (mysql_upgrade)\n" "info"
   cecho "    \n" "info"
   cecho "    To log output to a file, set the environment variable CRAFTER_SCRIPT_LOG to point to a log file\n" "info"
-  exit 2;
+  exit 18;
 }
 
 # Version info
@@ -847,6 +850,21 @@ function stopDeployer() {
 	stopModule "Deployer" "$DEPLOYER_PORT" "$DEPLOYER_PID" "\$0/deployer.sh stop" "$DEPLOYER_HOME"
 }
 
+function createOpenSearchDocker() {
+  if docker inspect "$SEARCH_DOCKER_NAME" > /dev/null 2>&1; then
+    cecho "Docker image $SEARCH_DOCKER_NAME found, unable to start. Please remove this image before starting.\n To remove the image, run: docker rm $SEARCH_DOCKER_NAME\n" "error"
+    exit 21
+  else
+    docker create -p 9201:9200 -p 9600:9600 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v "$SEARCH_INDEXES_DIR":/usr/share/opensearch/data/ --name "$SEARCH_DOCKER_NAME" opensearchproject/opensearch:2.6.0 > /dev/null 2>&1
+  fi
+}
+
+function destroyOpenSearchDocker() {
+  if ! [[ $( docker inspect "$SEARCH_DOCKER_NAME" > /dev/null 2>&1 ) ]]; then
+    docker rm "$SEARCH_DOCKER_NAME" > /dev/null 2>&1
+  fi
+}
+
 function startSearch() {
   module="OpenSearch"
   executable=("$OPENSEARCH_HOME/opensearch -d -p $SEARCH_PID")
@@ -861,7 +879,14 @@ function startSearch() {
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
-    runTask $executable
+    if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+      mkdir -p SEARCH_INDEXES_DIR
+      createOpenSearchDocker
+      DOCKER_ID=$( docker start "$SEARCH_DOCKER_NAME" )
+      echo $DOCKER_ID > $SEARCH_PID
+    else
+        runTask $executable
+    fi
   fi
 }
 
@@ -880,13 +905,26 @@ function debugSearch() {
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
     cecho "Starting module $module\n" "info"
-    bash -c "$envVars; $executable"
+        if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+          mkdir -p SEARCH_INDEXES_DIR
+          createOpenSearchDocker
+          DOCKER_ID=$( docker start "$SEARCH_DOCKER_NAME" )
+          echo $DOCKER_ID > $SEARCH_PID
+        else
+            bash -c "$envVars; $executable"
+        fi
   fi
 }
 
 function stopSearch() {
-  pid=$(cat "$SEARCH_PID" 2>/dev/null)
-	stopModule "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID" "kill \$0" "$pid"
+  if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+   	banner "Stop Search"
+    docker stop $(cat $SEARCH_PID) > /dev/null 2>&1
+    destroyOpenSearchDocker
+  else
+    pid=$(cat "$SEARCH_PID" 2>/dev/null)
+  	stopModule "OpenSearch" "$SEARCH_PORT" "$SEARCH_PID" "kill \$0" "$pid"
+  fi
 }
 
 function searchStatus() {
@@ -899,7 +937,7 @@ function startTomcat() {
     module="Tomcat"
     executable="$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh start"
     port=$TOMCAT_HTTP_PORT
-    foldersToCreate="$CATALINA_LOGS_DIR $CATALINA_TMPDIR"
+    foldersToCreate=("$CATALINA_LOGS_DIR" "$CATALINA_TMPDIR")
     pidFile="$CATALINA_PID"
     operation="Start"
 
@@ -914,7 +952,7 @@ function startTomcat() {
   else
     cecho "CrafterCMS Database Port: $MARIADB_PORT is in use by process id $(getPidByPort "$MARIADB_PORT").\n This might be because of a prior unsuccessful or incomplete shut down.\n Please terminate that process before attempting to start CrafterCMS.\n" "error"
     read -t 10 # Timeout for the read, (if gradle start)
-    exit -7
+    exit 19
   fi
 }
 
@@ -924,7 +962,7 @@ function debugTomcat() {
     module="Tomcat"
     executable="$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda start"
     port=$TOMCAT_HTTP_PORT
-    foldersToCreate="$CATALINA_LOGS_DIR $CATALINA_TMPDIR"
+    foldersToCreate=("$CATALINA_LOGS_DIR" "$CATALINA_TMPDIR")
     pidFile="$CATALINA_PID"
     operation="Debug"
 
@@ -942,7 +980,7 @@ function debugTomcat() {
     cecho "This might be because of a prior unsuccessful or incomplete shut down.\n" "error"
     cecho "Please terminate that process before attempting to start CrafterCMS.\n" "error"
     read -t 10 # Timeout for the read, (if gradle start)
-    exit -7
+    exit 20
   fi
 }
 
@@ -954,7 +992,7 @@ function startMongoDB() {
   module="MongoDB"
   executable="\$0/bin/mongod --dbpath=\$1/mongodb --directoryperdb --fork --journal --logpath=\$2/mongod.log --port \$3"
   port=$MONGODB_PORT
-  foldersToCreate="$MONGODB_DATA_DIR $MONGODB_LOGS_DIR"
+  foldersToCreate=("$MONGODB_DATA_DIR" "$MONGODB_LOGS_DIR")
   pidFile="$MONGODB_PID"
   operation="Start"
 
@@ -1006,10 +1044,11 @@ function getStatus() {
   banner "$module status"
 
   pid=$(getPidByPort $port)
-  if [ -z "$pid" ]; then
-    cecho "$module is not running\n" "warning"
-  else
+  pid=${pid:-"UNKNOWN"}
+  if isServiceRunning $port; then
     cecho "$module is up and running with PID:\t$pid\n" "strong"
+  else
+    cecho "$module is not running\n" "warning"
   fi
 }
 
@@ -1043,21 +1082,9 @@ function mongoDbStatus() {
 
 # Display instructions for tailing logs
 function tailTomcatLog() {
-    #tail -n 100 -F "$CRAFTER_LOGS_DIR"/tomcat/catalina.out
-    wait -n
+    tail -n 100 -F "$CRAFTER_LOGS_DIR"/tomcat/catalina.out
+    # wait -n # TODO Look into this as an option
     stop
-}
-
-function isTailTomcat() {
-  cecho "Looping through the params: $@\n" "strong"
-  for o in "$@"; do
-    if [ $o = "tailTomcat" ]; then
-      cecho "Found tailTomcat param\n" "strong"
-      return 0
-    fi
-  done
-  cecho "Did not find tailTomcat param\n" "strong"
-  return 1
 }
 
 function start() {
@@ -1074,7 +1101,7 @@ function start() {
   printTailInfo
 
   if isTailTomcat "$@"; then
-    cecho "Tailing Tomcat log\n" "strong"
+    cecho "Tailing the Tomcat log.\n" "strong"
     tailTomcatLog
   fi
 }
@@ -1091,24 +1118,45 @@ function debug() {
   printTailInfo
 }
 
+isServiceRunning() {
+  SERVICE_PORT=$1
+
+  if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
+    # This is not Linux, use netstat to check if the port is in use
+    if [[ $( netstat -an | grep LISTEN | grep $SERVICE_PORT ) ]]; then
+      return 0
+    else
+      return 1
+    fi
+  else
+    # This is a Linux machine, use ss
+    if [[ $( ss -pantH "( sport = $SERVICE_PORT )" ) ]]; then
+        return 0
+    else
+      return 1
+    fi
+  fi
+}
+
 function stop() {
   stopTomcat
-  if [ ! -z "$(getPidByPort $MONGODB_PORT)" ]; then
+  if isServiceRunning $MONGODB_PORT; then
      stopMongoDB
   fi
   stopDeployer
-  if [ ! -z "$(getPidByPort $SEARCH_PORT)" ]; then
+  if isServiceRunning $SEARCH_PORT; then
     stopSearch
   fi
 }
 
 function ctrl_c() {
+  cecho "Term signal detected, stopping services...\n" "strong"
   stopTomcat
-  if [ ! -z "$(getPidByPort $MONGODB_PORT)" ]; then
+  if isServiceRunning $MONGODB_PORT; then
      stopMongoDB
   fi
   stopDeployer
-  if [ ! -z "$(getPidByPort $SEARCH_PORT)" ]; then
+  if isServiceRunning $SEARCH_PORT; then
     stopSearch
   fi
 }
@@ -1133,122 +1181,155 @@ function status() {
   fi
 }
 
+function runCmd() {
+  case $1 in
+    debug)
+      splash
+      debug "$@"
+    ;;
+    start)
+      splash
+      start "$@"
+    ;;
+    stop)
+      splash
+      stop $2
+    ;;
+    debug_deployer)
+      splash
+      debugDeployer
+    ;;
+    start_deployer)
+      splash
+      startDeployer
+    ;;
+    stop_deployer)
+      splash
+      stopDeployer
+    ;;
+    start_search)
+      splash
+      startSearch
+    ;;
+    debug_search)
+      splash
+      debugSearch
+    ;;
+    stop_search)
+      splash
+      stopSearch
+    ;;
+    debug_tomcat)
+      splash
+      debugTomcat
+    ;;
+    start_tomcat)
+      splash
+      startTomcat start
+    ;;
+    stop_tomcat)
+      splash
+      stopTomcat
+    ;;
+    start_mongodb)
+      splash
+      startMongoDB
+    ;;
+    stop_mongodb)
+      splash
+      stopMongoDB
+    ;;
+    status)
+      status
+    ;;
+    backup)
+      doBackup $2
+    ;;
+    restore)
+      doRestore $2
+    ;;
+    upgradedb)
+      doUpgradeDB $2
+    ;;
+    status_engine)
+      engineStatus
+    ;;
+    status_studio)
+      studioStatus
+    ;;
+    status_profile)
+      profileStatus
+    ;;
+    status_social)
+      socialStatus
+    ;;
+    status_deployer)
+      deployerStatus
+    ;;
+    status_search)
+      searchStatus
+    ;;
+    status_mongodb)
+      mongoDbStatus
+    ;;
+    status_mariadb)
+      mariadbStatus
+    ;;
+    --v | --version)
+      version
+    ;;
+    # Deprecated options, to be removed
+    start_elasticsearch)
+      splash
+      startSearch
+    ;;
+    debug_elasticsearch)
+      splash
+      debugSearch
+    ;;
+    stop_elasticsearch)
+      splash
+      stopSearch
+    ;;
+    status_elasticsearch)
+      searchStatus
+    ;;
+    *)
+      help
+    ;;
+  esac
+}
+
+########################################################################################################################
+################################################## MAIN ################################################################
+
+# TODO: Some of this can be moved to preFlightCheck
+
+# Identify the operating system
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    Linux*)     OPERATING_SYSTEM=Linux;;
+    Darwin*)    OPERATING_SYSTEM=Mac;;
+    CYGWIN*)    OPERATING_SYSTEM=Cygwin;;
+    MINGW*)     OPERATING_SYSTEM=MinGw;;
+    *)          OPERATING_SYSTEM="UNKNOWN:${unameOut}"
+esac
+
+# Export our coordinates
+export CRAFTER_BIN_DIR=${CRAFTER_BIN_DIR:=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )}
+export CRAFTER_HOME=${CRAFTER_HOME:=$( cd "$CRAFTER_BIN_DIR/.." && pwd )}
+
+# Set up the environment
+source "$CRAFTER_BIN_DIR/crafter-setenv.sh"
+
 preFlightCheck
 
-case $1 in
-  debug)
-    splash
-    debug "$@"
-  ;;
-  start)
-    splash
-    start "$@"
-  ;;
-  stop)
-    splash
-    stop $2
-  ;;
-  debug_deployer)
-    splash
-    debugDeployer
-  ;;
-  start_deployer)
-    splash
-    startDeployer
-  ;;
-  stop_deployer)
-    splash
-    stopDeployer
-  ;;
-  start_search)
-    splash
-    startSearch
-  ;;
-  debug_search)
-    splash
-    debugSearch
-  ;;
-  stop_search)
-    splash
-    stopSearch
-  ;;
-  debug_tomcat)
-    splash
-    debugTomcat
-  ;;
-  start_tomcat)
-    splash
-    startTomcat start
-  ;;
-  stop_tomcat)
-    splash
-    stopTomcat
-  ;;
-  start_mongodb)
-    splash
-    startMongoDB
-  ;;
-  stop_mongodb)
-    splash
-    stopMongoDB
-  ;;
-  status)
-    status
-  ;;
-  backup)
-    doBackup $2
-  ;;
-  restore)
-    doRestore $2
-  ;;
-  upgradedb)
-    doUpgradeDB $2
-  ;;
-  status_engine)
-    engineStatus
-  ;;
-  status_studio)
-    studioStatus
-  ;;
-  status_profile)
-    profileStatus
-  ;;
-  status_social)
-    socialStatus
-  ;;
-  status_deployer)
-    deployerStatus
-  ;;
-  status_search)
-    searchStatus
-  ;;
-  status_mongodb)
-    mongoDbStatus
-  ;;
-  status_mariadb)
-    mariadbStatus
-  ;;
-  --v | --version)
-    version
-  ;;
-  # Deprecated options, to be removed
-  start_elasticsearch)
-    splash
-    startSearch
-  ;;
-  debug_elasticsearch)
-    splash
-    debugSearch
-  ;;
-  stop_elasticsearch)
-    splash
-    stopSearch
-  ;;
-  status_elasticsearch)
-    searchStatus
-  ;;
-  *)
-    help
-  ;;
-esac
+if isTailTomcat "$@"
+then
+  # trap ctrl-c and call ctrl_c()
+  cecho "Running with tailing Tomcat logs on, press Ctrl+C to stop.\n" "strong"
+  trap ctrl_c INT SIGTERM
+fi
+
+runCmd "$@"
 ########################################################################################################################

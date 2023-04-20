@@ -70,6 +70,7 @@ export SEARCH_LOGS_DIR=${SEARCH_LOGS_DIR:="$CRAFTER_LOGS_DIR/search"}
 export SEARCH_PID=${SEARCH_PID:="$OPENSEARCH_HOME/opensearch.pid"}
 export SEARCH_USERNAME=${SEARCH_USERNAME:=""}
 export SEARCH_PASSWORD=${SEARCH_PASSWORD:=""}
+export SEARCH_DOCKER_NAME=${SEARCH_DOCKER_NAME:="delivery-search"}
 
 # -------------------- Deployer variables --------------------
 export DEPLOYER_HOME=${DEPLOYER_HOME:="$CRAFTER_BIN_DIR/crafter-deployer"}
