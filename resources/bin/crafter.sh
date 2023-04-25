@@ -919,7 +919,7 @@ function debugSearch() {
 function stopSearch() {
   if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
    	banner "Stop Search"
-    docker stop $(cat DOCKER_ID) > /dev/null 2>&1
+    docker stop $(cat $SEARCH_PID) > /dev/null 2>&1
     destroyOpenSearchDocker
   else
     pid=$(cat "$SEARCH_PID" 2>/dev/null)
