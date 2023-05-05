@@ -66,111 +66,99 @@
 		<!-- Dependency Version Numbers -->
 		<!-- Main -->
 		<!-- Spring -->
-		<spring.version>5.3.25</spring.version>
-		<spring.security.version>5.8.2</spring.security.version>
-		<spring.data.version>2.7.9</spring.data.version>
+		<spring.version>5.3.27</spring.version>
+		<spring.security.version>5.8.3</spring.security.version>
+		<spring.data.version>2.7.11</spring.data.version>
 		<spring.ldap.version>2.4.1</spring.ldap.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
 		<spring.social.facebook.version>2.0.3.RELEASE</spring.social.facebook.version>
 
 		<!-- Commons -->
 		<commons.lang3.version>3.12.0</commons.lang3.version>
-		<commons.collections.version>3.2.2</commons.collections.version>
 		<commons.collections4.version>4.4</commons.collections4.version>
 		<commons.codec.version>1.15</commons.codec.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.io.version>2.11.0</commons.io.version>
 		<commons.configuration.version>2.9.0</commons.configuration.version>
 		<commons.text.version>1.10.0</commons.text.version>
-		<commons.cli.version>1.4</commons.cli.version>
+		<commons.cli.version>1.5.0</commons.cli.version>
 		<commons.dbcp2.version>2.9.0</commons.dbcp2.version>
-		<commons.fileupload.version>1.4</commons.fileupload.version>
-		<commons.compress.version>1.21</commons.compress.version>
+		<commons.fileupload.version>1.5</commons.fileupload.version>
+		<commons.compress.version>1.23.0</commons.compress.version>
 
-		<httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
-		<httpcomponents.httpmime.version>4.5.13</httpcomponents.httpmime.version>
+		<httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
 
-		<jackson.version>2.14.2</jackson.version>
-		<jackson.databind.version>2.14.2</jackson.databind.version>
-		<jackson.dataformat.version>2.14.2</jackson.dataformat.version>
+		<jackson.version>2.15.0</jackson.version>
 
 		<mongo.version>4.9.1</mongo.version>
-		<bson.version>4.9.1</bson.version>
 		<jongo.version>1.5.1</jongo.version>
 		<gmongo.version>1.5</gmongo.version>
 
-		<velocity.engine.version>2.3</velocity.engine.version>
-		<xstream.version>1.4.19</xstream.version>
+		<xstream.version>1.4.20</xstream.version>
 		<slf4j.version>1.7.32</slf4j.version>
-		<slf4j.api.version>1.7.32</slf4j.api.version>
-		<jcl.over.slf4j.version>1.7.30</jcl.over.slf4j.version>
-		<log4j.version>2.18.0</log4j.version>
+		<log4j.version>2.20.0</log4j.version>
 		<quartz.version>2.3.2</quartz.version>
-		<freemarker.version>2.3.31</freemarker.version>
-		<aspectj.version>1.9.7</aspectj.version>
+		<freemarker.version>2.3.32</freemarker.version>
+		<aspectj.version>1.9.19</aspectj.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
-		<javax.mail.api.version>1.6.2</javax.mail.api.version>
 		<javax.activation.version>1.2.0</javax.activation.version>
-		<javax.validation.version>2.0.1.Final</javax.validation.version>
-		<jakarta.xml.bind-api.version>3.0.1</jakarta.xml.bind-api.version>
+		<jakarta.xml.bind-api.version>4.0.0</jakarta.xml.bind-api.version>
 		<guava.version>31.1-jre</guava.version>
 		<guava.collections.version>r03</guava.collections.version>
 		<findbugs.version>3.0.1</findbugs.version>
-		<commons.bcel.version>6.7.0</commons.bcel.version>
-		<caffeine.version>2.8.6</caffeine.version>
-		<jsonpath.version>2.6.0</jsonpath.version>
+		<bcel.version>6.7.0</bcel.version>
+		<caffeine.version>3.1.6</caffeine.version>
+		<json.path.version>2.8.0</json.path.version>
 		<reactor.version>1.0.1.RELEASE</reactor.version>
-		<jgit.version>6.4.0.202211300538-r</jgit.version>
+		<jgit.version>6.5.0.202303070854-r</jgit.version>
 		<snakeyaml.version>1.33</snakeyaml.version>
-		<aws.sdk.version>1.12.425</aws.sdk.version>
+		<aws.sdk.version>1.12.463</aws.sdk.version>
 		<box.sdk.version>4.0.1</box.sdk.version>
 		<sardine.version>5.10</sardine.version>
-		<dom4j.version>2.1.3</dom4j.version>
-		<jaxen.version>1.2.0</jaxen.version>
-		<gson.version>2.8.9</gson.version>
+		<dom4j.version>2.1.4</dom4j.version>
+		<jaxen.version>2.0.0</jaxen.version>
+		<gson.version>2.10.1</gson.version>
 		<jta.version>1.1</jta.version>
 		<cglib.version>3.3.0</cglib.version>
-		<groovy.version>3.0.14</groovy.version>
+		<groovy.version>3.0.17</groovy.version>
 		<script.security.version>${project.version}</script.security.version>
 		<rome.version>1.0</rome.version>
 		<urlrewrite.version>4.0.4</urlrewrite.version>
 		<graphql.version>20.0</graphql.version>
 		<graphql.extended.scalars.version>20.0</graphql.extended.scalars.version>
-		<xerces.version>2.12.2</xerces.version><!-- consider xerces2 -->
+		<xerces.version>2.12.2</xerces.version>
 		<httpproxy.version>1.12.1</httpproxy.version>
 		<apache.ivy>2.5.1</apache.ivy>
-		<tinify.version>1.7.0</tinify.version>
+		<tinify.version>1.8.3</tinify.version>
 		<mariadb4j.version>2.6.0</mariadb4j.version>
-		<saxon.version>10.6</saxon.version>
-		<apache.cxf.version>3.4.10</apache.cxf.version>
+		<saxon.version>12.2</saxon.version>
+		<apache.cxf.version>3.5.5</apache.cxf.version>
 		<ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
-		<mybatis.spring.version>2.0.6</mybatis.spring.version>
-		<mybatis.version>3.5.7</mybatis.version>
+		<mybatis.spring.version>2.1.0</mybatis.spring.version>
+		<mybatis.version>3.5.13</mybatis.version>
 		<json.lib.version>2.4</json.lib.version>
-		<rest.assured.version>2.9.0</rest.assured.version>
-		<mariadb.java.client.version>2.7.4</mariadb.java.client.version>
-		<greenmail.version>1.5.14</greenmail.version>
+		<mariadb.java.client.version>2.7.9</mariadb.java.client.version>
+		<greenmail.version>1.6.14</greenmail.version>
 		<stax2.api.version>4.2.1</stax2.api.version>
-		<jodatime.version>2.10.12</jodatime.version>
+		<joda.time.version>2.12.5</joda.time.version>
 		<!-- Spring 5.x doesn't support Hibernate Validator 7.x -->
-		<hibernate.validator.version>6.2.3.Final</hibernate.validator.version>
+		<hibernate.validator.version>6.2.5.Final</hibernate.validator.version>
 		<validation.api.version>2.0.1.Final</validation.api.version>
 		<opensearch.version>2.6.0</opensearch.version>
 		<opensearch.client.version>2.2.0</opensearch.client.version>
-		<tika.version>2.4.0</tika.version>
-		<poi.version>5.2.1</poi.version>
-		<metadata.extractors.version>2.16.0</metadata.extractors.version>
+		<tika.version>2.7.0</tika.version>
+		<poi.version>5.2.3</poi.version>
+		<metadata.extractor.version>2.18.0</metadata.extractor.version>
 		<jsoup.version>1.14.3</jsoup.version>
-		<google.protobuf.version>3.19.6</google.protobuf.version>
-		<unit.version>2.1.3</unit.version>
+		<protobuf.java.version>3.22.4</protobuf.java.version>
+		<unit.api.version>2.1.3</unit.api.version>
 		<javax.inject.version>1</javax.inject.version>
-		<jcraft.jsch.version>0.1.55</jcraft.jsch.version>
-		<hazelcast.version>5.1.3</hazelcast.version>
+		<hazelcast.version>5.1.5</hazelcast.version>
 		<semver4j.version>3.1.0</semver4j.version>
-		<jose4j.version>0.7.9</jose4j.version>
-		<httpclient.version>4.5.13</httpclient.version>
-		<picocli.version>4.6.1</picocli.version>
+		<jose4j.version>0.9.3</jose4j.version>
+		<httpclient.version>4.5.14</httpclient.version>
+		<picocli.version>4.7.3</picocli.version>
 		<http.builder.version>1.0.4</http.builder.version>
 		<jaxb.api.version>2.3.1</jaxb.api.version>
 		<jaxb.core.version>3.0.2</jaxb.core.version>
@@ -178,40 +166,40 @@
 		<spatial4j.version>0.8</spatial4j.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<eddsa.version>0.3.0</eddsa.version>
-		<okhttp.version>4.9.2</okhttp.version>
+		<okhttp.version>4.11.0</okhttp.version>
 		<zxcvbn.version>1.7.0</zxcvbn.version>
-		<owasp.esapi.version>2.5.1.0</owasp.esapi.version>
+		<esapi.version>2.5.2.0</esapi.version>
 
 		<!-- Testing -->
-		<testng.version>7.4.0</testng.version>
+		<testng.version>7.7.1</testng.version>
 		<junit.version>4.13.2</junit.version>
-		<mockito.version>4.8.0</mockito.version>
-		<embedmongo.maven.version>0.3.5</embedmongo.maven.version>
+		<mockito.version>4.11.0</mockito.version>
+		<embedmongo.maven.version>0.4.2</embedmongo.maven.version>
 		<de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
-		<org.xmlunit.version>2.8.3</org.xmlunit.version>
-		<tomcat.version>9.0.71</tomcat.version>
+		<xmlunit.core.version>2.9.1</xmlunit.core.version>
+		<tomcat.version>9.0.74</tomcat.version>
 
 		<!-- Build -->
 		<maven.compiler.version>3.11.0</maven.compiler.version>
 		<maven.source.version>3.2.1</maven.source.version>
 		<maven.javadoc.version>3.5.0</maven.javadoc.version>
-		<maven.resources.version>3.1.0</maven.resources.version>
-		<maven.jar.version>3.2.0</maven.jar.version>
-		<maven.war.version>3.3.1</maven.war.version>
-		<maven.deploy.version>3.0.0-M1</maven.deploy.version>
-		<maven.gpg.version>1.6</maven.gpg.version>
+		<maven.resources.version>3.1.0</maven.resources.version><!-- should upgrade to 3.3.1 when possible -->
+		<maven.jar.version>3.3.0</maven.jar.version>
+		<maven.war.version>3.3.2</maven.war.version>
+		<maven.deploy.version>3.1.1</maven.deploy.version>
+		<maven.gpg.version>3.0.1</maven.gpg.version>
 		<maven.shade.version>3.3.0</maven.shade.version>
 		<maven.clean.version>3.2.0</maven.clean.version>
-		<maven.surefire.version>3.0.0-M9</maven.surefire.version>
-		<maven.failsafe.version>3.0.0-M9</maven.failsafe.version>
-		<jacoco.maven.version>0.8.8</jacoco.maven.version>
+		<maven.surefire.version>3.0.0</maven.surefire.version>
+		<maven.failsafe.version>3.0.0</maven.failsafe.version>
+		<jacoco.maven.version>0.8.10</jacoco.maven.version>
 		<buildnumber.maven.version>3.0.0</buildnumber.maven.version>
 		<grunt.maven.version>1.5.1</grunt.maven.version>
-		<gmavenplus.version>1.13.0</gmavenplus.version>
+		<gmavenplus.version>2.1.0</gmavenplus.version>
 		<appassembler.maven.version>2.1.0</appassembler.maven.version>
-		<maven.assembly.version>3.3.0</maven.assembly.version>
-		<nexus.staging.maven.version>1.6.7</nexus.staging.maven.version>
+		<maven.assembly.version>3.5.0</maven.assembly.version>
+		<nexus.staging.maven.version>1.6.13</nexus.staging.maven.version>
 	</properties>
 
 	<dependencyManagement>
