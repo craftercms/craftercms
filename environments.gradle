@@ -307,7 +307,8 @@ ext.commonConfUpdatePatterns = [
                 match: '# ---------------------------------- Various -----------------------------------',
                 replace: '# ---------------------------------- Various -----------------------------------' +
                         System.lineSeparator() +
-                        'plugins.security.disabled: true' + System.lineSeparator()
+                        'plugins.security.disabled: true' + System.lineSeparator() + 'plugins.sql.enabled: false' +
+                        System.lineSeparator()
             ]
         ]
     ],
