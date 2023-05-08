@@ -26,12 +26,16 @@ import upgrade.exceptions.UpgradeException
 class PostUpgradeHooks {
 
     private static final List<PostUpgradeHooks> AUTHORING_3_1_X_NO_DB_HOOKS = [
-            new PostUpgradeCompletedHook(false)
+            new StartCrafterHook(),
+            new RecreateIndexesHook(),
+            new PostUpgradeCompletedHook(true)
     ]
 
     private static final List<PostUpgradeHooks> AUTHORING_3_1_X_WITH_DB_HOOKS = [
             new UpgradeEmbeddedDbHook(),
-            new PostUpgradeCompletedHook(false)
+            new StartCrafterHook(),
+            new RecreateIndexesHook(),
+            new PostUpgradeCompletedHook(true)
     ]
 
     private static final List<PostUpgradeHooks> DELIVERY_3_1_X_HOOKS = [
