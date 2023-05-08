@@ -307,7 +307,8 @@ ext.commonConfUpdatePatterns = [
                 match: '# ---------------------------------- Various -----------------------------------',
                 replace: '# ---------------------------------- Various -----------------------------------' +
                         System.lineSeparator() +
-                        'plugins.security.disabled: true' + System.lineSeparator()
+                        'plugins.security.disabled: true' + System.lineSeparator() + 'plugins.sql.enabled: false' +
+                        System.lineSeparator()
             ]
         ]
     ],
@@ -425,11 +426,6 @@ ext.getEnvironments = { ->
 }
 
 ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes, includeMongodb ->
-    // Create require folders
-    commonFoldersToCreate.each { folder ->
-        file(envFolder + folder).mkdirs()
-    }
-
     // Copy files into env
     commonItemsToCopy.each { item ->
         def name = item.name
@@ -474,15 +470,16 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes,
 
     // Update known_hosts
     updateKnownHosts(envFolder)
+
+    // Create required folders
+    commonFoldersToCreate.each { folder ->
+        file(envFolder + folder).mkdirs()
+    }
 }
 
 ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, includeMongodb ->
     // Prepare the base
     prepareBaseEnvironment("${authoringEnvDir}", overwriteChangedFiles, downloadGrapes, includeMongodb)
-
-    authoringFoldersToCreate.each { folder ->
-        file("${authoringEnvDir}" + folder).mkdirs()
-    }
 
     // Copy files into env
     authoringItemsToCopy.each { item ->
@@ -543,15 +540,16 @@ ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, inclu
 	authoringConfUpdatePatterns.each { conf ->
 		updateConfFile("${authoringEnvDir}" + conf['confFile'], conf['patterns'])
 	}
+
+    // Create required folders
+    authoringFoldersToCreate.each { folder ->
+        file("${authoringEnvDir}" + folder).mkdirs()
+    }
 }
 
 ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes, includeMongodb ->
     // Prepare the base
     prepareBaseEnvironment("${deliveryEnvDir}", overwriteChangedFiles, downloadGrapes, includeMongodb)
-
-    deliveryFoldersToCreate.each { folder ->
-        file("${deliveryEnvDir}" + folder).mkdirs()
-    }
 
     // Copy files into env
     deliveryItemsToCopy.each { item ->
@@ -612,6 +610,11 @@ ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes, includ
 	deliveryConfUpdatePatterns.each { conf ->
 		updateConfFile("${deliveryEnvDir}" + conf['confFile'], conf['patterns'])
 	}
+
+    // Create required folders
+    deliveryFoldersToCreate.each { folder ->
+        file("${deliveryEnvDir}" + folder).mkdirs()
+    }
 }
 
 ext.prepareEnvironment = { environment, refreshEnv, overwriteChangedFiles, downloadGrapes, includeMongodb ->
