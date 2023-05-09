@@ -75,6 +75,7 @@
 
 		<!-- Commons -->
 		<commons.lang3.version>3.12.0</commons.lang3.version>
+		<commons.collections.version>3.2.2</commons.collections.version>
 		<commons.collections4.version>4.4</commons.collections4.version>
 		<commons.codec.version>1.15</commons.codec.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
@@ -93,7 +94,7 @@
 		<mongo.version>4.9.1</mongo.version>
 		<jongo.version>1.5.1</jongo.version>
 		<gmongo.version>1.5</gmongo.version>
-
+		<velocity.engine.version>2.3</velocity.engine.version>
 		<xstream.version>1.4.20</xstream.version>
 		<slf4j.version>1.7.32</slf4j.version>
 		<log4j.version>2.20.0</log4j.version>
@@ -138,15 +139,15 @@
 		<mybatis.spring.version>2.1.0</mybatis.spring.version>
 		<mybatis.version>3.5.13</mybatis.version>
 		<json.lib.version>2.4</json.lib.version>
-		<mariadb.java.client.version>3.1.4</mariadb.java.client.version>
+		<mariadb.java.client.version>2.7.9</mariadb.java.client.version>
 		<greenmail.version>1.6.14</greenmail.version>
 		<stax2.api.version>4.2.1</stax2.api.version>
 		<joda.time.version>2.12.5</joda.time.version>
 		<!-- Spring 5.x doesn't support Hibernate Validator 7.x -->
 		<hibernate.validator.version>6.2.5.Final</hibernate.validator.version>
 		<validation.api.version>2.0.1.Final</validation.api.version>
-		<opensearch.version>2.6.0</opensearch.version>
-		<opensearch.client.version>2.2.0</opensearch.client.version>
+		<opensearch.version>2.7.0</opensearch.version>
+		<opensearch.client.version>2.4.0</opensearch.client.version>
 		<tika.version>2.7.0</tika.version>
 		<poi.version>5.2.3</poi.version>
 		<metadata.extractor.version>2.18.0</metadata.extractor.version>

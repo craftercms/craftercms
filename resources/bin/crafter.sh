@@ -855,7 +855,7 @@ function createOpenSearchDocker() {
     cecho "Docker image $SEARCH_DOCKER_NAME found, unable to start. Please remove this image before starting.\n To remove the image, run: docker rm $SEARCH_DOCKER_NAME\n" "error"
     exit 21
   else
-    docker create -p $SEARCH_PORT:9200 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v "$SEARCH_INDEXES_DIR":/usr/share/opensearch/data/ --name "$SEARCH_DOCKER_NAME" opensearchproject/opensearch:2.6.0 > /dev/null 2>&1
+    docker create -p $SEARCH_PORT:9200 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v "$SEARCH_INDEXES_DIR":/usr/share/opensearch/data/ --name "$SEARCH_DOCKER_NAME" opensearchproject/opensearch:2.7.0 > /dev/null 2>&1
   fi
 }
 
@@ -867,7 +867,7 @@ function destroyOpenSearchDocker() {
 
 function startSearch() {
   module="OpenSearch"
-  executable=("$OPENSEARCH_HOME/opensearch -d -p $SEARCH_PID")
+  executable=("$OPENSEARCH_HOME/bin/opensearch -d -p $SEARCH_PID")
   port=$SEARCH_PORT
   foldersToCreate="$SEARCH_INDEXES_DIR"
   pidFile="$SEARCH_PID"
@@ -893,7 +893,7 @@ function startSearch() {
 function debugSearch() {
   module="OpenSearch"
   envVars="ES_JAVA_OPTS=\"$ES_JAVA_OPTS -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1045\""
-  executable="$OPENSEARCH_HOME/opensearch -d -p $SEARCH_PID"
+  executable="$OPENSEARCH_HOME/bin/opensearch -d -p $SEARCH_PID"
   port=$SEARCH_PORT
   foldersToCreate="$SEARCH_INDEXES_DIR"
   pidFile="$SEARCH_PID"
