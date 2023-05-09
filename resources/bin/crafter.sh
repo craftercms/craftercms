@@ -134,8 +134,6 @@ function preFlightCheck() {
   if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
     cecho "Operating system is $OPERATING_SYSTEM, must use Docker to run OpenSearch.\n" "warning"
     cecho "Running in this mode is for development purposes only.\n" "warning"
-    cecho "Press any key or wait 5 seconds to continue...\n" "strong"
-    read -t 5
     if ! type -p docker > /dev/null 2>&1; then
       cecho "Unable to find Docker which is required for this operating system, please install Docker, aborting.\n" "error"
       exit 9
@@ -180,7 +178,7 @@ function killProcess() {
 function getPidByPort() {
   port=$1
 
-  echo $(lsof -iTCP -sTCP:LISTEN -P | grep "$port" | awk '{print $2}' | sort | uniq)
+  echo $(lsof -wiTCP -sTCP:LISTEN -P | grep "$port" | awk '{print $2}' | sort | uniq)
 }
 
 # Check if the process holding the port is ours
@@ -764,22 +762,28 @@ function help() {
              the Crafter Profile WAR file is present,
              if tailTomcat is specified, Tomcat will be tailed and Crafter will shutdown when
              this script terminates.\n" "info"
-  cecho "    stop, Stops Tomcat, Deployer, OpenSearch (if started), Mongo (if started)\n" "info"
+  cecho "    stop, Stops Tomcat, Deployer, OpenSearch (if started), MongoDB (if started)\n" "info"
   cecho "    debug [withMongoDB] [skipSearch] [skipMongoDB], Starts Tomcat, Deployer and
              OpenSearch in debug mode. If withMongoDB is specified MongoDB will be started,
              if skipSearch is specified OpenSearch will not be started, if skipMongoDB is specified MongoDB
              will not be started even if the Crafter Profile war is present\n" "info"
+  cecho "    restart, Restarts Tomcat, Deployer, OpenSearch (if started), MongoDB (if started)\n" "info"
   cecho "    start_deployer, Starts Deployer\n" "info"
   cecho "    stop_deployer, Stops Deployer\n" "info"
   cecho "    debug_deployer, Starts Deployer in debug mode\n" "info"
+  cecho "    restart_deployer, Restarts Deployer\n" "info"
   cecho "    start_search, Starts OpenSearch\n" "info"
   cecho "    stop_search, Stops OpenSearch\n" "info"
   cecho "    debug_search, Starts OpenSearch in debug mode\n" "info"
+  cecho "    restart_search, Restarts OpenSearch\n" "info"
   cecho "    start_tomcat, Starts Tomcat\n" "info"
   cecho "    stop_tomcat, Stops Tomcat\n" "info"
   cecho "    debug_tomcat, Starts Tomcat in debug mode\n" "info"
+  cecho "    restart_tomcat, Restarts Tomcat\n" "info"
+  cecho "    restart_debug_tomcat, Restarts Tomcat in debug mode\n" "info"
   cecho "    start_mongodb, Starts Mongo DB\n" "info"
   cecho "    stop_mongodb, Stops Mongo DB\n" "info"
+  cecho "    restart_mongodb, Restarts MongoDB\n" "info"
   cecho "    status, Status of all CrafterCms subsystems\n" "info"
   cecho "    status_engine, Status of Crafter Engine\n" "info"
   cecho "    status_studio, Status of Crafter Studio\n" "info"
@@ -823,7 +827,6 @@ function startDeployer() {
   checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
-    cecho "Starting module $module\n" "info"
     runTask $executable
   fi
 }
@@ -841,7 +844,6 @@ function debugDeployer() {
   checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
-    cecho "Starting module $module\n" "info"
     runTask $executable
   fi
 }
@@ -878,7 +880,6 @@ function startSearch() {
   checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
-    cecho "Starting module $module\n" "info"
     if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
       mkdir -p SEARCH_INDEXES_DIR
       createOpenSearchDocker
@@ -904,7 +905,6 @@ function debugSearch() {
   checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
-    cecho "Starting module $module\n" "info"
         if ! [[ "$OPERATING_SYSTEM" == "Linux" ]]; then
           mkdir -p SEARCH_INDEXES_DIR
           createOpenSearchDocker
@@ -946,7 +946,6 @@ function startTomcat() {
     checkIfModuleIsRunning "$module" "$port" "$pidFile"
     isModuleRunning=$?
     if [ $isModuleRunning = 0 ]; then
-      cecho "Starting module $module\n" "info"
       runTask $executable
     fi
   else
@@ -971,7 +970,6 @@ function debugTomcat() {
     checkIfModuleIsRunning "$module" "$port" "$pidFile"
     isModuleRunning=$?
     if [ $isModuleRunning = 0 ]; then
-      cecho "Starting module $module\n" "info"
       runTask $executable
     fi
   else
@@ -1001,7 +999,6 @@ function startMongoDB() {
   checkIfModuleIsRunning "$module" "$port" "$pidFile"
   isModuleRunning=$?
   if [ $isModuleRunning = 0 ]; then
-    cecho "Starting module $module\n" "info"
     runTask -c "$executable" $MONGODB_HOME $CRAFTER_DATA_DIR $MONGODB_LOGS_DIR $MONGODB_PORT
   fi
 }
@@ -1116,6 +1113,11 @@ function debug() {
   fi
   debugTomcat
   printTailInfo
+
+  if isTailTomcat "$@"; then
+    cecho "Tailing the Tomcat log.\n" "strong"
+    tailTomcatLog
+  fi
 }
 
 isServiceRunning() {
@@ -1193,7 +1195,12 @@ function runCmd() {
     ;;
     stop)
       splash
-      stop $2
+      stop
+    ;;
+    restart)
+      splash
+      stop
+      start "$@"
     ;;
     debug_deployer)
       splash
@@ -1207,6 +1214,11 @@ function runCmd() {
       splash
       stopDeployer
     ;;
+    restart_deployer)
+      splash
+      stopDeployer
+      startDeployer
+    ;;
     start_search)
       splash
       startSearch
@@ -1218,6 +1230,11 @@ function runCmd() {
     stop_search)
       splash
       stopSearch
+    ;;
+    restart_search)
+      splash
+      stopSearch
+      startSearch
     ;;
     debug_tomcat)
       splash
@@ -1231,6 +1248,16 @@ function runCmd() {
       splash
       stopTomcat
     ;;
+    restart_tomcat)
+      splash
+      stopTomcat
+      startTomcat start
+    ;;
+    restart_debug_tomcat)
+      splash
+      stopTomcat
+      debugTomcat
+    ;;
     start_mongodb)
       splash
       startMongoDB
@@ -1238,6 +1265,11 @@ function runCmd() {
     stop_mongodb)
       splash
       stopMongoDB
+    ;;
+    restart_mongodb)
+      splash
+      stopMongoDB
+      startMongoDB
     ;;
     status)
       status
