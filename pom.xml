@@ -95,7 +95,7 @@
 		<gmongo.version>1.5</gmongo.version>
 
 		<xstream.version>1.4.20</xstream.version>
-		<slf4j.version>1.7.32</slf4j.version>
+		<slf4j.version>2.0.7</slf4j.version>
 		<log4j.version>2.20.0</log4j.version>
 		<quartz.version>2.3.2</quartz.version>
 		<freemarker.version>2.3.32</freemarker.version>
@@ -138,7 +138,7 @@
 		<mybatis.spring.version>2.1.0</mybatis.spring.version>
 		<mybatis.version>3.5.13</mybatis.version>
 		<json.lib.version>2.4</json.lib.version>
-		<mariadb.java.client.version>3.1.4</mariadb.java.client.version>
+		<mariadb.java.client.version>2.7.9</mariadb.java.client.version>
 		<greenmail.version>1.6.14</greenmail.version>
 		<stax2.api.version>4.2.1</stax2.api.version>
 		<joda.time.version>2.12.5</joda.time.version>
