@@ -170,6 +170,7 @@
 		<okhttp.version>4.11.0</okhttp.version>
 		<zxcvbn.version>1.7.0</zxcvbn.version>
 		<esapi.version>2.5.2.0</esapi.version>
+		<opensaml.version>4.1.1</opensaml.version>
 
 		<!-- Testing -->
 		<testng.version>7.7.1</testng.version>
