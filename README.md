@@ -59,7 +59,7 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `clean` Clean modules
 * `build` Build modules
 * `deploy` Deploy modules
-* `upgrade` Upgrade modules (same as `update`, `build`, `deploy`)
+* `upgrade` Upgrade modules (same as `update`, `clean`, `build`, `deploy`)
 * `start` Start CrafterCMS
 * `stop` Stop CrafterCMS
 * `status` Report status on running environments if any
