@@ -2,6 +2,15 @@ name: Enhancement Request
 description: Request an enhancement
 labels: ["enhancement", "triage"]
 body:
+  - type: checkboxes
+    attributes:
+      label: Latest version
+      description: We roll bug fixes, performance enhancements, and other improvements into new releases.
+      options:
+        - label: The issue is in the latest released 4.1.x
+        - label: The issue is in the latest released 4.0.x
+        - label: The issue is in the latest released 3.1.x
+
   - type: markdown
     attributes:
       value: |
