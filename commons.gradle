@@ -70,9 +70,7 @@ ext.execCommand = { command, dir ->
 }
 
 ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFiles, deleteNonExisting ->
-    def command = [];
-
-	command = ["rsync", "-ar"]
+    def command = ["rsync", "-ar"]
 
 	if (!overwriteChangedFiles) {
         command += ["--update"]

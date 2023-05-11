@@ -59,7 +59,7 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `clean` Clean modules
 * `build` Build modules
 * `deploy` Deploy modules
-* `upgrade` Upgrade modules (same as `update`, `build`, `deploy`)
+* `upgrade` Upgrade modules (same as `update`, `clean`, `build`, `deploy`)
 * `start` Start CrafterCMS
 * `stop` Stop CrafterCMS
 * `status` Report status on running environments if any
@@ -69,12 +69,12 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 
 * `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `true` 
 * `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false` 
-* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: Elasticsearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false` 
+* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: OpenSearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false` 
 * `gitRemote`: Git remote name to use in cloned modules, default `origin`
 * `gitBranch`: Git branch to use when cloning modules, default `develop` (for develop branch)
 * `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
-* `socialRequired` or `crafter.social`: Include Social in the build, default `false`
-* `profileRequired` or `crafter.profile`: Include Profile in the build, default `false`
+* `socialRequired`: Include Social in the build, default `false`
+* `profileRequired`: Include Profile in the build, default `false`
 * `startElasticsearch` or `withElasticsearch`: start Elasticsearch, default `true`
 * `startMongoDB`: start MongoDB, default `false` unless Profile or Social are enabled. This is automatic.
 * `unitTest`: Run unit tests during build, default `false`

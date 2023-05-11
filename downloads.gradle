@@ -44,9 +44,9 @@ ext.downloads = [
         expandFolder: "${downloadDir}"
     ],
     [
-        name: "elasticsearch",
-        url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-${currentArch}.tar.gz",
-        destinationFile: "${downloadDir}/elasticsearch-${elasticsearchVersion}-${elasticsearchPlatform}-${currentArch}.tar.gz",
+        name: "openSearch",
+        url: "https://artifacts.opensearch.org/releases/bundle/opensearch/${openSearchVersion}/opensearch-${openSearchVersion}-${openSearchPlatform}-${currentArch}.tar.gz",
+        destinationFile: "${downloadDir}/openSearch-${openSearchVersion}-${openSearchPlatform}-${currentArch}.tar.gz",
         checksumAlgorithm: "sha512",
         expand: "true",
         expandFolder: "${downloadDir}"
@@ -61,9 +61,17 @@ ext.downloads = [
     ],
     [
         name: "mongodb",
-        url: "https://fastdl.mongodb.org/${mongodbPlatform}/mongodb-${mongodbBinary}-x86_64-${mongodbVersion}.tgz",
-        destinationFile: "${downloadDir}/mongodb-${mongodbBinary}-x86_64-${mongodbVersion}.tar.gz",
+        url: "https://fastdl.mongodb.org/${mongodbPlatform}/mongodb-${mongodbBinary}-${mongodbArch}-${mongodbVersion}.tgz",
+        destinationFile: "${downloadDir}/mongodb-${mongodbBinary}-${mongodbArch}-${mongodbVersion}.tar.gz",
         checksumAlgorithm: "sha256",
+        expand: "true",
+        expandFolder: "${downloadDir}"
+    ],
+    [
+        name: "mongosh",
+        url: "https://downloads.mongodb.com/compass/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}.${mongoshExtention}",
+        destinationFile: "${downloadDir}/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}.${mongoshExtention}".replace(".tgz", ".tar.gz"),
+        verifyArtifact: false,
         expand: "true",
         expandFolder: "${downloadDir}"
     ]

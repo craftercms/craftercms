@@ -37,7 +37,7 @@ gitflow.prefix.versiontag=v
 
 ## Workflow
 ### Day-to-Day Development
-Day-to-day development is based on the `develop` branch, and the develop must create a feature/bugfix branch that's based on develop for the feature/bugfix before sending a PR. These features/bugfixes go back to `develop` and are not automatically merged to other branches.
+Day-to-day development is based on the `develop` branch, and the developer must create a feature/bugfix branch that's based on develop for the feature/bugfix before sending a PR. These features/bugfixes go back to `develop` and are not automatically merged to other branches.
 
 #### Working on a new feature
 ```
@@ -58,7 +58,7 @@ Note the command `git flow feature rebase` before finishing the feature. This en
 
 With the feature published to your remote git repo, you can send pull-requests (PRs) to `develop` or other branches as required.
 
-With the PR in, you now wait for the codereview process to complete and your PR to be accepted. Once accepted, youcan now finish the feature using git flow which which deletes the local branch after merging to `develop` and then push upstream.
+With the PR in, you now wait for the codereview process to complete and your PR to be accepted. Once accepted, you can now finish the feature using git flow which deletes the local branch after merging to `develop` and then push upstream.
 
 ```
 git flow feature finish {TICKET}

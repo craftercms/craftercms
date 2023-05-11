@@ -42,7 +42,7 @@ ext.commonFoldersToCreate = [
     "/bin/apache-tomcat/shared/lib",
     "/bin/apache-tomcat/webapps",
     "/bin/apache-tomcat/lib/org/apache/catalina/util/",
-    "/bin/elasticsearch/logs",
+    "/bin/opensearch/logs",
     "/data"
 ]
 
@@ -87,15 +87,21 @@ ext.commonItemsToCopy = [
         exclude: ""
     ],
     [
-        name: "elasticsearch",
-        from: "${downloadDir}/elasticsearch-${elasticsearchVersion}/",
-        into: "/bin/elasticsearch/",
+        name: "opensearch",
+        from: "${downloadDir}/opensearch-${openSearchVersion}/",
+        into: "/bin/opensearch/",
         exclude: ""
     ],
     [
         name: "mongodb",
-        from: "${downloadDir}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}/",
+        from: "${downloadDir}/mongodb-${mongodbBinary}-${mongodbArch}-${mongodbVersion}/",
         into: "/bin/mongodb/",
+        exclude: ""
+    ],
+    [
+        name: "mongosh",
+        from: "${downloadDir}/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}/bin/mongosh",
+        into: "/bin/mongodb/bin/",
         exclude: ""
     ],
     [
@@ -174,8 +180,8 @@ ext.commonUpdatePermissions = [
     ],
     [
         items: [
-            "/elasticsearch/bin/",
-            "/elasticsearch/modules"
+            "/opensearch/bin/",
+            "/opensearch/modules"
         ],
         permissions: [
             "-R",
@@ -261,7 +267,7 @@ ext.commonConfUpdatePatterns = [
         confFile: "/bin/apache-tomcat/conf/catalina.properties",
         patterns: [
             [
-                match: 'shared.loader=', 
+                match: 'shared.loader=',
                 replace: 'shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar'
             ]
         ]
@@ -276,23 +282,23 @@ ext.commonConfUpdatePatterns = [
         ]
     ],
     [
-        confFile: "/bin/elasticsearch/config/elasticsearch.yml",
+        confFile: "/bin/opensearch/config/opensearch.yml",
         patterns: [
             [
                 match: "#path.data: /path/to/data",
-                replace: 'path.data: ${ES_INDEXES_DIR}'
+                replace: 'path.data: ${SEARCH_INDEXES_DIR}'
             ],
             [
                 match: "#path.logs: /path/to/logs",
-                replace: 'path.logs: ${ES_LOGS_DIR}'
+                replace: 'path.logs: ${SEARCH_LOGS_DIR}'
             ],
             [
                 match: "#http.port: 9200",
-                replace: 'http.port: ${ES_PORT}'
+                replace: 'http.port: ${SEARCH_PORT}'
             ],
             [
                 match: '# --------------------------------- Discovery ----------------------------------',
-                replace: System.lineSeparator() + 
+                replace: System.lineSeparator() +
                     '# Disable cluster discovery' + System.lineSeparator() +
                     'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
                     '# ---------------------------------- Gateway -----------------------------------'
@@ -300,14 +306,14 @@ ext.commonConfUpdatePatterns = [
             [
                 match: '# ---------------------------------- Various -----------------------------------',
                 replace: '# ---------------------------------- Various -----------------------------------' +
-                        System.lineSeparator() + '# Disable ML' + System.lineSeparator() +
-                        'xpack.ml.enabled: false' + System.lineSeparator() +
-                        'xpack.security.enabled: false' + System.lineSeparator()
+                        System.lineSeparator() +
+                        'plugins.security.disabled: true' + System.lineSeparator() + 'plugins.sql.enabled: false' +
+                        System.lineSeparator()
             ]
         ]
     ],
     [
-            confFile: "/bin/elasticsearch/config/jvm.options",
+            confFile: "/bin/opensearch/config/jvm.options",
             patterns: [
                     [
                             match: "-Xm",
@@ -379,7 +385,7 @@ def authoringTokens = [
   TOMCAT_AJP_PORT      : String.valueOf(authoringTomcatAjpPortDefault),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(authoringTomcatShutdownPortDefault),
   TOMCAT_DEBUG_PORT    : String.valueOf(authoringTomcatDebugPortDefault),
-  ES_PORT              : String.valueOf(authoringElasticsearchPort),
+  SEARCH_PORT          : String.valueOf(authoringSearchPort),
   DEPLOYER_PORT        : String.valueOf(authoringDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(authoringDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(authoringDeploymentDir),
@@ -397,7 +403,7 @@ def deliveryTokens = [
   TOMCAT_AJP_PORT      : String.valueOf(deliveryTomcatAjpPortDefault),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(deliveryTomcatShutdownPortDefault),
   TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPortDefault),
-  ES_PORT              : String.valueOf(deliveryElasticsearchPort),
+  SEARCH_PORT          : String.valueOf(deliverySearchPort),
   DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(deliveryDeploymentDir),
@@ -420,11 +426,6 @@ ext.getEnvironments = { ->
 }
 
 ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes, includeMongodb ->
-    // Create require folders
-    commonFoldersToCreate.each { folder ->
-        file(envFolder + folder).mkdirs()
-    }
-
     // Copy files into env
     commonItemsToCopy.each { item ->
         def name = item.name
@@ -469,15 +470,16 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes,
 
     // Update known_hosts
     updateKnownHosts(envFolder)
+
+    // Create required folders
+    commonFoldersToCreate.each { folder ->
+        file(envFolder + folder).mkdirs()
+    }
 }
 
 ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, includeMongodb ->
     // Prepare the base
     prepareBaseEnvironment("${authoringEnvDir}", overwriteChangedFiles, downloadGrapes, includeMongodb)
-
-    authoringFoldersToCreate.each { folder ->
-        file("${authoringEnvDir}" + folder).mkdirs()
-    }
 
     // Copy files into env
     authoringItemsToCopy.each { item ->
@@ -538,15 +540,16 @@ ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, inclu
 	authoringConfUpdatePatterns.each { conf ->
 		updateConfFile("${authoringEnvDir}" + conf['confFile'], conf['patterns'])
 	}
+
+    // Create required folders
+    authoringFoldersToCreate.each { folder ->
+        file("${authoringEnvDir}" + folder).mkdirs()
+    }
 }
 
 ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes, includeMongodb ->
     // Prepare the base
     prepareBaseEnvironment("${deliveryEnvDir}", overwriteChangedFiles, downloadGrapes, includeMongodb)
-
-    deliveryFoldersToCreate.each { folder ->
-        file("${deliveryEnvDir}" + folder).mkdirs()
-    }
 
     // Copy files into env
     deliveryItemsToCopy.each { item ->
@@ -607,6 +610,11 @@ ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes, includ
 	deliveryConfUpdatePatterns.each { conf ->
 		updateConfFile("${deliveryEnvDir}" + conf['confFile'], conf['patterns'])
 	}
+
+    // Create required folders
+    deliveryFoldersToCreate.each { folder ->
+        file("${deliveryEnvDir}" + folder).mkdirs()
+    }
 }
 
 ext.prepareEnvironment = { environment, refreshEnv, overwriteChangedFiles, downloadGrapes, includeMongodb ->
