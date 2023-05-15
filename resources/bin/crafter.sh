@@ -1183,7 +1183,7 @@ function status() {
   fi
 }
 
-function runCmd() {
+function executeAction() {
   case $1 in
     debug)
       splash
@@ -1363,5 +1363,5 @@ then
   trap ctrl_c INT SIGTERM
 fi
 
-runCmd "$@"
+executeAction "$@"
 ########################################################################################################################
