@@ -16,4 +16,5 @@ CATALINA_OPTS="$CATALINA_OPTS -Dtomcat.host=$TOMCAT_HOST -Dtomcat.http.port=$TOM
 	-Dgrape.root=$CRAFTER_BIN_DIR"
 # Opts used in both Tomcat start and stop
 JAVA_OPTS="$JAVA_OPTS -Dtomcat.shutdown.port=$TOMCAT_SHUTDOWN_PORT"
+JAVA_OPTS="$JAVA_OPTS -Dorg.owasp.esapi.logSpecial.discard=true"
 UMASK=$(umask)

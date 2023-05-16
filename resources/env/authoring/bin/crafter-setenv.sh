@@ -67,10 +67,10 @@ export CATALINA_OPTS=${CATALINA_OPTS:="-server -Xss1024K -Xms1G -Xmx4G -Dlog4j2.
 
 # -------------------- OpenSearch variables --------------------
 export OPENSEARCH_JAVA_HOME=${OPENSEARCH_JAVA_HOME:=$JAVA_HOME}
-export OPENSEARCH_HOME=${OPENSEARCH_HOME:="$CRAFTER_BIN_DIR/opensearch/bin"}
+export OPENSEARCH_HOME=${OPENSEARCH_HOME:="$CRAFTER_BIN_DIR/opensearch"}
 export SEARCH_INDEXES_DIR=${SEARCH_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes-es"}
 export SEARCH_LOGS_DIR=${SEARCH_LOGS_DIR:="$CRAFTER_LOGS_DIR/search"}
-export SEARCH_PID=${SEARCH_PID:="$OPENSEARCH_HOME/opensearch.pid"}
+export SEARCH_PID=${SEARCH_PID:="$OPENSEARCH_HOME/bin/opensearch.pid"}
 export SEARCH_USERNAME=${SEARCH_USERNAME:=""}
 export SEARCH_PASSWORD=${SEARCH_PASSWORD:=""}
 export SEARCH_DOCKER_NAME=${SEARCH_DOCKER_NAME:="authoring-search"}
