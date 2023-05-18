@@ -6,6 +6,7 @@ CrafterCMS is a modern content management platform for building digital experien
 
 * Single Page Applications (SPAs) using frameworks like React, Vue, and Angular
 * Native mobile apps and headless applications (IOT, digital signage, wearables, etc.)
+* HTML5 websites using Bootstrap or other HTML frameworks
 * e-commerce front-ends
 * OTT video experiences on AWS Elemental Media Services
 * AR/VR applications using A-Frame
@@ -466,10 +467,10 @@ To stop the authoring environment:
 
 ### 5.1.1 Other Scripts
 
-For more information about Apache Tomcat, and Elasticsearch please refer to the following:
+For more information about Apache Tomcat, and OpenSearch please refer to the following:
 
  * [Tomcat Script documentation](https://tomcat.apache.org/tomcat-9.0-doc/RUNNING.txt)
- * [Elasticsearch Script documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/starting-elasticsearch.html)
+ * [OpenSearch documentation](https://opensearch.org/docs/latest/)
 
 
 ## 5.2 Gradle Authoring and Delivery Environment Scripts
@@ -477,7 +478,7 @@ For more information about Apache Tomcat, and Elasticsearch please refer to the 
 As we have seen in the getting started section above, to run a gradle task, we run the following from the root of the project:
 
 ```bash
-   ./gradlew command [-Penv={env}] [-PmoduleName={module}]
+   ./gradlew command [-Penv={env}] [-Pmodules={module}]
 ```       
 
 
@@ -486,12 +487,12 @@ Here's a list of commands (Gradle tasks) available:
 | Command<br>``command`` | Description | Env Options<br>``env`` | Module Options<br>``module`` |
 |-----|-----|-----|-----|
 | clone | Clones CrafterCMS | <ul><li>None</li></ul> | <ul><li>None</li></ul> |
-| build | Build a module or an entire environment | authoring<br><br><br><br><br><br><br><br><br><br><br><br><hr> delivery | <ul><li>None</li><li>studio</li><li>deployer</li><li>engine</li><li>search</li><li>social</li><li>profile</li><li>core</li><li>commons</li><li>studio-ui</li><li>plugin-maker</li><hr>|
-| deploy | Deploy a module or an entire environment | authoring<br><br><br><br><br><br><br><hr>delivery | <ul><li>None</li><li>studio</li><li>deployer</li><li>engine</li><li>search</li><li>social</li><li>profile</li><hr><ul><li>None</li><li>deployer</li><li>engine</li><li>search</li><li>social</li><li>profile</li> |
+| build | Build module/s or an entire environment<br>`Note:: build will clone if needed` | authoring<hr> delivery | <ul><li>None</li><li>studio</li><li>deployer</li><li>engine</li><li>search</li><li>social</li><li>profile</li><li>core</li><li>commons</li><li>studio-ui</li><li>groovy-sandbox</li><li>script-security-plugin</li><li>cli</li></ul>|
+| deploy | Deploy module/s or an entire environment | authoring<hr>delivery | <ul><li>None</li><li>studio</li><li>deployer</li><li>engine</li><li>search</li><li>social</li><li>social-admin</li><li>profile</li><li>profile-admin</li><li>commons</li><li>core</li><li>studio-ui</li><li>groovy-sandbox</li><li>script-security-plugin</li><li>cli</li></ul> |
 | bundle | Build deployable and distributable binaries | authoring <hr> delivery | <ul><li>None</li></ul> |
 | start | Start CrafterCMS | authoring <hr> delivery | <ul><li>None</li></ul> |
 | stop | Stop CrafterCMS | authoring <hr> delivery | <ul><li>None</li></ul> |
-| update | Update a module or modules | <ul><li>None</li></ul> | <ul><li>None</li><li>studio</li><li>deployer</li><li>engine</li><li>search</li><li>social</li><li>profile</li><li>core</li><li>commons</li><li>studio-ui</li><li>plugin-maker</li> |
+| update | Update a module or modules | <ul><li>None</li></ul> | <ul><li>None</li><li>studio</li><li>deployer</li><li>engine</li><li>search</li><li>social</li><li>profile</li><li>core</li><li>commons</li><li>studio-ui</li><li>groovy-sandbox</li><li>script-security-plugin</li><li>cli</li></ul> |
 | upgrade | Upgrades the installed Tomcat version, etc, without deleting your data then builds and deploys | <ul><li>None</li></ul> | <ul><li>None</li></ul> |
 | selfupdate | Updates the CrafterCMS project (gradle) | <ul><li>None</li></ul> | <ul><li>None</li></ul> |
 | clean | Delete all compiled objects | <ul><li>None</li></ul> | <ul><li>None</li></ul> |
@@ -499,7 +500,7 @@ Here's a list of commands (Gradle tasks) available:
 > **_NOTE:_**
     * If you don't specify the ``env`` parameter, it means all environments (where applicable).
     * In the current version of CrafterCMS, some services run in the same Web container, and that implies the stopping/starting of one of these services will cause other services to stop/start as well.
-    * The Gradle task property ``moduleName`` accepts one or multiple module/s, separated by commas like this: ``./gradlew build -PmoduleName=search,studio``
+    * The Gradle task property ``modules`` accepts one or multiple module/s, separated by commas like this: ``./gradlew build -Pmodules=search,studio``
     * The ``clean`` command does not delete previously built environment folders ``crafter-authoring`` and ``crafter-delivery``. To build a fresh copy of these two, backup your custom data and delete both folders manually.
 
 <br><br>
@@ -515,10 +516,8 @@ To build the authoring and delivery environments, run the following:
 
 The Gradle task above will:
 
-1. Delete any existing environments/module
-2. Download Apache Tomcat, Elasticsearch, and MongoDB (check the Gradle section on how to specify a version for each component)
-3. Build all CrafterCMS modules from the source (check the [section](#git) on how to update the source)
-4. Create the environment folders and copy all needed resources
+1. Download the dependencies
+2. Build all CrafterCMS modules from the source (check the [section](#git) on how to update the source)
 
     - ``crafter-authoring``
     - ``crafter-delivery``
@@ -526,7 +525,7 @@ The Gradle task above will:
 To build a module (all module options for task ``build`` are listed in the table above), run the following (we'll build the module *studio* in the example below):
 
 ```bash
-   ./gradlew build -PmoduleName=studio
+   ./gradlew build -Pmodules=studio
 ```
 
 To build an environment, run the following (we'll build the authoring environment in the example below:
@@ -543,7 +542,7 @@ To start an environment, run the following:
    ./gradlew start [-Penv={env}]
 ```
 
-What this does under the hood is:
+For an alternative to start an environment, run the following :
 
 ```bash
    cd crafter-{env}
@@ -554,15 +553,11 @@ The options above will:
 
 For the *Authoring Environment*:
 
-* Start Apache tomcat on default ports (8080, 8009, 8005) [See [here](#gradle-tasks) on how to change default ports]
-* Start Elasticsearch on port 9201
-* Start Crafter Deployer on port 9191
+* The above will start the authoring environment with the default port 8080
 
 For the *Delivery Environment*:
 
-* Start Apache tomcat on default ports (9080, 9009, 9005) [See [here](#gradle-tasks) on how to change default ports]
-* Start ElasticSEarch server on port 9202
-* Start Crafter Deployer on port 9192
+* The above will start the authoring environment with the default port 9080
 
 Here's an example starting an authoring environment:
 
