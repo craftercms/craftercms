@@ -26,8 +26,7 @@ This repository is for developers interested in contributing to CrafterCMS, cust
 3. Developer's environment so you can compile and contribute to CrafterCMS
 
 **WARNING:** CrafterCMS source code development and building is 
-_only_ supported on Unix based systems. If you want to use CrafterCMS in Windows, install Windows Subsystem for Linux (WSL) by following the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install) then use the WSL 2 terminal for all the commands below.  Please refer to the documentation
-in [Installing CrafterCMS on WSL 2](https://docs.craftercms.org/current/system-administrators/activities/installing-craftercms-on-wsl2.html).
+_only_ supported on Unix based systems. If you want to use CrafterCMS in Windows, install Windows Subsystem for Linux (WSL) by following the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install) then use the WSL 2 terminal for all the commands below.  Please refer to the documentation in [Installing CrafterCMS on WSL 2](https://docs.craftercms.org/current/system-administrators/activities/installing-craftercms-on-wsl2.html).
 
 # 1. Initial Setup
 Please make sure your system meets the prerequisites:
@@ -78,7 +77,7 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
 * `socialRequired`: Include Social in the build, default `false`
 * `profileRequired`: Include Profile in the build, default `false`
-* `startElasticsearch` or `withElasticsearch`: start Elasticsearch, default `true`
+* `startSearch` or `withSearch`: start OpenSearch, default `true`
 * `startMongoDB`: start MongoDB, default `false` unless Profile or Social are enabled. This is automatic.
 * `unitTest`: Run unit tests during build, default `false`
 * `shallowClone`: Clone only the latest commits and not the entire history (faster, but you lose history), default `false`
@@ -88,6 +87,7 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `authoringEnvDir`: Where to store the authoring environment, default `./crafter-authoring`
 * `deliveryEnvDir`: Where to store the delivery environment, default `./crafter-delivery`
 * `currentPlatform`: What platform to build to (`linux` or `darwin`), default is the build machine's OS
+* `currentArch`: What arch to build to (`aarch64` or `x64`), default is the build machine's arch
 
 # 3. Build Deployable Binaries
 
@@ -247,7 +247,7 @@ The CrafterCMS Authoring and Delivery scripts will help you on the basic startup
 |-----------|--------------|
 |**Description**|Main Script to start and stop all needed Services to have a functional CrafterCMS *Authoring/Delivery Environment* <br>To log the output of the script to a file, set the environment variable CRAFTER_SCRIPT_LOG to point to a log file|
 |**Synopsis**|``crafter.sh start``\|``stop``\|``debug``\|``help``|
-|**Arguments**|``start [withMongoDB] [skipSearch] [skipMongoDB] [tailTomcat]``<br>Starts all CrafterCMS services in this order: Crafter Deployer, OpenSearch, Apache Tomcat<br>&nbsp;&nbsp;&nbsp;&nbsp;If `withMongoDB` is specified MongoDB will be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipSearch` is specified OpenSearch will not be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipMongoDB` is specified MongoDB will not be started even if the Crafter Profile war is present.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `tailTomcat` is specified, Tomcat will be tailed and Crafter will shutdown when the script terminates.<br><br>``stop``  Stops all CrafterCMS services in the same order as they start.<br><br>``debug [withMongoDB] [skipSearch] [skipMongoDB]``<br>Starts all CrafterCMS services with the JAVA remote debug port 5000 for Crafter Deployer, and 8000 for Apache Tomcat for the *Authoring Environment*<br>Starts all CrafterCMS services with the JAVA remote debug port 5001 for Crafter Deployer, and 9000 for Apache Tomcat for the *Delivery Environment*<br>&nbsp;&nbsp;&nbsp;&nbsp;If `withMongoDB` is specified MongoDB will be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipSearch` is specified Elasticsearch will not be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipMongoDB` is specified MongoDB will not be started even if the Crafter Profile war is present.<br><br>``start_deployer``  Starts Deployer<br><br>``stop_deployer``  Stops Deployer<br><br>    ``debug_deployer``  Starts Deployer in debug mode<br><br>``restart_deployer``  Restarts Deployer<br><br>``start_search``  Starts OpenSearch<br><br>``stop_search``  Stops OpenSearch<br><br>``debug_search``  Starts OpenSearch in debug mode<br><br>``restart_search``  Restarts OpenSearch<br><br>``start_tomcat``  Starts Apache Tomcat<br><br>``stop_tomcat``  Stops Apache Tomcat<br><br>``debug_tomcat``  Starts Apache Tomcat in debug mode<br><br>``restart_tomcat`` Restarts Apache Tomcat<br><br>``restart_debug_tomcat``  Restarts Apache Tomcat in debug mode<br><br>``start_mongodb``  Starts MongoDB<br><br>``stop_mongodb``  Stops MongoDB<br><br>``restart_mongodb``  Restarts MongoDB<br><br>``status``  Prints the status of all CrafterCMS subsystems<br><br>``status_engine``  Prints the status of Crafter Engine<br><br>``status_studio``  Prints the status of Crafter Studio<br><br>``status_profile``  Prints the status of Crafter Profile<br><br>``status_social``  Prints the status of Crafter Social<br><br>``status_deployer``  Prints the status of Crafter Deployer<br><br>``status_search``  Prints the status of OpenSearch<br><br>``status_mariadb``  Prints the status of MariaDb<br><br>``status_mongodb``  Prints the status of MongoDB<br><br>``backup <name>``  Perform a backup of all data<br><br>``restore <file>``  Perform a restore of all data<br><br>``upgradedb``  Perform database upgrade (mysql_upgrade)|
+|**Arguments**|``start [withMongoDB] [skipSearch] [skipMongoDB] [tailTomcat]``<br>Starts all CrafterCMS services in this order: Crafter Deployer, OpenSearch, Apache Tomcat<br>&nbsp;&nbsp;&nbsp;&nbsp;If `withMongoDB` is specified MongoDB will be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipSearch` is specified OpenSearch will not be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipMongoDB` is specified MongoDB will not be started even if the Crafter Profile war is present.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `tailTomcat` is specified, Tomcat will be tailed and Crafter will shutdown when the script terminates.<br><br>``stop``  Stops all CrafterCMS services in the same order as they start.<br><br>``debug [withMongoDB] [skipSearch] [skipMongoDB]``<br>Starts all CrafterCMS services with the JAVA remote debug port 5000 for Crafter Deployer, and 8000 for Apache Tomcat for the *Authoring Environment*<br>Starts all CrafterCMS services with the JAVA remote debug port 5001 for Crafter Deployer, and 9000 for Apache Tomcat for the *Delivery Environment*<br>&nbsp;&nbsp;&nbsp;&nbsp;If `withMongoDB` is specified MongoDB will be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipSearch` is specified OpenSearch will not be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipMongoDB` is specified MongoDB will not be started even if the Crafter Profile war is present.<br><br>``start_deployer``  Starts Deployer<br><br>``stop_deployer``  Stops Deployer<br><br>    ``debug_deployer``  Starts Deployer in debug mode<br><br>``restart_deployer``  Restarts Deployer<br><br>``start_search``  Starts OpenSearch<br><br>``stop_search``  Stops OpenSearch<br><br>``debug_search``  Starts OpenSearch in debug mode<br><br>``restart_search``  Restarts OpenSearch<br><br>``start_tomcat``  Starts Apache Tomcat<br><br>``stop_tomcat``  Stops Apache Tomcat<br><br>``debug_tomcat``  Starts Apache Tomcat in debug mode<br><br>``restart_tomcat`` Restarts Apache Tomcat<br><br>``restart_debug_tomcat``  Restarts Apache Tomcat in debug mode<br><br>``start_mongodb``  Starts MongoDB<br><br>``stop_mongodb``  Stops MongoDB<br><br>``restart_mongodb``  Restarts MongoDB<br><br>``status``  Prints the status of all CrafterCMS subsystems<br><br>``status_engine``  Prints the status of Crafter Engine<br><br>``status_studio``  Prints the status of Crafter Studio<br><br>``status_profile``  Prints the status of Crafter Profile<br><br>``status_social``  Prints the status of Crafter Social<br><br>``status_deployer``  Prints the status of Crafter Deployer<br><br>``status_search``  Prints the status of OpenSearch<br><br>``status_mariadb``  Prints the status of MariaDb<br><br>``status_mongodb``  Prints the status of MongoDB<br><br>``backup <name>``  Perform a backup of all data<br><br>``restore <file>``  Perform a restore of all data<br><br>``upgradedb``  Perform database upgrade (mysql_upgrade)|
 
 | **Synopsis**| ``startup.sh``|
 |-----|-----|
@@ -383,7 +383,7 @@ Here are the environment variables used for MariaDb in ``crafter.sh``:
 | MARIADB_PASSWD | MariaDb user password <hr>crafter |
 | MARIADB_SOCKET_TIMEOUT | MariaDB socket timeout <hr> 60000 |
 | MARIADB_TCP_TIMEOUT | MariaDB TCP timeout <hr>120 |
-| MARIADB_PID | MariaDB process id file <hr> $MARIADB_HOME/$HOSTNAME.pid |
+| MARIADB_PID | MariaDB process id file <hr> \$MARIADB_HOME/\$HOSTNAME.pid |
 
 <br><br>
 Here are the environment variables used for Git in ``crafter.sh``:
@@ -542,7 +542,7 @@ To start an environment, run the following:
    ./gradlew start [-Penv={env}]
 ```
 
-For an alternative to start an environment, run the following :
+For an alternative to start an environment, run the following:
 
 ```bash
    cd crafter-{env}
@@ -557,12 +557,12 @@ For the *Authoring Environment*:
 
 For the *Delivery Environment*:
 
-* The above will start the authoring environment with the default port 9080
+* The above will start the delivery environment with the default port 9080
 
-Here's an example starting an authoring environment:
+Here's an example starting a delivery environment:
 
 ```bash
-   ./gradlew start -Penv=authoring
+   ./gradlew start -Penv=delivery
 ```
 
 ### 5.2.3 STOP
@@ -573,7 +573,7 @@ To stop an environment, run the following:
    ./gradlew stop [-Penv={env}]
 ```
 
-What this does under the hood is:
+For an alternative to stop an environment, run the following:
 
 ```bash
    cd crafter-{env}
@@ -588,7 +588,7 @@ The Gradle task ``bundle`` will build deployable and distributable binaries of C
    ./gradlew bundle [-Penv={env}]
 ```
 
-Binaries will be saved as ``crafter-cms-authoring-VERSION.tar`` for the *Authoring Environment* and ``crafter-cms-delivery-VERSION.tar`` for the *Delivery Environment* in the ``bundles`` folder
+Binaries will be saved as ``crafter-cms-authoring-VERSION.tar.gz`` for the *Authoring Environment* and ``crafter-cms-delivery-VERSION.tar.gz`` for the *Delivery Environment* in the ``bundles`` folder
 
 Using the common task property ``env`` lets you select what environment (authoring or delivery) will be generated.
 
@@ -599,165 +599,4 @@ Let's look at an example using the task property mentioned above:
 ```
 
 The command above will generate an authoring binary archive in the bundles folder named ``crafter-cms-authoring-VERSION.tar.gz``.
-
-### <a id="gradle-tasks"></a>5.2.5 Gradle Tasks
-
-In the section above, we discussed some of the Gradle tasks used for building, starting, stopping and bundling our authoring and delivery environments.  To get more information about all tasks used, run the following:
-
-```bash
-   ./gradlew tasks --all
-```
-
-Let's take a look at some examples of running a task.
-
-#### 5.2.5.1 downloadTomcat
-
-Downloads the configured Tomcat version and also verifies that the zip file is ok against a sha1 signature.
-
-```bash
-   ./gradlew downloadTomcat
-```
-
-
-#### <a id="common-task-properties"></a>5.2.5.2 Common Task Properties
-
-Aside from the tasks that we can run, there are also some properties defined in CrafterCMS that allows us to configure our environment.  Below are the available task properties
-
-**Download Properties**
-| Property | Description |
-|-----|-----|
-| ``tomcat.version`` | Sets the tomcat version to be downloaded |
-| ``groovy.version`` | Sets the groovy version to be downloaded |
-| ``opensearch.version``| Sets the OpenSearch version to be downloaded |
-| ``mariadb4j.version`` | Sets the MariaDb version to be downloaded |
-| ``downloadDir`` | Path were all downloads will be saved. Default value is ``./target/downloads`` |
-
-**Environment Building Properties**
-| Property | Description |
-|-----|-----|
-| ``authoring.root`` | Path were a development environment will be generated. <br> Default value is ``./crafter-authoring/`` |
-| ``delivery.root`` | Path were a delivery environment will be generated. <br> Default value is ``./crafter-delivery/`` |
-| ``crafter.profile`` | Includes Profile in the generation of the development environment. <br>  Default value is false. <br> **If true, MongoDB is required** |
-| ``crafter.social`` | Includes Social in the generation of the development environment. <br> Default value is false, <br> **If true, *includeProfile* will be set to true** |
-
-**Authoring Environment Properties** 
-| Property | Description |
-|-----|-----|
-| ``authoring.tomcat.http.port`` | Authoring Tomcat Http port. Default value is 8080 |
-| ``authoring.tomcat.shutdown.port`` | Authoring Tomcat shutdown port. Default value is 8005 |
-| ``authoring.tomcat.ajp.port`` | Authoring Tomcat AJP port. Default value is 8009 |
-| ``authoring.tomcat.https.port`` | Authoring Tomcat SSL(https) port. Default value is 8443 |
-| ``authoring.tomcat.debug.port`` | Authoring Tomcat debug port. Default value is 8000 |
-| ``authoring.mongo.port`` | Authoring MongoDb port. Default value is 27020 |
-| ``authoring.elasticsearch.port`` | Authoring Elasticsearch port. Default value is 9201 |
-| ``authoring.smtp.port`` | Authoring SMTP port. Default value is 25 |
-| ``authoring.mariadb.port`` | Authoring MariaDb port. Default value is 33306 |
-| ``authoring.deployer.port`` | Authoring Deployer port. Default value is 9191 |
-| ``authoring.deployer.debug.port`` | Authoring Deployer debug port. Default value is 5000 |
-| ``authoring.deployment.dir`` | Authoring deployment directory. <br> Default value is "data/repos/sites" |
-
-**Delivery Environment Properties**
-| Property | Description |
-|-----|-----|
-| ``delivery.tomcat.http.port`` | Delivery Tomcat Http port. Default value is 9080 |
-| ``delivery.tomcat.shutdown.port`` | Delivery Tomcat Shutdown port. Default value is 9005 |
-| ``delivery.tomcat.ajp.port`` | Delivery Tomcat AJP port. Default value is 9009 |
-| ``delivery.tomcat.https.port`` | Delivery Tomcat SSL(https) port. Default value is 9443 |
-| ``delivery.tomcat.debug.port`` | Delivery Tomcat debug port. Default value is 9000 |
-| ``delivery.mongodb.port`` | Delivery Mongo DB port. Default value is 28020 |
-| ``delivery.elasticsearch.port`` | Delivery Elasticsearch port. Default value is 9202 |
-| ``delivery.deployer.port`` | Delivery Deployer port. Default value is 9192 |
-| ``delivery.deployer.debug.port`` | Delivery Deployer debug port. Default value is 5001 |
-| ``delivery.deployment.dir`` | Delivery Deployment directory. <br> Default value is "data/repos/sites" |
-| ``delivery.smtp.port`` | Delivery SMTP port. Default value is 25 |
-
-
-**Other Properties**
-| Property | Description |
-|-----|-----|
-| ``overwriteConfig`` | Overwrite configurations. Default value is false |
-| ``backupAndReplaceConfig`` | Backup and replace configurations. Default value is false |
-
-<a id="git-properties" style="font-weight:bold">Git Properties</a> 
-| Property | Description |
-|-----|-----|
-| ``crafter.git.url`` | Git URL <br> Default value is "https://github.com/craftercms/" |
-| ``crafter.git.branch`` | Git source branch. Default value is "master" |
-| ``crafter.git.remote`` | Git repository. Default value is "origin" |
-| ``crafter.git.shallowClone`` | Perform a shallow clone. Default value is false |
-| ``crafter.ui.repo`` | Is Studio UI from repository? Default value is false |
-
-Here's an example using one of the task properties, ``gitRepo``,  to get the latest code from CrafterCMS, in order to have the latest updates from the community:
-
-```bash
-   ./gradlew update -Pcrafter.git.remote=upstream
-```
-
-Here's another example on how to clone, build and bundle from a given tag/branch.  Remember to clone the desired branch/tag of craftercms (As described in the [next section](#git) ),  before running the command below:
-
-```bash
-   ./gradlew clone build deploy bundle -Pcrafter.git.branch={BRANCH}/{TAG NAME}
-```
-
-Replace {BRANCH} or {TAG NAME} with the branch and tag you'd like to build.
-
-Here's yet another example of building and deploying the authoring environment of CrafterCMS with Crafter Profile included:
-
-```bash
-   ./gradlew build deploy -Pcrafter.profile=true -Penv=authoring
-```
-
-## <a id="git"></a>5.3 Useful Git Commands
-
-Here are some useful Git commands for setting up our CrafterCMS project.
-
->**_NOTE:_**
-You may notice a few ``.keep`` files in your repository.  Those ``.keep`` files are automatically generated by Studio when empty folders are created, since Git doesn't keep track of folders (and Studio does). It's best if you just leave them there and don't add them to ``.gitignore``
-
-
-### 5.3.1 Copy CrafterCMS repository and clone submodules
-
-```bash
-       git clone https://github.com/craftercms/craftercms.git
-       cd craftercms
-       git submodule clone
-```
-
-### <a id="update-submodules"></a>5.3.2Update Submodules
-
-1. Run
-
-```bash
-   git submodule update --force --recursive --remote
-```
-
-### 5.3.3 Change Project URL to a fork
-
-1. Change the url on the _.gitmodules_ file
-2. Run
-
-```bash
-   git submodule sync --recursive
-```
-
-### 5.3.4 Change the branch/tag of a project (manual way)
-
-1. Change the `branch` value in the desire project to valid branch,tag or commit id
-2. Run
-
-```bash
-   git submodule sync --recursive
-```
-
-3. Run [update-submodules](#update-submodules)
-
-### 5.3.5 Clone a branch/tag
-
-To clone the branch/tag of craftercms that you want to work with, run:
-
-```bash
-    git clone -b<branch> https://github.com/craftercms/craftercms/
-```
-
-Replace {BRANCH} or {TAG NAME} with the branch and tag you'd like to build.  After cloning the desired branch, you can now clone, build and bundle from a given tag/branch using the property `crafter.git.branch` as described in an earlier section [Git Properties](#git-properties)
 
