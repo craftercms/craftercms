@@ -39,7 +39,9 @@ class PostUpgradeHooks {
     ]
 
     private static final List<PostUpgradeHooks> DELIVERY_3_1_X_HOOKS = [
-            new PostUpgradeCompletedHook(false)
+            new StartCrafterHook(),
+            new RecreateIndexesHook(),
+            new PostUpgradeCompletedHook(true)
     ]
 
     private static final List<PostUpgradeHooks> AUTHORING_4_0_X = [

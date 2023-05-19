@@ -148,7 +148,9 @@ ext.commonGrapesDownloads = [
     ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
         "${projectDir}/resources/bin/upgrade/upgrade-target.groovy"],
     ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
-        "${projectDir}/resources/bin/upgrade/post-upgrade.groovy"]
+        "${projectDir}/resources/bin/upgrade/post-upgrade.groovy"],
+    ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+        "${projectDir}/resources/bin/upgrade/upgrade-search.groovy"]
 ]
 
 ext.authoringGrapesDownloads = [

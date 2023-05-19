@@ -294,13 +294,20 @@ def upgradeSearch(Path targetFolder, Map optionValues) {
     } finally {
         if (esProcess && esProcess.isAlive()) {
             if (optionValues['stay-alive']) {
-                println "'stay-alive' flag on, waiting for parent process to be stopped"
-                esProcess.waitFor()
-            } else {
-                println "End process. Stop Elasticsearch"
-                esProcess.destroy()
+                println "'stay-alive' flag on, hit enter to stop Elasticsearch"
+                System.console().readLine '>'
             }
+            println "End process. Stop Elasticsearch"
+            esProcess.destroy()
+            esProcess.waitFor()
         }
+    }
+
+    // If indexes dir is not set in this environment, use the default one
+    if (getEnv('ES_INDEXES_DIR') == null) {
+        println "Move indexes from 'data/indexes-es' to 'indexes'"
+        Path defaultSearchIndexesDir = targetFolder.resolve('data/indexes-es')
+        Files.move(defaultSearchIndexesDir, defaultSearchIndexesDir.resolveSibling('indexes'))
     }
     println "========================================================================"
     println "Search upgrade completed"
@@ -332,7 +339,9 @@ if (options) {
     if (CollectionUtils.isNotEmpty(extraArguments)) {
         def targetPath = extraArguments[0]
         def targetFolder = Paths.get(targetPath)
+
         upgradeSearch(targetFolder, optionValues)
+
     } else {
         exitWithError(cli, 'No <target-installation-path> was specified')
     }
