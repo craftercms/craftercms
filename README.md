@@ -87,7 +87,7 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `authoringEnvDir`: Where to store the authoring environment, default `./crafter-authoring`
 * `deliveryEnvDir`: Where to store the delivery environment, default `./crafter-delivery`
 * `currentPlatform`: What platform to build to (`linux` or `darwin`), default is the build machine's OS
-* `currentArch`: What arch to build to (`aarch64` or `x64`), default is the build machine's arch
+* `currentArch`: What arch to build to (`aarch64` or `x86_64`), default is the build machine's arch
 
 # 3. Build Deployable Binaries
 

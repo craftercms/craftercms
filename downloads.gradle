@@ -45,8 +45,8 @@ ext.downloads = [
     ],
     [
         name: "openSearch",
-        url: "https://artifacts.opensearch.org/releases/bundle/opensearch/${openSearchVersion}/opensearch-${openSearchVersion}-${openSearchPlatform}-${currentArch}.tar.gz",
-        destinationFile: "${downloadDir}/openSearch-${openSearchVersion}-${openSearchPlatform}-${currentArch}.tar.gz",
+        url: "https://artifacts.opensearch.org/releases/bundle/opensearch/${openSearchVersion}/opensearch-${openSearchVersion}-${openSearchPlatform}-${openSearchArch}.tar.gz",
+        destinationFile: "${downloadDir}/openSearch-${openSearchVersion}-${openSearchPlatform}-${openSearchArch}.tar.gz",
         checksumAlgorithm: "sha512",
         expand: "true",
         expandFolder: "${downloadDir}"
