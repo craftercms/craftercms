@@ -81,6 +81,7 @@
 		<!-- Override property setup by Spring Boot Parent -->
 		<jackson.version>2.15.0</jackson.version>
 		<aws.version>1.12.463</aws.version>
+		<jose4j.version>0.9.3</jose4j.version>
 		<box.sdk.version>4.1.1</box.sdk.version>
 		<opensearch.version>2.7.0</opensearch.version>
 		<opensearch.client.version>2.4.0</opensearch.client.version>
