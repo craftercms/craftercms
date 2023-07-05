@@ -50,6 +50,8 @@ class StartCrafterHook implements PostUpgradeHook {
 
         executeCommand(["./startup.sh"] + flags, binFolder, setupCallback)
 
+        // Wait for OpenSearch to start so its output don't get mixed with this script's
+        sleep 5000
         println ''
         println 'Please make sure Crafter has started successfully before continuing'
 
