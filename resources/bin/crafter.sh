@@ -932,6 +932,7 @@ function searchStatus() {
 }
 
 function startTomcat() {
+  rmDirContents "$CATALINA_TMPDIR"
   cd $CRAFTER_BIN_DIR
   if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(getPidByPort "$MARIADB_PORT") ]] || [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]]; then
     module="Tomcat"
@@ -956,6 +957,7 @@ function startTomcat() {
 }
 
 function debugTomcat() {
+  rmDirContents "$CATALINA_TMPDIR"
   cd $CRAFTER_BIN_DIR
   if [[ ! -d "$CRAFTER_BIN_DIR/dbms" ]] || [[ -z $(getPidByPort "$MARIADB_PORT") ]] ;then
     module="Tomcat"
