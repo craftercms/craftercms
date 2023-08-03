@@ -83,13 +83,13 @@ project.ext.set("crafterCmd", getPropertySafelyWithDefaults("crafterCmd", "./cra
 project.ext.set("currentPlatform", getPropertySafelyWithDefaults("currentPlatform", SystemUtils.IS_OS_MAC_OSX ? "darwin" : "linux"))
 project.ext.set("currentArch", getPropertySafelyWithDefaults("currentArch", SystemUtils.OS_ARCH == "aarch64" ? "aarch64" : "x86_64"))
 project.ext.set("openSearchPlatform", getPropertySafelyWithDefaults("openSearchPlatform", "linux"))
-project.ext.set("openSearchArch", getPropertySafelyWithDefaults("openSearchArch", SystemUtils.OS_ARCH == "aarch64" ? "aarch64" : "x64"))
+project.ext.set("openSearchArch", getPropertySafelyWithDefaults("openSearchArch", "x64"))
 project.ext.set("mongodbPlatform", getPropertySafelyWithDefaults("mongodbPlatform", currentPlatform == "darwin" ? "osx" : currentPlatform))
 project.ext.set("mongodbBinary", getPropertySafelyWithDefaults("mongodbBinary", currentPlatform == "darwin" ? "macos" : currentPlatform))
-project.ext.set("mongoshExtention", getPropertySafelyWithDefaults("mongoshExtention", SystemUtils.IS_OS_MAC_OSX ? "zip" : "tgz"))
+project.ext.set("mongoshExtention", getPropertySafelyWithDefaults("mongoshExtention", currentPlatform == "darwin" ? "zip" : "tgz"))
 if (currentPlatform == "darwin") {
-	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", SystemUtils.OS_ARCH == "aarch64" ? "arm64" : "x86_64"))
-	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", SystemUtils.OS_ARCH == "aarch64" ? "arm64" : "x64"))
+	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", currentArch == "aarch64" ? "arm64" : "x86_64"))
+	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", currentArch == "aarch64" ? "arm64" : "x64"))
 } else {
 	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", "x86_64-${execDetermineLinuxOS()}${execDetermineLinuxVersion()}"))
 	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", "x64"))
