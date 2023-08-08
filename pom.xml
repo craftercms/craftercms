@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>craftercms</artifactId>
-	<version>4.1.1-SNAPSHOT</version><!-- craftercms version flag -->
+	<version>4.1.2-SNAPSHOT</version><!-- craftercms version flag -->
 
 	<name>CrafterCMS</name>
 	<description>CrafterCMS Parent POM</description>
@@ -67,7 +67,7 @@
 		<!-- Main -->
 		<!-- Spring -->
 		<spring.version>5.3.28</spring.version>
-		<spring.security.version>5.8.3</spring.security.version>
+		<spring.security.version>5.8.5</spring.security.version>
 		<spring.data.version>2.7.11</spring.data.version>
 		<spring.ldap.version>2.4.1</spring.ldap.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
@@ -132,7 +132,7 @@
 		<httpproxy.version>1.12.1</httpproxy.version>
 		<apache.ivy>2.5.1</apache.ivy>
 		<tinify.version>1.8.3</tinify.version>
-		<mariadb4j.version>2.6.0.1</mariadb4j.version>
+		<mariadb4j.version>2.6.0.2</mariadb4j.version>
 		<saxon.version>12.2</saxon.version>
 		<apache.cxf.version>3.5.5</apache.cxf.version>
 		<ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>

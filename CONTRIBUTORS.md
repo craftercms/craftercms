@@ -25,6 +25,7 @@ Security Analysts
 =================
 | Name                               | URL                                  | Contribution                                                                              |
 |------------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------|
+| Egidio Romano                      | egidio.romano@mindedsecurity.com     | [CV-2023080301](https://docs.craftercms.org/current/security/advisory.html#cv-2023080301) |
 | Gil Correia                        | gil.correia@devoteam.com             | [CV-2023021701](https://docs.craftercms.org/current/security/advisory.html#cv-2023021701) |
 | Matei "Mal" Badanoiu               | https://github.com/mbadanoiu         | [CV-2022091301](https://docs.craftercms.org/current/security/advisory.html#cv-2022091301) |
 |                                    |                                      | [CV-2022091302](https://docs.craftercms.org/current/security/advisory.html#cv-2022091302) |
