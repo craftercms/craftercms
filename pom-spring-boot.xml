@@ -86,7 +86,7 @@
 		<opensearch.version>2.8.0</opensearch.version>
 		<opensearch.client.version>2.5.0</opensearch.client.version>
 		<tomcat.version>9.0.76</tomcat.version>
-		<mariadb.version>10.4.31</mariadb.version>
+		<mariadb.version>10.4.31.1</mariadb.version>
 		<groovy.version>3.0.17</groovy.version>
 		<apache.ivy>2.5.1</apache.ivy>
 		<log4j2.version>2.20.0</log4j2.version>
