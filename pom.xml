@@ -98,7 +98,7 @@
 		<xstream.version>1.4.20</xstream.version>
 		<slf4j.version>2.0.7</slf4j.version>
 		<log4j.version>2.20.0</log4j.version>
-		<quartz.version>2.3.2</quartz.version>
+		<quartz.version>2.4.0-rc2</quartz.version>
 		<freemarker.version>2.3.32</freemarker.version>
 		<aspectj.version>1.9.19</aspectj.version>
 		<bouncycastle.version>1.70</bouncycastle.version>
@@ -115,7 +115,7 @@
 		<jgit.version>6.5.0.202303070854-r</jgit.version>
 		<snakeyaml.version>2.0</snakeyaml.version>
 		<aws.sdk.version>1.12.463</aws.sdk.version>
-		<box.sdk.version>4.1.1</box.sdk.version>
+		<box.sdk.version>4.4.0</box.sdk.version>
 		<sardine.version>5.10</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
 		<jaxen.version>2.0.0</jaxen.version>
@@ -130,9 +130,9 @@
 		<graphql.version>20.2</graphql.version>
 		<graphql.extended.scalars.version>20.2</graphql.extended.scalars.version>
 		<httpproxy.version>1.12.1</httpproxy.version>
-		<apache.ivy>2.5.1</apache.ivy>
+		<apache.ivy>2.5.2</apache.ivy>
 		<tinify.version>1.8.3</tinify.version>
-		<mariadb4j.version>2.6.0.4</mariadb4j.version>
+		<mariadb4j.version>2.6.0.8</mariadb4j.version>
 		<saxon.version>12.2</saxon.version>
 		<apache.cxf.version>3.5.5</apache.cxf.version>
 		<ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
@@ -169,6 +169,7 @@
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<eddsa.version>0.3.0</eddsa.version>
 		<okhttp.version>4.11.0</okhttp.version>
+		<okio.version>3.4.0</okio.version>
 		<zxcvbn.version>1.7.0</zxcvbn.version>
 		<esapi.version>2.5.2.0</esapi.version>
 		<opensaml.version>4.1.1</opensaml.version>
