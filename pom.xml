@@ -113,8 +113,8 @@
 		<json.path.version>2.8.0</json.path.version>
 		<reactor.version>1.0.1.RELEASE</reactor.version>
 		<jgit.version>6.5.0.202303070854-r</jgit.version>
-		<snakeyaml.version>2.0</snakeyaml.version>
-		<aws.sdk.version>1.12.463</aws.sdk.version>
+		<snakeyaml.version>2.2</snakeyaml.version>
+		<aws.sdk.version>1.12.543</aws.sdk.version>
 		<box.sdk.version>4.4.0</box.sdk.version>
 		<sardine.version>5.10</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
@@ -182,7 +182,7 @@
 		<de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.9.1</xmlunit.core.version>
-		<tomcat.version>9.0.76</tomcat.version>
+		<tomcat.version>9.0.80</tomcat.version>
 
 		<!-- Build -->
 		<maven.compiler.version>3.11.0</maven.compiler.version>
