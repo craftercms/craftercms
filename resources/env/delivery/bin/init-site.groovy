@@ -1,9 +1,9 @@
 @Grapes([
-		@Grab(group='org.slf4j', module='slf4j-nop', version='1.7.25'),
-		@Grab(group='org.apache.commons', module='commons-lang3', version='3.7'),
-		@Grab(group='org.apache.commons', module='commons-collections4', version='4.1'),
-		@Grab(group='commons-io', module='commons-io', version='2.6'),
-		@Grab(group='io.github.http-builder-ng', module='http-builder-ng-core', version='1.0.3')
+	@Grab(group='org.slf4j', module='slf4j-nop', version='1.7.36'),
+	@Grab(group='org.apache.commons', module='commons-lang3', version='3.12.0'),
+	@Grab(group='org.apache.commons', module='commons-collections4', version='4.4'),
+	@Grab(group='commons-io', module='commons-io', version='2.13.0'),
+	@Grab(group='io.github.http-builder-ng', module='http-builder-ng-core', version='1.0.3')
 ])
 
 import java.nio.file.Files
@@ -56,9 +56,8 @@ def buildCli(cli) {
 			'authentication')
 	cli.p(longOpt: 'password', args: 1, argName: 'password', 'The password for the remote Git repo, when using basic ' +
 			'authentication')
-	cli.k(longOpt: 'private-key', args: 1, argName: 'path', 'The path to the private key, if it\'s not under the ' +
-			'default path (~/.ssh/id_rsa), when authenticating ' +
-			'through SSH to the remote Git repo')
+	cli.k(longOpt: 'private-key', args: 1, argName: 'path', 'The path to the private key, when using private-key ' +
+			'authentication through SSH to the remote Git repo')
 	cli.f(longOpt: 'passphrase', args: 1, argName: 'passphrase', 'The passphrase of the private key (when the key is ' +
 			'passphrase protected)')
 	cli.a(longOpt: 'notification-addresses', args: 1, argName: 'addresses', 'A comma-separated list of email ' +
@@ -80,14 +79,11 @@ def printHelp(cli) {
 	println '     init-site -b master mysite /opt/crafter/authoring/data/repos/sites/mysite/published'
 	println ' Init a site that is in a remote HTTPS repo with username/password authentication'
 	println '     init-site -u jdoe -p jdoe1234 mysite https://github.com/jdoe/mysite.git'
-	println ' Init a site that is in a remote SSH repo with public/private key authentication (default private key path '
-	println ' with no passphrase)'
-	println '     init-site mysite ssh://myserver/opt/crater/sites/mysite'
-	println ' Init a site that is in a remote SSH repo with public/private key authentication (specific private key path '
-	println ' with no passphrase)'
+	println ' Init a site that is in a remote SSH repo with public/private key authentication (private key path '
+	println '     with no passphrase)'
 	println '     init-site -k ~/.ssh/jdoe_key mysite ssh://myserver/opt/crater/sites/mysite'
 	println ' Init a site that is in a remote SSH repo with public/private key authentication (specific private key path '
-	println ' with passphrase)'
+	println '     with passphrase)'
 	println '     init-site -k ~/.ssh/jdoe_key -f jdoe123 mysite ssh://myserver/opt/crater/sites/mysite'
 }
 

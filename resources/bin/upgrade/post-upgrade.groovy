@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -16,13 +16,14 @@
 package upgrade
 
 @Grapes([
-        @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.25'),
-        @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.7'),
-        @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.1'),
-        @Grab(group = 'org.apache.commons', module = 'commons-configuration2', version = '2.7'),
-        @Grab(group = 'commons-beanutils', module = 'commons-beanutils', version = '1.9.3'),
-        @Grab(group = 'org.yaml', module = 'snakeyaml', version = '1.24'),
-        @Grab(group = 'io.github.http-builder-ng', module = 'http-builder-ng-core', version = '1.0.3')
+    @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.36'),
+    @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.12.0'),
+    @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.4'),
+    @Grab(group = 'org.apache.commons', module = 'commons-configuration2', version = '2.9.0'),
+    @Grab(group = 'org.apache.commons', module = 'commons-text', version = '1.10.0'),
+    @Grab(group = 'commons-beanutils', module = 'commons-beanutils', version = '1.9.4'),
+    @Grab(group = 'org.yaml', module = 'snakeyaml', version = '2.2'),
+    @Grab(group = 'io.github.http-builder-ng', module = 'http-builder-ng-core', version = '1.0.3')
 ])
 
 import org.apache.commons.collections4.CollectionUtils
@@ -86,14 +87,14 @@ if (options) {
 
     // Parse the options and arguments
     def extraArguments = options.arguments()
-    if (CollectionUtils.isNotEmpty(extraArguments)) {
+    if (CollectionUtils.isNotEmpty(extraArguments) && extraArguments.size() == 3) {
         def oldVersion = extraArguments[0]
         def newVersion = extraArguments[1]
         def environment = extraArguments[2]
 
         postUpgrade(oldVersion, newVersion, environment)
     } else {
-        exitWithError(cli, 'No <target-installation-path> was specified')
+        exitWithError(cli, 'Invalid list of arguments')
     }
 }
 

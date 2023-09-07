@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2020 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -19,7 +19,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+		classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property('commons-lang3.version')
 	}
 }
 
@@ -28,29 +28,69 @@ import org.apache.commons.lang3.SystemUtils
 ext.getPropertySafelyWithDefaults = {
 	prop, propDefault ->
 
-		project.ext.set("ret", project.hasProperty(prop)? project.property(prop).toString(): propDefault)
+		project.ext.set("ret", project.hasProperty(prop) ? project.property(prop).toString() : propDefault)
 
 		return ret
+}
+
+def commandTimeout = getPropertySafelyWithDefaults("commandTimeout", 1000000).toInteger()
+
+ext.execDetermineLinuxOS = {
+	def cmd = "lsb_release -si"
+	def proc = cmd.execute()
+	proc.waitForOrKill(commandTimeout)
+
+	if (proc.exitValue() != 0) {
+		return "unknown"
+	}
+
+	return proc.in.text.toLowerCase().trim()
+}
+
+ext.execDetermineLinuxVersion = {
+	def cmd = "lsb_release -sr"
+	def proc = cmd.execute()
+	proc.waitForOrKill(commandTimeout)
+
+	if (proc.exitValue() != 0) {
+		return "unknown-version"
+	}
+
+	return proc.in.text.replace(".", "").trim()
 }
 
 project.ext.set("overwriteArtifact", getPropertySafelyWithDefaults("refreshDownloads", "false").toBoolean())
 project.ext.set("overwriteChangedFiles", getPropertySafelyWithDefaults("overwriteChangedFiles", "true").toBoolean())
 project.ext.set("refreshEnv", getPropertySafelyWithDefaults("refreshEnv", "false").toBoolean())
 project.ext.set("downloadGrapes", getPropertySafelyWithDefaults("downloadGrapes", "false").toBoolean())
-project.ext.set("socialRequired", getPropertySafelyWithDefaults("crafter.social", "false").toBoolean())
-project.ext.set("profileRequired", (getPropertySafelyWithDefaults("crafter.profile", "false").toBoolean() || socialRequired))
+project.ext.set("socialRequired", getPropertySafelyWithDefaults("crafter.social", "false").toBoolean()
+		|| getPropertySafelyWithDefaults("socialRequired", "false").toBoolean())
+project.ext.set("profileRequired", (getPropertySafelyWithDefaults("crafter.profile", "false").toBoolean()
+		|| (getPropertySafelyWithDefaults("profileRequired", "false").toBoolean()
+		|| socialRequired)))
 project.ext.set("unitTest", getPropertySafelyWithDefaults("unitTest", "false").toBoolean())
 project.ext.set("startMongoDB", getPropertySafelyWithDefaults("startMongodb", (profileRequired || socialRequired)).toBoolean())
-project.ext.set("startElasticsearch", getPropertySafelyWithDefaults("withElasticsearch", "true").toBoolean())
+project.ext.set("startSearch", getPropertySafelyWithDefaults("startSearch", getPropertySafelyWithDefaults("withSearch", "true")).toBoolean())
 project.ext.set("startCommand", project.hasProperty("debug") ? "debug" : "start")
 project.ext.set("stopCommand", "stop")
 project.ext.set("statusCommand", "status")
 project.ext.set("gitUrl", getPropertySafelyWithDefaults("gitUrl", "https://github.com/craftercms/"))
 project.ext.set("gitRemote", getPropertySafelyWithDefaults("gitRemote", "origin"))
 project.ext.set("shallowClone", getPropertySafelyWithDefaults("shallowClone", "false").toBoolean())
-project.ext.set("gitBranch", "develop")  // craftercms branch flag
+project.ext.set("gitBranch", "develop") // craftercms branch flag
 project.ext.set("bundlesDir", getPropertySafelyWithDefaults(bundlesDir, "./bundles"))
-project.ext.set("currentPlatform", getPropertySafelyWithDefaults("currentPlatform", SystemUtils.IS_OS_MAC_OSX ? "darwin" : "linux"))
-project.ext.set("elasticsearchPlatform", getPropertySafelyWithDefaults("elasticsearchPlatform", currentPlatform))
-project.ext.set("mongodbPlatform", getPropertySafelyWithDefaults("mongodbPlatform", currentPlatform == "darwin" ? "osx" : currentPlatform))
 project.ext.set("crafterCmd", getPropertySafelyWithDefaults("crafterCmd", "./crafter.sh"))
+project.ext.set("currentPlatform", getPropertySafelyWithDefaults("currentPlatform", SystemUtils.IS_OS_MAC_OSX ? "darwin" : "linux"))
+project.ext.set("currentArch", getPropertySafelyWithDefaults("currentArch", SystemUtils.OS_ARCH == "aarch64" ? "aarch64" : "x86_64"))
+project.ext.set("openSearchPlatform", getPropertySafelyWithDefaults("openSearchPlatform", "linux"))
+project.ext.set("openSearchArch", getPropertySafelyWithDefaults("openSearchArch", "x64"))
+project.ext.set("mongodbPlatform", getPropertySafelyWithDefaults("mongodbPlatform", currentPlatform == "darwin" ? "osx" : currentPlatform))
+project.ext.set("mongodbBinary", getPropertySafelyWithDefaults("mongodbBinary", currentPlatform == "darwin" ? "macos" : currentPlatform))
+project.ext.set("mongoshExtention", getPropertySafelyWithDefaults("mongoshExtention", currentPlatform == "darwin" ? "zip" : "tgz"))
+if (currentPlatform == "darwin") {
+	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", currentArch == "aarch64" ? "arm64" : "x86_64"))
+	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", currentArch == "aarch64" ? "arm64" : "x64"))
+} else {
+	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", "x86_64-${execDetermineLinuxOS()}${execDetermineLinuxVersion()}"))
+	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", "x64"))
+}

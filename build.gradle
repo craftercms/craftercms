@@ -21,7 +21,7 @@ plugins {
 apply plugin: "groovy"
 apply plugin: 'de.undercouch.download'
 
-project.version = "4.0.0-SNAPSHOT" // craftercms version flag
+project.version = "4.1.2-SNAPSHOT" // craftercms version flag
 
 apply from: "global-settings.gradle"
 apply from: "commons.gradle"
@@ -70,14 +70,13 @@ task download() {
 			}
 
 			if (performDownload) {
-				def artifact = download['name']
 				downloadArtifact(
 						download['name'],
 						download['url'],
 						download['destinationFile'],
 						download['checksumAlgorithm'],
 						overwriteArtifact,
-						true /* verify artifact */,
+						download['verifyArtifact'] == false ? false : true /* verify artifact */,
 						download['expand'].toBoolean(),
 						download['expandFolder']
 				)
@@ -178,8 +177,8 @@ task start() {
 			println "Starting $environment"
 
 			def command = [ startCommand ]
-			if (!startElasticsearch)
-				command += ["skipElasticsearch"]
+			if (!startSearch)
+				command += ["skipSearch"]
 			if (startMongoDB)
 				command += ["forceMongo"]
 			runEnvironment(environment, command, profileRequired, socialRequired)
@@ -194,8 +193,8 @@ task stop() {
 			println "Stopping $environment"
 
 			def command = [ stopCommand ]
-			if (!startElasticsearch)
-				command += ["skipElasticsearch"]
+			if (!startSearch)
+				command += ["skipSearch"]
 			if (startMongoDB)
 				command += ["forceMongo"]
 			runEnvironment(environment, command, profileRequired, socialRequired)
@@ -208,8 +207,8 @@ task status() {
 	doFirst {
 		getEnvironments().each { environment ->
 			def command = [ statusCommand ]
-			if (!startElasticsearch)
-				command += ["skipElasticsearch"]
+			if (!startSearch)
+				command += ["skipSearch"]
 			if (startMongoDB)
 				command += ["forceMongo"]
 			runEnvironment(environment, command, profileRequired, socialRequired)

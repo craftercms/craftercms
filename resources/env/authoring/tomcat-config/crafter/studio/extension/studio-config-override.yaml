@@ -10,6 +10,8 @@ studio.repo.basePath: ${env:CRAFTER_DATA_DIR}/repos
 # studio.repo.published.live: live
 # Git repository branch for the `staging` publishing target, default "staging"
 # studio.repo.published.staging: staging
+# If Git CLI should be used for some Git operations, for better performance (Git CLI needs to be installed beforehand)
+# studio.repo.git.cli.enabled: true
 
 ############################################################
 ##                   Site Configuration                   ##
@@ -39,6 +41,7 @@ studio.configuration.management.previewProtectedUrls: >-
   /api/1/site/context/graphql/rebuild,
   /api/1/site/cache/clear,
   /api/1/site/cache/statistics
+
 ############################################################
 ##                    Preview Deployer                    ##
 ############################################################
@@ -50,12 +53,6 @@ studio.preview.createTargetUrl: ${env:DEPLOYER_URL}/api/1/target/create_if_not_e
 studio.preview.deleteTargetUrl: ${env:DEPLOYER_URL}/api/1/target/delete-if-exists/{siteEnv}/{siteName}
 # URL to the preview repository (aka Sandbox) where authors save work-in-progress
 studio.preview.repoUrl: ${env:CRAFTER_DATA_DIR}/repos/sites/{siteName}/sandbox
-
-############################################################
-##                   Preview Search                       ##
-############################################################
-studio.preview.search.createUrl: ${env:SEARCH_URL}/api/2/admin/index/create
-studio.preview.search.deleteUrl: ${env:SEARCH_URL}/api/2/admin/index/delete/{siteName}
 
 ##################################################
 ##                   Database                   ##
@@ -94,17 +91,19 @@ studio.db.socket: /tmp/MariaDB4j.${env:MARIADB_PORT}.sock
 studio.security.cipher.salt: ${env:CRAFTER_SYSTEM_ENCRYPTION_SALT}
 # Key for encrypting
 studio.security.cipher.key: ${env:CRAFTER_SYSTEM_ENCRYPTION_KEY}
-# Password requirements validation regular expression
-# The supported capture group keys are:
-#   hasNumbers
-#   hasLowercase
-#   hasUppercase
-#   hasSpecialChars
-#   noSpaces
-#   minLength
-#   maxLength
-#   minMaxLength
-# studio.security.passwordRequirements.validationRegex: ^(?=(?<hasNumbers>.*[0-9]))(?=(?<hasLowercase>.*[a-z]))(?=(?<hasUppercase>.*[A-Z]))(?=(?<hasSpecialChars>.*[~|!`,;\/@#$%^&+=]))(?<minLength>.{8,})$
+
+# Password requirements minimum complexity
+# This is based on https://github.com/dropbox/zxcvbn
+# The minimum complexity corresponds to the password score
+# You can try this out here https://lowe.github.io/tryzxcvbn/
+#  score      # Integer from 0-4 (useful for implementing a strength bar)
+#  0 # too guessable: risky password. (guesses < 10^3)
+#  1 # very guessable: protection from throttled online attacks. (guesses < 10^6)
+#  2 # somewhat guessable: protection from unthrottled online attacks. (guesses < 10^8)
+#  3 # safely unguessable: moderate protection from offline slow-hash scenario. (guesses < 10^10)
+#  4 # very unguessable: strong protection from offline slow-hash scenario. (guesses >= 10^10)
+# The default value is 3
+# studio.security.passwordRequirements.minimumComplexity: 3
 
 # The key used for encryption of configuration properties
 studio.security.encryption.key: ${env:CRAFTER_ENCRYPTION_KEY}
@@ -162,12 +161,12 @@ studio.mail.port: ${env:MAIL_PORT}
 ################################################################
 ##                           Search                           ##
 ################################################################
-# URLs to connect to Elasticsearch
-studio.search.urls: ${env:ES_URL}
-# The username for Elasticsearch
-studio.search.username: ${env:ES_USERNAME}
-# The password for Elasticsearch
-studio.search.password: ${env:ES_PASSWORD}
+# URLs to connect to Search
+studio.search.urls: ${env:SEARCH_URL}
+# The username for Search
+studio.search.username: ${env:SEARCH_USERNAME}
+# The password for Search
+studio.search.password: ${env:SEARCH_PASSWORD}
 # The connection timeout in milliseconds, if set to -1 the default will be used
 studio.search.timeout.connect: -1
 # The socket timeout in milliseconds, if set to -1 the default will be used
@@ -198,10 +197,10 @@ studio.search.keepAlive: false
 # studio.serverless.delivery.deployer.target.localRepoPath: ${env:CRAFTER_DATA_DIR}/repos/aws/{siteName}
 # Parameters for the target template. Please check the deployer template documentation for the possible parameters.
 # The following parameters will be sent automatically, and you don't need to specify them: env, site_name, replace,
-# disable_deploy_cron, local_repo_path, repo_url, use_crafter_search
+# disable_deploy_cron, local_repo_path, repo_url
 # studio.serverless.delivery.deployer.target.template.params:
-#   # The delivery Elasticsearch endpoint (optional is authoring is using the same one, specified in the ES_URL env variable)
-#   elastic_search_url:
+#   # The delivery search endpoint (optional is authoring is using the same one, specified in the SEARCH_URL env variable)
+#   search_url:
 #   aws:
 #     # AWS region (optional if specified through default AWS chain)
 #     region: us-east-1
@@ -248,7 +247,12 @@ studio.security.token.password.sign: ${env:STUDIO_TOKEN_SIGN_PASSWORD}
 studio.security.token.password.encrypt: ${env:STUDIO_TOKEN_ENCRYPT_PASSWORD}
 # Name of the cookie to store the refresh token
 studio.security.token.cookie.name: ${env:STUDIO_REFRESH_TOKEN_NAME}
+# The domain used to set the refresh token cookie (if set to empty the domain will be detected from the request)
+studio.security.token.cookie.domain: ${env:STUDIO_REFRESH_TOKEN_DOMAIN}
 # Time in seconds for the expiration of the refresh token cookie
 studio.security.token.cookie.maxAge: ${env:STUDIO_REFRESH_TOKEN_MAX_AGE}
 # Indicates if the refresh token cookie should be secure (should be true for production environments behind HTTPS)
 studio.security.token.cookie.secure: ${env:STUDIO_REFRESH_TOKEN_SECURE}
+
+# Use base domain instead of subdomain for the crafterSite cookie
+studio.cookie.useBaseDomain: false

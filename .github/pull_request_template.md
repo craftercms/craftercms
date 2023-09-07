@@ -1,1 +1,1 @@
-### Ticket reference or full description of what's in the PR
+### Ticket reference or the full description of what's in the PR

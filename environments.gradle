@@ -19,21 +19,19 @@ buildscript {
         mavenCentral()
 	}
 	dependencies {
-		classpath project.property("grgit.version")
-        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+        classpath group: 'org.ajoberstar.grgit', name: 'org.ajoberstar.grgit.gradle.plugin', version: project.property("grgit.version")
     }
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.ajoberstar.grgit.Grgit
-import org.apache.commons.lang3.SystemUtils
 
 apply from: "commons.gradle"
 
 ext.environments = ["authoring", "delivery"]
 
 ext {
-    git = org.ajoberstar.grgit.Grgit.open(dir: "${projectDir}")
+    git = Grgit.open(dir: "${projectDir}")
 	gitRevisionId = git.head().id.substring(0, 6)
 }
 
@@ -42,7 +40,7 @@ ext.commonFoldersToCreate = [
     "/bin/apache-tomcat/shared/lib",
     "/bin/apache-tomcat/webapps",
     "/bin/apache-tomcat/lib/org/apache/catalina/util/",
-    "/bin/elasticsearch/logs",
+    "/bin/opensearch/logs",
     "/data"
 ]
 
@@ -87,15 +85,21 @@ ext.commonItemsToCopy = [
         exclude: ""
     ],
     [
-        name: "elasticsearch",
-        from: "${downloadDir}/elasticsearch-${elasticsearchVersion}/",
-        into: "/bin/elasticsearch/",
+        name: "opensearch",
+        from: "${downloadDir}/opensearch-${openSearchVersion}/",
+        into: "/bin/opensearch/",
         exclude: ""
     ],
     [
         name: "mongodb",
-        from: "${downloadDir}/mongodb-${mongodbPlatform}-x86_64-${mongodbVersion}/",
+        from: "${downloadDir}/mongodb-${mongodbBinary}-${mongodbArch}-${mongodbVersion}/",
         into: "/bin/mongodb/",
+        exclude: ""
+    ],
+    [
+        name: "mongosh",
+        from: "${downloadDir}/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}/bin/mongosh",
+        into: "/bin/mongodb/bin/",
         exclude: ""
     ],
     [
@@ -142,7 +146,9 @@ ext.commonGrapesDownloads = [
     ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
         "${projectDir}/resources/bin/upgrade/upgrade-target.groovy"],
     ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
-        "${projectDir}/resources/bin/upgrade/post-upgrade.groovy"]
+        "${projectDir}/resources/bin/upgrade/post-upgrade.groovy"],
+    ["groovy/bin/groovy", "-cp", "${projectDir}/resources/bin", "-Dgrape.root=.", "-Dmode.downloadGrapesOnly=true",
+        "${projectDir}/resources/bin/upgrade/upgrade-search.groovy"]
 ]
 
 ext.authoringGrapesDownloads = [
@@ -174,8 +180,8 @@ ext.commonUpdatePermissions = [
     ],
     [
         items: [
-            "/elasticsearch/bin/",
-            "/elasticsearch/modules"
+            "/opensearch/bin/",
+            "/opensearch/modules"
         ],
         permissions: [
             "-R",
@@ -261,8 +267,203 @@ ext.commonConfUpdatePatterns = [
         confFile: "/bin/apache-tomcat/conf/catalina.properties",
         patterns: [
             [
-                match: 'shared.loader=', 
+                match: 'shared.loader=',
                 replace: 'shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar'
+            ],
+            [
+                match: 'tomcat.util.scan.StandardJarScanFilter.jarsToSkip=\\',
+                replace: 'tomcat.util.scan.StandardJarScanFilter.jarsToSkip=\\\n' +
+                        'activation-*.jar,\\\n' +
+                        'aggs-matrix-stats-client-*.jar,\\\n' +
+                        'annotations-*.jar,\\\n' +
+                        'apache-mime4j-core-*.jar,\\\n' +
+                        'apache-mime4j-dom-*.jar,\\\n' +
+                        'AppleJavaExtensions-*.jar,\\\n' +
+                        'aws-java-sdk-*.jar,\\\n' +
+                        'batik-*.jar,\\\n' +
+                        'bcmail-*.jar,\\\n' +
+                        'bcpg-jdk15on-*.jar,\\\n' +
+                        'bcpkix-*.jar,\\\n' +
+                        'bcprov-*.jar,\\\n' +
+                        'bcutil-*.jar,\\\n' +
+                        'box-java-sdk-*.jar,\\\n' +
+                        'bsh-*.jar,\\\n' +
+                        'bson4jackson-*.jar,\\\n' +
+                        'bson-*.jar,\\\n' +
+                        'c3p0-*.jar,\\\n' +
+                        'caffeine-*.jar,\\\n' +
+                        'checker-qual-*.jar,\\\n' +
+                        'classmate-*.jar,\\\n' +
+                        'commons-configuration2-*.jar,\\\n' +
+                        'commons-configuration-*.jar,\\\n' +
+                        'commons-csv-*.jar,\\\n' +
+                        'commons-exec-*.jar,\\\n' +
+                        'commons-text-*.jar,\\\n' +
+                        'compiler-*.jar,\\\n' +
+                        'crafter-*.jar,\\\n' +
+                        'curvesapi-*.jar,\\\n' +
+                        'cxf-*.jar,\\\n' +
+                        'daisydiff.jar,\\\n' +
+                        'dd-plist-*.jar,\\\n' +
+                        'dec-*.jar,\\\n' +
+                        'eddsa-*.jar,\\\n' +
+                        'error_prone_annotations-*.jar,\\\n' +
+                        'esapi-*.jar,\\\n' +
+                        'exec-*.jar,\\\n' +
+                        'ezmorph-*.jar,\\\n' +
+                        'failureaccess-*.jar,\\\n' +
+                        'FastInfoset-*.jar,\\\n' +
+                        'findbugs-*.jar,\\\n' +
+                        'fontbox-*.jar,\\\n' +
+                        'freemarker-*.jar,\\\n' +
+                        'geronimo-jta_1.1_spec-*.jar,\\\n' +
+                        'gmongo-*.jar,\\\n' +
+                        'graphql-java-*.jar,\\\n' +
+                        'groovy-*.jar,\\\n' +
+                        'gson-*.jar,\\\n' +
+                        'guava-*.jar,\\\n' +
+                        'HdrHistogram-*.jar,\\\n' +
+                        'HikariCP-java7-*.jar,\\\n' +
+                        'hppc-*.jar,\\\n' +
+                        'httpasyncclient-*.jar,\\\n' +
+                        'httpcore5-*.jar,\\\n' +
+                        'httpcore-*.jar,\\\n' +
+                        'httpcore-nio-*.jar,\\\n' +
+                        'ion-java-*.jar,\\\n' +
+                        'istack-commons-runtime-*.jar,\\\n' +
+                        'ivy-*.jar,\\\n' +
+                        'j2objc-annotations-*.jar,\\\n' +
+                        'jackcess-encrypt-*.jar,\\\n' +
+                        'jackcess-*.jar,\\\n' +
+                        'jackson-annotations-*.jar,\\\n' +
+                        'jackson-*.jar,\\\n' +
+                        'jai-imageio-core-*.jar,\\\n' +
+                        'jakarta.*.jar,\\\n' +
+                        'java-dataloader-*.jar,\\\n' +
+                        'JavaEWAH-*.jar,\\\n' +
+                        'java-libpst-*.jar,\\\n' +
+                        'javaparser-core-*.jar,\\\n' +
+                        'javax.activation-*.jar,\\\n' +
+                        'javax.inject-*.jar,\\\n' +
+                        'javax.mail-*.jar,\\\n' +
+                        'jbig2-imageio-*.jar,\\\n' +
+                        'jboss-logging-3.4.1.Final.jar,\\\n' +
+                        'jcip-annotations-*.jar,\\\n' +
+                        'jcl-over-slf4j-*.jar,\\\n' +
+                        'jcommander-*.jar,\\\n' +
+                        'jdom2-*.jar,\\\n' +
+                        'jempbox-*.jar,\\\n' +
+                        'jFormatString-*.jar,\\\n' +
+                        'jhighlight-*.jar,\\\n' +
+                        'jline-*.jar,\\\n' +
+                        'jmatio-*.jar,\\\n' +
+                        'jmespath-java-*.jar,\\\n' +
+                        'jna-*.jar,\\\n' +
+                        'joda-time-*.jar,\\\n' +
+                        'jongo-*.jar,\\\n' +
+                        'jopt-simple-*.jar,\\\n' +
+                        'jose4j-*.jar,\\\n' +
+                        'jquery-*.jar,\\\n' +
+                        'json-lib-2.4-jdk15.jar,\\\n' +
+                        'jsoup-*.jar,\\\n' +
+                        'jsr305-*.jar,\\\n' +
+                        'juniversalchardet-*.jar,\\\n' +
+                        'junrar-*.jar,\\\n' +
+                        'jwarc-*.jar,\\\n' +
+                        'kotlin-stdlib-*.jar,\\\n' +
+                        'lang-mustache-client-*.jar,\\\n' +
+                        'listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar,\\\n' +
+                        'lucene-*.jar,\\\n' +
+                        'mapper-extras-client-*.jar,\\\n' +
+                        'mariaDB4j-*.jar,\\\n' +
+                        'mariadb-java-client-*.jar,\\\n' +
+                        'mchange-commons-java-*.jar,\\\n' +
+                        'metadata-extractor-*.jar,\\\n' +
+                        'minimal-json-*.jar,\\\n' +
+                        'mongodb-*.jar,\\\n' +
+                        'mongo-java-driver-*.jar,\\\n' +
+                        'mxparser-*.jar,\\\n' +
+                        'mybatis-*.jar,\\\n' +
+                        'neethi-*.jar,\\\n' +
+                        'neko-htmlunit-*.jar,\\\n' +
+                        'okhttp-*.jar,\\\n' +
+                        'okio-*.jar,\\\n' +
+                        'opensearch-*.jar,\\\n' +
+                        'opentest4j-*.jar,\\\n' +
+                        'org.eclipse.jgit-*.jar,\\\n' +
+                        'parent-join-client-*.jar,\\\n' +
+                        'parso-*.jar,\\\n' +
+                        'parsson-*.jar,\\\n' +
+                        'pdfbox-*.jar,\\\n' +
+                        'picocli-*.jar,\\\n' +
+                        'poi-*.jar,\\\n' +
+                        'protobuf-java-*.jar,\\\n' +
+                        'qdox-*.jar,\\\n' +
+                        'quartz-*.jar,\\\n' +
+                        'rank-eval-client-*.jar,\\\n' +
+                        'reactive-streams-*.jar,\\\n' +
+                        'rome-*.jar,\\\n' +
+                        'saaj-impl-*.jar,\\\n' +
+                        'sardine-*.jar,\\\n' +
+                        'Saxon-HE-*.jar,\\\n' +
+                        'script-security-*.jar,\\\n' +
+                        'semver4j-*.jar,\\\n' +
+                        'smiley-http-proxy-servlet-*.jar,\\\n' +
+                        'snakeyaml-*.jar,\\\n' +
+                        'SparseBitSet-*.jar,\\\n' +
+                        'spatial4j-*.jar,\\\n' +
+                        'spring-aop-*.jar,\\\n' +
+                        'spring-beans-*.jar,\\\n' +
+                        'spring-context-*.jar,\\\n' +
+                        'spring-context-support-*.jar,\\\n' +
+                        'spring-core-*.jar,\\\n' +
+                        'spring-data-commons-*.jar,\\\n' +
+                        'spring-expression-*.jar,\\\n' +
+                        'spring-jcl-*.jar,\\\n' +
+                        'spring-jdbc-*.jar,\\\n' +
+                        'spring-ldap-core-*.jar,\\\n' +
+                        'spring-messaging-*.jar,\\\n' +
+                        'spring-oxm-*.jar,\\\n' +
+                        'spring-security-config-*.jar,\\\n' +
+                        'spring-security-core-*.jar,\\\n' +
+                        'spring-security-crypto-*.jar,\\\n' +
+                        'spring-security-ldap-*.jar,\\\n' +
+                        'spring-security-messaging-*.jar,\\\n' +
+                        'spring-security-web-*.jar,\\\n' +
+                        'spring-social-*.jar,\\\n' +
+                        'spring-tx-*.jar,\\\n' +
+                        'spring-web-*.jar,\\\n' +
+                        'spring-webmvc-*.jar,\\\n' +
+                        'spring-websocket-*.jar,\\\n' +
+                        'sshd-*.jar,\\\n' +
+                        'stax2-api-*.jar,\\\n' +
+                        'stax-ex-*.jar,\\\n' +
+                        't-digest-*.jar,\\\n' +
+                        'testng-*.jar,\\\n' +
+                        'tika-core-*.jar,\\\n' +
+                        'tika-parser-*.jar,\\\n' +
+                        'tinify-*.jar,\\\n' +
+                        'txw2-*.jar,\\\n' +
+                        'unit-api-*.jar,\\\n' +
+                        'urlrewritefilter-*.jar,\\\n' +
+                        'validation-api-2.0.1.Final.jar,\\\n' +
+                        'vorbis-java-*.jar,\\\n' +
+                        'woodstox-core-*.jar,\\\n' +
+                        'xercesImpl-*.jar,\\\n' +
+                        'xml-apis-*.jar,\\\n' +
+                        'xmlbeans-*.jar,\\\n' +
+                        'xmlgraphics-commons-*.jar,\\\n' +
+                        'xmlpull-*.jar,\\\n' +
+                        'xmlresolver-5.1.2-data.jar,\\\n' +
+                        'xml-resolver-*.jar,\\\n' +
+                        'xmlresolver-*.jar,\\\n' +
+                        'xmlschema-core-*.jar,\\\n' +
+                        'xmpbox-*.jar,\\\n' +
+                        'xmpcore-*.jar,\\\n' +
+                        'xstream-*.jar,\\\n' +
+                        'xz-*.jar,\\\n' +
+                        'yasson-*.jar,\\\n' +
+                        'zxcvbn-*.jar,\\'
             ]
         ]
     ],
@@ -276,23 +477,23 @@ ext.commonConfUpdatePatterns = [
         ]
     ],
     [
-        confFile: "/bin/elasticsearch/config/elasticsearch.yml",
+        confFile: "/bin/opensearch/config/opensearch.yml",
         patterns: [
             [
                 match: "#path.data: /path/to/data",
-                replace: 'path.data: ${ES_INDEXES_DIR}'
+                replace: 'path.data: ${SEARCH_INDEXES_DIR}'
             ],
             [
                 match: "#path.logs: /path/to/logs",
-                replace: 'path.logs: ${ES_LOGS_DIR}'
+                replace: 'path.logs: ${SEARCH_LOGS_DIR}'
             ],
             [
                 match: "#http.port: 9200",
-                replace: 'http.port: ${ES_PORT}'
+                replace: 'http.port: ${SEARCH_PORT}'
             ],
             [
                 match: '# --------------------------------- Discovery ----------------------------------',
-                replace: System.lineSeparator() + 
+                replace: System.lineSeparator() +
                     '# Disable cluster discovery' + System.lineSeparator() +
                     'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
                     '# ---------------------------------- Gateway -----------------------------------'
@@ -300,14 +501,14 @@ ext.commonConfUpdatePatterns = [
             [
                 match: '# ---------------------------------- Various -----------------------------------',
                 replace: '# ---------------------------------- Various -----------------------------------' +
-                        System.lineSeparator() + '# Disable ML' + System.lineSeparator() +
-                        'xpack.ml.enabled: false' + System.lineSeparator() +
-                        'xpack.security.enabled: false' + System.lineSeparator()
+                        System.lineSeparator() +
+                        'plugins.security.disabled: true' + System.lineSeparator() + 'plugins.sql.enabled: false' +
+                        System.lineSeparator()
             ]
         ]
     ],
     [
-            confFile: "/bin/elasticsearch/config/jvm.options",
+            confFile: "/bin/opensearch/config/jvm.options",
             patterns: [
                     [
                             match: "-Xm",
@@ -379,7 +580,7 @@ def authoringTokens = [
   TOMCAT_AJP_PORT      : String.valueOf(authoringTomcatAjpPortDefault),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(authoringTomcatShutdownPortDefault),
   TOMCAT_DEBUG_PORT    : String.valueOf(authoringTomcatDebugPortDefault),
-  ES_PORT              : String.valueOf(authoringElasticsearchPort),
+  SEARCH_PORT          : String.valueOf(authoringSearchPort),
   DEPLOYER_PORT        : String.valueOf(authoringDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(authoringDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(authoringDeploymentDir),
@@ -397,7 +598,7 @@ def deliveryTokens = [
   TOMCAT_AJP_PORT      : String.valueOf(deliveryTomcatAjpPortDefault),
   TOMCAT_SHUTDOWN_PORT : String.valueOf(deliveryTomcatShutdownPortDefault),
   TOMCAT_DEBUG_PORT    : String.valueOf(deliveryTomcatDebugPortDefault),
-  ES_PORT              : String.valueOf(deliveryElasticsearchPort),
+  SEARCH_PORT          : String.valueOf(deliverySearchPort),
   DEPLOYER_PORT        : String.valueOf(deliveryDeployerPort),
   DEPLOYER_DEBUG_PORT  : String.valueOf(deliveryDeployerDebugPort),
   DEPLOYMENT_DIR       : String.valueOf(deliveryDeploymentDir),
@@ -420,11 +621,6 @@ ext.getEnvironments = { ->
 }
 
 ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes, includeMongodb ->
-    // Create require folders
-    commonFoldersToCreate.each { folder ->
-        file(envFolder + folder).mkdirs()
-    }
-
     // Copy files into env
     commonItemsToCopy.each { item ->
         def name = item.name
@@ -469,15 +665,16 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes,
 
     // Update known_hosts
     updateKnownHosts(envFolder)
+
+    // Create required folders
+    commonFoldersToCreate.each { folder ->
+        file(envFolder + folder).mkdirs()
+    }
 }
 
 ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, includeMongodb ->
     // Prepare the base
     prepareBaseEnvironment("${authoringEnvDir}", overwriteChangedFiles, downloadGrapes, includeMongodb)
-
-    authoringFoldersToCreate.each { folder ->
-        file("${authoringEnvDir}" + folder).mkdirs()
-    }
 
     // Copy files into env
     authoringItemsToCopy.each { item ->
@@ -538,15 +735,16 @@ ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, inclu
 	authoringConfUpdatePatterns.each { conf ->
 		updateConfFile("${authoringEnvDir}" + conf['confFile'], conf['patterns'])
 	}
+
+    // Create required folders
+    authoringFoldersToCreate.each { folder ->
+        file("${authoringEnvDir}" + folder).mkdirs()
+    }
 }
 
 ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes, includeMongodb ->
     // Prepare the base
     prepareBaseEnvironment("${deliveryEnvDir}", overwriteChangedFiles, downloadGrapes, includeMongodb)
-
-    deliveryFoldersToCreate.each { folder ->
-        file("${deliveryEnvDir}" + folder).mkdirs()
-    }
 
     // Copy files into env
     deliveryItemsToCopy.each { item ->
@@ -607,6 +805,11 @@ ext.prepareDeliveryEnvironment = { overwriteChangedFiles, downloadGrapes, includ
 	deliveryConfUpdatePatterns.each { conf ->
 		updateConfFile("${deliveryEnvDir}" + conf['confFile'], conf['patterns'])
 	}
+
+    // Create required folders
+    deliveryFoldersToCreate.each { folder ->
+        file("${deliveryEnvDir}" + folder).mkdirs()
+    }
 }
 
 ext.prepareEnvironment = { environment, refreshEnv, overwriteChangedFiles, downloadGrapes, includeMongodb ->

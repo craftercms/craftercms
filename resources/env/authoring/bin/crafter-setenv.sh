@@ -20,11 +20,25 @@ export CRAFTER_DATA_DIR=${CRAFTER_DATA_DIR:="$CRAFTER_HOME/data"}
 export CRAFTER_TEMP_DIR=${CRAFTER_TEMP_DIR:="$CRAFTER_HOME/temp"}
 export CRAFTER_BACKUPS_DIR=${CRAFTER_BACKUPS_DIR:="$CRAFTER_HOME/backups"}
 
+# Support old ES env variables
+export SEARCH_INDEXES_DIR=${SEARCH_INDEXES_DIR:=$ES_INDEXES_DIR}
+export SEARCH_LOGS_DIR=${SEARCH_LOGS_DIR:=$ES_LOGS_DIR}
+export SEARCH_PID=${SEARCH_PID:=$ES_PID}
+export SEARCH_USERNAME=${SEARCH_USERNAME:=$ES_USERNAME}
+export SEARCH_PASSWORD=${SEARCH_PASSWORD:=$ES_PASSWORD}
+export SEARCH_HOST=${SEARCH_HOST:=$ES_HOST}
+export SEARCH_PORT=${SEARCH_PORT:=$ES_PORT}
+export SEARCH_URL=${SEARCH_URL:=$ES_URL}
+# These are read by opensearch itself, so we cannot rename to SEARCH_XXX
+export OPENSEARCH_JAVA_HOME=${OPENSEARCH_JAVA_HOME:=$ES_JAVA_HOME}
+export OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:=$ES_JAVA_OPTS}
+export OPENSEARCH_HOME=${OPENSEARCH_HOME:=$ES_HOME}
+
 # -------------------- Hosts and ports --------------------
 export MAIL_HOST=${MAIL_HOST:="localhost"}
 export MAIL_PORT=${MAIL_PORT:="@SMTP_PORT@"}
-export ES_HOST=${ES_HOST:="localhost"}
-export ES_PORT=${ES_PORT:="@ES_PORT@"}
+export SEARCH_HOST=${SEARCH_HOST:="localhost"}
+export SEARCH_PORT=${SEARCH_PORT:="@SEARCH_PORT@"}
 export DEPLOYER_HOST=${DEPLOYER_HOST:="localhost"}
 export DEPLOYER_PORT=${DEPLOYER_PORT:="@DEPLOYER_PORT@"}
 export MONGODB_HOST=${MONGODB_HOST:="localhost"}
@@ -39,7 +53,7 @@ export TOMCAT_SHUTDOWN_PORT=${TOMCAT_SHUTDOWN_PORT:="@TOMCAT_SHUTDOWN_PORT@"}
 export TOMCAT_DEBUG_PORT=${TOMCAT_DEBUG_PORT:="@TOMCAT_DEBUG_PORT@"}
 
 # -------------------- URLs --------------------
-export ES_URL=${ES_URL:="http://$ES_HOST:$ES_PORT"}
+export SEARCH_URL=${SEARCH_URL:="http://$SEARCH_HOST:$SEARCH_PORT"}
 export DEPLOYER_URL=${DEPLOYER_URL:="http://$DEPLOYER_HOST:$DEPLOYER_PORT"}
 export STUDIO_URL=${STUDIO_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/studio"}
 export ENGINE_URL=${ENGINE_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT"}
@@ -47,18 +61,19 @@ export PROFILE_URL=${PROFILE_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/crafter
 export SOCIAL_URL=${SOCIAL_URL:="http://$TOMCAT_HOST:$TOMCAT_HTTP_PORT/crafter-social"}
 
 # -------------------- Java opts --------------------
-export ES_JAVA_OPTS=${ES_JAVA_OPTS:="-server -Xss1024K -Xms1G -Xmx1G -Dlog4j2.formatMsgNoLookups=true"}
+export OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:="-server -Xss1024K -Xms1G -Xmx1G -Dlog4j2.formatMsgNoLookups=true"}
 export DEPLOYER_JAVA_OPTS=${DEPLOYER_JAVA_OPTS:="-server -Xss1024K -Xmx1G -Dlog4j2.formatMsgNoLookups=true"}
 export CATALINA_OPTS=${CATALINA_OPTS:="-server -Xss1024K -Xms1G -Xmx4G -Dlog4j2.formatMsgNoLookups=true"}
 
-# -------------------- Elasticsearch variables --------------------
-export ES_JAVA_HOME=${ES_JAVA_HOME:="$JAVA_HOME"}
-export ES_HOME=${ES_HOME:="$CRAFTER_BIN_DIR/elasticsearch/bin"}
-export ES_INDEXES_DIR=${ES_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes-es"}
-export ES_LOGS_DIR=${ES_LOGS_DIR:="$CRAFTER_LOGS_DIR/elasticsearch"}
-export ES_PID=${ES_PID:="$ES_HOME/elasticsearch.pid"}
-export ES_USERNAME=${ES_USERNAME:=""}
-export ES_PASSWORD=${ES_PASSWORD:=""}
+# -------------------- OpenSearch variables --------------------
+export OPENSEARCH_JAVA_HOME=${OPENSEARCH_JAVA_HOME:=$JAVA_HOME}
+export OPENSEARCH_HOME=${OPENSEARCH_HOME:="$CRAFTER_BIN_DIR/opensearch"}
+export SEARCH_INDEXES_DIR=${SEARCH_INDEXES_DIR:="$CRAFTER_DATA_DIR/indexes"}
+export SEARCH_LOGS_DIR=${SEARCH_LOGS_DIR:="$CRAFTER_LOGS_DIR/search"}
+export SEARCH_PID=${SEARCH_PID:="$OPENSEARCH_HOME/bin/opensearch.pid"}
+export SEARCH_USERNAME=${SEARCH_USERNAME:=""}
+export SEARCH_PASSWORD=${SEARCH_PASSWORD:=""}
+export SEARCH_DOCKER_NAME=${SEARCH_DOCKER_NAME:="authoring-search"}
 
 # -------------------- Deployer variables --------------------
 export DEPLOYER_HOME=${DEPLOYER_HOME:="$CRAFTER_BIN_DIR/crafter-deployer"}
@@ -155,3 +170,5 @@ export STUDIO_REFRESH_TOKEN_NAME=${STUDIO_REFRESH_TOKEN_NAME:="refresh_token"}
 export STUDIO_REFRESH_TOKEN_MAX_AGE=${STUDIO_REFRESH_TOKEN_MAX_AGE:=300}
 # Indicates if the refresh token cookie should be secure
 export STUDIO_REFRESH_TOKEN_SECURE=${STUDIO_REFRESH_TOKEN_SECURE:="false"}
+# The domain used to set the refresh token cookie (if set to empty the domain will be detected from the request)
+export STUDIO_REFRESH_TOKEN_DOMAIN=${STUDIO_REFRESH_TOKEN_DOMAIN:=""}

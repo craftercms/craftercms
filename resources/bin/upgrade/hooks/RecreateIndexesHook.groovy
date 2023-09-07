@@ -30,11 +30,11 @@ class RecreateIndexesHook implements PostUpgradeHook {
     @Override
     void execute(Path binFolder, Path dataFolder, String environment) {
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        println "Re-creating Elasticsearch indexes for sites"
+        println "Re-creating Search indexes for sites"
         println "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
-        println "WARNING: This will delete the current Elasticsearch site indexes and recreate them."
-        println "This is necessary because of a major Elasticsearch upgrade. Don't proceed "
+        println "WARNING: This will delete the current Search site indexes and recreate them."
+        println "This is necessary because of a major Search upgrade. Don't proceed "
         println "if you can't have any search downtime."
 
         def cont = System.console().readLine '> Proceed? [(Y)es/(N)o]: '

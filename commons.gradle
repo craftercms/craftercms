@@ -20,9 +20,9 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath project.property("grgit.version")
-        classpath group: 'org.apache.commons', name: 'commons-text', version: project.property("commons.text.version")
-        classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property("commons.lang3.version")
+		classpath group: 'org.ajoberstar.grgit', name: 'org.ajoberstar.grgit.gradle.plugin', version: project.property('grgit.version')
+		classpath group: 'org.apache.commons', name: 'commons-text', version: project.property('commons-text.version')
+		classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property('commons-lang3.version')
 	}
 }
 
@@ -31,12 +31,12 @@ import java.security.MessageDigest
 // Helper methods
 ext.splash = { ->
 	System.out.println("\033[38;5;196m")
-	System.out.println(" ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗      ██████╗ ███╗   ███╗ ███████╗")
-	System.out.println("██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗    ██╔════╝ ████╗ ████║ ██╔════╝")
-	System.out.println("██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝    ██║      ██╔████╔██║ ███████╗")
-	System.out.println("██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗    ██║      ██║╚██╔╝██║ ╚════██║")
-	System.out.println("╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║    ╚██████╗ ██║ ╚═╝ ██║ ███████║")
-	System.out.println(" ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝     ╚═════╝ ╚═╝     ╚═╝ ╚══════╝")
+	System.out.println(" ██████╗ ██████╗   █████╗  ███████╗ ████████╗ ███████╗ ██████╗   ██████╗ ███╗   ███╗ ███████╗")
+	System.out.println("██╔════╝ ██╔══██╗ ██╔══██╗ ██╔════╝ ╚══██╔══╝ ██╔════╝ ██╔══██╗ ██╔════╝ ████╗ ████║ ██╔════╝")
+	System.out.println("██║      ██████╔╝ ███████║ █████╗      ██║    █████╗   ██████╔╝ ██║      ██╔████╔██║ ███████╗")
+	System.out.println("██║      ██╔══██╗ ██╔══██║ ██╔══╝      ██║    ██╔══╝   ██╔══██╗ ██║      ██║╚██╔╝██║ ╚════██║")
+	System.out.println("╚██████╗ ██║  ██║ ██║  ██║ ██║         ██║    ███████╗ ██║  ██║ ╚██████╗ ██║ ╚═╝ ██║ ███████║")
+	System.out.println(" ╚═════╝ ╚═╝  ╚═╝ ╚═╝  ╚═╝ ╚═╝         ╚═╝    ╚══════╝ ╚═╝  ╚═╝  ╚═════╝ ╚═╝     ╚═╝ ╚══════╝")
 	System.out.println("\033[0m")
 }
 
@@ -70,9 +70,7 @@ ext.execCommand = { command, dir ->
 }
 
 ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFiles, deleteNonExisting ->
-    def command = [];
-
-	command = ["rsync", "-ar"]
+    def command = ["rsync", "-ar"]
 
 	if (!overwriteChangedFiles) {
         command += ["--update"]
@@ -202,7 +200,7 @@ ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
 */
 	// Tar and package
 	file(bundlesDir).mkdir()
-	def bundleFilename = "crafter-cms-${env}-${project.version}-${currentPlatform}-x86_64.tar.gz"
+	def bundleFilename = "crafter-cms-${env}-${project.version}-${currentPlatform}-${currentArch}.tar.gz"
 	def bundlePath = "${bundlesDir}/" + bundleFilename
 
 	try {

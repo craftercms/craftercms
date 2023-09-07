@@ -13,44 +13,58 @@ Core Developers
 | Mike Vertal | https://github.com/mikevertal |
 | Russ Danner | https://github.com/russdanner | 
 | Alfonso Vasquez | https://github.com/avasquez614 |
-| Dejan Brkic | https://github.com/dejan-brkic |
 | Roy Art | https://github.com/rart |
-| Jose Ross | https://github.com/jdrossl |
 | Jose Vega | https://github.com/jvega190 |
-| Aaron Chavarria | https://github.com/aachavarria |
 | Vita Alhambra | https://github.com/alhambrav |
 | Yacdaniel Hurtado | https://github.com/yacdaniel |
+| Phil Nguyen | https://github.com/phuongnq |
 | Andy Reiter | https://github.com/AndyReiter |
+| Juan Vasquez | https://github.com/Euquimides |
 
 Security Analysts
 =================
 | Name                               | URL                                  | Contribution                                                                              |
 |------------------------------------|--------------------------------------|-------------------------------------------------------------------------------------------|
+| Egidio Romano                      | egidio.romano@mindedsecurity.com     | [CV-2023080301](https://docs.craftercms.org/current/security/advisory.html#cv-2023080301) |
+| Gil Correia                        | gil.correia@devoteam.com             | [CV-2023021701](https://docs.craftercms.org/current/security/advisory.html#cv-2023021701) |
+| Matei "Mal" Badanoiu               | https://github.com/mbadanoiu         | [CV-2022091301](https://docs.craftercms.org/current/security/advisory.html#cv-2022091301) |
+|                                    |                                      | [CV-2022091302](https://docs.craftercms.org/current/security/advisory.html#cv-2022091302) |
 | Kai Zhao <br> (ToTU Security Team) | https://github.com/happyhacking-k    | [CV-2020080101](https://docs.craftercms.org/current/security/advisory.html#cv-2020080101) |
 |                                    |                                      | [CV-2021120101](https://docs.craftercms.org/current/security/advisory.html#cv-2021120101) | 
 |                                    |                                      | [CV-2021120102](https://docs.craftercms.org/current/security/advisory.html#cv-2021120102) |
 |                                    |                                      | [CV-2021120103](https://docs.craftercms.org/current/security/advisory.html#cv-2021120103) |
 |                                    |                                      | [CV-2021120104](https://docs.craftercms.org/current/security/advisory.html#cv-2021120104) |
 |                                    |                                      | [CV-2021120105](https://docs.craftercms.org/current/security/advisory.html#cv-2021120105) |
+|                                    |                                      | [CV-2022051603](https://docs.craftercms.org/current/security/advisory.html#cv-2022051603) |
 | Sparsh Kulshrestha                 | https://github.com/sparshkulshrestha | [CV-2021120107](https://docs.craftercms.org/current/security/advisory.html#cv-2021120107) |
 | Carlos Ortiz                       | https://github.com/cortiz            | [CV-2021120106](https://docs.craftercms.org/current/security/advisory.html#cv-2021120106) |
-| Faizan Wani                        | https://github.com/faizanw8          | Pending public disclosure                                                                 |
+| Faizan Wani                        | https://github.com/faizanw8          | [CV-2022051601](https://docs.craftercms.org/current/security/advisory.html#cv-2022051601) |
+|                                    |                                      | [CV-2022051602](https://docs.craftercms.org/current/security/advisory.html#cv-2022051602) |
 | Alvaro Muñoz <br> (GitHub)         | https://github.com/pwntester         | [CV-2020080102](https://docs.craftercms.org/current/security/advisory.html#cv-2020080102) |
 | Buxu                               | https://github.com/buxu              | [CV-2018120601](https://docs.craftercms.org/current/security/advisory.html#cv-2018120601) |
 | Jasmin Landry                      | https://github.com/JR0ch17           | [CV-2017061501](https://docs.craftercms.org/current/security/advisory.html#cv-2017061501) |
+|                                    |                                      | [CV-2017061502](https://docs.craftercms.org/current/security/advisory.html#cv-2017061502) |
+|                                    |                                      | [CV-2017061503](https://docs.craftercms.org/current/security/advisory.html#cv-2017061503) |
+|                                    |                                      | [CV-2017061504](https://docs.craftercms.org/current/security/advisory.html#cv-2017061504) |
+|                                    |                                      | [CV-2017061505](https://docs.craftercms.org/current/security/advisory.html#cv-2017061505) |
+|                                    |                                      | [CV-2017061506](https://docs.craftercms.org/current/security/advisory.html#cv-2017061506) |
+|                                    |                                      | [CV-2017061507](https://docs.craftercms.org/current/security/advisory.html#cv-2017061507) |
 
 External Contributors
 =====================
 | Name | URL | Contribution |
 | --- | --- | --- |
+| René Muhl | https://github.com/rm-- | Docker Images improvements |
+| Jose Ross | https://github.com/jdrossl | Crafter Studio, Engine, Search, Deployer development |
+| Dejan Brkic | https://github.com/dejan-brkic | Crafter Studio development |
+| Aaron Chavarria | https://github.com/aachavarria | Crafter Studio UI development |
 | Tony Field | https://github.com/tfield | Issue reporting and training content contributions |
-| Phil Nguyen | https://github.com/phuongnq | Issue reporting |
 | Ethan Vertal | https://github.com/ethanvert | Amazon Alexa blueprint |
 | grundmann-thalia | https://github.com/grundmann-thalia | Issue reporting |
 | Mohammed Y. Alnajdi | https://github.com/malnajdi | Issue reporting |
 | Manuel Calvo | https://github.com/shiriuki | Several blueprints |
 | Veronica Estrada | https://github.com/vestrada | Studio UI development |
-| Carlos Ortiz | https://github.com/cortiz | Gradle build harness, Social development, and more. |
+| Carlos Ortiz | https://github.com/cortiz | Gradle build harness, Social development, and more |
 | Michael Chen | https://github.com/mcgitty | Documentation and Issue reporting |
 | Luis Hernandez | https://github.com/luishernandezmonge | Integration testing framework |
 | Jeff Rosler | https://github.com/jrosler | Issue reporting |

@@ -15,10 +15,10 @@
  */
 
 @Grapes([
-        @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.25'),
-        @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.7'),
-        @Grab(group = 'commons-codec', module = 'commons-codec', version = '1.11'),
-        @Grab(group = 'commons-io', module = 'commons-io', version = '2.6')
+    @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.36'),
+    @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.12.0'),
+    @Grab(group = 'commons-codec', module = 'commons-codec', version = '1.16.0'),
+    @Grab(group = 'commons-io', module = 'commons-io', version = '2.13.0')
 ])
 
 import java.nio.file.Files
