@@ -131,7 +131,7 @@
 		<graphql.version>20.2</graphql.version>
 		<graphql.extended.scalars.version>20.2</graphql.extended.scalars.version>
 		<httpproxy.version>1.12.1</httpproxy.version>
-		<apache.ivy>2.5.2</apache.ivy>
+		<apache.ivy>2.5.1</apache.ivy>
 		<tinify.version>1.8.3</tinify.version>
 		<mariadb4j.version>2.6.0.8</mariadb4j.version>
 		<saxon.version>12.2</saxon.version>
