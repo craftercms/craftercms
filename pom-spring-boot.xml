@@ -88,8 +88,8 @@
 		<opensearch.client.version>2.5.0</opensearch.client.version>
 		<tomcat.version>9.0.80</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
-		<groovy.version>3.0.17</groovy.version>
-		<apache.ivy>2.5.2</apache.ivy>
+		<groovy.version>3.0.19</groovy.version>
+		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
 
 		<!-- build -->

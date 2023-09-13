@@ -123,7 +123,7 @@
 		<gson.version>2.10.1</gson.version>
 		<jta.version>1.1</jta.version>
 		<cglib.version>3.3.0</cglib.version>
-		<groovy.version>3.0.17</groovy.version>
+		<groovy.version>3.0.19</groovy.version>
 		<script.security.version>${project.version}</script.security.version>
 		<rome.version>1.0</rome.version>
 		<urlrewrite.version>4.0.4</urlrewrite.version>
@@ -131,7 +131,7 @@
 		<graphql.version>20.2</graphql.version>
 		<graphql.extended.scalars.version>20.2</graphql.extended.scalars.version>
 		<httpproxy.version>1.12.1</httpproxy.version>
-		<apache.ivy>2.5.1</apache.ivy>
+		<ivy.version>2.5.2</ivy.version>
 		<tinify.version>1.8.3</tinify.version>
 		<mariadb4j.version>2.6.0.8</mariadb4j.version>
 		<saxon.version>12.2</saxon.version>
