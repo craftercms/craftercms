@@ -19,21 +19,19 @@ buildscript {
         mavenCentral()
 	}
 	dependencies {
-		classpath project.property("grgit.version")
-        classpath group: 'org.apache.commons', name: 'commons-lang3', version: '3.6'
+        classpath group: 'org.ajoberstar.grgit', name: 'org.ajoberstar.grgit.gradle.plugin', version: project.property("grgit.version")
     }
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.ajoberstar.grgit.Grgit
-import org.apache.commons.lang3.SystemUtils
 
 apply from: "commons.gradle"
 
 ext.environments = ["authoring", "delivery"]
 
 ext {
-    git = org.ajoberstar.grgit.Grgit.open(dir: "${projectDir}")
+    git = Grgit.open(dir: "${projectDir}")
 	gitRevisionId = git.head().id.substring(0, 6)
 }
 
@@ -323,7 +321,7 @@ ext.commonConfUpdatePatterns = [
                         'graphql-java-*.jar,\\\n' +
                         'groovy-*.jar,\\\n' +
                         'gson-*.jar,\\\n' +
-                        'guava-31.1-jre.jar,\\\n' +
+                        'guava-*.jar,\\\n' +
                         'HdrHistogram-*.jar,\\\n' +
                         'HikariCP-java7-*.jar,\\\n' +
                         'hppc-*.jar,\\\n' +

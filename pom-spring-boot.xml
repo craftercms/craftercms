@@ -76,19 +76,20 @@
 		<hazelcast.version>5.2.3</hazelcast.version>
 		<script.security.version>${project.version}</script.security.version>
 		<jakarta.json.version>2.0.1</jakarta.json.version>
-		<snakeyaml.version>2.0</snakeyaml.version>
+		<snakeyaml.version>2.2</snakeyaml.version>
+		<okio.version>3.4.0</okio.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
 		<jackson.version>2.15.0</jackson.version>
-		<aws.version>1.12.463</aws.version>
+		<aws.version>1.12.543</aws.version>
 		<jose4j.version>0.9.3</jose4j.version>
 		<box.sdk.version>4.4.0</box.sdk.version>
 		<opensearch.version>2.8.0</opensearch.version>
 		<opensearch.client.version>2.5.0</opensearch.client.version>
-		<tomcat.version>9.0.76</tomcat.version>
+		<tomcat.version>9.0.80</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
-		<groovy.version>3.0.17</groovy.version>
-		<apache.ivy>2.5.2</apache.ivy>
+		<groovy.version>3.0.19</groovy.version>
+		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
 
 		<!-- build -->

@@ -20,9 +20,9 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath project.property("grgit.version")
-        classpath group: 'org.apache.commons', name: 'commons-text', version: project.property("commons.text.version")
-        classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property("commons.lang3.version")
+		classpath group: 'org.ajoberstar.grgit', name: 'org.ajoberstar.grgit.gradle.plugin', version: project.property('grgit.version')
+		classpath group: 'org.apache.commons', name: 'commons-text', version: project.property('commons-text.version')
+		classpath group: 'org.apache.commons', name: 'commons-lang3', version: project.property('commons-lang3.version')
 	}
 }
 
