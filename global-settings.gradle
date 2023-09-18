@@ -62,7 +62,7 @@ ext.execDetermineLinuxVersion = {
 project.ext.set("overwriteArtifact", getPropertySafelyWithDefaults("refreshDownloads", "false").toBoolean())
 project.ext.set("overwriteChangedFiles", getPropertySafelyWithDefaults("overwriteChangedFiles", "true").toBoolean())
 project.ext.set("refreshEnv", getPropertySafelyWithDefaults("refreshEnv", "false").toBoolean())
-project.ext.set("downloadGrapes", getPropertySafelyWithDefaults("downloadGrapes", "false").toBoolean())
+project.ext.set("downloadGrapes", getPropertySafelyWithDefaults("downloadGrapes", "true").toBoolean())
 project.ext.set("socialRequired", getPropertySafelyWithDefaults("crafter.social", "false").toBoolean()
 		|| getPropertySafelyWithDefaults("socialRequired", "false").toBoolean())
 project.ext.set("profileRequired", (getPropertySafelyWithDefaults("crafter.profile", "false").toBoolean()
