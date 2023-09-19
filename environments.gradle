@@ -259,7 +259,7 @@ ext.commonConfUpdatePatterns = [
         confFile: "/bin/apache-tomcat/conf/catalina.properties",
         patterns: [
             [
-                match: 'shared.loader=', 
+                match: 'shared.loader=',
                 replace: 'shared.loader=${catalina.base}/shared/classes,${catalina.base}/shared/lib/*.jar'
             ]
         ]
@@ -290,7 +290,7 @@ ext.commonConfUpdatePatterns = [
             ],
             [
                 match: '# --------------------------------- Discovery ----------------------------------',
-                replace: System.lineSeparator() + 
+                replace: System.lineSeparator() +
                     '# Disable cluster discovery' + System.lineSeparator() +
                     'discovery.type: single-node' + System.lineSeparator() + System.lineSeparator() +
                     '# ---------------------------------- Gateway -----------------------------------'
@@ -443,6 +443,10 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes,
 
     // Download Grapes
     if (downloadGrapes) {
+        copy {
+            from "${projectDir}/resources/bin/grapeConfig.xml"
+            into "${envFolder}/bin"
+        }
         commonGrapesDownloads.each() { grapes ->
             def command = grapes
             execCommand(command, envFolder + "/bin/")
