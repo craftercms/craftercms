@@ -23,7 +23,7 @@ import org.apache.commons.io.FileUtils
     @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.12.0'),
     @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.4'),
     @Grab(group = 'commons-codec', module = 'commons-codec', version = '1.16.0'),
-    @Grab(group = 'commons-io', module = 'commons-io', version = '2.13.0'),
+    @Grab(group = 'commons-io', module = 'commons-io', version = '2.14.0'),
     @Grab(group='org.elasticsearch.client', module='elasticsearch-rest-high-level-client', version='7.10.0')
 ])
 
