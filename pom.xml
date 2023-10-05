@@ -183,6 +183,7 @@
 		<okio.version>3.4.0</okio.version>
 		<zxcvbn.version>1.7.0</zxcvbn.version>
 		<owasp.esapi.version>2.5.2.0</owasp.esapi.version>
+		<directory-watcher.version>0.18.0</directory-watcher.version>
 
 		<!-- Testing -->
 		<testng.version>7.4.0</testng.version>
