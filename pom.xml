@@ -79,7 +79,7 @@
 		<commons.collections4.version>4.4</commons.collections4.version>
 		<commons.codec.version>1.15</commons.codec.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
-		<commons.io.version>2.11.0</commons.io.version>
+		<commons.io.version>2.14.0</commons.io.version>
 		<commons.configuration.version>2.9.0</commons.configuration.version>
 		<commons.text.version>1.10.0</commons.text.version>
 		<commons.cli.version>1.5.0</commons.cli.version>
@@ -113,7 +113,7 @@
 		<json.path.version>2.8.0</json.path.version>
 		<reactor.version>1.0.1.RELEASE</reactor.version>
 		<json-smart.version>2.4.9</json-smart.version>
-		<jgit.version>6.5.0.202303070854-r</jgit.version>
+		<jgit.version>6.7.0.202309050840-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
 		<aws.sdk.version>1.12.543</aws.sdk.version>
 		<box.sdk.version>4.4.0</box.sdk.version>
@@ -174,6 +174,7 @@
 		<zxcvbn.version>1.7.0</zxcvbn.version>
 		<esapi.version>2.5.2.0</esapi.version>
 		<opensaml.version>4.1.1</opensaml.version>
+		<directory-watcher.version>0.18.0</directory-watcher.version>
 
 		<!-- Testing -->
 		<testng.version>7.7.1</testng.version>
