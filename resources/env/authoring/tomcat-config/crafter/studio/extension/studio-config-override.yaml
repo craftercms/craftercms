@@ -129,7 +129,7 @@ studio.mail.port: ${env:MAIL_PORT}
 # studio.mail.username:
 # SMTP password for authenticated access when sending emails.
 # studio.mail.password:
-# Turn on/off (value true/false) SMTP authenaticated access protocol.
+# Turn on/off (value true/false) SMTP authenticated access protocol.
 # studio.mail.smtp.auth: false
 # Enable/disable (value true/false) SMTP TLS protocol when sending emails.
 # studio.mail.smtp.starttls.enable: false
