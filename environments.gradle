@@ -641,6 +641,10 @@ ext.prepareBaseEnvironment = { envFolder, overwriteChangedFiles, downloadGrapes,
 
     // Download Grapes
     if (downloadGrapes) {
+        copy {
+            from "${projectDir}/resources/bin/grapeConfig.xml"
+            into "${envFolder}/bin"
+        }
         commonGrapesDownloads.each() { grapes ->
             def command = grapes
             execCommand(command, envFolder + "/bin/")
