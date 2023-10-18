@@ -211,7 +211,7 @@ studio.search.keepAlive: false
 #     # The S3 configurations, apply to aws-s3 deployer target template (see studio.serverless.delivery.deployer.target.template property)
 #     s3:
 #      # The S3 bucket name (required)
-#      url: s3://mybucketname/{siteName}
+#      url: s3://mybucketname/sites/{siteName}
 #      # The S3 endpoint (optional)
 #      endpoint: http://localhost:9000
 #      # Indicates if path style access should be used (optional, default is false)
