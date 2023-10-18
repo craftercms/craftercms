@@ -185,7 +185,7 @@ studio.search.keepAlive: false
 # studio.serverless.delivery.deployer.target.createUrl: ${studio.preview.createTargetUrl}
 # The URL for the serverless delivery deployer delete URL
 # studio.serverless.delivery.deployer.target.deleteUrl: ${studio.preview.deleteTargetUrl}
-# The template name for serverless deployer targets
+# The template name for serverless deployer targets (supported: aws-s3, aws-cloudformed-s3)
 # studio.serverless.delivery.deployer.target.template: aws-cloudformed-s3
 # Replace existing target configuration if one exists?
 # studio.serverless.delivery.deployer.target.replace: false
@@ -208,6 +208,14 @@ studio.search.keepAlive: false
 #     default_access_key:
 #     # AWS secret key (optional if specified through default AWS chain)
 #     default_secret_key:
+#     # The S3 configurations, apply to aws-s3 deployer target template (see studio.serverless.delivery.deployer.target.template property)
+#     s3:
+#      # The S3 bucket name (required)
+#      url: s3://mybucketname/{siteName}
+#      # The S3 endpoint (optional)
+#      endpoint: http://localhost:9000
+#      # Indicates if path style access should be used (optional, default is false)
+#      path_style_access: false
 #     cloudformation:
 #       # AWS access key (optional if aws.accessKey is specified)
 #       access_key:
