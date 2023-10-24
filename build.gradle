@@ -128,10 +128,20 @@ clean() {
 	}
 }
 
+task installPomFiles() {
+	description 'Installs the main POMs.'
+	mustRunAfter selfUpdate
+	dependsOn = [ "preFlightCheck" ]
+	doFirst {
+		println "Installing main POMs"
+		installPoms()
+	}
+}
+
 build() {
 	description 'Builds the modules and prepares the binaries for deployment.'
 	mustRunAfter clean
-	dependsOn = [ "clone" ]
+	dependsOn = [ "clone", "installPomFiles" ]
 	doFirst {
 		getBuildModules().each { module ->
 			println "Building $module"

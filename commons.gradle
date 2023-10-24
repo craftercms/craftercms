@@ -123,6 +123,16 @@ ext.cloneModule = { module, gitUrl, shallowClone, gitBranch, gitRemote ->
 	}
 }
 
+ext.installPoms = {
+	try {
+		execCommand(mavenCmd + ["install"], "${projectDir}")
+		execCommand(mavenCmd + ["-f", "pom-spring-boot.xml", "install"], "${projectDir}")
+	} catch (e) {
+		logger.error("Failed to install POMs, exception: {}", e)
+		throw new GradleException("Failed to install POMs.", e)
+	}
+}
+
 ext.updateModule = { module, remote, branch ->
 	def dir = srcFolder + module
 
