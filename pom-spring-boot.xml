@@ -92,6 +92,7 @@
 		<groovy.version>3.0.19</groovy.version>
 		<apache.ivy>2.5.2</apache.ivy>
 		<log4j2.version>2.20.0</log4j2.version>
+		<quartz.version>2.4.0-rc2</quartz.version>
 
 		<!-- build -->
 		<maven.javadoc.version>3.2.0</maven.javadoc.version>
