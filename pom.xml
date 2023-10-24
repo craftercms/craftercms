@@ -66,8 +66,8 @@
 		<!-- Dependency Version Numbers -->
 		<!-- Main -->
 		<!-- Spring -->
-		<spring.version>5.3.28</spring.version>
-		<spring.security.version>5.8.3</spring.security.version>
+		<spring.version>5.3.30</spring.version>
+		<spring.security.version>5.8.6</spring.security.version>
 		<spring.data.version>2.7.11</spring.data.version>
 		<spring.ldap.version>2.4.1</spring.ldap.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
@@ -90,9 +90,9 @@
 		<httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
 		<httpcomponents.httpmime.version>4.5.13</httpcomponents.httpmime.version>
 
-		<jackson.version>2.14.2</jackson.version>
-		<jackson.databind.version>2.14.2</jackson.databind.version>
-		<jackson.dataformat.version>2.14.2</jackson.dataformat.version>
+		<jackson.version>2.15.0</jackson.version>
+		<jackson.databind.version>2.15.0</jackson.databind.version>
+		<jackson.dataformat.version>2.15.0</jackson.dataformat.version>
 
 		<mongo.version>3.5.0</mongo.version> <!-- 3.12.6 -->
 		<bson.version>3.5.0</bson.version>
