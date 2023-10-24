@@ -64,6 +64,7 @@
 
 	<properties>
 		<!-- Version Numbers -->
+		<spring-framework.version>5.3.30</spring-framework.version>
 		<commons.configuration.version>2.9.0</commons.configuration.version>
 		<commons.csv.version>1.10.0</commons.csv.version>
 		<commons.io.version>2.14.0</commons.io.version>
@@ -91,6 +92,7 @@
 		<groovy.version>3.0.19</groovy.version>
 		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
+		<quartz.version>2.4.0-rc2</quartz.version>
 
 		<!-- build -->
 		<maven.javadoc.version>3.5.0</maven.javadoc.version>
