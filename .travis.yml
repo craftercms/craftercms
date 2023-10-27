@@ -20,6 +20,7 @@ notifications:
     use_notice: true
     skip_join: true
   slack: craftersoftware:7YiSb41ZG5rfMgiAY7Qgprc7
+install: skip
 script:
 - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
     bash -c "mvn -DskipTests deploy --settings .travis-settings.xml";
