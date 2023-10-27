@@ -1,5 +1,3 @@
-![build status](https://travis-ci.com/craftercms/craftercms.svg?branch=develop)
-
 # CrafterCMS
 
 CrafterCMS is a modern content management platform for building digital experience applications including:
