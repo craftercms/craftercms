@@ -15,13 +15,18 @@
  */
 package upgrade.hooks
 
+@Grapes([
+    @Grab(group='com.squareup.okhttp3', module='okhttp', version='4.11.0')
+])
+
 import org.apache.commons.lang3.BooleanUtils
 import upgrade.exceptions.UpgradeException
 import upgrade.hooks.PostUpgradeHook
 
 import java.nio.file.Path
 
-import static groovyx.net.http.HttpBuilder.configure
+import okhttp3.*
+
 import static utils.EnvironmentUtils.getDeployerUrl
 import static utils.EnvironmentUtils.getEnv
 
@@ -49,37 +54,46 @@ class RecreateIndexesHook implements PostUpgradeHook {
     }
 
     protected def getAllTargets() {
-        def httpClient = configure {
-            request.uri = getDeployerUrl()
-        }
+        OkHttpClient client = new OkHttpClient()
+        Request request = new Request.Builder()
+                .url("${getDeployerUrl()}/api/1/target/get-all")
+                .get()
+                .addHeader('Content-Type', 'application/json')
+                .build()
 
-        return httpClient.get {
-            request.uri.path = "/api/1/target/get-all"
-            request.contentType = 'application/json'
-            response.failure { fs, body ->
-                throw new UpgradeException("Error while listing targets: ${body.message}")
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.successful) {
+                throw new UpgradeException("Error while listing targets: ${response.message()}")
             }
+
+            return response.body().string()
+        } catch (IOException e) {
+            e.printStackTrace()
         }
     }
 
     protected void recreateIndex(String siteName, String environment) {
-        def httpClient = configure {
-            request.uri = getDeployerUrl()
-        }
+        OkHttpClient client = new OkHttpClient()
 
-        httpClient.post {
-            request.uri.path = "/api/1/target/recreate/${environment}/${siteName}"
-            request.uri.query = [
-                token: getEnv("DEPLOYER_MANAGEMENT_TOKEN")
-            ]
-            request.contentType = 'application/json'
-            response.success { fs ->
-                println "Re-index succesfully triggered for '${siteName}-${environment}'"
+        HttpUrl.Builder urlBuilder = HttpUrl
+                .parse("${getDeployerUrl()}/api/1/target/recreate/${environment}/${siteName}")
+                .newBuilder()
+        urlBuilder.addQueryParameter('token', getEnv('DEPLOYER_MANAGEMENT_TOKEN'))
+
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .post(RequestBody.create(null, new byte[0]))
+                .addHeader('Content-Type', 'application/json')
+                .build()
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.successful) {
+                println "Re-index successfully triggered for '${siteName}-${environment}'"
+            } else {
+                throw new UpgradeException("Error while triggering re-index for '${siteName}-${environment}':${response.message()}")
             }
-            response.failure { fs, body ->
-                throw new UpgradeException("Error while triggering re-index for '${siteName}-${environment}': ${body.message}")
-            }
+        } catch (IOException e) {
+            e.printStackTrace()
         }
     }
-
 }

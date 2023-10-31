@@ -17,11 +17,8 @@ package upgrade.hooks
 
 import java.nio.file.Files
 import java.nio.file.Path
-import upgrade.exceptions.UpgradeException
 import org.apache.commons.io.FileUtils
-import static groovyx.net.http.HttpBuilder.configure
-import static utils.EnvironmentUtils.getDeployerUrl
-import static utils.EnvironmentUtils.*
+import static utils.EnvironmentUtils.getEnv
 
 
 class RemoveOldSearchIndexesDirHook implements PostUpgradeHook {
