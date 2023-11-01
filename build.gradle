@@ -177,7 +177,7 @@ task deploy() {
 
 task upgrade() {
 	description 'Upgrades all modules and redeploys them'
-	dependsOn = [ "update", "clean", "build", "deploy" ]
+	dependsOn = [ "installPomFiles", "update", "clean", "build", "deploy" ]
 }
 
 task start() {
