@@ -15,44 +15,61 @@
  */
 package upgrade.hooks
 
+@Grapes([
+    @Grab(group='com.squareup.okhttp3', module='okhttp', version='4.11.0')
+])
+
+import groovy.json.JsonBuilder
 import java.nio.file.Path
-import static groovyx.net.http.HttpBuilder.configure
+import okhttp3.*
 import static utils.EnvironmentUtils.getDeployerUrl
 import upgrade.exceptions.UpgradeException
 
 class ReindexAllTargetsHook implements PostUpgradeHook {
 
     def getAllTargets() {
-        def httpClient = configure {
-            request.uri = getDeployerUrl()
-        }
-        return httpClient.get {
-            request.uri.path = '/api/1/target/get-all'
-            response.failure { fs, body ->
-                throw new UpgradeException("Error while listing targets: ${body.message}")
+        OkHttpClient client = new OkHttpClient()
+
+        Request request = new Request.Builder()
+                .url("${getDeployerUrl()}/api/1/target/get-all")
+                .get()
+                .addHeader('Content-Type', 'application/json')
+                .build()
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.successful) {
+                throw new UpgradeException("Error while listing targets: ${response.message()}")
             }
+
+            return response.body().string()
+        } catch (IOException e) {
+            e.printStackTrace()
         }
     }
 
     void deployAll() {
-        def httpClient = configure {
-            request.uri = getDeployerUrl()
-        }
+        OkHttpClient client = new OkHttpClient()
 
         def deployAllParams = [
-                'reprocess_all_files': true,
-                'deployment_mode'    : 'SEARCH_INDEX'
+            'reprocess_all_files': true,
+            'deployment_mode'    : 'SEARCH_INDEX'
         ]
-        httpClient.post {
-            request.uri.path = '/api/1/target/deploy-all'
-            request.contentType = 'application/json'
-            request.body = deployAllParams
-            response.success { fs ->
+
+        MediaType mediaType = MediaType.parse('application/json')
+        RequestBody body = RequestBody.create(new JsonBuilder(deployAllParams).toString(), mediaType)
+        Request request = new Request.Builder()
+                .url("${getDeployerUrl()}/api/1/target/deploy-all")
+                .post(body)
+                .addHeader('Content-Type', 'application/json')
+                .build()
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.successful) {
                 println "'deploy-all' API triggered successfully"
+            } else {
+                println "Failed to trigger 'deploy-all' API: ${response.message()}"
             }
-            response.failure { fs, body ->
-                println "Failed to trigger 'deploy-all' API: ${body.message}"
-            }
+        } catch (IOException e) {
+            e.printStackTrace()
         }
     }
 

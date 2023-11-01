@@ -23,6 +23,7 @@ package upgrade
     @Grab(group = 'commons-io', module = 'commons-io', version = '2.14.0')
 ])
 
+import groovy.cli.commons.CliBuilder
 import groovy.transform.Field
 import org.apache.commons.lang3.StringUtils
 

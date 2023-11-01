@@ -21,6 +21,8 @@
     @Grab(group = 'commons-io', module = 'commons-io', version = '2.14.0')
 ])
 
+import groovy.cli.commons.CliBuilder
+
 import java.nio.file.Files
 import java.nio.file.Paths
 
