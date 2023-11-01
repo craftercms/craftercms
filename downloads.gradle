@@ -69,8 +69,16 @@ ext.downloads = [
     ],
     [
         name: "mongosh",
-        url: "https://downloads.mongodb.com/compass/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}.${mongoshExtention}",
-        destinationFile: "${downloadDir}/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}.${mongoshExtention}".replace(".tgz", ".tar.gz"),
+        url: "https://downloads.mongodb.com/compass/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}.${mongoExtension}",
+        destinationFile: "${downloadDir}/mongosh-${mongoshVersion}-${currentPlatform}-${mongoshArch}.${mongoExtension}".replace(".tgz", ".tar.gz"),
+        verifyArtifact: false,
+        expand: "true",
+        expandFolder: "${downloadDir}"
+    ],
+    [
+        name: "mongodb-database-tools",
+        url: "https://fastdl.mongodb.org/tools/db/mongodb-database-tools-${mongoToolsArch}-${mongoToolsVersion}.${mongoExtension}",
+        destinationFile: "${downloadDir}/mongodb-database-tools-${mongoToolsArch}-${mongoToolsVersion}.${mongoExtension}".replace(".tgz", ".tar.gz"),
         verifyArtifact: false,
         expand: "true",
         expandFolder: "${downloadDir}"

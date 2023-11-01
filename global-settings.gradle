@@ -86,11 +86,13 @@ project.ext.set("openSearchPlatform", getPropertySafelyWithDefaults("openSearchP
 project.ext.set("openSearchArch", getPropertySafelyWithDefaults("openSearchArch", "x64"))
 project.ext.set("mongodbPlatform", getPropertySafelyWithDefaults("mongodbPlatform", currentPlatform == "darwin" ? "osx" : currentPlatform))
 project.ext.set("mongodbBinary", getPropertySafelyWithDefaults("mongodbBinary", currentPlatform == "darwin" ? "macos" : currentPlatform))
-project.ext.set("mongoshExtention", getPropertySafelyWithDefaults("mongoshExtention", currentPlatform == "darwin" ? "zip" : "tgz"))
+project.ext.set("mongoExtension", getPropertySafelyWithDefaults("mongoExtension", currentPlatform == "darwin" ? "zip" : "tgz"))
 if (currentPlatform == "darwin") {
 	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", currentArch == "aarch64" ? "arm64" : "x86_64"))
 	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", currentArch == "aarch64" ? "arm64" : "x64"))
+	project.ext.set("mongoToolsArch", getPropertySafelyWithDefaults("mongoToolsArch", currentArch == "aarch64" ? "macos-arm64" : "macos-x86_64"))
 } else {
 	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", "x86_64-${execDetermineLinuxOS()}${execDetermineLinuxVersion()}"))
 	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", "x64"))
+	project.ext.set("mongoToolsArch", getPropertySafelyWithDefaults("mongoToolsArch", "${execDetermineLinuxOS()}${execDetermineLinuxVersion()}-x86_64"))
 }
