@@ -71,7 +71,7 @@
 		<commons.text.version>1.10.0</commons.text.version>
 		<jgit.version>6.7.0.202309050840-r</jgit.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
-		<handlebars.version>4.3.0</handlebars.version>
+		<handlebars.version>4.3.1</handlebars.version>
 		<sardine.version>5.10</sardine.version>
 		<xerces.version>2.12.2</xerces.version>
 		<java.version>11</java.version>
@@ -84,6 +84,7 @@
 		<!-- Override property setup by Spring Boot Parent -->
 		<jackson.version>2.15.0</jackson.version>
 		<jackson.databind.version>2.15.0</jackson.databind.version>
+		<jose4j.version>0.9.3</jose4j.version>
 		<aws.version>1.12.543</aws.version>
 		<box.sdk.version>4.4.0</box.sdk.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
