@@ -35,28 +35,46 @@ ext.getPropertySafelyWithDefaults = {
 
 def commandTimeout = getPropertySafelyWithDefaults("commandTimeout", 1000000).toInteger()
 
-ext.execDetermineLinuxOS = {
-	def cmd = "lsb_release -si"
-	def proc = cmd.execute()
-	proc.waitForOrKill(commandTimeout)
-
-	if (proc.exitValue() != 0) {
-		return "unknown"
+ext.execDetermineLinuxOSWithVersion = {
+	def os = new File('/etc/os-release').text.split('\n').find { it.startsWith('NAME=') }?.split('=')[1]
+	def version = new File('/etc/os-release').text.split('\n').find { it.startsWith('VERSION_ID=') }?.split('=')[1]
+	if (os == null || version == null) {
+		println "Cannot determine the operating system."
+		return "unsupportedOS"
 	}
 
-	return proc.in.text.toLowerCase().trim()
-}
+	version = version.replaceAll("\"", "").replaceAll("\'", "").replaceAll("\\.", "").trim()
+	switch (os) {
+		case ~/.*Ubuntu.*/:
+			return "ubuntu${version}"
+		case ~/.*Linux Mint.*/:
+			def ubuntuVersion
+			def releaseFile = new File('/etc/upstream-release/lsb-release')
+			if (releaseFile.exists()) {
+				ubuntuVersion = releaseFile.text.split('\n').find { it.startsWith('DISTRIB_RELEASE=') }?.split('=')[1]
+			}
+			if (ubuntuVersion == null) {
+				// try best to manually map LinuxMint to Ubuntu version
+				if (version.startsWith("19")) {
+					ubuntuVersion = "1804"
+				} else if (version.startsWith("20")) {
+					ubuntuVersion = "2004"
+				} else if (version.startsWith("21")) {
+					ubuntuVersion = "2204"
+				} else {
+					// Default, should be updated with new release of LinuxMint
+					ubuntuVersion = "2204"
+				}
+			}
+			ubuntuVersion = ubuntuVersion.replaceAll("\"", "").replaceAll("\'", "").replaceAll("\\.", "").trim()
 
-ext.execDetermineLinuxVersion = {
-	def cmd = "lsb_release -sr"
-	def proc = cmd.execute()
-	proc.waitForOrKill(commandTimeout)
-
-	if (proc.exitValue() != 0) {
-		return "unknown-version"
+			return "ubuntu${ubuntuVersion}"
+		case ~/.*Red Hat Enterprise Linux.*/:
+			return "rhel${version}"
+		default:
+			println "Operating system is not Ubuntu, Linux Mint, or Red Hat."
+			return "unsupportedOS"
 	}
-
-	return proc.in.text.replace(".", "").trim()
 }
 
 project.ext.set("overwriteArtifact", getPropertySafelyWithDefaults("refreshDownloads", "false").toBoolean())
@@ -92,7 +110,7 @@ if (currentPlatform == "darwin") {
 	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", currentArch == "aarch64" ? "arm64" : "x64"))
 	project.ext.set("mongoToolsArch", getPropertySafelyWithDefaults("mongoToolsArch", currentArch == "aarch64" ? "macos-arm64" : "macos-x86_64"))
 } else {
-	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", "x86_64-${execDetermineLinuxOS()}${execDetermineLinuxVersion()}"))
+	project.ext.set("mongodbArch", getPropertySafelyWithDefaults("mongodbArch", "x86_64-${execDetermineLinuxOSWithVersion()}"))
 	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", "x64"))
-	project.ext.set("mongoToolsArch", getPropertySafelyWithDefaults("mongoToolsArch", "${execDetermineLinuxOS()}${execDetermineLinuxVersion()}-x86_64"))
+	project.ext.set("mongoToolsArch", getPropertySafelyWithDefaults("mongoToolsArch", "${execDetermineLinuxOSWithVersion()}-x86_64"))
 }
