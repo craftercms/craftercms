@@ -65,7 +65,8 @@ task download() {
 		def performDownload = true
 		getDownloads().each { download ->
 			performDownload = true
-			if (download['name'] == "mongodb" && (!(socialRequired || profileRequired))) {
+			def mongoDownload = ["mongodb", "mongosh", "mongodb-database-tools"].contains(download['name'])
+			if (mongoDownload && (!(socialRequired || profileRequired))) {
 				performDownload = false // Skip mongodb download
 			}
 
