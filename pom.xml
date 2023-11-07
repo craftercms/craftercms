@@ -97,7 +97,7 @@
 		<velocity.engine.version>2.3</velocity.engine.version>
 		<xstream.version>1.4.20</xstream.version>
 		<slf4j.version>2.0.9</slf4j.version>
-		<log4j.version>2.20.0</log4j.version>
+		<log4j.version>2.21.1</log4j.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
 		<freemarker.version>2.3.32</freemarker.version>
 		<aspectj.version>1.9.19</aspectj.version>
@@ -192,7 +192,7 @@
 		<!-- Build -->
 		<maven.compiler.version>3.11.0</maven.compiler.version>
 		<maven.source.version>3.2.1</maven.source.version>
-		<maven.javadoc.version>3.5.0</maven.javadoc.version>
+		<maven.javadoc.version>3.6.0</maven.javadoc.version>
 		<maven.resources.version>3.1.0</maven.resources.version><!-- should upgrade to 3.3.1 when possible -->
 		<maven.jar.version>3.3.0</maven.jar.version>
 		<maven.war.version>3.3.2</maven.war.version>
