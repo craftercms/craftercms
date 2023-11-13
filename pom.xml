@@ -215,6 +215,9 @@
 		<appassembler.maven.version>2.1.0</appassembler.maven.version>
 		<maven.assembly.version>3.3.0</maven.assembly.version>
 		<nexus.staging.maven.version>1.6.7</nexus.staging.maven.version>
+		<frontend.maven.version>1.14.2</frontend.maven.version>
+		<studio.ui.node.version>v21.1.0</studio.ui.node.version>
+		<studio.ui.yarn.version>v1.22.19</studio.ui.yarn.version>
 	</properties>
 
 	<dependencyManagement>
