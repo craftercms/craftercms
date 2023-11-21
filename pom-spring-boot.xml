@@ -95,6 +95,9 @@
 		<log4j2.version>2.20.0</log4j2.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
 
+		<!-- Testing -->
+		<junit.vintage.version>5.10.0</junit.vintage.version>
+
 		<!-- build -->
 		<maven.javadoc.version>3.5.0</maven.javadoc.version>
 		<maven.source.version>3.2.1</maven.source.version>
