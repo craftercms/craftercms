@@ -101,7 +101,7 @@
 		<quartz.version>2.4.0-rc2</quartz.version>
 		<freemarker.version>2.3.32</freemarker.version>
 		<aspectj.version>1.9.19</aspectj.version>
-		<bouncycastle.version>1.70</bouncycastle.version>
+		<bouncycastle.version>1.76</bouncycastle.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<javax.activation.version>1.2.0</javax.activation.version>
 		<jakarta.xml.bind-api.version>4.0.0</jakarta.xml.bind-api.version>
@@ -150,7 +150,7 @@
 		<opensearch.version>2.9.0</opensearch.version>
 		<opensearch.runner.version>2.9.0.0</opensearch.runner.version>
 		<opensearch.client.version>2.5.0</opensearch.client.version>
-		<tika.version>2.7.0</tika.version>
+		<tika.version>2.9.1</tika.version>
 		<poi.version>5.2.3</poi.version>
 		<metadata.extractor.version>2.18.0</metadata.extractor.version>
 		<jsoup.version>1.16.1</jsoup.version>
@@ -172,7 +172,7 @@
 		<okhttp.version>4.11.0</okhttp.version>
 		<okio.version>3.4.0</okio.version>
 		<zxcvbn.version>1.7.0</zxcvbn.version>
-		<esapi.version>2.5.2.0</esapi.version>
+		<esapi.version>2.5.3.0</esapi.version>
 		<opensaml.version>4.1.1</opensaml.version>
 		<directory-watcher.version>0.18.0</directory-watcher.version>
 
