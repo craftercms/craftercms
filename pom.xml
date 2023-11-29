@@ -212,6 +212,7 @@
 		<frontend.maven.version>1.14.2</frontend.maven.version>
 		<studio.ui.node.version>v21.1.0</studio.ui.node.version>
 		<studio.ui.yarn.version>v1.22.19</studio.ui.yarn.version>
+		<exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
 	</properties>
 
 	<dependencyManagement>
