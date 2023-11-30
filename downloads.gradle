@@ -54,7 +54,7 @@ ext.downloads = [
     [
         name: "mariadb4j",
         url: "https://repo1.maven.org/maven2/org/craftercms/mariaDB4j/mariaDB4j-app/${mariadb4jVersion}/mariaDB4j-app-${mariadb4jVersion}.jar",
-        destinationFile: "${downloadDir}/mariaDB4j-app.jar",
+	destinationFile: "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar",
         checksumAlgorithm: "md5",
         expand: "false",
         expandFolder: ""
