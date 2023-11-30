@@ -133,7 +133,7 @@
 		<httpproxy.version>1.12.1</httpproxy.version>
 		<ivy.version>2.5.2</ivy.version>
 		<tinify.version>1.8.3</tinify.version>
-		<mariadb4j.version>2.6.0.8</mariadb4j.version>
+		<mariadb4j.version>2.6.0.9</mariadb4j.version>
 		<saxon.version>12.2</saxon.version>
 		<apache.cxf.version>3.5.5</apache.cxf.version>
 		<ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
