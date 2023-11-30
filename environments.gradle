@@ -113,8 +113,8 @@ ext.commonItemsToCopy = [
 ext.authoringItemsToCopy = [
     [
         name: "mariadb",
-        from: "${downloadDir}/mariaDB4j-app.jar",
-        into: "/bin",
+        from: "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar",
+        into: "/bin/mariaDB4j-app.jar",
         exclude: ""
     ],
     [
