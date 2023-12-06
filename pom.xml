@@ -195,7 +195,7 @@
 		<maven.javadoc.version>3.6.0</maven.javadoc.version>
 		<maven.resources.version>3.1.0</maven.resources.version><!-- should upgrade to 3.3.1 when possible -->
 		<maven.jar.version>3.3.0</maven.jar.version>
-		<maven.war.version>3.3.2</maven.war.version>
+		<maven.war.version>3.4.0</maven.war.version>
 		<maven.deploy.version>3.1.1</maven.deploy.version>
 		<maven.gpg.version>3.0.1</maven.gpg.version>
 		<maven.shade.version>3.3.0</maven.shade.version>
