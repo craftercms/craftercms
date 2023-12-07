@@ -1064,7 +1064,6 @@
 				<groupId>org.mongodb</groupId>
 				<artifactId>bson</artifactId>
 				<version>${mongo.version}</version>
-				<optional>true</optional>
 			</dependency>
 
 			<!-- Other -->
