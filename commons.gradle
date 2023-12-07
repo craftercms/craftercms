@@ -69,6 +69,16 @@ ext.execCommand = { command, dir ->
 	}
 }
 
+ext.copyFile = { workingDir, source, destination ->
+	def command = ["cp", source, destination]
+	try {
+		execCommand(command, workingDir)
+	} catch (e) {
+		logger.error("Failed to copy file workingDir: {}, source: {}, destination: {}")
+		throw new GradleException("Failed to copy file.", e)
+	}
+}
+
 ext.syncFolder = { workingDir, source, destination, exclude, overwriteChangedFiles, deleteNonExisting ->
     def command = ["rsync", "-ar"]
 
