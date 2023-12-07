@@ -127,6 +127,7 @@ ext.authoringItemsToCopy = [
         name: "mariadb",
         from: "${downloadDir}/mariaDB4j-app-${mariadb4jVersion}.jar",
         into: "/bin/mariaDB4j-app.jar",
+        copyFile: true,
         exclude: ""
     ],
     [
@@ -692,7 +693,11 @@ ext.prepareAuthoringEnvironment = { overwriteChangedFiles, downloadGrapes, inclu
         def from = item.from
         def into = item.into
         def exclude = item.exclude
-        syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles, true)
+        if (item.copyFile) {
+            copyFile("${projectDir}", from, "${authoringEnvDir}" + into)
+        } else {
+            syncFolder("${projectDir}", from, "${authoringEnvDir}" + into, exclude, overwriteChangedFiles, true)
+        }
     }
 
     // Copy Deployer config
