@@ -113,13 +113,315 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- AWS SDK -->
+			<!-- Overrides -->
+			<dependency>
+				<groupId>com.squareup.okio</groupId>
+				<artifactId>okio</artifactId>
+				<version>${okio.version}</version>
+			</dependency>
+
+			<!-- Spring -->
+
+			<!-- Apache -->
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-configuration2</artifactId>
+				<version>${commons.configuration.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-csv</artifactId>
+				<version>${commons.csv.version}</version>
+			</dependency>
+			<!-- Groovy -->
+			<dependency>
+				<groupId>org.apache.groovy</groupId>
+				<artifactId>groovy-all</artifactId>
+				<version>${groovy4.version}</version> <!-- TODO: change to groovy.version when spring boot upgrade to v3 -->
+				<type>pom</type>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.ivy</groupId>
+				<artifactId>ivy</artifactId>
+				<version>${ivy.version}</version>
+			</dependency>
+
+			<!-- Security -->
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>${bouncycastle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcpkix-jdk18on</artifactId>
+				<version>${bouncycastle.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bitbucket.b_c</groupId>
+				<artifactId>jose4j</artifactId>
+				<version>${jose4j.version}</version>
+			</dependency>
+
+			<!-- Test -->
+			<dependency>
+				<groupId>org.junit.vintage</groupId>
+				<artifactId>junit-vintage-engine</artifactId>
+				<version>${junit.vintage.version}</version>
+			</dependency>
+
+			<!-- AWS -->
 			<dependency>
 				<groupId>com.amazonaws</groupId>
 				<artifactId>aws-java-sdk-bom</artifactId>
 				<version>${aws.version}</version>
 				<type>pom</type>
-				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-s3</artifactId>
+				<version>${aws.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-sts</artifactId>
+				<version>${aws.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-cloudfront</artifactId>
+				<version>${aws.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-cloudformation</artifactId>
+				<version>${aws.version}</version>
+			</dependency>
+
+			<!-- git -->
+			<dependency>
+				<groupId>org.eclipse.jgit</groupId>
+				<artifactId>org.eclipse.jgit</artifactId>
+				<version>${jgit.version}</version>
+			</dependency>
+
+			<!-- Other -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-xml</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish</groupId>
+				<artifactId>jakarta.json</artifactId>
+				<version>${jakarta.json.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.lookfirst</groupId>
+				<artifactId>sardine</artifactId>
+				<version>${sardine.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.mail</groupId>
+				<artifactId>javax.mail</artifactId>
+				<version>${javax.mail.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.jknack</groupId>
+				<artifactId>handlebars</artifactId>
+				<version>${handlebars.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.jknack</groupId>
+				<artifactId>handlebars-springmvc</artifactId>
+				<version>${handlebars.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.box</groupId>
+				<artifactId>box-java-sdk</artifactId>
+				<version>${box.sdk.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.bouncycastle</groupId>
+						<artifactId>bcprov-jdk15on</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.bouncycastle</groupId>
+						<artifactId>bcpkix-jdk15on</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- CrafterCMS -->
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>craftercms</artifactId>
+				<type>pom</type>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons-audit</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons-entitlements</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons-git</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons-mongo</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons-plugin</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons-security</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons-upgrade-manager</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons-utilities</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-commons-validation</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-engine</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-profile-admin-console</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-profile-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-profile</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-profile-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-profile-integration-tests</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-profile-parent</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-search-batch-indexer</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-search-commons</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-search-opensearch</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-security-provider</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-social-admin</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-social</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-social-parent</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-studio-ui</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>crafter-virus-scanner</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>groovy-sandbox</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>mariaDB4j</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>script-security</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.craftercms</groupId>
+				<artifactId>social-client-proxy</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -176,6 +478,7 @@
                                         <plugin>
                                                 <groupId>org.codehaus.mojo</groupId>
                                                 <artifactId>buildnumber-maven-plugin</artifactId>
+						<version>${buildnumber.maven.version}</version>
                                         </plugin>
                                         <plugin>
                                                 <groupId>org.apache.maven.plugins</groupId>
