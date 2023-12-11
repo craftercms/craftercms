@@ -118,7 +118,7 @@
 		<snakeyaml.version>2.2</snakeyaml.version>
 		<aws.sdk.version>1.12.608</aws.sdk.version>
 		<box.sdk.version>4.4.0</box.sdk.version>
-		<sardine.version>5.10</sardine.version>
+		<sardine.version>5.12</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<gson.version>2.10.1</gson.version>
