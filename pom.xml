@@ -118,7 +118,7 @@
 		<snakeyaml.version>2.2</snakeyaml.version>
 		<aws.sdk.version>1.12.609</aws.sdk.version>
 		<box.sdk.version>4.4.0</box.sdk.version>
-		<sardine.version>5.10</sardine.version>
+		<sardine.version>5.12</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<gson.version>2.10.1</gson.version>
@@ -152,7 +152,7 @@
 		<opensearch.runner.version>2.9.0.0</opensearch.runner.version>
 		<opensearch.client.version>2.5.0</opensearch.client.version>
 		<tika.version>2.9.1</tika.version>
-		<poi.version>5.2.3</poi.version>
+		<poi.version>5.2.5</poi.version>
 		<metadata.extractor.version>2.18.0</metadata.extractor.version>
 		<jsoup.version>1.16.1</jsoup.version>
 		<protobuf.java.version>3.22.4</protobuf.java.version>
