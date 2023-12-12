@@ -206,7 +206,7 @@
 		<grunt.maven.version>1.5.1</grunt.maven.version>
 		<gmavenplus.version>2.1.0</gmavenplus.version>
 		<appassembler.maven.version>2.1.0</appassembler.maven.version>
-		<maven.assembly.version>3.5.0</maven.assembly.version>
+		<maven.assembly.version>3.6.0</maven.assembly.version>
 		<nexus.staging.maven.version>1.6.13</nexus.staging.maven.version>
 		<frontend.maven.version>1.14.2</frontend.maven.version>
 		<studio.ui.node.version>v21.1.0</studio.ui.node.version>
