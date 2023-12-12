@@ -130,7 +130,7 @@
 		<urlrewrite.version>4.0.4</urlrewrite.version>
 		<xerces.version>2.12.2</xerces.version>
 		<graphql.version>20.2</graphql.version>
-		<graphql.extended.scalars.version>20.2</graphql.extended.scalars.version>
+		<graphql.extended.scalars.version>21.0</graphql.extended.scalars.version>
 		<httpproxy.version>1.12.1</httpproxy.version>
 		<ivy.version>2.5.2</ivy.version>
 		<tinify.version>1.8.3</tinify.version>
