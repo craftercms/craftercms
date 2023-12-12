@@ -24,11 +24,11 @@ install: skip
 script:
 - if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
     bash -c "mvn -DskipTests deploy --settings .travis-settings.xml";
-    bash -c "mvn -DskipTests -f pom-spring-boot.xml deploy --settings .travis-settings.xml";
+    bash -c "mvn -DskipTests -f spring-boot/pom.xml deploy --settings .travis-settings.xml";
   fi
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then
     bash -c "mvn -DskipTests clean install"
-    bash -c "mvn -DskipTests -f pom-spring-boot.xml clean install";
+    bash -c "mvn -DskipTests -f spring-boot/pom.xml clean install";
   fi
 env:
   global:
