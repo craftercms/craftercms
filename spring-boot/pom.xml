@@ -97,7 +97,7 @@
 		<quartz.version>2.4.0-rc2</quartz.version>
 
 		<!-- Testing -->
-		<junit.vintage.version>5.10.0</junit.vintage.version>
+		<junit.vintage.version>5.10.1</junit.vintage.version>
 
 		<!-- build -->
 		<maven.javadoc.version>3.6.3</maven.javadoc.version>
