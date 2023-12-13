@@ -178,8 +178,8 @@
 		<!-- Testing -->
 		<testng.version>7.8.0</testng.version>
 		<junit.version>4.13.2</junit.version>
-		<junit.jupiter.version>5.10.0</junit.jupiter.version>
-		<junit.vintage.version>5.10.0</junit.vintage.version>
+		<junit.jupiter.version>5.10.1</junit.jupiter.version>
+		<junit.vintage.version>5.10.1</junit.vintage.version>
 		<testng.engine.version>1.0.4</testng.engine.version>
 		<mockito.version>5.8.0</mockito.version>
 		<embedmongo.maven.version>0.4.2</embedmongo.maven.version>
