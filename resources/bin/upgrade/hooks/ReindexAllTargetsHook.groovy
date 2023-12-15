@@ -16,9 +16,10 @@
 package upgrade.hooks
 
 @Grapes([
-    @Grab(group='com.squareup.okhttp3', module='okhttp', version='4.11.0')
+    @Grab(group='com.squareup.okhttp3', module='okhttp', version='4.12.0')
 ])
 
+import groovy.json.JsonSlurper
 import groovy.json.JsonBuilder
 import java.nio.file.Path
 import okhttp3.*
@@ -40,7 +41,7 @@ class ReindexAllTargetsHook implements PostUpgradeHook {
                 throw new UpgradeException("Error while listing targets: ${response.message()}")
             }
 
-            return response.body().string()
+            return (new JsonSlurper()).parseText(response.body().string())
         } catch (IOException e) {
             e.printStackTrace()
         }
