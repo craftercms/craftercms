@@ -139,7 +139,7 @@
 		<apache.cxf.version>3.5.5</apache.cxf.version>
 		<ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
 		<mybatis.spring.version>2.1.0</mybatis.spring.version>
-		<mybatis.version>3.5.13</mybatis.version>
+		<mybatis.version>3.5.15</mybatis.version>
 		<json.lib.version>2.4</json.lib.version>
 		<mariadb.java.client.version>2.7.9</mariadb.java.client.version>
 		<greenmail.version>2.0.1</greenmail.version>
