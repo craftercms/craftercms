@@ -212,6 +212,7 @@
 		<studio.ui.node.version>v21.1.0</studio.ui.node.version>
 		<studio.ui.yarn.version>v1.22.19</studio.ui.yarn.version>
 		<exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
+		<cyclonedx.maven.version>2.7.10</cyclonedx.maven.version>
 	</properties>
 
 	<dependencyManagement>
@@ -290,13 +291,13 @@
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
 				<version>${servlet.api.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet.jsp</groupId>
 				<artifactId>jsp-api</artifactId>
 				<version>${servlet.jsp.api.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet.jsp.jstl</groupId>
@@ -629,7 +630,7 @@
 				<groupId>org.apache.ibatis</groupId>
 				<artifactId>ibatis-sqlmap</artifactId>
 				<version>${ibatis.sqlmap.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.mybatis</groupId>
@@ -740,7 +741,7 @@
 				<groupId>org.apache.groovy</groupId>
 				<artifactId>groovy</artifactId>
 				<version>${groovy.version}</version>
-				 <!-- Updated to avoid exclusions in other places -->
+				<!-- Updated to avoid exclusions in other places -->
 			</dependency>
 
 
@@ -792,7 +793,7 @@
 				<artifactId>aws-java-sdk-bom</artifactId>
 				<version>${aws.sdk.version}</version>
 				<type>pom</type>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>com.amazonaws</groupId>
@@ -894,49 +895,49 @@
 				<groupId>org.apache.tomcat</groupId>
 				<artifactId>tomcat-jasper-el</artifactId>
 				<version>${tomcat.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
 				<version>${spring.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.testng</groupId>
 				<artifactId>testng</artifactId>
 				<version>${testng.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
 				<version>${junit.jupiter.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.junit.vintage</groupId>
 				<artifactId>junit-vintage-engine</artifactId>
 				<version>${junit.vintage.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.junit.support</groupId>
 				<artifactId>testng-engine</artifactId>
 				<version>${testng.engine.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>javax.measure</groupId>
@@ -947,31 +948,31 @@
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest</artifactId>
 				<version>${hamcrest.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path-assert</artifactId>
 				<version>${json.path.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path</artifactId>
 				<version>${json.path.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.xmlunit</groupId>
 				<artifactId>xmlunit-core</artifactId>
 				<version>${xmlunit.core.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-websocket</artifactId>
 				<version>${tomcat.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jgit</groupId>
@@ -994,7 +995,7 @@
 				<groupId>org.codelibs.opensearch</groupId>
 				<artifactId>opensearch-runner</artifactId>
 				<version>${opensearch.runner.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.apache.tika</groupId>
@@ -1034,7 +1035,7 @@
 				<groupId>org.eclipse.jgit</groupId>
 				<artifactId>org.eclipse.jgit.archive</artifactId>
 				<version>${jgit.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jgit</groupId>
@@ -1069,7 +1070,7 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-simple</artifactId>
 				<version>${slf4j.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -1252,7 +1253,7 @@
 				<groupId>org.jenkins-ci</groupId>
 				<artifactId>test-annotations</artifactId>
 				<version>1.2</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>io.jenkins.tools.incrementals</groupId>
@@ -1268,7 +1269,7 @@
 				<groupId>com.icegreen</groupId>
 				<artifactId>greenmail</artifactId>
 				<version>${greenmail.version}</version>
-				
+
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
@@ -1618,6 +1619,27 @@
 					<artifactId>maven-shade-plugin</artifactId>
 					<version>${maven.shade.version}</version>
 				</plugin>
+				<plugin>
+					<groupId>org.cyclonedx</groupId>
+					<artifactId>cyclonedx-maven-plugin</artifactId>
+					<version>${cyclonedx.maven.version}</version>
+					<configuration>
+						<projectType>application</projectType>
+						<schemaVersion>1.4</schemaVersion>
+						<includeBomSerialNumber>true</includeBomSerialNumber>
+						<includeCompileScope>true</includeCompileScope>
+						<includeProvidedScope>true</includeProvidedScope>
+						<includeRuntimeScope>true</includeRuntimeScope>
+						<includeSystemScope>true</includeSystemScope>
+						<includeTestScope>false</includeTestScope>
+						<includeLicenseText>false</includeLicenseText>
+						<outputReactorProjects>true</outputReactorProjects>
+						<outputFormat>all</outputFormat>
+						<outputName>bom</outputName>
+						<outputDirectory>${project.build.directory}</outputDirectory><!-- usually target, if not redefined in pom.xml -->
+						<verbose>false</verbose><!-- = ${cyclonedx.verbose} -->
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -1632,6 +1654,10 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.cyclonedx</groupId>
+				<artifactId>cyclonedx-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
