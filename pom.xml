@@ -98,7 +98,7 @@
 		<velocity.engine.version>2.3</velocity.engine.version>
 		<xstream.version>1.4.20</xstream.version>
 		<slf4j.version>2.0.9</slf4j.version>
-		<log4j.version>2.21.1</log4j.version>
+		<log4j.version>2.22.1</log4j.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
 		<freemarker.version>2.3.32</freemarker.version>
 		<aspectj.version>1.9.19</aspectj.version>
