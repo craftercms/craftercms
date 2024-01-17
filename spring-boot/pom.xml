@@ -109,7 +109,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<nexus.staging.maven.version>1.6.13</nexus.staging.maven.version>
-		<cyclonedx.maven.version>2.7.10</cyclonedx.maven.version>
+		<cyclonedx.maven.version>2.7.11</cyclonedx.maven.version>
 	</properties>
 
 	<dependencyManagement>
