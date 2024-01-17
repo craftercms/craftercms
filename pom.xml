@@ -89,7 +89,7 @@
 
 		<httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
 
-		<jackson.version>2.15.0</jackson.version>
+		<jackson.version>2.16.1</jackson.version>
 
 		<mongo.version>4.9.1</mongo.version>
 		<jongo.version>1.5.1</jongo.version>
@@ -116,7 +116,7 @@
 		<jgit.version>6.7.0.202309050840-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
 		<aws.sdk.version>1.12.543</aws.sdk.version>
-		<box.sdk.version>4.4.0</box.sdk.version>
+		<box.sdk.version>4.7.0</box.sdk.version>
 		<sardine.version>5.10</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
 		<jaxen.version>2.0.0</jaxen.version>
@@ -170,9 +170,9 @@
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<eddsa.version>0.3.0</eddsa.version>
 		<okhttp.version>4.11.0</okhttp.version>
-		<okio.version>3.4.0</okio.version>
+		<okio.version>3.7.0</okio.version>
 		<zxcvbn.version>1.7.0</zxcvbn.version>
-		<esapi.version>2.5.3.0</esapi.version>
+		<esapi.version>2.5.3.1</esapi.version>
 		<opensaml.version>4.1.1</opensaml.version>
 		<directory-watcher.version>0.18.0</directory-watcher.version>
 
@@ -184,7 +184,7 @@
 		<de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.9.1</xmlunit.core.version>
-		<tomcat.version>9.0.83</tomcat.version>
+		<tomcat.version>9.0.85</tomcat.version>
 
 		<!-- Build -->
 		<maven.compiler.version>3.11.0</maven.compiler.version>
