@@ -79,17 +79,17 @@
 		<script.security.version>${project.version}</script.security.version>
 		<jakarta.json.version>2.0.1</jakarta.json.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
-		<okio.version>3.4.0</okio.version>
+		<okio.version>3.7.0</okio.version>
 		<bouncycastle.version>1.76</bouncycastle.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
-		<jackson.version>2.15.0</jackson.version>
+		<jackson.version>2.16.1</jackson.version>
 		<jackson.databind.version>2.15.0</jackson.databind.version>
-		<jose4j.version>0.9.3</jose4j.version>
+		<jose4j.version>0.9.4</jose4j.version>
 		<aws.version>1.12.543</aws.version>
-		<box.sdk.version>4.4.0</box.sdk.version>
+		<box.sdk.version>4.7.0</box.sdk.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
-		<tomcat.version>9.0.83</tomcat.version>
+		<tomcat.version>9.0.85</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
 		<groovy.version>3.0.19</groovy.version>
 		<apache.ivy>2.5.2</apache.ivy>
