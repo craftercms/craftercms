@@ -90,7 +90,7 @@
 
 		<httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
 
-		<jackson.version>2.16.0</jackson.version>
+		<jackson.version>2.16.1</jackson.version>
 
 		<mongo.version>4.11.1</mongo.version>
 		<jongo.version>1.5.1</jongo.version>
@@ -98,8 +98,8 @@
 		<velocity.engine.version>2.3</velocity.engine.version>
 		<xstream.version>1.4.20</xstream.version>
 		<slf4j.version>2.0.9</slf4j.version>
-		<log4j.version>2.21.1</log4j.version>
-		<quartz.version>2.4.0-rc2</quartz.version>
+		<log4j.version>2.22.1</log4j.version>
+		<quartz.version>2.5.0-rc1</quartz.version>
 		<freemarker.version>2.3.32</freemarker.version>
 		<aspectj.version>1.9.19</aspectj.version>
 		<bouncycastle.version>1.76</bouncycastle.version>
@@ -156,7 +156,7 @@
 		<metadata.extractor.version>2.18.0</metadata.extractor.version>
 		<jsoup.version>1.16.1</jsoup.version>
 		<protobuf.java.version>3.22.4</protobuf.java.version>
-		<unit.api.version>2.1.3</unit.api.version>
+		<unit.api.version>2.2</unit.api.version>
 		<javax.inject.version>1</javax.inject.version>
 		<semver4j.version>3.1.0</semver4j.version>
 		<jose4j.version>0.9.3</jose4j.version>
