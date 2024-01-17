@@ -102,7 +102,7 @@
 		<quartz.version>2.5.0-rc1</quartz.version>
 		<freemarker.version>2.3.32</freemarker.version>
 		<aspectj.version>1.9.19</aspectj.version>
-		<bouncycastle.version>1.76</bouncycastle.version>
+		<bouncycastle.version>1.77</bouncycastle.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<javax.activation.version>1.2.0</javax.activation.version>
 		<jakarta.xml.bind-api.version>4.0.1</jakarta.xml.bind-api.version>
