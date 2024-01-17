@@ -119,7 +119,7 @@ task update() {
 clean() {
 	description 'Cleans the modules.'
 	mustRunAfter update
-	dependsOn = [ "clone" ]
+	dependsOn = [ "clone", "installPomFiles" ]
 	doFirst {
 		getBuildModules().each { module ->
 			println "Cleaning $module"
@@ -178,7 +178,7 @@ task deploy() {
 
 task upgrade() {
 	description 'Upgrades all modules and redeploys them'
-	dependsOn = [ "update", "clean", "build", "deploy" ]
+	dependsOn = [ "installPomFiles", "update", "clean", "build", "deploy" ]
 }
 
 task start() {
