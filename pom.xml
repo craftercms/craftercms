@@ -116,7 +116,7 @@
 		<json-smart.version>2.4.9</json-smart.version>
 		<jgit.version>6.8.0.202311291450-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
-		<aws.sdk.version>1.12.634</aws.sdk.version>
+		<aws.sdk.version>1.12.640</aws.sdk.version>
 		<box.sdk.version>4.4.0</box.sdk.version>
 		<sardine.version>5.12</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
