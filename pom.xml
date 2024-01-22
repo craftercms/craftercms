@@ -106,7 +106,7 @@
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<javax.activation.version>1.2.0</javax.activation.version>
 		<jakarta.xml.bind-api.version>4.0.1</jakarta.xml.bind-api.version>
-		<guava.version>32.1.2-jre</guava.version>
+		<guava.version>33.0.0-jre</guava.version>
 		<guava.collections.version>r03</guava.collections.version>
 		<findbugs.version>3.0.1</findbugs.version>
 		<bcel.version>6.8.0</bcel.version>
@@ -155,7 +155,7 @@
 		<poi.version>5.2.5</poi.version>
 		<metadata.extractor.version>2.19.0</metadata.extractor.version>
 		<jsoup.version>1.16.1</jsoup.version>
-		<protobuf.java.version>3.22.4</protobuf.java.version>
+		<protobuf.java.version>3.25.2</protobuf.java.version>
 		<unit.api.version>2.2</unit.api.version>
 		<javax.inject.version>1</javax.inject.version>
 		<semver4j.version>3.1.0</semver4j.version>
