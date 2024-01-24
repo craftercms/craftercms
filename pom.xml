@@ -161,7 +161,7 @@
 		<semver4j.version>3.1.0</semver4j.version>
 		<jose4j.version>0.9.4</jose4j.version>
 		<httpclient.version>4.5.14</httpclient.version>
-		<picocli.version>4.7.3</picocli.version>
+		<picocli.version>4.7.5</picocli.version>
 		<http.builder.version>1.0.4</http.builder.version>
 		<jaxb.api.version>2.3.1</jaxb.api.version>
 		<jaxb.core.version>4.0.4</jaxb.core.version>
