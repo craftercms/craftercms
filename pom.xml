@@ -186,7 +186,7 @@
 		<de.flapdoodle.embed.mongo.version>4.12.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.9.1</xmlunit.core.version>
-		<tomcat.version>9.0.85</tomcat.version>
+		<tomcat.version>10.1.18</tomcat.version>
 
 		<!-- Build -->
 		<maven.compiler.version>3.12.1</maven.compiler.version>
