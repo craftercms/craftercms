@@ -143,7 +143,7 @@
 		<json.lib.version>2.4</json.lib.version>
 		<mariadb.java.client.version>2.7.9</mariadb.java.client.version>
 		<greenmail.version>2.0.1</greenmail.version>
-		<stax2.api.version>4.2.1</stax2.api.version>
+		<stax2.api.version>4.2.2</stax2.api.version>
 		<joda.time.version>2.12.5</joda.time.version>
 		<!-- Spring 5.x doesn't support Hibernate Validator 7.x -->
 		<hibernate.validator.version>6.2.5.Final</hibernate.validator.version>
