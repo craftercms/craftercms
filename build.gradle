@@ -166,7 +166,7 @@ task buildBaseEnvs() {
 
 task buildBom() {
 	description 'Builds the Software Bill of Materials (BOM).'
-	dependsOn = ["clone"]
+	dependsOn = [ "clone", "installPomFiles" ]
 	doFirst {
 		println "Build the Software Bill of Materials (BOM)"
 
