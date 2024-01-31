@@ -164,6 +164,23 @@ task buildBaseEnvs() {
 	}
 }
 
+task buildBom() {
+	description 'Builds the Software Bill of Materials (BOM).'
+	dependsOn = [ "clone", "installPomFiles" ]
+	doFirst {
+		println "Build the Software Bill of Materials (BOM)"
+
+		// TODO Switch to all modules
+		getBuildModules().each { module ->
+			println "Building BOM for $module"
+			buildBom(module)
+		}
+		println "Aggregate BOMs"
+		aggregateBoms("${projectDir}")
+	}
+}
+
+
 task deploy() {
 	description 'Deploys the module artifacts prepares the authoring/delivery environments.'
 	mustRunAfter build
