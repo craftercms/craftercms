@@ -218,6 +218,7 @@
 		<frontend.maven.version>1.14.2</frontend.maven.version>
 		<studio.ui.node.version>v21.1.0</studio.ui.node.version>
 		<studio.ui.yarn.version>v1.22.19</studio.ui.yarn.version>
+		<cyclonedx.maven.version>2.7.11</cyclonedx.maven.version>
 	</properties>
 
 	<dependencyManagement>
@@ -398,6 +399,27 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>org.cyclonedx</groupId>
+					<artifactId>cyclonedx-maven-plugin</artifactId>
+					<version>${cyclonedx.maven.version}</version>
+					<configuration>
+						<projectType>application</projectType>
+						<schemaVersion>1.4</schemaVersion>
+						<includeBomSerialNumber>true</includeBomSerialNumber>
+						<includeCompileScope>true</includeCompileScope>
+						<includeProvidedScope>true</includeProvidedScope>
+						<includeRuntimeScope>true</includeRuntimeScope>
+						<includeSystemScope>true</includeSystemScope>
+						<includeTestScope>false</includeTestScope>
+						<includeLicenseText>false</includeLicenseText>
+						<outputReactorProjects>true</outputReactorProjects>
+						<outputFormat>all</outputFormat>
+						<outputName>bom</outputName>
+						<outputDirectory>${project.build.directory}</outputDirectory><!-- usually target, if not redefined in pom.xml -->
+						<verbose>false</verbose><!-- = ${cyclonedx.verbose} -->
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -412,6 +434,10 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.cyclonedx</groupId>
+				<artifactId>cyclonedx-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

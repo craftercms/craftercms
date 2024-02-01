@@ -181,6 +181,26 @@ ext.buildModule = { module, unitTest ->
 	}
 }
 
+ext.buildBom = { module ->
+	def dir = srcFolder + module
+
+	try {
+		execCommand(mavenCmd + ["cyclonedx:makeBom"], dir)
+	} catch (e) {
+		logger.error("Failed to build bom: {}, exception: {}", module, e)
+		throw new GradleException("Failed to build bom.", e)
+	}
+}
+
+ext.aggregateBoms = { dir ->
+	try {
+		execCommand(["./aggregate-boms.sh"], dir)
+	} catch (e) {
+		logger.error("Failed to aggregate BOMs, exception: {}", e)
+		throw new GradleException("Failed to aggregate BOMs.", e)
+	}
+}
+
 ext.checksumFile = { filePath, algorithm ->
     // Set your algorithm
     // "MD2","MD5","SHA","SHA-1","SHA-256","SHA-384","SHA-512"
