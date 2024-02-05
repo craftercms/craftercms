@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -53,20 +53,28 @@ class PostUpgradeHooks {
 
     private static final List<PostUpgradeHooks> DELIVERY_4_0_X = AUTHORING_4_0_X
 
+    private static final List<PostUpgradeHooks> AUTHORING_4_1_x = [
+            new PostUpgradeCompletedHook(false)
+    ]
+
+    private static final List<PostUpgradeHooks> DELIVERY_4_1_x = AUTHORING_4_1_x
+
     private static final Map ALL_HOOKS = [
             'authoring': [
+                    '>=4.1.0': AUTHORING_4_1_x,
                     '4.0': AUTHORING_4_0_X,
                     '3.1.9' : AUTHORING_3_1_X_WITH_DB_HOOKS,
                     '3.1.12': AUTHORING_3_1_X_WITH_DB_HOOKS,
                     '3.1.13': AUTHORING_3_1_X_WITH_DB_HOOKS,
-                    '>=3.1.17': AUTHORING_3_1_X_NO_DB_HOOKS
+                    '3.1 >=3.1.17': AUTHORING_3_1_X_NO_DB_HOOKS
                     ],
             'delivery': [
+                    '>=4.1.0': DELIVERY_4_1_x,
                     '4.0': DELIVERY_4_0_X,
                     '3.1.9' : DELIVERY_3_1_X_HOOKS,
                     '3.1.12': DELIVERY_3_1_X_HOOKS,
                     '3.1.13': DELIVERY_3_1_X_HOOKS,
-                    '>=3.1.17': DELIVERY_3_1_X_HOOKS
+                    '3.1 >=3.1.17': DELIVERY_3_1_X_HOOKS
             ]
     ]
 
