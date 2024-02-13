@@ -78,7 +78,7 @@
 		<script.security.version>${project.version}</script.security.version>
 		<jakarta.json.version>2.0.1</jakarta.json.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
-		<okio.version>3.7.0</okio.version>
+		<okio.version>3.8.0</okio.version>
 		<bouncycastle.version>1.77</bouncycastle.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
