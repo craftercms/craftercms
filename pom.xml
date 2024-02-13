@@ -170,7 +170,7 @@
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<eddsa.version>0.3.0</eddsa.version>
 		<okhttp.version>4.12.0</okhttp.version>
-		<okio.version>3.7.0</okio.version>
+		<okio.version>3.8.0</okio.version>
 		<zxcvbn.version>1.7.0</zxcvbn.version>
 		<esapi.version>2.5.3.1</esapi.version>
 		<directory-watcher.version>0.18.0</directory-watcher.version>
