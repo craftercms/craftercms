@@ -11,7 +11,7 @@ cache:
 branches:
   only:
   - develop
-  - support/.*
+  - support/4.1.x
   - master
 notifications:
   irc:
