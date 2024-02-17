@@ -510,6 +510,8 @@ ext.commonConfUpdatePatterns = [
                 replace: '# ---------------------------------- Various -----------------------------------' +
                         System.lineSeparator() +
                         'plugins.security.disabled: true' + System.lineSeparator() + 'plugins.sql.enabled: false' +
+                        System.lineSeparator() +
+                        'indices.query.bool.max_clause_count: 8192' +
                         System.lineSeparator()
             ]
         ]
