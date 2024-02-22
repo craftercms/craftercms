@@ -78,26 +78,26 @@
 		<script.security.version>${project.version}</script.security.version>
 		<jakarta.json.version>2.0.1</jakarta.json.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
-		<okio.version>3.7.0</okio.version>
+		<okio.version>3.8.0</okio.version>
 		<bouncycastle.version>1.77</bouncycastle.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
 		<jackson.version>2.16.1</jackson.version>
-		<aws.version>1.12.621</aws.version>
-		<jose4j.version>0.9.4</jose4j.version>
-		<box.sdk.version>4.6.1</box.sdk.version>
+		<aws.version>1.12.660</aws.version>
+		<jose4j.version>0.9.5</jose4j.version>
+		<box.sdk.version>4.7.0</box.sdk.version>
 		<opensearch.version>2.9.0</opensearch.version>
 		<opensearch.client.version>2.5.0</opensearch.client.version>
-		<tomcat.version>9.0.83</tomcat.version>
+		<tomcat.version>9.0.85</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
 		<groovy.version>3.0.19</groovy.version>
-		<groovy4.version>4.0.17</groovy4.version> <!-- TODO: remove when spring boot upgrade to v3 -->
+		<groovy4.version>4.0.18</groovy4.version> <!-- TODO: remove when spring boot upgrade to v3 -->
 		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
 
 		<!-- Testing -->
-		<junit.vintage.version>5.10.1</junit.vintage.version>
+		<junit.vintage.version>5.10.2</junit.vintage.version>
 
 		<!-- build -->
 		<maven.javadoc.version>3.6.3</maven.javadoc.version>
@@ -109,7 +109,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<nexus.staging.maven.version>1.6.13</nexus.staging.maven.version>
-		<cyclonedx.maven.version>2.7.10</cyclonedx.maven.version>
+		<cyclonedx.maven.version>2.7.11</cyclonedx.maven.version>
 	</properties>
 
 	<dependencyManagement>
