@@ -85,7 +85,7 @@
 		<commons.text.version>1.10.0</commons.text.version>
 		<commons.dbcp2.version>2.9.0</commons.dbcp2.version>
 		<commons.fileupload.version>1.5</commons.fileupload.version>
-		<commons.compress.version>1.26</commons.compress.version>
+		<commons.compress.version>1.26.0</commons.compress.version>
 
 		<httpcomponents.httpclient.version>4.5.13</httpcomponents.httpclient.version>
 		<httpcomponents.httpmime.version>4.5.13</httpcomponents.httpmime.version>
