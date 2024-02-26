@@ -16,46 +16,41 @@
 package upgrade
 
 @Grapes([
-        @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.36'),
-        @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.12.0'),
-        @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.4'),
-        @Grab(group = 'commons-codec', module = 'commons-codec', version = '1.16.0'),
-        @Grab(group = 'commons-io', module = 'commons-io', version = '2.14.0'),
-        @Grab(group='org.elasticsearch.client', module='elasticsearch-rest-high-level-client', version='7.10.0')
+    @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.36'),
+    @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.12.0'),
+    @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.4'),
+    @Grab(group = 'commons-codec', module = 'commons-codec', version = '1.16.0'),
+    @Grab(group = 'commons-io', module = 'commons-io', version = '2.14.0'),
+    @Grab(group = 'org.elasticsearch.client', module='elasticsearch-rest-client', version='7.10.0')
 ])
-
-import groovy.cli.commons.CliBuilder
-
-import org.apache.commons.collections4.CollectionUtils
-import org.apache.commons.io.FileUtils
 
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.Files
 import java.time.temporal.ChronoUnit
 import java.util.stream.Stream
+import java.util.concurrent.TimeUnit
 import java.time.ZonedDateTime
+
+import groovy.cli.commons.CliBuilder
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+
+import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.RestClientBuilder
+import org.elasticsearch.client.Response
+import org.elasticsearch.client.Request
+
+import org.apache.commons.collections4.CollectionUtils
+import org.apache.commons.io.FileUtils
+import org.apache.http.util.EntityUtils
+import org.apache.http.nio.entity.NStringEntity
+import org.apache.http.entity.ContentType
+import org.apache.http.HttpHost
 
 import static upgrade.utils.UpgradeUtils.*
 import static utils.EnvironmentUtils.*
 import static utils.ScriptUtils.*
-import org.elasticsearch.action.ActionResponse
-import org.elasticsearch.action.admin.indices.alias.IndicesAliasesRequest
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest
-import org.elasticsearch.action.admin.cluster.health.*
-import org.elasticsearch.client.*
-import org.elasticsearch.client.tasks.*
-import org.elasticsearch.cluster.health.ClusterHealthStatus
-import org.elasticsearch.index.reindex.ReindexRequest
-import org.elasticsearch.index.reindex.BulkByScrollResponse
-import org.elasticsearch.common.unit.TimeValue
-import java.util.concurrent.TimeUnit
-
-import org.apache.http.HttpHost
-import org.apache.http.client.CredentialsProvider
-import org.apache.http.impl.client.BasicCredentialsProvider
-import org.apache.http.auth.AuthScope
-import org.apache.commons.lang3.StringUtils
 
 ES_VERSION = '7.10.0'
 ES_DOWNLOAD_URL_BASE = 'https://artifacts.elastic.co/downloads/elasticsearch'
@@ -141,24 +136,23 @@ Process startES7(Path targetFolder, Map optionValues) {
 /**
  * Waits for ES status to be yellow
  */
-boolean waitForES(RestHighLevelClient esClient, Map optionValues) {
-    ClusterHealthStatus expectedStatus = ClusterHealthStatus.YELLOW
+boolean waitForES(RestClient client, Map optionValues) {
+    String expectedStatus = "yellow"
     int timeoutSeconds = optionValues['status-timeout']
     int maxRetries = optionValues['status-retries']
     while ((maxRetries--) > 0) {
         println "Check ES cluster status"
         try {
-            ClusterHealthResponse healthResponse = esClient.cluster()
-                    .health(new ClusterHealthRequest()
-                            .waitForStatus(expectedStatus)
-                            .timeout(new TimeValue(timeoutSeconds, TimeUnit.SECONDS)),
-                    RequestOptions.DEFAULT)
+            Response healthResponse = client.performRequest(new Request("GET",
+            "/_cluster/health?wait_for_status=${expectedStatus}&timeout=${timeoutSeconds}s"))
+            Map<String, Object> healthResponseMap = new JsonSlurper().parseText(EntityUtils.toString(healthResponse.getEntity()))
+            String status = healthResponseMap.status
 
-            if (expectedStatus.equals(healthResponse.getStatus())) {
-                println "ES cluster ready, status is ${healthResponse.getStatus()}"
+            if (expectedStatus.equals(status)) {
+                println "ES cluster ready, status is ${status}"
                 return true
             }
-            println "ES cluster not ready, status is ${healthResponse.getStatus()}"
+            println "ES cluster not ready, status is ${status}"
         } catch (Exception e) {
             println "Failed to check cluster status: ${e.getMessage()}"
         }
@@ -173,11 +167,12 @@ boolean waitForES(RestHighLevelClient esClient, Map optionValues) {
     return false
 }
 
+
 String getESUrl(Map optionValues) {
     "${ES_URL_BASE}:${optionValues.port}"
 }
 
-RestHighLevelClient createESClient(Map optionValues, int connectTimeout = 0, int socketTimeout = 0) {
+RestClient createESClient(Map optionValues, int connectTimeout = 0, int socketTimeout = 0) {
     String[] serverUrls = [getESUrl(optionValues)]
     HttpHost[] hosts = Stream.of(serverUrls).map(HttpHost::create).toArray(HttpHost[]::new)
     RestClientBuilder clientBuilder = RestClient.builder(hosts)
@@ -186,24 +181,31 @@ RestHighLevelClient createESClient(Map optionValues, int connectTimeout = 0, int
     }
 
     clientBuilder.setHttpClientConfigCallback(httpClientConfigCallback)
-    return new RestHighLevelClient(clientBuilder)
+    return clientBuilder.build()
 }
 
-def submitReindexAndWait(RestHighLevelClient client, String indexName, String newIndexName) {
-    TaskSubmissionResponse reindexTask = client.submitReindexTask(
-            new ReindexRequest().setSourceIndices(indexName).setDestIndex(newIndexName).setRefresh(true),
-            RequestOptions.DEFAULT)
-    TaskId taskId = new TaskId(reindexTask.getTask())
-    GetTaskRequest getTaskRequest = new GetTaskRequest(taskId.getNodeId(), taskId.getId())
+def submitReindexAndWait(RestClient client, String indexName, String newIndexName) {
+    Map<String, Object> source = ["index": indexName]
+    Map<String, Object> dest = ["index": newIndexName]
+    Map<String, Object> reindexBody = [
+        "source": source,
+        "dest": dest
+    ]
+    String reindexBodyJson = new JsonBuilder(reindexBody).toString()
+
+    Request reindexRequest = new Request("POST", "/_reindex?wait_for_completion=false&refresh=true")
+    reindexRequest.setEntity(new NStringEntity(reindexBodyJson, ContentType.APPLICATION_JSON))
+    Response reindexResponse = client.performRequest(reindexRequest)
+    Map<String, Object> reindexResponseMap = new JsonSlurper().parseText(EntityUtils.toString(reindexResponse.getEntity()))
+    String taskId = reindexResponseMap.task
 
     long waitPeriod = TimeUnit.SECONDS.toMillis(2)
     long maxWaitPeriodMillis = TimeUnit.MINUTES.toMillis(1)
     do {
         sleep(waitPeriod)
-        GetTaskResponse taskStatus = client.tasks()
-                .get(getTaskRequest, RequestOptions.DEFAULT)
-                .orElseThrow(() -> new IllegalStateException("Failed to retrieve task with id=$taskId"))
-        if (taskStatus.isCompleted()) {
+        Response taskResponse = client.performRequest(new Request("GET", "/_tasks/$taskId"))
+        Map<String, Object> taskResponseMap = new JsonSlurper().parseText(EntityUtils.toString(taskResponse.getEntity()))
+        if (taskResponseMap.completed) {
             return
         }
         println "Waiting for reindex task for index '$indexName' to be completed"
@@ -211,7 +213,7 @@ def submitReindexAndWait(RestHighLevelClient client, String indexName, String ne
     } while (true)
 }
 
-def reindex(RestHighLevelClient client, String alias, String indexName) {
+def reindex(RestClient client, String alias, String indexName) {
     println "Reindexing index '${indexName}'"
 
     if (indexName.contains(REINDEXED)) {
@@ -237,18 +239,15 @@ def reindex(RestHighLevelClient client, String alias, String indexName) {
 
     // Delete old
     println "Delete old index '${indexName}'"
-    ActionResponse deleteResponse =  client.indices().delete(
-            new DeleteIndexRequest(indexName),
-            RequestOptions.DEFAULT)
+    Response deleteResponse = client.performRequest(new Request("DELETE", "/${indexName}"))
 
     // Create alias
     println "Create alias '${alias} for index '${newIndexName}'"
-    ActionResponse aliasResponse = client.indices().updateAliases(new IndicesAliasesRequest()
-            .addAliasAction(
-                    new IndicesAliasesRequest.AliasActions(IndicesAliasesRequest.AliasActions.Type.ADD)
-                            .index(newIndexName)
-                            .alias(alias)
-            ), RequestOptions.DEFAULT)
+    Map<String, Object> aliasBody = ["actions": [["add": ["index": newIndexName, "alias": alias]]]]
+    String aliasBodyJson = new JsonBuilder(aliasBody).toString()
+    Request createAliasRequest = new Request("POST", "/_aliases")
+    createAliasRequest.setEntity(new NStringEntity(aliasBodyJson, ContentType.APPLICATION_JSON))
+    Response aliasResponse = client.performRequest(createAliasRequest)
 }
 
 /**
@@ -282,7 +281,7 @@ def upgradeSearch(Path targetFolder, Map optionValues) {
         println "tail -F ${upgradeTmpFolder.resolve(ES_LOG_FILE).toFile().getCanonicalPath()}"
 
         println "Create ElasticSearch client"
-        RestHighLevelClient esClient = createESClient(optionValues)
+        RestClient esClient = createESClient(optionValues)
         if (waitForES(esClient, optionValues)) {
             println "ES cluster started. Preparing to reindex"
             ZonedDateTime start = ZonedDateTime.now()
