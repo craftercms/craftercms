@@ -58,13 +58,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.17</version>
+		<version>2.7.18</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
 		<!-- Version Numbers -->
-		<spring-framework.version>5.3.30</spring-framework.version>
+		<spring-framework.version>5.3.32</spring-framework.version>
 		<commons.configuration.version>2.9.0</commons.configuration.version>
 		<commons.csv.version>1.9.0</commons.csv.version>
 		<commons.io.version>2.11.0</commons.io.version>
