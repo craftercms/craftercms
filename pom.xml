@@ -61,15 +61,15 @@
 		<project.test.sourceEncoding>UTF-8</project.test.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>17</java.version>
-		<servlet.api.version>4.0.1</servlet.api.version>
+		<servlet.api.version>6.1.0-M2</servlet.api.version>
 
 		<!-- Dependency Version Numbers -->
 		<!-- Main -->
 		<!-- Spring -->
-		<spring.version>5.3.31</spring.version>
-		<spring.security.version>5.8.8</spring.security.version>
-		<spring.data.version>2.7.18</spring.data.version>
-		<spring.ldap.version>2.4.1</spring.ldap.version>
+		<spring.version>6.1.4</spring.version>
+		<spring.security.version>6.2.2</spring.security.version>
+		<spring.data.version>3.2.3</spring.data.version>
+		<spring.ldap.version>3.2.2</spring.ldap.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
 		<spring.social.facebook.version>2.0.3.RELEASE</spring.social.facebook.version>
 
@@ -100,10 +100,10 @@
 		<slf4j.version>2.0.12</slf4j.version>
 		<log4j.version>2.22.1</log4j.version>
 		<quartz.version>2.5.0-rc1</quartz.version>
-		<freemarker.version>2.3.32</freemarker.version>
+		<freemarker.version>2.3.33-SNAPSHOT</freemarker.version>
 		<aspectj.version>1.9.21</aspectj.version>
 		<bouncycastle.version>1.77</bouncycastle.version>
-		<javax.mail.version>1.6.2</javax.mail.version>
+		<jakarta.mail.version>2.0.1</jakarta.mail.version>
 		<javax.activation.version>1.2.0</javax.activation.version>
 		<jakarta.xml.bind-api.version>4.0.1</jakarta.xml.bind-api.version>
 		<guava.version>33.0.0-jre</guava.version>
@@ -288,16 +288,14 @@
 			<!-- Dependencies -->
 			<!-- Base -->
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
 				<version>${servlet.api.version}</version>
-
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet.jsp</groupId>
 				<artifactId>jsp-api</artifactId>
 				<version>${servlet.jsp.api.version}</version>
-
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet.jsp.jstl</groupId>
@@ -749,6 +747,7 @@
 			<dependency>
 				<groupId>org.owasp.esapi</groupId>
 				<artifactId>esapi</artifactId>
+				<classifier>jakarta</classifier>
 				<version>${esapi.version}</version>
 			</dependency>
 			<dependency>
@@ -1084,8 +1083,8 @@
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>${javax.mail.version}</version>
+				<artifactId>jakarta.mail</artifactId>
+				<version>${jakarta.mail.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>cglib</groupId>
@@ -1272,9 +1271,9 @@
 
 			</dependency>
 			<dependency>
-				<groupId>javax.mail</groupId>
-				<artifactId>javax.mail-api</artifactId>
-				<version>${javax.mail.version}</version>
+				<groupId>jakarta.mail</groupId>
+				<artifactId>jakarta.mail-api</artifactId>
+				<version>${jakarta.mail.version}</version>
 			</dependency>
 
 			<!-- CrafterCMS -->
@@ -1791,6 +1790,16 @@
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>apache-snapshot-repository</id>
+			<url>https://repository.apache.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
