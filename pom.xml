@@ -1792,7 +1792,7 @@
 				<checksumPolicy>fail</checksumPolicy>
 			</snapshots>
 		</repository>
-		<repository>
+		<repository><!-- remove once the new FreeMarker is released -->
 			<id>apache-snapshot-repository</id>
 			<url>https://repository.apache.org/content/repositories/snapshots/</url>
 			<releases>
