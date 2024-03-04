@@ -91,7 +91,7 @@
 		<tomcat.version>9.0.85</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
 		<groovy.version>3.0.19</groovy.version>
-		<groovy4.version>4.0.18</groovy4.version> <!-- TODO: remove when spring boot upgrade to v3 -->
+		<groovy4.version>4.0.19</groovy4.version> <!-- TODO: remove when spring boot upgrade to v3 -->
 		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
