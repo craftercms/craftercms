@@ -70,7 +70,7 @@
 		<commons.io.version>2.14.0</commons.io.version>
 		<jgit.version>6.8.0.202311291450-r</jgit.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
-		<handlebars.version>4.3.1</handlebars.version>
+		<handlebars.version>4.4.0</handlebars.version>
 		<sardine.version>5.12</sardine.version>
 		<xerces.version>2.12.2</xerces.version>
 		<java.version>17</java.version>
