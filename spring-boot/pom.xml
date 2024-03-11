@@ -68,7 +68,7 @@
 		<commons.configuration.version>2.9.0</commons.configuration.version>
 		<commons.csv.version>1.10.0</commons.csv.version>
 		<commons.io.version>2.14.0</commons.io.version>
-		<jgit.version>6.8.0.202311291450-r</jgit.version>
+		<jgit.version>6.9.0.202403050737-r</jgit.version>
 		<javax.mail.version>1.6.2</javax.mail.version>
 		<handlebars.version>4.3.1</handlebars.version>
 		<sardine.version>5.12</sardine.version>
