@@ -51,6 +51,8 @@ studio.preview.defaultPreviewDeployerUrl: ${env:DEPLOYER_URL}/api/1/target/deplo
 studio.preview.createTargetUrl: ${env:DEPLOYER_URL}/api/1/target/create_if_not_exists
 # Default preview create target URL (can be overridden per site)
 studio.preview.deleteTargetUrl: ${env:DEPLOYER_URL}/api/1/target/delete-if-exists/{siteEnv}/{siteName}
+# Preview duplicate target URL
+studio.preview.duplicateTargetUrl: ${env:DEPLOYER_URL}/api/1/target/duplicate/{siteEnv}/{siteName}
 # URL to the preview repository (aka Sandbox) where authors save work-in-progress
 studio.preview.repoUrl: ${env:CRAFTER_DATA_DIR}/repos/sites/{siteName}/sandbox
 
