@@ -66,8 +66,8 @@
 		<!-- Dependency Version Numbers -->
 		<!-- Main -->
 		<!-- Spring -->
-		<spring.version>5.3.32</spring.version>
-		<spring.security.version>5.8.9</spring.security.version>
+		<spring.version>5.3.33</spring.version>
+		<spring.security.version>5.8.11</spring.security.version>
 		<spring.data.version>2.7.18</spring.data.version>
 		<spring.ldap.version>2.4.1</spring.ldap.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
