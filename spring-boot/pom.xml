@@ -69,7 +69,7 @@
 		<commons.csv.version>1.10.0</commons.csv.version>
 		<commons.io.version>2.14.0</commons.io.version>
 		<jgit.version>6.8.0.202311291450-r</jgit.version>
-		<javax.mail.version>1.6.2</javax.mail.version>
+		<jakarta.mail.version>2.0.1</jakarta.mail.version>
 		<handlebars.version>4.3.1</handlebars.version>
 		<sardine.version>5.12</sardine.version>
 		<xerces.version>2.12.2</xerces.version>
@@ -90,8 +90,7 @@
 		<opensearch.client.version>2.5.0</opensearch.client.version>
 		<tomcat.version>9.0.85</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
-		<groovy.version>3.0.19</groovy.version>
-		<groovy4.version>4.0.18</groovy4.version> <!-- TODO: remove when spring boot upgrade to v3 -->
+		<groovy4.version>4.0.18</groovy4.version>
 		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
