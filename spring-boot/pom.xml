@@ -88,9 +88,9 @@
 		<box.sdk.version>4.7.0</box.sdk.version>
 		<opensearch.version>2.9.0</opensearch.version>
 		<opensearch.client.version>2.5.0</opensearch.client.version>
-		<tomcat.version>9.0.85</tomcat.version>
+		<tomcat.version>10.1.19</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
-		<groovy4.version>4.0.18</groovy4.version>
+		<groovy.version>4.0.18</groovy.version>
 		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
@@ -137,7 +137,7 @@
 			<dependency>
 				<groupId>org.apache.groovy</groupId>
 				<artifactId>groovy-all</artifactId>
-				<version>${groovy4.version}</version> <!-- TODO: change to groovy.version when spring boot upgrade to v3 -->
+				<version>${groovy.version}</version>
 				<type>pom</type>
 			</dependency>
 			<dependency>
@@ -233,8 +233,8 @@
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>${javax.mail.version}</version>
+				<artifactId>jakarta.mail</artifactId>
+				<version>${jakarta.mail.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.jknack</groupId>
