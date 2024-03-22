@@ -91,7 +91,7 @@
 		<opensearch.client.version>2.5.0</opensearch.client.version>
 		<tomcat.version>9.0.86</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
-		<groovy.version>3.0.20</groovy.version>
+		<groovy.version>3.0.21</groovy.version>
 		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
