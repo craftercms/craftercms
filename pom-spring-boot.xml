@@ -90,9 +90,9 @@
 		<aws.version>1.12.543</aws.version>
 		<box.sdk.version>4.7.0</box.sdk.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
-		<tomcat.version>9.0.85</tomcat.version>
+		<tomcat.version>9.0.86</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
-		<groovy.version>3.0.19</groovy.version>
+		<groovy.version>3.0.21</groovy.version>
 		<apache.ivy>2.5.2</apache.ivy>
 		<log4j2.version>2.20.0</log4j2.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
