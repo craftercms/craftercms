@@ -149,7 +149,7 @@
 		<hibernate.validator.version>6.2.5.Final</hibernate.validator.version>
 		<validation.api.version>2.0.1.Final</validation.api.version>
 		<opensearch.version>2.9.0</opensearch.version>
-		<opensearch.runner.version>2.9.0.0</opensearch.runner.version>
+		<opensearch.runner.version>2.12.0.0</opensearch.runner.version>
 		<opensearch.client.version>2.8.1</opensearch.client.version>
 		<tika.version>2.9.1</tika.version>
 		<poi.version>5.2.5</poi.version>
