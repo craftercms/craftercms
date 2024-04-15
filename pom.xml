@@ -60,7 +60,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.test.sourceEncoding>UTF-8</project.test.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<servlet.api.version>6.1.0-M2</servlet.api.version>
 		<servlet.jsp.api.version>3.1.1</servlet.jsp.api.version>
 		<servlet.jstl.version>3.0.0</servlet.jstl.version>
