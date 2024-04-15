@@ -87,8 +87,8 @@
 		<jackson.version>2.16.1</jackson.version>
 		<jackson.databind.version>2.15.0</jackson.databind.version>
 		<jose4j.version>0.9.4</jose4j.version>
-		<aws.version>1.12.543</aws.version>
-		<box.sdk.version>4.7.0</box.sdk.version>
+		<aws.version>1.12.671</aws.version>
+		<box.sdk.version>4.8.0</box.sdk.version>
 		<elasticsearch.version>7.15.2</elasticsearch.version>
 		<tomcat.version>9.0.86</tomcat.version>
 		<mariadb.version>10.4.20</mariadb.version>
