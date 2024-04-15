@@ -4,7 +4,7 @@ git:
   quiet: true
 language: java
 jdk:
-  - openjdk17
+  - openjdk21
 cache:
   directories:
     - "$HOME/.m2"

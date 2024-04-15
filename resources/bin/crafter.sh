@@ -16,7 +16,7 @@
 
 ########################################################################################################################
 ################################################ GLOBALS ###############################################################
-REQUIRED_JAVA_VERSION=17
+REQUIRED_JAVA_VERSION=21
 REQUIRED_GIT_VERSION=2.15.0
 
 ################################################ COMMONS ###############################################################
@@ -983,7 +983,7 @@ function debugTomcat() {
 }
 
 function stopTomcat() {
-	stopModule "Tomcat" "$TOMCAT_HTTP_PORT" "$CATALINA_PID" "\$0/apache-tomcat/bin/shutdown.sh 10 -force" "$CRAFTER_BIN_DIR"
+	stopModule "Tomcat" "$TOMCAT_HTTP_PORT" "$CATALINA_PID" "\$0/apache-tomcat/bin/shutdown.sh 50 -force" "$CRAFTER_BIN_DIR"
 }
 
 function startMongoDB() {
