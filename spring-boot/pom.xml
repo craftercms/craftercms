@@ -64,8 +64,8 @@
 
 	<properties>
 		<!-- Version Numbers -->
-		<spring-framework.version>5.3.33</spring-framework.version>
-		<spring-security.version>5.7.12</spring-security.version>
+		<spring-framework.version>5.3.34</spring-framework.version>
+		<spring-security.version>5.8.12</spring-security.version>
 		<commons.configuration.version>2.10.1</commons.configuration.version>
 		<commons.csv.version>1.10.0</commons.csv.version>
 		<commons.io.version>2.14.0</commons.io.version>
@@ -91,8 +91,8 @@
 		<opensearch.client.version>2.5.0</opensearch.client.version>
 		<tomcat.version>9.0.86</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
-		<groovy.version>3.0.19</groovy.version>
-		<groovy4.version>4.0.19</groovy4.version> <!-- TODO: remove when spring boot upgrade to v3 -->
+		<groovy.version>3.0.21</groovy.version>
+		<groovy4.version>4.0.21</groovy4.version> <!-- TODO: remove when spring boot upgrade to v3 -->
 		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
