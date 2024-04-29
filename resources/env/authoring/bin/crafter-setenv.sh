@@ -141,6 +141,22 @@ export CRAFTER_SYSTEM_ENCRYPTION_SALT=${CRAFTER_SYSTEM_ENCRYPTION_SALT:="DgGN9xh
 # -------------------- Configuration variables --------------------
 export CRAFTER_ENVIRONMENT=${CRAFTER_ENVIRONMENT:=default}
 
+# -------------------- Serverless variables --------------------
+export AWS_S3_ENDPOINT=${AWS_S3_ENDPOINT:=""}
+export AWS_S3_PATH_STYLE_ACCESS=${AWS_S3_PATH_STYLE_ACCESS:="false"}
+
+export SERVERLESS_NAMESPACE=${SERVERLESS_NAMESPACE:=cloud-sites}
+
+export PREVIEW_BUCKET_NAME_PATTERN=${PREVIEW_BUCKET_NAME_PATTERN:="${SERVERLESS_NAMESPACE}-blobs-\${siteName}"}
+export PREVIEW_BUCKET_PREFIX_PATTERN=${PREVIEW_BUCKET_PREFIX_PATTERN:=""}
+
+export STAGING_BUCKET_NAME_PATTERN=${STAGING_BUCKET_NAME_PATTERN:="${SERVERLESS_NAMESPACE}-site-\${siteName}-staging"}
+export STAGING_BUCKET_PREFIX_PATTERN=${STAGING_BUCKET_PREFIX_PATTERN:=""}
+
+export LIVE_BUCKET_NAME_PATTERN=${LIVE_BUCKET_NAME_PATTERN:="${SERVERLESS_NAMESPACE}-site-\${siteName}"}
+export LIVE_BUCKET_PREFIX_PATTERN=${LIVE_BUCKET_PREFIX_PATTERN:=""}
+
+
 # -------------------- SSH variables --------------------
 # The path of the folder used for the SSH configuration
 export CRAFTER_SSH_CONFIG=${CRAFTER_SSH_CONFIG:="$CRAFTER_DATA_DIR/ssh"}
