@@ -91,7 +91,6 @@
 		<opensearch.client.version>2.5.0</opensearch.client.version>
 		<tomcat.version>10.1.20</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
-		<groovy4.version>4.0.21</groovy4.version> <!-- TODO: consider removing this when spring boot upgrade to v3 -->
 		<groovy.version>4.0.21</groovy.version>
 		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
