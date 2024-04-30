@@ -60,16 +60,18 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.test.sourceEncoding>UTF-8</project.test.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>17</java.version>
-		<servlet.api.version>4.0.1</servlet.api.version>
+		<java.version>21</java.version>
+		<servlet.api.version>6.1.0-M2</servlet.api.version>
+		<servlet.jsp.api.version>3.1.1</servlet.jsp.api.version>
+		<servlet.jstl.version>3.0.0</servlet.jstl.version>
 
 		<!-- Dependency Version Numbers -->
 		<!-- Main -->
 		<!-- Spring -->
-		<spring.version>5.3.33</spring.version>
-		<spring.security.version>5.8.11</spring.security.version>
-		<spring.data.version>2.7.18</spring.data.version>
-		<spring.ldap.version>2.4.1</spring.ldap.version>
+		<spring.version>6.1.5</spring.version>
+		<spring.security.version>6.2.3</spring.security.version>
+		<spring.data.version>3.2.3</spring.data.version>
+		<spring.ldap.version>3.2.2</spring.ldap.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
 		<spring.social.facebook.version>2.0.3.RELEASE</spring.social.facebook.version>
 
@@ -84,11 +86,12 @@
 		<commons.text.version>1.11.0</commons.text.version>
 		<commons.cli.version>1.6.0</commons.cli.version>
 		<commons.dbcp2.version>2.11.0</commons.dbcp2.version>
-		<commons.fileupload.version>1.5</commons.fileupload.version>
+		<commons.fileupload2.version>2.0.0-M2</commons.fileupload2.version>
 		<commons.compress.version>1.26.0</commons.compress.version>
 		<commons.csv.version>1.10.0</commons.csv.version>
 
 		<httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
+		<httpcomponents.httpclient5.version>5.3.1</httpcomponents.httpclient5.version>
 
 		<jackson.version>2.16.1</jackson.version>
 
@@ -98,13 +101,14 @@
 		<velocity.engine.version>2.3</velocity.engine.version>
 		<xstream.version>1.4.20</xstream.version>
 		<slf4j.version>2.0.12</slf4j.version>
-		<log4j.version>2.22.1</log4j.version>
+		<log4j.version>2.23.1</log4j.version>
 		<quartz.version>2.5.0-rc1</quartz.version>
-		<freemarker.version>2.3.32</freemarker.version>
+		<freemarker.version>2.3.33-SNAPSHOT</freemarker.version>
 		<aspectj.version>1.9.21</aspectj.version>
 		<bouncycastle.version>1.77</bouncycastle.version>
-		<javax.mail.version>1.6.2</javax.mail.version>
-		<javax.activation.version>1.2.0</javax.activation.version>
+		<jakarta.mail.version>2.0.1</jakarta.mail.version>
+		<jakarta.activation.version>2.1.3</jakarta.activation.version>
+		<angus.activation.version>2.0.2</angus.activation.version>
 		<jakarta.xml.bind-api.version>4.0.1</jakarta.xml.bind-api.version>
 		<guava.version>33.0.0-jre</guava.version>
 		<guava.collections.version>r03</guava.collections.version>
@@ -127,27 +131,26 @@
 		<groovy.version>4.0.19</groovy.version>
 		<script.security.version>${project.version}</script.security.version>
 		<rome.version>1.0</rome.version>
-		<urlrewrite.version>4.0.4</urlrewrite.version>
+		<urlrewrite.version>5.1.3</urlrewrite.version>
 		<xerces.version>2.12.2</xerces.version>
 		<graphql.version>21.3</graphql.version>
 		<graphql.extended.scalars.version>21.0</graphql.extended.scalars.version>
-		<httpproxy.version>1.12.1</httpproxy.version>
+		<httpproxy.version>2.0</httpproxy.version>
 		<ivy.version>2.5.2</ivy.version>
 		<tinify.version>1.8.3</tinify.version>
-		<mariadb4j.version>2.6.0.9</mariadb4j.version>
+		<mariadb4j.version>3.0.1</mariadb4j.version>
 		<saxon.version>12.4</saxon.version>
 		<apache.cxf.version>3.5.5</apache.cxf.version>
 		<ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
-		<mybatis.spring.version>2.1.0</mybatis.spring.version>
+		<mybatis.spring.version>3.0.3</mybatis.spring.version>
 		<mybatis.version>3.5.15</mybatis.version>
 		<json.lib.version>2.4</json.lib.version>
 		<mariadb.java.client.version>2.7.9</mariadb.java.client.version>
 		<greenmail.version>2.0.1</greenmail.version>
 		<stax2.api.version>4.2.2</stax2.api.version>
 		<joda.time.version>2.12.6</joda.time.version>
-		<!-- Spring 5.x doesn't support Hibernate Validator 7.x -->
-		<hibernate.validator.version>6.2.5.Final</hibernate.validator.version>
-		<validation.api.version>2.0.1.Final</validation.api.version>
+		<hibernate.validator.version>7.0.5.Final</hibernate.validator.version>
+		<jakarta.validation.api.version>3.0.2</jakarta.validation.api.version>
 		<opensearch.version>2.9.0</opensearch.version>
 		<opensearch.runner.version>2.9.0.0</opensearch.runner.version>
 		<opensearch.client.version>2.8.1</opensearch.client.version>
@@ -186,7 +189,7 @@
 		<de.flapdoodle.embed.mongo.version>4.12.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.9.1</xmlunit.core.version>
-		<tomcat.version>9.0.86</tomcat.version>
+		<tomcat.version>10.1.20</tomcat.version>
 
 		<!-- Build -->
 		<maven.compiler.version>3.12.1</maven.compiler.version>
@@ -288,26 +291,24 @@
 			<!-- Dependencies -->
 			<!-- Base -->
 			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
 				<version>${servlet.api.version}</version>
-
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet.jsp</groupId>
-				<artifactId>jsp-api</artifactId>
+				<groupId>jakarta.servlet.jsp</groupId>
+				<artifactId>jakarta.servlet.jsp-api</artifactId>
 				<version>${servlet.jsp.api.version}</version>
-
 			</dependency>
 			<dependency>
-				<groupId>javax.servlet.jsp.jstl</groupId>
-				<artifactId>jstl-api</artifactId>
+				<groupId>jakarta.servlet.jsp.jstl</groupId>
+				<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
 				<version>${servlet.jstl.version}</version>
 				<exclusions>
 					<!-- Exclude Commons Logging in favor of SLF4j -->
 					<exclusion>
-						<groupId>javax.servlet</groupId>
-						<artifactId>servlet-api</artifactId>
+						<groupId>jakarta.servlet</groupId>
+						<artifactId>jakarta.servlet-api</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -561,9 +562,9 @@
 
 			<!-- Apache -->
 			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>${httpcomponents.httpclient.version}</version>
+				<groupId>org.apache.httpcomponents.client5</groupId>
+				<artifactId>httpclient5</artifactId>
+				<version>${httpcomponents.httpclient5.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -603,7 +604,7 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-web</artifactId>
+				<artifactId>log4j-jakarta-web</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
@@ -648,9 +649,9 @@
 				<version>${commons.dbcp2.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>${commons.fileupload.version}</version>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
+				<version>${commons.fileupload2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.json-lib</groupId>
@@ -674,9 +675,9 @@
 				<version>${jta.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>javax.validation</groupId>
-				<artifactId>validation-api</artifactId>
-				<version>${validation.api.version}</version>
+				<groupId>jakarta.validation</groupId>
+				<artifactId>jakarta.validation-api</artifactId>
+				<version>${jakarta.validation.api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
@@ -705,9 +706,14 @@
 				<optional>true</optional>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.activation</groupId>
-				<artifactId>javax.activation</artifactId>
-				<version>${javax.activation.version}</version>
+				<groupId>jakarta.activation</groupId>
+				<artifactId>jakarta.activation-api</artifactId>
+				<version>${jakarta.activation.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.angus</groupId>
+				<artifactId>angus-activation</artifactId>
+				<version>${angus.activation.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
@@ -749,6 +755,7 @@
 			<dependency>
 				<groupId>org.owasp.esapi</groupId>
 				<artifactId>esapi</artifactId>
+				<classifier>jakarta</classifier>
 				<version>${esapi.version}</version>
 			</dependency>
 			<dependency>
@@ -1084,8 +1091,8 @@
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>${javax.mail.version}</version>
+				<artifactId>jakarta.mail</artifactId>
+				<version>${jakarta.mail.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>cglib</groupId>
@@ -1272,9 +1279,9 @@
 
 			</dependency>
 			<dependency>
-				<groupId>javax.mail</groupId>
-				<artifactId>javax.mail-api</artifactId>
-				<version>${javax.mail.version}</version>
+				<groupId>jakarta.mail</groupId>
+				<artifactId>jakarta.mail-api</artifactId>
+				<version>${jakarta.mail.version}</version>
 			</dependency>
 
 			<!-- CrafterCMS -->
@@ -1505,6 +1512,7 @@
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
+						<parameters>true</parameters>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -1791,6 +1799,16 @@
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>fail</checksumPolicy>
+			</snapshots>
+		</repository>
+		<repository><!-- remove once the new FreeMarker is released -->
+			<id>apache-snapshot-repository</id>
+			<url>https://repository.apache.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
