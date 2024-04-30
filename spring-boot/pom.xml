@@ -58,23 +58,23 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>3.2.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
 		<!-- Version Numbers -->
-		<spring-framework.version>5.3.34</spring-framework.version>
-		<spring-security.version>5.8.12</spring-security.version>
+		<spring-framework.version>6.1.4</spring-framework.version>
+		<spring-security.version>6.2.3</spring-security.version>
 		<commons.configuration.version>2.10.1</commons.configuration.version>
 		<commons.csv.version>1.10.0</commons.csv.version>
 		<commons.io.version>2.14.0</commons.io.version>
 		<jgit.version>6.9.0.202403050737-r</jgit.version>
-		<javax.mail.version>1.6.2</javax.mail.version>
+		<jakarta.mail.version>2.0.1</jakarta.mail.version>
 		<handlebars.version>4.3.1</handlebars.version>
 		<sardine.version>5.12</sardine.version>
 		<xerces.version>2.12.2</xerces.version>
-		<java.version>17</java.version>
+		<java.version>21</java.version>
 		<hazelcast.version>5.2.3</hazelcast.version>
 		<script.security.version>${project.version}</script.security.version>
 		<jakarta.json.version>2.0.1</jakarta.json.version>
@@ -89,10 +89,10 @@
 		<box.sdk.version>4.8.0</box.sdk.version>
 		<opensearch.version>2.9.0</opensearch.version>
 		<opensearch.client.version>2.5.0</opensearch.client.version>
-		<tomcat.version>9.0.86</tomcat.version>
+		<tomcat.version>10.1.20</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
-		<groovy.version>3.0.21</groovy.version>
-		<groovy4.version>4.0.21</groovy4.version> <!-- TODO: remove when spring boot upgrade to v3 -->
+		<groovy4.version>4.0.21</groovy4.version> <!-- TODO: consider removing this when spring boot upgrade to v3 -->
+		<groovy.version>4.0.21</groovy.version>
 		<ivy.version>2.5.2</ivy.version>
 		<log4j2.version>2.20.0</log4j2.version>
 		<quartz.version>2.4.0-rc2</quartz.version>
@@ -139,7 +139,7 @@
 			<dependency>
 				<groupId>org.apache.groovy</groupId>
 				<artifactId>groovy-all</artifactId>
-				<version>${groovy4.version}</version> <!-- TODO: change to groovy.version when spring boot upgrade to v3 -->
+				<version>${groovy.version}</version>
 				<type>pom</type>
 			</dependency>
 			<dependency>
@@ -235,8 +235,8 @@
 			</dependency>
 			<dependency>
 				<groupId>com.sun.mail</groupId>
-				<artifactId>javax.mail</artifactId>
-				<version>${javax.mail.version}</version>
+				<artifactId>jakarta.mail</artifactId>
+				<version>${jakarta.mail.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.github.jknack</groupId>

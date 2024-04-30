@@ -350,9 +350,9 @@ ext.commonConfUpdatePatterns = [
                         'JavaEWAH-*.jar,\\\n' +
                         'java-libpst-*.jar,\\\n' +
                         'javaparser-core-*.jar,\\\n' +
-                        'javax.activation-*.jar,\\\n' +
-                        'javax.inject-*.jar,\\\n' +
-                        'javax.mail-*.jar,\\\n' +
+                        'jakarta.activation-*.jar,\\\n' +
+                        'jakarta.inject-*.jar,\\\n' +
+                        'jakarta.mail-*.jar,\\\n' +
                         'jbig2-imageio-*.jar,\\\n' +
                         'jboss-logging-3.4.1.Final.jar,\\\n' +
                         'jcip-annotations-*.jar,\\\n' +
