@@ -17,13 +17,13 @@ Download a pre-built binary archive here: https://craftercms.org/downloads.
 
 Read the docs here: https://docs.craftercms.org/current
 
-This repository is for developers interested in contributing to CrafterCMS, customizing their own release, or building the latest. This parent project helps you build the following: 
+This repository is for developers interested in contributing to CrafterCMS, customizing their own release, or building the latest. This parent project helps you build the following:
 
 1. Deployable CrafterCMS binaries
 2. Docker images
 3. Developer's environment so you can compile and contribute to CrafterCMS
 
-**WARNING:** CrafterCMS source code development and building is 
+**WARNING:** CrafterCMS source code development and building is
 _only_ supported on Unix based systems. If you want to use CrafterCMS in Windows, install Windows Subsystem for Linux (WSL) by following the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install) then use the WSL 2 terminal for all the commands below.  Please refer to the documentation in [Installing CrafterCMS on WSL 2](https://docs.craftercms.org/current/system-administrators/activities/installing-craftercms-on-wsl2.html).
 
 # 1. Initial Setup
@@ -67,9 +67,9 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 
 ## 2.2 Options
 
-* `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `true` 
-* `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false` 
-* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: OpenSearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false` 
+* `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `true`
+* `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false`
+* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: OpenSearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false`
 * `gitRemote`: Git remote name to use in cloned modules, default `origin`
 * `gitBranch`: Git branch to use when cloning modules, default `develop` (for develop branch)
 * `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
@@ -133,7 +133,7 @@ When using a tag-based build, you're essentially cloning a point in time to buil
 CrafterCMS comprises a number of headless API-first (GraphQL, REST, in-process)  modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
 
 
-## 4.1. Build, Start and Stop All 
+## 4.1. Build, Start and Stop All
 ### 4.1.1. Build All
 Build all CrafterCMS modules
 
@@ -143,7 +143,7 @@ Build all CrafterCMS modules
 
 ### 4.1.2. Start All
 Start CrafterCMS,
- 
+
  ```bash
     ./gradlew start
 ```
@@ -245,7 +245,7 @@ The CrafterCMS Authoring and Delivery scripts will help you on the basic startup
 |-----------|--------------|
 |**Description**|Main Script to start and stop all needed Services to have a functional CrafterCMS *Authoring/Delivery Environment* <br>To log the output of the script to a file, set the environment variable CRAFTER_SCRIPT_LOG to point to a log file|
 |**Synopsis**|``crafter.sh start``\|``stop``\|``debug``\|``help``|
-|**Arguments**|``start [withMongoDB] [skipSearch] [skipMongoDB] [tailTomcat]``<br>Starts all CrafterCMS services in this order: Crafter Deployer, OpenSearch, Apache Tomcat<br>&nbsp;&nbsp;&nbsp;&nbsp;If `withMongoDB` is specified MongoDB will be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipSearch` is specified OpenSearch will not be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipMongoDB` is specified MongoDB will not be started even if the Crafter Profile war is present.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `tailTomcat` is specified, Tomcat will be tailed and Crafter will shutdown when the script terminates.<br><br>``stop``  Stops all CrafterCMS services in the same order as they start.<br><br>``debug [withMongoDB] [skipSearch] [skipMongoDB]``<br>Starts all CrafterCMS services with the JAVA remote debug port 5000 for Crafter Deployer, and 8000 for Apache Tomcat for the *Authoring Environment*<br>Starts all CrafterCMS services with the JAVA remote debug port 5001 for Crafter Deployer, and 9000 for Apache Tomcat for the *Delivery Environment*<br>&nbsp;&nbsp;&nbsp;&nbsp;If `withMongoDB` is specified MongoDB will be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipSearch` is specified OpenSearch will not be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipMongoDB` is specified MongoDB will not be started even if the Crafter Profile war is present.<br><br>``start_deployer``  Starts Deployer<br><br>``stop_deployer``  Stops Deployer<br><br>    ``debug_deployer``  Starts Deployer in debug mode<br><br>``restart_deployer``  Restarts Deployer<br><br>``start_search``  Starts OpenSearch<br><br>``stop_search``  Stops OpenSearch<br><br>``debug_search``  Starts OpenSearch in debug mode<br><br>``restart_search``  Restarts OpenSearch<br><br>``start_tomcat``  Starts Apache Tomcat<br><br>``stop_tomcat``  Stops Apache Tomcat<br><br>``debug_tomcat``  Starts Apache Tomcat in debug mode<br><br>``restart_tomcat`` Restarts Apache Tomcat<br><br>``restart_debug_tomcat``  Restarts Apache Tomcat in debug mode<br><br>``start_mongodb``  Starts MongoDB<br><br>``stop_mongodb``  Stops MongoDB<br><br>``restart_mongodb``  Restarts MongoDB<br><br>``status``  Prints the status of all CrafterCMS subsystems<br><br>``status_engine``  Prints the status of Crafter Engine<br><br>``status_studio``  Prints the status of Crafter Studio<br><br>``status_profile``  Prints the status of Crafter Profile<br><br>``status_social``  Prints the status of Crafter Social<br><br>``status_deployer``  Prints the status of Crafter Deployer<br><br>``status_search``  Prints the status of OpenSearch<br><br>``status_mariadb``  Prints the status of MariaDb<br><br>``status_mongodb``  Prints the status of MongoDB<br><br>``backup <name>``  Perform a backup of all data<br><br>``restore <file>``  Perform a restore of all data<br><br>``upgradedb``  Perform database upgrade (mysql_upgrade)|
+|**Arguments**|``start [withMongoDB] [skipSearch] [skipMongoDB] [tailTomcat]``<br>Starts all CrafterCMS services in this order: Crafter Deployer, OpenSearch, Apache Tomcat<br>&nbsp;&nbsp;&nbsp;&nbsp;If `withMongoDB` is specified MongoDB will be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipSearch` is specified OpenSearch will not be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipMongoDB` is specified MongoDB will not be started even if the Crafter Profile war is present.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `tailTomcat` is specified, Tomcat will be tailed and Crafter will shutdown when the script terminates.<br><br>``stop``  Stops all CrafterCMS services in the same order as they start.<br><br>``debug [withMongoDB] [skipSearch] [skipMongoDB]``<br>Starts all CrafterCMS services with the JAVA remote debug port 5000 for Crafter Deployer, and 8000 for Apache Tomcat for the *Authoring Environment*<br>Starts all CrafterCMS services with the JAVA remote debug port 5001 for Crafter Deployer, and 9000 for Apache Tomcat for the *Delivery Environment*<br>&nbsp;&nbsp;&nbsp;&nbsp;If `withMongoDB` is specified MongoDB will be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipSearch` is specified OpenSearch will not be started.<br>&nbsp;&nbsp;&nbsp;&nbsp;If `skipMongoDB` is specified MongoDB will not be started even if the Crafter Profile war is present.<br><br>``start_deployer``  Starts Deployer<br><br>``stop_deployer``  Stops Deployer<br><br>    ``debug_deployer``  Starts Deployer in debug mode<br><br>``restart_deployer``  Restarts Deployer<br><br>``start_search``  Starts OpenSearch<br><br>``stop_search``  Stops OpenSearch<br><br>``debug_search``  Starts OpenSearch in debug mode<br><br>``restart_search``  Restarts OpenSearch<br><br>``start_tomcat``  Starts Apache Tomcat<br><br>``stop_tomcat``  Stops Apache Tomcat<br><br>``debug_tomcat``  Starts Apache Tomcat in debug mode<br><br>``restart_tomcat`` Restarts Apache Tomcat<br><br>``restart_debug_tomcat``  Restarts Apache Tomcat in debug mode<br><br>``start_mongodb``  Starts MongoDB<br><br>``stop_mongodb``  Stops MongoDB<br><br>``restart_mongodb``  Restarts MongoDB<br><br>``status``  Prints the status of all CrafterCMS subsystems<br><br>``status_engine``  Prints the status of Crafter Engine<br><br>``status_studio``  Prints the status of Crafter Studio<br><br>``status_profile``  Prints the status of Crafter Profile<br><br>``status_social``  Prints the status of Crafter Social<br><br>``status_deployer``  Prints the status of Crafter Deployer<br><br>``status_search``  Prints the status of OpenSearch<br><br>``status_mariadb``  Prints the status of MariaDb<br><br>``status_mongodb``  Prints the status of MongoDB<br><br>``backup <name>``  Perform a backup of all data<br><br>``restore <file>``  Perform a restore of all data<br><br>``upgradedb``  Perform database upgrade (mariadb-upgrade)|
 
 | **Synopsis**| ``startup.sh``|
 |-----|-----|
@@ -477,7 +477,7 @@ As we have seen in the getting started section above, to run a gradle task, we r
 
 ```bash
    ./gradlew command [-Penv={env}] [-Pmodules={module}]
-```       
+```
 
 
 Here's a list of commands (Gradle tasks) available:
