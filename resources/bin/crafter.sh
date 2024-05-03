@@ -736,7 +736,7 @@ function doUpgradeDB() {
     # Do upgrade
     banner "Upgrading embedded DB"
     export MYSQL_PWD=$MARIADB_ROOT_PASSWD
-    $CRAFTER_BIN_DIR/dbms/bin/mysql_upgrade --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp
+    $CRAFTER_BIN_DIR/dbms/bin/mariadb-upgrade --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp
     abortOnError
 
     if [ "$DB_STARTED" = true ]; then
@@ -795,7 +795,7 @@ function help() {
   cecho "    status_mongodb, Status of MonoDb\n" "info"
   cecho "    backup <name>, Perform a backup of all data\n" "info"
   cecho "    restore <file>, Perform a restore of all data\n" "info"
-  cecho "    upgradedb, Perform database upgrade (mysql_upgrade)\n" "info"
+  cecho "    upgradedb, Perform database upgrade (mariadb-upgrade)\n" "info"
   cecho "    \n" "info"
   cecho "    To log output to a file, set the environment variable CRAFTER_SCRIPT_LOG to point to a log file\n" "info"
   exit 18;
@@ -857,7 +857,7 @@ function createOpenSearchDocker() {
     cecho "Docker image $SEARCH_DOCKER_NAME found, unable to start. Please remove this image before starting.\n To remove the image, run: docker rm $SEARCH_DOCKER_NAME\n" "error"
     exit 21
   else
-    docker create -p $SEARCH_PORT:9200 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v "$SEARCH_INDEXES_DIR":/usr/share/opensearch/data/ --name "$SEARCH_DOCKER_NAME" opensearchproject/opensearch:2.9.0 > /dev/null 2>&1
+    docker create -p $SEARCH_PORT:9200 -e "discovery.type=single-node" -e "plugins.security.disabled=true" -v "$SEARCH_INDEXES_DIR":/usr/share/opensearch/data/ --name "$SEARCH_DOCKER_NAME" opensearchproject/opensearch:2.11.0 > /dev/null 2>&1
   fi
 }
 
