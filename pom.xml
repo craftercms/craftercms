@@ -105,7 +105,7 @@
 		<quartz.version>2.5.0-rc1</quartz.version>
 		<freemarker.version>2.3.33-SNAPSHOT</freemarker.version>
 		<aspectj.version>1.9.21</aspectj.version>
-		<bouncycastle.version>1.77</bouncycastle.version>
+		<bouncycastle.version>1.78.1</bouncycastle.version>
 		<jakarta.mail.version>2.0.1</jakarta.mail.version>
 		<jakarta.activation.version>2.1.3</jakarta.activation.version>
 		<angus.activation.version>2.0.2</angus.activation.version>
