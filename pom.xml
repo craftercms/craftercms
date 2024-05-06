@@ -93,7 +93,7 @@
 		<httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
 		<httpcomponents.httpclient5.version>5.3.1</httpcomponents.httpclient5.version>
 
-		<jackson.version>2.16.1</jackson.version>
+		<jackson.version>2.17.1</jackson.version>
 
 		<mongo.version>4.11.1</mongo.version>
 		<jongo.version>1.5.1</jongo.version>
