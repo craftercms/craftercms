@@ -83,7 +83,7 @@
 
 		<!-- Override property setup by Spring Boot Parent -->
 		<jackson.version>2.17.1</jackson.version>
-		<aws.version>1.12.723</aws.version>
+		<aws.version>2.25.45</aws.version>
 		<jose4j.version>0.9.6</jose4j.version>
 		<box.sdk.version>4.9.0</box.sdk.version>
 		<opensearch.version>2.9.0</opensearch.version>
@@ -172,29 +172,29 @@
 
 			<!-- AWS -->
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-bom</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
 				<version>${aws.version}</version>
 				<type>pom</type>
 			</dependency>
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-s3</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>s3</artifactId>
 				<version>${aws.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-sts</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>sts</artifactId>
 				<version>${aws.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-cloudfront</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>cloudfront</artifactId>
 				<version>${aws.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-cloudformation</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>cloudformation</artifactId>
 				<version>${aws.version}</version>
 			</dependency>
 
