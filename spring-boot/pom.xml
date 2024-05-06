@@ -58,7 +58,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.3</version>
+		<version>3.2.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
@@ -79,11 +79,11 @@
 		<script.security.version>${project.version}</script.security.version>
 		<jakarta.json.version>2.0.1</jakarta.json.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
-		<okio.version>3.8.0</okio.version>
+		<okio.version>3.9.0</okio.version>
 		<bouncycastle.version>1.78.1</bouncycastle.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
-		<jackson.version>2.17.0</jackson.version>
+		<jackson.version>2.17.1</jackson.version>
 		<aws.version>1.12.715</aws.version>
 		<jose4j.version>0.9.6</jose4j.version>
 		<box.sdk.version>4.8.0</box.sdk.version>
@@ -104,7 +104,7 @@
 		<maven.source.version>3.3.0</maven.source.version>
 		<maven.jar.version>3.3.0</maven.jar.version>
 		<buildnumber.maven.version>3.2.0</buildnumber.maven.version>
-		<maven.deploy.version>3.1.1</maven.deploy.version>
+		<maven.deploy.version>3.1.2</maven.deploy.version>
 		<maven.gpg.version>3.2.4</maven.gpg.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
