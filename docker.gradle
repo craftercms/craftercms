@@ -98,9 +98,6 @@ task downloadLibCrypto(type: Download) {
 
 task expandAuthoringBundle(type: Copy) {
 	dependsOn = [ "bundle" ]
-	doFirst {
-		println "***** Expanding authoring bundle from: " + authoringBundleSource + " into: ${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile) + "/"
-	}
 	from tarTree(authoringBundleSource)
 	into "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile)
 }
