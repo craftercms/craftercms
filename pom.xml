@@ -179,7 +179,7 @@
 		<directory-watcher.version>0.18.0</directory-watcher.version>
 
 		<!-- Testing -->
-		<testng.version>7.9.0</testng.version>
+		<testng.version>7.10.2</testng.version>
 		<junit.version>4.13.2</junit.version>
 		<junit.jupiter.version>5.10.2</junit.jupiter.version>
 		<junit.vintage.version>5.10.2</junit.vintage.version>
