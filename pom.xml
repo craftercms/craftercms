@@ -162,7 +162,7 @@
 		<unit.api.version>2.2</unit.api.version>
 		<javax.inject.version>1</javax.inject.version>
 		<semver4j.version>3.1.0</semver4j.version>
-		<jose4j.version>0.9.5</jose4j.version>
+		<jose4j.version>0.9.6</jose4j.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<picocli.version>4.7.5</picocli.version>
 		<http.builder.version>1.0.4</http.builder.version>
@@ -181,7 +181,7 @@
 		<!-- Testing -->
 		<testng.version>7.9.0</testng.version>
 		<junit.version>4.13.2</junit.version>
-		<junit.jupiter.version>5.10.1</junit.jupiter.version>
+		<junit.jupiter.version>5.10.2</junit.jupiter.version>
 		<junit.vintage.version>5.10.2</junit.vintage.version>
 		<testng.engine.version>1.0.5</testng.engine.version>
 		<mockito.version>5.11.0</mockito.version>
