@@ -36,11 +36,6 @@ ext {
 
 	authoringBuildTarget = 'main'
 
-	// TODO: Move this to EE
-	if (project.hasProperty("enterprise")) {
-		authoringBuildTarget = 'enterprise'
-	}
-
 	// Authoring bundle
 	authoringBundleSource = "${projectDir}/bundles/crafter-cms-authoring-${project.version}-linux-x86_64.tar.gz"
 	authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleSource)
