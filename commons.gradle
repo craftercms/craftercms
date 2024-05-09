@@ -221,16 +221,6 @@ ext.checksumFile = { filePath, algorithm ->
 }
 
 ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
-	def source = "./crafter"
-
-	if (env == "authoring") {
-        file("${authoringEnvDir}").renameTo(source)
-	} else if (env == "delivery") {
-        file("${deliveryEnvDir}").renameTo(source)
-	} else {
-		throw new GradleException("Unknown environment " + env)
-	}
-
 /*
 	// TODO: add support for a fresh env before bundling
 	if (fresh) {
@@ -239,33 +229,45 @@ ext.bundleEnvironment = { env, bundlesDir /*, fresh*/ ->
 	}
 */
 	// Tar and package
-	file(bundlesDir).mkdir()
 	def bundleFilename = "crafter-cms-${env}-${project.version}-${currentPlatform}-${currentArch}.tar.gz"
 	def bundlePath = "${bundlesDir}/" + bundleFilename
+	def source = "./crafter"
 
-	try {
-		execCommand(["tar", "czf", bundlePath, source], "${projectDir}")
-
-		def md5sum = checksumFile(bundlePath, "MD5")
-		def sha512sum = checksumFile(bundlePath, "SHA-512")
-
-		new File(bundlePath + ".md5").withWriter('utf-8') {
-			writer -> writer.writeLine md5sum + "  " + bundleFilename
+	if (!file(bundlePath).exists()) {
+		if (env == "authoring") {
+			file("${authoringEnvDir}").renameTo(source)
+		} else if (env == "delivery") {
+			file("${deliveryEnvDir}").renameTo(source)
+		} else {
+			throw new GradleException("Unknown environment " + env)
 		}
 
-		new File(bundlePath + ".sha512").withWriter('utf-8') {
-			writer -> writer.writeLine sha512sum + "  " + bundleFilename
+		file(bundlesDir).mkdir()
+
+		try {
+			execCommand(["tar", "czf", bundlePath, source], "${projectDir}")
+
+			def md5sum = checksumFile(bundlePath, "MD5")
+			def sha512sum = checksumFile(bundlePath, "SHA-512")
+
+			new File(bundlePath + ".md5").withWriter('utf-8') {
+				writer -> writer.writeLine md5sum + "  " + bundleFilename
+			}
+
+			new File(bundlePath + ".sha512").withWriter('utf-8') {
+				writer -> writer.writeLine sha512sum + "  " + bundleFilename
+			}
+		} catch (e) {
+			logger.error("Failed to create bundle for env: {}, bundlesDir: {}", env, bundlesDir, e)
+			throw new GradleException("Failed to create bundle.", e)
+		} finally {
+			if (env == "authoring") {
+				file(source).renameTo("${authoringEnvDir}")
+			} else if (env == "delivery") {
+				file(source).renameTo("${deliveryEnvDir}")
+			} else {
+				throw new GradleException("Unknown environment " + env)
+			}
 		}
-	} catch (e) {
-		logger.error("Failed to create bundle for env: {}, bundlesDir: {}", env, bundlesDir, e)
-		throw new GradleException("Failed to create bundle.", e)
-	} finally {
-        if (env == "authoring") {
-            file(source).renameTo("${authoringEnvDir}")
-        } else if (env == "delivery") {
-            file(source).renameTo("${deliveryEnvDir}")
-        } else {
-            throw new GradleException("Unknown environment " + env)
-        }
-    }
+	}
 }
