@@ -154,7 +154,7 @@
 		<opensearch.version>2.11.0</opensearch.version>
 		<opensearch.runner.version>2.11.0.0</opensearch.runner.version>
 		<opensearch.client.version>2.8.1</opensearch.client.version>
-		<tika.version>2.9.1</tika.version>
+		<tika.version>2.9.2</tika.version>
 		<poi.version>5.2.5</poi.version>
 		<metadata.extractor.version>2.19.0</metadata.extractor.version>
 		<jsoup.version>1.17.2</jsoup.version>
