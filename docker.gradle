@@ -32,7 +32,6 @@ ext {
 	imagesDir = "${projectDir}/resources/docker/images"
 	imagesBuildDir = "${buildDir}/images"
 	tempDir = "${buildDir}/temp"
-	libDir = "${tempDir}/lib"
 
 	authoringBuildTarget = 'main'
 
@@ -79,18 +78,6 @@ ext {
 	]
 }
 
-task downloadLibSsl(type: Download) {
-	src 'https://downloads.craftercms.org/misc/libssl.so.1.1'
-	overwrite false
-	dest "${libDir}/libssl.so.1.1"
-}
-
-task downloadLibCrypto(type: Download) {
-	src 'https://downloads.craftercms.org/misc/libcrypto.so.1.1'
-	overwrite false
-	dest "${libDir}/libcrypto.so.1.1"
-}
-
 task expandAuthoringBundle(type: Copy) {
 	dependsOn = [ "bundle" ]
 	from tarTree(authoringBundleSource)
@@ -104,8 +91,6 @@ task expandDeliveryBundle(type: Copy) {
 }
 
 task prepareAuthoringBundle() {
-	dependsOn downloadLibSsl
-	dependsOn downloadLibCrypto
 	dependsOn expandAuthoringBundle
 	doLast {
 		copy {
@@ -176,11 +161,6 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
 			exclude defaultTomcatBinExcludes
 		}
 
-		copy {
-			from "${libDir}/"
-			into "${imageBuildDir}/mariadb-lib-deps"
-		}
-
 		exec {
 			commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringTomcatImageName}:${project.version}", imageBuildDir
 		}
@@ -206,11 +186,6 @@ task buildAuthoringLocal(group: "Build", description: "Builds the Authoring Tomc
 			from "${authoringBundleRoot}/bin/"
 			into "${imageBuildDir}/bin"
 			exclude defaultTomcatLocalBinExcludes
-		}
-
-		copy {
-			from "${libDir}/"
-			into "${imageBuildDir}/mariadb-lib-deps"
 		}
 
 		exec {

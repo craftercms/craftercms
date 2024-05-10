@@ -11,12 +11,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-FROM eclipse-temurin:17-jdk-alpine AS main
+FROM eclipse-temurin:21-jdk-alpine AS main
 
 ############# INSTALL NATIVE TOMCAT #############
 ENV CATALINA_HOME=/usr/local/tomcat \
-    TOMCAT_MAJOR="9" \
-    TOMCAT_VERSION="9.0.86"
+    TOMCAT_MAJOR="10" \
+    TOMCAT_VERSION="10.1.20"
 
 # Download Tomcat, and then Build tc-native
 RUN apk add --no-cache --virtual .my-build-deps apr-dev openssl-dev make g++ && \
@@ -90,7 +90,6 @@ RUN apk add --update --no-cache -t .mariadb-run-deps \
         tzdata \
         xz-libs \
         zlib;
-COPY ./mariadb-lib-deps/* /usr/lib/
 
 # Create folders and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
