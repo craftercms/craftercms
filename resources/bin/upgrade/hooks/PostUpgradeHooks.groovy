@@ -16,7 +16,7 @@
 package upgrade.hooks
 
 @Grapes(
-    @Grab(group='com.vdurmont', module='semver4j', version='3.1.0')
+    @Grab(group='org.semver4j', module='semver4j', version='5.3.0')
 )
 
 import java.nio.file.Path
