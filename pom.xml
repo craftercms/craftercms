@@ -81,7 +81,7 @@
 		<commons.collections4.version>4.4</commons.collections4.version>
 		<commons.codec.version>1.15</commons.codec.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
-		<commons.io.version>2.15.1</commons.io.version>
+		<commons.io.version>2.16.1</commons.io.version>
 		<commons.configuration.version>2.10.1</commons.configuration.version>
 		<commons.text.version>1.11.0</commons.text.version>
 		<commons.cli.version>1.6.0</commons.cli.version>
@@ -95,7 +95,7 @@
 
 		<jackson.version>2.17.1</jackson.version>
 
-		<mongo.version>4.11.1</mongo.version>
+		<mongo.version>5.1.0</mongo.version>
 		<jongo.version>1.5.1</jongo.version>
 		<gmongo.version>1.5</gmongo.version>
 		<velocity.engine.version>2.3</velocity.engine.version>
@@ -120,7 +120,7 @@
 		<json-smart.version>2.4.9</json-smart.version>
 		<jgit.version>6.9.0.202403050737-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
-		<aws.sdk.version>1.12.718</aws.sdk.version>
+		<aws.sdk.version>1.12.719</aws.sdk.version>
 		<box.sdk.version>4.9.0</box.sdk.version>
 		<sardine.version>5.12</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
@@ -189,7 +189,7 @@
 		<de.flapdoodle.embed.mongo.version>4.13.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.10.0</xmlunit.core.version>
-		<tomcat.version>10.1.20</tomcat.version>
+		<tomcat.version>10.1.23</tomcat.version>
 
 		<!-- Build -->
 		<maven.compiler.version>3.13.0</maven.compiler.version>
