@@ -183,9 +183,12 @@ ext.buildBom = { module ->
 	def dir = srcFolder + module
 
 	try {
-		def goal = module == "studio-ui"
-				? ["frontend:yarn@generate", "-Pgenerate-bom"]
-				: ["cyclonedx:makeBom"]
+		def goal
+		if (module == "studio-ui") {
+			goal = ["frontend:yarn@generate", "-Pgenerate-bom"]
+		} else {
+			goal = ["cyclonedx:makeBom"]
+		}
 		execCommand(mavenCmd + goal, dir)
 	} catch (e) {
 		logger.error("Failed to build bom: {}, exception: {}", module, e)
