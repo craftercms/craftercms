@@ -62,7 +62,7 @@
     </Appenders>
     <Loggers>
         <Logger name="org.springframework" level="warn"/>
-        <Logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="error"/>
+        <Logger name="software.amazon.awssdk.profiles.internal.ProfileFileReader" level="error"/>
         <Logger name="org.craftercms" level="info"/>
         <Root level="info">
             <AppenderRef ref="ConsoleAppender"/>
