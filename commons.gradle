@@ -185,7 +185,7 @@ ext.buildBom = { module ->
 	try {
 		def goal
 		if (module == "studio-ui") {
-			goal = ["frontend:yarn@generate", "-Pgenerate-bom"]
+			goal = ["frontend:install-node-and-yarn", "frontend:yarn", "frontend:yarn@generate", "-Pgenerate-bom"]
 		} else {
 			goal = ["cyclonedx:makeBom"]
 		}
