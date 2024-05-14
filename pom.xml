@@ -167,7 +167,7 @@
 		<picocli.version>4.7.5</picocli.version>
 		<http.builder.version>1.0.4</http.builder.version>
 		<jaxb.api.version>2.3.1</jaxb.api.version>
-		<jaxb.core.version>4.0.4</jaxb.core.version>
+		<jaxb.core.version>4.0.5</jaxb.core.version>
 		<jaxb.impl.version>4.0.4</jaxb.impl.version>
 		<spatial4j.version>0.8</spatial4j.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
