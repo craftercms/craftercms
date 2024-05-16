@@ -17,13 +17,13 @@ Download a pre-built binary archive here: https://craftercms.org/downloads
 
 Read the docs here: https://docs.craftercms.org/current
 
-This repository is for developers interested in contributing to CrafterCMS, customizing their own release, or building the latest. This parent project helps you build the following: 
+This repository is for developers interested in contributing to CrafterCMS, customizing their own release, or building the latest. This parent project helps you build the following:
 
 1. Deployable CrafterCMS binaries
 2. Docker images
 3. Developer's environment so you can compile and contribute to CrafterCMS
 
-**WARNING:** CrafterCMS source code development and building is 
+**WARNING:** CrafterCMS source code development and building is
 _only_ supported on Unix based systems. If you want to use CrafterCMS in Windows, install Windows Subsystem for Linux (WSL) by following the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install) then use the WSL 2 terminal for all the commands below.  Please refer to the documentation in [Installing CrafterCMS on WSL 2](https://docs.craftercms.org/current/system-administrators/activities/installing-craftercms-on-wsl2.html).
 
 # 1. Initial Setup
@@ -67,9 +67,9 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 
 ## 2.2 Options
 
-* `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `true` 
-* `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false` 
-* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: OpenSearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false` 
+* `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `true`
+* `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false`
+* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: OpenSearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false`
 * `gitRemote`: Git remote name to use in cloned modules, default `origin`
 * `gitBranch`: Git branch to use when cloning modules, default `develop` (for develop branch)
 * `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
@@ -133,7 +133,7 @@ When using a tag-based build, you're essentially cloning a point in time to buil
 CrafterCMS comprises a number of headless API-first (GraphQL, REST, in-process)  modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
 
 
-## 4.1. Build, Start and Stop All 
+## 4.1. Build, Start and Stop All
 ### 4.1.1. Build All
 Build all CrafterCMS modules
 
@@ -143,7 +143,7 @@ Build all CrafterCMS modules
 
 ### 4.1.2. Start All
 Start CrafterCMS,
- 
+
  ```bash
     ./gradlew start
 ```
@@ -419,6 +419,21 @@ Here are the environment variables used to encrypt and decrypt values in the dat
 | CRAFTER_SYSTEM_ENCRYPTION_SALT | Salt used for encrypting database values <hr> \<someDefaultSaltValue\> |
 
 <br><br>
+Here are the environment variables used for serverless deployments:
+
+| Serverless<br> Variable Name | Description <hr> Default Value |
+|---------------|---------------|
+| AWS_S3_ENDPOINT | Endpoint used for accessing S3 buckets <hr> "" |
+| AWS_S3_PATH_STYLE_ACCESS | Use path style URLs for accessing S3 buckets <hr> false |
+| SERVERLESS_NAMESPACE | Namespace used for deployment <hr> cloud-sites |
+| PREVIEW_BUCKET_NAME_PATTERN | Name pattern for S3 Preview bucket <hr> ${SERVERLESS_NAMESPACE}-blobs-\${siteName} |
+| PREVIEW_BUCKET_PREFIX_PATTERN | Prefix pattern for S3 Preview bucket <hr> "" |
+| STAGING_BUCKET_NAME_PATTERN | Name pattern for S3 Staging bucket <hr> ${SERVERLESS_NAMESPACE}-site-\${siteName}-staging |
+| STAGING_BUCKET_PREFIX_PATTERN | Prefix pattern for S3 Staging bucket <hr> "" |
+| LIVE_BUCKET_NAME_PATTERN | Name pattern for S3 Live bucket <hr> ${SERVERLESS_NAMESPACE}-site-\${siteName} |
+| LIVE_BUCKET_PREFIX_PATTERN | Prefix pattern for S3 Live bucket <hr> "" |
+
+<br><br>
 Here are the configuration variables used in CrafterCMS:
 
 | Configuration<br> Variable Name | Description <hr> Default Value |
@@ -477,7 +492,7 @@ As we have seen in the getting started section above, to run a gradle task, we r
 
 ```bash
    ./gradlew command [-Penv={env}] [-Pmodules={module}]
-```       
+```
 
 
 Here's a list of commands (Gradle tasks) available:
