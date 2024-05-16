@@ -419,6 +419,21 @@ Here are the environment variables used to encrypt and decrypt values in the dat
 | CRAFTER_SYSTEM_ENCRYPTION_SALT | Salt used for encrypting database values <hr> \<someDefaultSaltValue\> |
 
 <br><br>
+Here are the environment variables used for serverless deployments:
+
+| Serverless<br> Variable Name | Description <hr> Default Value |
+|---------------|---------------|
+| AWS_S3_ENDPOINT | Endpoint used for accessing S3 buckets <hr> "" |
+| AWS_S3_PATH_STYLE_ACCESS | Use path style URLs for accessing S3 buckets <hr> false |
+| SERVERLESS_NAMESPACE | Namespace used for deployment <hr> cloud-sites |
+| PREVIEW_BUCKET_NAME_PATTERN | Name pattern for S3 Preview bucket <hr> ${SERVERLESS_NAMESPACE}-blobs-\${siteName} |
+| PREVIEW_BUCKET_PREFIX_PATTERN | Prefix pattern for S3 Preview bucket <hr> "" |
+| STAGING_BUCKET_NAME_PATTERN | Name pattern for S3 Staging bucket <hr> ${SERVERLESS_NAMESPACE}-site-\${siteName}-staging |
+| STAGING_BUCKET_PREFIX_PATTERN | Prefix pattern for S3 Staging bucket <hr> "" |
+| LIVE_BUCKET_NAME_PATTERN | Name pattern for S3 Live bucket <hr> ${SERVERLESS_NAMESPACE}-site-\${siteName} |
+| LIVE_BUCKET_PREFIX_PATTERN | Prefix pattern for S3 Live bucket <hr> "" |
+
+<br><br>
 Here are the configuration variables used in CrafterCMS:
 
 | Configuration<br> Variable Name | Description <hr> Default Value |
