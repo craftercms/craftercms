@@ -207,7 +207,7 @@
 		<jacoco.maven.version>0.8.10</jacoco.maven.version>
 		<buildnumber.maven.version>3.2.0</buildnumber.maven.version>
 		<grunt.maven.version>1.5.1</grunt.maven.version>
-		<gmavenplus.version>2.1.0</gmavenplus.version>
+		<gmavenplus.version>3.0.2</gmavenplus.version>
 		<appassembler.maven.version>2.1.0</appassembler.maven.version>
 		<maven.assembly.version>3.7.1</maven.assembly.version>
 		<nexus.staging.maven.version>1.6.13</nexus.staging.maven.version>
