@@ -64,7 +64,7 @@
 
 	<properties>
 		<!-- Version Numbers -->
-		<spring-framework.version>6.1.6</spring-framework.version>
+		<spring-framework.version>6.1.7</spring-framework.version>
 		<spring-security.version>6.2.3</spring-security.version>
 		<commons.configuration.version>2.10.1</commons.configuration.version>
 		<commons.csv.version>1.11.0</commons.csv.version>
@@ -88,7 +88,7 @@
 		<box.sdk.version>4.9.0</box.sdk.version>
 		<opensearch.version>2.9.0</opensearch.version>
 		<opensearch.client.version>2.5.0</opensearch.client.version>
-		<tomcat.version>10.1.20</tomcat.version>
+		<tomcat.version>10.1.24</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
 		<groovy.version>4.0.21</groovy.version>
 		<ivy.version>2.5.2</ivy.version>

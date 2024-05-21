@@ -68,7 +68,7 @@
 		<!-- Dependency Version Numbers -->
 		<!-- Main -->
 		<!-- Spring -->
-		<spring.version>6.1.6</spring.version>
+		<spring.version>6.1.7</spring.version>
 		<spring.security.version>6.2.4</spring.security.version>
 		<spring.data.version>3.2.5</spring.data.version>
 		<spring.ldap.version>3.2.3</spring.ldap.version>
@@ -133,7 +133,7 @@
 		<rome.version>1.0</rome.version>
 		<urlrewrite.version>5.1.3</urlrewrite.version>
 		<xerces.version>2.12.2</xerces.version>
-		<graphql.version>21.3</graphql.version>
+		<graphql.version>22.0</graphql.version>
 		<graphql.extended.scalars.version>21.0</graphql.extended.scalars.version>
 		<httpproxy.version>2.0</httpproxy.version>
 		<ivy.version>2.5.2</ivy.version>
@@ -189,7 +189,7 @@
 		<de.flapdoodle.embed.mongo.version>4.13.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.10.0</xmlunit.core.version>
-		<tomcat.version>10.1.23</tomcat.version>
+		<tomcat.version>10.1.24</tomcat.version>
 
 		<!-- Build -->
 		<maven.compiler.version>3.13.0</maven.compiler.version>
@@ -207,7 +207,7 @@
 		<jacoco.maven.version>0.8.10</jacoco.maven.version>
 		<buildnumber.maven.version>3.2.0</buildnumber.maven.version>
 		<grunt.maven.version>1.5.1</grunt.maven.version>
-		<gmavenplus.version>2.1.0</gmavenplus.version>
+		<gmavenplus.version>3.0.2</gmavenplus.version>
 		<appassembler.maven.version>2.1.0</appassembler.maven.version>
 		<maven.assembly.version>3.7.1</maven.assembly.version>
 		<nexus.staging.maven.version>1.6.13</nexus.staging.maven.version>
