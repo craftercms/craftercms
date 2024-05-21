@@ -85,7 +85,7 @@
 		<jackson.version>2.17.1</jackson.version>
 		<aws.version>1.12.723</aws.version>
 		<jose4j.version>0.9.6</jose4j.version>
-		<box.sdk.version>4.9.0</box.sdk.version>
+		<box.sdk.version>4.9.1</box.sdk.version>
 		<opensearch.version>2.9.0</opensearch.version>
 		<opensearch.client.version>2.5.0</opensearch.client.version>
 		<tomcat.version>10.1.24</tomcat.version>
