@@ -79,7 +79,7 @@
 		<commons.lang3.version>3.14.0</commons.lang3.version>
 		<commons.collections.version>3.2.2</commons.collections.version>
 		<commons.collections4.version>4.4</commons.collections4.version>
-		<commons.codec.version>1.15</commons.codec.version>
+		<commons.codec.version>1.17.0</commons.codec.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.io.version>2.16.1</commons.io.version>
 		<commons.configuration.version>2.10.1</commons.configuration.version>
@@ -134,7 +134,7 @@
 		<urlrewrite.version>5.1.3</urlrewrite.version>
 		<xerces.version>2.12.2</xerces.version>
 		<graphql.version>22.0</graphql.version>
-		<graphql.extended.scalars.version>21.0</graphql.extended.scalars.version>
+		<graphql.extended.scalars.version>22.0</graphql.extended.scalars.version>
 		<httpproxy.version>2.0</httpproxy.version>
 		<ivy.version>2.5.2</ivy.version>
 		<tinify.version>1.8.8</tinify.version>
@@ -168,7 +168,7 @@
 		<http.builder.version>1.0.4</http.builder.version>
 		<jaxb.api.version>2.3.1</jaxb.api.version>
 		<jaxb.core.version>4.0.5</jaxb.core.version>
-		<jaxb.impl.version>4.0.4</jaxb.impl.version>
+		<jaxb.impl.version>4.0.5</jaxb.impl.version>
 		<spatial4j.version>0.8</spatial4j.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<eddsa.version>0.3.0</eddsa.version>
@@ -200,7 +200,7 @@
 		<maven.war.version>3.4.0</maven.war.version>
 		<maven.deploy.version>3.1.2</maven.deploy.version>
 		<maven.gpg.version>3.2.4</maven.gpg.version>
-		<maven.shade.version>3.5.1</maven.shade.version>
+		<maven.shade.version>3.5.3</maven.shade.version>
 		<maven.clean.version>3.3.2</maven.clean.version>
 		<maven.surefire.version>3.2.5</maven.surefire.version>
 		<maven.failsafe.version>3.0.0</maven.failsafe.version>
