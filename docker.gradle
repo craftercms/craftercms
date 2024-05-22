@@ -81,19 +81,16 @@ ext {
 ext.pushTagDockerImage = { dockerImage ->
 	if (pushDockerImages) {
 		exec {
-			commandLine 'docker', 'push', dockerImage+":${project.version}"
+			commandLine 'docker', 'push', dockerImage + ":${project.version}"
 		}
 	}
 
-	if (tagDockerImagesAsLatest) {
+	if (!tagDockerImages.isEmpty()) {
 		exec {
-			commandLine 'docker', 'image', 'tag', dockerImage+":${project.version}", dockerImage+":latest"
+			commandLine 'docker', 'image', 'tag', dockerImage + ":${project.version}", dockerImage + ":" + tagDockerImages
 		}
-	}
-
-	if (tagDockerImagesAsLatest) {
 		exec {
-			commandLine 'docker', 'push', dockerImage+":latest"
+			commandLine 'docker', 'push', dockerImage + ":" + tagDockerImages
 		}
 	}
 }
