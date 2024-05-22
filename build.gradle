@@ -30,6 +30,7 @@ apply from: "environments.gradle"
 apply from: "downloads.gradle"
 apply from: "deploy.gradle"
 apply from: "run.gradle"
+apply from: "docker.gradle"
 
 task splash() {
 	description 'Displays splash screen'

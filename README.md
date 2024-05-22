@@ -64,6 +64,13 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `stop` Stop CrafterCMS
 * `status` Report status on running environments if any
 * `bundle` Create deployable binaries
+* `buildAuthoringTomcat` Build an authoring Docker image
+* `buildDeliveryTomcat` Build a delivery Docker image
+* `buildDeployer` Build a deployer Docker image
+* `buildGitSshServer` Build a Git SSH server Docker image
+* `buildGitHttpServer` Build a Git HTTP server Docker image
+* `buildLogRotate` Build a LogRotate Docker image
+* `buildMainImages` Build the main Docker images
 
 ## 2.2 Options
 
@@ -85,6 +92,8 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `authoringEnvDir`: Where to store the authoring environment, default `./crafter-authoring`
 * `deliveryEnvDir`: Where to store the delivery environment, default `./crafter-delivery`
 * `currentPlatform`: What platform to build to (`linux` or `darwin`), default is the build machine's OS
+* `pushDockerImages`: Push the Docker images to DockerHub (if you have the right permissions), default `false`
+* `tagDockerImages`: Tag the Docker images with the tag provided (if you have the right permissions), default is not to tag
 
 # 3. Build Deployable Binaries
 

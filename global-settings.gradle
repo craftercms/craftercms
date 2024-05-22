@@ -59,3 +59,5 @@ project.ext.set("elasticsearchPlatform", getPropertySafelyWithDefaults("elastics
 project.ext.set("currentArch", getPropertySafelyWithDefaults("currentArch", SystemUtils.OS_ARCH == "aarch64" ? "aarch64" : "x86_64"))
 project.ext.set("mongodbPlatform", getPropertySafelyWithDefaults("mongodbPlatform", currentPlatform == "darwin" ? "osx" : currentPlatform))
 project.ext.set("mongodbBinary", getPropertySafelyWithDefaults("mongodbBinary", currentPlatform == "darwin" ? "osx-ssl" : currentPlatform))
+project.ext.set("pushDockerImages", getPropertySafelyWithDefaults("pushDockerImages", "false").toBoolean())
+project.ext.set("tagDockerImages", getPropertySafelyWithDefaults("tagDockerImages", ""))

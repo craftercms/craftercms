@@ -1,0 +1,3 @@
+#!/bin/sh
+printf '%s\n' "Interactive shell access disabled for user"
+exit 128
