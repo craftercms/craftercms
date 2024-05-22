@@ -64,6 +64,13 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `stop` Stop CrafterCMS
 * `status` Report status on running environments if any
 * `bundle` Create deployable binaries
+* `buildAuthoringTomcat` Build an authoring Docker image
+* `buildDeliveryTomcat` Build a delivery Docker image
+* `buildDeployer` Build a deployer Docker image
+* `buildGitSshServer` Build a Git SSH server Docker image
+* `buildGitHttpServer` Build a Git HTTP server Docker image
+* `buildLogRotate` Build a LogRotate Docker image
+* `buildMainImages` Build the main Docker images
 
 ## 2.2 Options
 
@@ -86,6 +93,8 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `deliveryEnvDir`: Where to store the delivery environment, default `./crafter-delivery`
 * `currentPlatform`: What platform to build to (`linux` or `darwin`), default is the build machine's OS
 * `currentArch`: What arch to build to (`aarch64` or `x86_64`), default is the build machine's arch
+* `pushDockerImages`: Push the Docker images to DockerHub (if you have the right permissions), default `false`
+* `tagDockerImagesAsLatest`: Tag the Docker images as `latest` (if you have the right permissions), default `false`
 
 # 3. Build Deployable Binaries
 
