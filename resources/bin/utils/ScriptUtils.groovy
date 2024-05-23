@@ -17,8 +17,8 @@
 package utils
 
 @Grapes([
-    @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.12.0'),
-    @Grab(group = 'commons-io', module = 'commons-io', version = '2.14.0')
+    @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.14.0'),
+    @Grab(group = 'commons-io', module = 'commons-io', version = '2.16.1')
 ])
 
 import org.apache.commons.lang3.SystemUtils
