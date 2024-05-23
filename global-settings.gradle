@@ -114,3 +114,5 @@ if (currentPlatform == "darwin") {
 	project.ext.set("mongoshArch", getPropertySafelyWithDefaults("mongoshArch", "x64"))
 	project.ext.set("mongoToolsArch", getPropertySafelyWithDefaults("mongoToolsArch", "${execDetermineLinuxOSWithVersion()}-x86_64"))
 }
+project.ext.set("pushDockerImages", getPropertySafelyWithDefaults("pushDockerImages", "false").toBoolean())
+project.ext.set("tagDockerImages", getPropertySafelyWithDefaults("tagDockerImages", ""))
