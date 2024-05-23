@@ -15,7 +15,7 @@ Try CrafterCMS using a pre-built AMI (use the `authoring` AMI): https://aws.amaz
 
 Download a pre-built binary archive here: https://craftercms.org/downloads
 
-Read the docs here: https://docs.craftercms.org/current
+Read the docs here: https://docs.craftercms.org/en/4.1
 
 This repository is for developers interested in contributing to CrafterCMS, customizing their own release, or building the latest. This parent project helps you build the following:
 
@@ -24,11 +24,11 @@ This repository is for developers interested in contributing to CrafterCMS, cust
 3. Developer's environment so you can compile and contribute to CrafterCMS
 
 **WARNING:** CrafterCMS source code development and building is
-_only_ supported on Unix based systems. If you want to use CrafterCMS in Windows, install Windows Subsystem for Linux (WSL) by following the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install) then use the WSL 2 terminal for all the commands below.  Please refer to the documentation in [Installing CrafterCMS on WSL 2](https://docs.craftercms.org/current/system-administrators/activities/installing-craftercms-on-wsl2.html).
+_only_ supported on Unix based systems. If you want to use CrafterCMS in Windows, use [Docker](https://docs.craftercms.org/en/4.1/by-role/system-admin/installation.html#docker) or install Windows Subsystem for Linux (WSL) by following the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install) then use the WSL 2 terminal for all the commands below.
 
 # 1. Initial Setup
 Please make sure your system meets the prerequisites:
-https://docs.craftercms.org/current/system-administrators/requirements-supported-platforms.html
+https://docs.craftercms.org/en/4.1/by-role/system-admin/installation.html#requirements
 
 Let's begin :)
 
@@ -148,7 +148,7 @@ Start CrafterCMS,
     ./gradlew start
 ```
 
-You can now point your browser to [http://localhost:8080/studio](http://localhost:8080/studio) and start using CrafterCMS. To get started with your first CrafterCMS experience, you can follow this guide: [https://docs.craftercms.org/current/content-authors/index.html](https://docs.craftercms.org/current/content-authors/index.html).
+You can now point your browser to [http://localhost:8080/studio](http://localhost:8080/studio) and start using CrafterCMS. To get started with your first CrafterCMS experience, you can follow this guide: [Your First Templated Project](https://docs.craftercms.org/en/4.1/getting-started/your-first-project/templated.html) or [Your First Headless Project](https://docs.craftercms.org/en/4.1/getting-started/your-first-project/headless.html).
 
 > **_NOTE:_**
     * The authoring environment runs on port `8080`, a great place to start, while the delivery environment runs on port `9080`.
@@ -187,14 +187,11 @@ To build, start and stop one of the two environments is similar to building/star
 The mechanics for working with a single module are similar to working with _all_, with one exception: You can deploy a module to one or both environments (`authoring`/`delivery`).
 
 CrafterCMS comprises the following modules:
-* [`core`](https://docs.craftercms.org/current/developers/projects/core/index.html)
-* [`commons`](https://docs.craftercms.org/current/developers/projects/commons/index.html)
-* [`engine`](https://docs.craftercms.org/current/developers/projects/engine/index.html)
-* [`studio`](https://docs.craftercms.org/current/developers/projects/studio/index.html)
-* [`search`](https://docs.craftercms.org/current/developers/projects/search/index.html)
-* [`profile`](https://docs.craftercms.org/current/developers/projects/profile/index.html)
-* [`social`](https://docs.craftercms.org/current/developers/projects/social/index.html)
-* [`deployer`](https://docs.craftercms.org/current/developers/projects/deployer/index.html)
+* [`engine`](https://docs.craftercms.org/en/4.1/reference/modules/engine/index.html)
+* [`studio`](https://docs.craftercms.org/en/4.1/reference/modules/studio/index.html)
+* [`profile`](https://docs.craftercms.org/en/4.1/reference/modules/profile/index.html)
+* [`social`](https://docs.craftercms.org/en/4.1/reference/modules/social/index.html)
+* [`deployer`](https://docs.craftercms.org/en/4.1/reference/modules/deployer/index.html)
 
 You'll find these projects checked out and ready for you to contribute to in the folder `src/{modules}`.
 
@@ -227,7 +224,7 @@ You can update, build, deploy, start or stop a module by:
     * In the current version of CrafterCMS, some services run in the same Web container, and that implies the stopping/starting of one of these services will cause other services to stop/start as well.
 
 # 5. Advanced Topics
-For more detailed information and advanced topic, please visit the [detailed documentation](https://docs.craftercms.org/current/developers/projects/craftercms/index.html).
+For more detailed information and advanced topic, please visit the [detailed documentation](https://docs.craftercms.org/en/4.1/by-role/developer/index.html).
 
 CrafterCMS has two environments, the Authoring Environment and the Delivery Environment.
 
@@ -266,201 +263,7 @@ The CrafterCMS Authoring and Delivery scripts will help you on the basic startup
 |**Arguments**|``start`` Starts all CrafterCMS services in this order Crafter Deployer OpenSearch, Apache Tomcat<br><br>``stop``  Stops all CrafterCMS services in the same order as they start.<br><br>``debug`` Start all CrafterCMS services with the JAVA remote debug port 5000 for Crafter Deployer, and 8000 for Apache Tomcat for the *Authoring Environment* <br>Starts all CrafterCMS services with the JAVA remote debug port 5001 for Crafter Deployer, and 9000 for Apache Tomcat for the *Delivery Environment*<br><br>``help``  Prints script help|
 
 <br><br>
-Here are the location environment variables used by ``crafter.sh``:
-
-
-| Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| CRAFTER_HOME  | CrafterCMS *Authoring/Delivery* path <hr> {CrafterCMS-install-directory}/crafter-{env}/|
-| CRAFTER_LOGS_DIR | CrafterCMS logs file path <hr>$CRAFTER_HOME/logs |
-| CRAFTER_DATA_DIR | CrafterCMS data file path <hr>$CRAFTER_HOME/data |
-| CRAFTER_TEMP_DIR | CrafterCMS temporary directory path <hr> $CRAFTER_HOME/temp |
-| CRAFTER_BACKUPS_DIR | CrafterCMS backup directory path <hr> $CRAFTER_HOME/backups |
-
-<br><br>
-Here are the environment variables used for hosts and ports in ``crafter.sh``:
-
-| Hosts and Ports<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| MAIL_HOST | CrafterCMS mail host <hr>localhost |
-| MAIL_PORT | CrafterCMS mail port <hr>25|
-| SEARCH_HOST   | Search host <hr>localhost |
-| SEARCH_PORT   | Search port <hr>9201|
-| DEPLOYER_HOST | Deployer host <hr>localhost|
-| DEPLOYER_PORT | Deployer port <hr> 9201 |
-| MONGODB_HOST  | MongoDB host <hr> localhost |
-| MONGODB_PORT  | MongoDB port <hr>27020 |
-| MARIADB_HOST  | MariaDb host <hr> 127.0.0.1 |
-| MARIADB_PORT  | MariaDb port <hr> 33306 |
-| TOMCAT_HOST   | Tomcat host <hr> localhost |
-| TOMCAT_HTTP_PORT | Tomcat Http port <hr> 8080 |
-| TOMCAT_HTTPS_PORT | Tomcat SSL (https) port <hr> 8443 |
-| TOMCAT_AJP_PORT | Tomcat AJP port <hr> 8009 |
-| TOMCAT_SHUTDOWN_PORT | Tomcat shutdown port <hr> 8005 |
-| TOMCAT_DEBUG_PORT | Tomcat debug port <hr> 8000 |
-
-<br><br>
-Here are the environment variables used for URLs in ``crafter.sh``:
-
-| URLs<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| SEARCH_URL | Search URL <hr> http://\$SEARCH_HOST:\$SEARCH_PORT|
-| DEPLOYER_URL | Crafter Deployer URL <hr> http://\$DEPLOYER_HOST:\$DEPLOYER_PORT |
-| STUDIO_URL | Crafter Studio URL <hr> http://\$TOMCAT_HOST:\$TOMCAT_HTTP_PORT/studio |
-| ENGINE_URL | Crafter Engine URL <hr> http://\$TOMCAT_HOST:\$TOMCAT_HTTP_PORT/studio |
-| PROFILE_URL | Crafter Profile URL <hr> http://\$TOMCAT_HOST:\$TOMCAT_HTTP_PORT/crafter-profile |
-| SOCIAL_URL | Crafter Social URL <hr> http://\$TOMCAT_HOST:\$TOMCAT_HTTP_PORT/crafter-social |
-
-<br><br>
-Here are the environment variables used for Java options in ``crafter.sh``:
-
-| Java options<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| OPENSEARCH_JAVA_OPTS | OpenSearch Java options <hr>"-server -Xss1024K -Xmx1G"|
-| DEPLOYER_JAVA_OPTS | Deployer Java options <hr> "-server -Xss1024K -Xmx1G"|
-| CATALINA_OPTS | Tomcat options <hr> "-server -Xss1024K -Xms1G -Xmx4G"|
-
-<br><br>
-Here are the environment variables used for Tomcat in ``crafter.sh``:
-
-| Tomcat<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| CATALINA_HOME | Apache Tomcat files path <hr> $CRAFTER_HOME/bin/apache-tomcat |
-| CATALINA_PID | Tomcat process id file save path <hr> $CATALINA_HOME/bin/tomcat.pid |
-| CATALINA_LOGS_DIR | Tomcat file logs path <hr>$CRAFTER_LOGS_DIR/tomcat |
-| CATALINA_OUT | Tomcat main log file <hr> $CATALINA_LOGS_DIR/catalina.out |
-| CATALINA_TMPDIR | Tomcat temporary directory <hr>$CRAFTER_TEMP_DIR/tomcat |
-
-<br><br>
-Here are the environment variables used for OpenSearch in ``crafter.sh``:
-
-| OpenSearch<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| OPENSEARCH_JAVA_HOME | OpenSearch Java home directory <hr>$JAVA_HOME |
-| OPENSEARCH_HOME | OpenSearch home directory <hr> $CRAFTER_BIN_DIR/opensearch |
-| OPENSEARCH_INDEXES_DIR | OpenSearch indexes directory <hr>$CRAFTER_DATA_DIR/indexes-es |
-| OPENSEARCH_LOGS_DIR | OpenSearch log files directory <hr>$CRAFTER_LOGS_DIR/logs/search |
-| OPENSEARCH_PID | OpenSearch process Id <hr>$OPENSEARCH_HOME/opensearch.pid |
-| OPENSEARCH_USERNAME | OpenSearch username <hr> |
-| OPENSEARCH_PASSWORD | OpenSearch password <hr> |
-| SEARCH_DOCKER_NAME | OpenSearch Docker name <hr> {env}-search |
-
-<br><br>
-Here are the environment variables used for the Deployer in ``crafter.sh``:
-
-| Deployer<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| DEPLOYER_HOME | Crafter Deployer jar files path <hr> $CRAFTER_HOME/bin/crafter-deployer |
-| DEPLOYER_DATA_DIR | Deployer data files directory <hr> $CRAFTER_DATA_DIR/deployer |
-| DEPLOYER_LOGS_DIR | Deployer log files directory <hr> $CRAFTER_LOGS_DIR/deployer |
-| DEPLOYER_DEPLOYMENTS_DIR | Deployer deployments files directory <hr> $CRAFTER_DATA_DIR/repos/sites |
-| DEPLOYER_SDOUT | Deployer SDOUT path <hr>$DEPLOYER_LOGS_DIR/crafter-deployer.out |
-| DEPLOYER_PID | Deployer process id file <hr> $DEPLOYER_HOME/crafter-deployer.pid |
-
-<br><br>
-Here are the environment variables used for MongoDB in ``crafter.sh``:
-
-| MongoDB<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| MONGODB_HOME | MongoDB files path <hr> $CRAFTER_BIN_DIR/mongodb |
-| MONGODB_PID | MongoDB process id file save path <hr> $MONGODB_DATA_DIR/mongod.lock |
-| MONGODB_DATA_DIR | MongoDB data directory <hr> $CRAFTER_DATA_DIR/mongodb |
-| MONGODB_LOGS_DIR | MongoDB log files directory <hr> $CRAFTER_LOGS_DIR/mongodb |
-
-<br><br>
-Here are the environment variables used for MariaDb in ``crafter.sh``:
-
-| MariaDB<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| MARIADB_SCHEMA | MariaDb schema <hr>crafter |
-| MARIADB_HOME | MariaDb files path <hr>$CRAFTER_BIN_DIR/dbms |
-| MARIADB_DATA_DIR | MariaDb data directory <hr> $CRAFTER_DATA_DIR/db |
-| MARIADB_ROOT_USER | MariaDb root username <hr> |
-| MARIADB_ROOT_PASSWD | MariaDb root password <hr> |
-| MARIADB_USER | MariaDb username <hr>crafter |
-| MARIADB_PASSWD | MariaDb user password <hr>crafter |
-| MARIADB_SOCKET_TIMEOUT | MariaDB socket timeout <hr> 60000 |
-| MARIADB_TCP_TIMEOUT | MariaDB TCP timeout <hr>120 |
-| MARIADB_PID | MariaDB process id file <hr> \$MARIADB_HOME/\$HOSTNAME.pid |
-
-<br><br>
-Here are the environment variables used for Git in ``crafter.sh``:
-
-| Git<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| GIT_CONFIG_NOSYSTEM | Ignore Git system wide configuration file <hr>true |
-
-<br><br>
-Here are the environment variables used for Management Tokens.
-Remember to update these per installation and provide these tokens to the status monitors:
-
-| Management Token<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| STUDIO_MANAGEMENT_TOKEN | Authorization token for Studio <hr>defaultManagementToken |
-| ENGINE_MANAGEMENT_TOKEN | Authorization token for Engine <hr>defaultManagementToken |
-| DEPLOYER_MANAGEMENT_TOKEN | Authorization token for Deployer <hr>defaultManagementToken |
-| PROFILE_MANAGEMENT_TOKEN | Authorization token for Profile <hr>defaultManagementToken |
-| SOCIAL_MANAGEMENT_TOKEN | Authorization token for Social <hr>defaultManagementToken |
-
-<br><br>
-Here are the environment variables used to encrypt and decrypt values inside configuration files:
-
-| Encryption<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| CRAFTER_ENCRYPTION_KEY | Key used for encrypting properties <hr> default_encryption_key |
-| CRAFTER_ENCRYPTION_SALT | Salt used for encrypting properties <hr> default_encryption_salt |
-
-<br><br>
-Here are the environment variables used to encrypt and decrypt values in the database:
-
-| Encryption<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| CRAFTER_SYSTEM_ENCRYPTION_KEY | Key used for encrypting database values <hr> \<someDefaultKeyValue\> |
-| CRAFTER_SYSTEM_ENCRYPTION_SALT | Salt used for encrypting database values <hr> \<someDefaultSaltValue\> |
-
-<br><br>
-Here are the environment variables used for serverless deployments:
-
-| Serverless<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| AWS_S3_ENDPOINT | Endpoint used for accessing S3 buckets <hr> "" |
-| AWS_S3_PATH_STYLE_ACCESS | Use path style URLs for accessing S3 buckets <hr> false |
-| SERVERLESS_NAMESPACE | Namespace used for deployment <hr> cloud-sites |
-| PREVIEW_BUCKET_NAME_PATTERN | Name pattern for S3 Preview bucket <hr> ${SERVERLESS_NAMESPACE}-blobs-\${siteName} |
-| PREVIEW_BUCKET_PREFIX_PATTERN | Prefix pattern for S3 Preview bucket <hr> "" |
-| STAGING_BUCKET_NAME_PATTERN | Name pattern for S3 Staging bucket <hr> ${SERVERLESS_NAMESPACE}-site-\${siteName}-staging |
-| STAGING_BUCKET_PREFIX_PATTERN | Prefix pattern for S3 Staging bucket <hr> "" |
-| LIVE_BUCKET_NAME_PATTERN | Name pattern for S3 Live bucket <hr> ${SERVERLESS_NAMESPACE}-site-\${siteName} |
-| LIVE_BUCKET_PREFIX_PATTERN | Prefix pattern for S3 Live bucket <hr> "" |
-
-<br><br>
-Here are the configuration variables used in CrafterCMS:
-
-| Configuration<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| CRAFTER_ENVIRONMENT | Name used for environment specific configurations in Studio, Engine and Deployer <hr> default |
-
-<br><br>
-Here are the SSH variables used in CrafterCMS:
-
-| Configuration<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| CRAFTER_SSH_CONFIG | CrafterCMS folder path for the SSH configuration <hr> $CRAFTER_DATA_DIR/ssh |
-
-<br><br>
-Here are the environment variables used for Studio's access tokens for API's:
-
-| Configuration<br> Variable Name | Description <hr> Default Value |
-|---------------|---------------|
-| STUDIO_TOKEN_ISSUER | Issuer for generated tokens <hr> Crafter Studio |
-| STUDIO_TOKEN_VALID_ISSUERS | Issuer for generated tokens <hr> Crafter Studio |
-| STUDIO_TOKEN_AUDIENCE | Audience for generation and validation of access tokens <hr> |
-| STUDIO_TOKEN_TIMEOUT | Expiration time of access tokens in minutes <hr>5 |
-| STUDIO_TOKEN_SIGN_PASSWORD | Password for signing the access tokens <hr> |
-| STUDIO_TOKEN_ENCRYPT_PASSWORD | Password for encrypting the access tokens <hr> |
-| STUDIO_REFRESH_TOKEN_NAME | Name of the cookie to store the refresh token <hr> refresh_token |
-| STUDIO_REFRESH_TOKEN_MAX | Expiration time of the refresh token cookie in seconds <hr> 300 |
-| STUDIO_REFRESH_TOKEN_SECURE | Indicates if refresh token cookie should be secure <hr> false |
+For more informaion on environment variables used by ``crafter.sh``, see [CrafterCMS Environment Variables](https://docs.craftercms.org/en/4.1/by-role/system-admin/configuration.html#environment-variables)
 
 <br><br>
 Let's look at an example on how to start an authoring environment using the scripts we discussed above.  To start the authoring environment, go to your CrafterCMS install folder then run the following:
