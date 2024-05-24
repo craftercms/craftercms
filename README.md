@@ -263,7 +263,7 @@ The CrafterCMS Authoring and Delivery scripts will help you on the basic startup
 |**Arguments**|``start`` Starts all CrafterCMS services in this order Crafter Deployer OpenSearch, Apache Tomcat<br><br>``stop``  Stops all CrafterCMS services in the same order as they start.<br><br>``debug`` Start all CrafterCMS services with the JAVA remote debug port 5000 for Crafter Deployer, and 8000 for Apache Tomcat for the *Authoring Environment* <br>Starts all CrafterCMS services with the JAVA remote debug port 5001 for Crafter Deployer, and 9000 for Apache Tomcat for the *Delivery Environment*<br><br>``help``  Prints script help|
 
 <br><br>
-For more informaion on environment variables used by ``crafter.sh``, see [CrafterCMS Environment Variables](https://docs.craftercms.org/en/4.1/by-role/system-admin/configuration.html#environment-variables)
+For more information on environment variables used by ``crafter.sh``, see [CrafterCMS Environment Variables](https://docs.craftercms.org/en/4.1/by-role/system-admin/configuration.html#environment-variables)
 
 <br><br>
 Let's look at an example on how to start an authoring environment using the scripts we discussed above.  To start the authoring environment, go to your CrafterCMS install folder then run the following:
