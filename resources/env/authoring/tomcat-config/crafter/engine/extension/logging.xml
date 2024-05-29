@@ -47,7 +47,7 @@
         <Logger name="org.craftercms.security" level="info"/>
 
         <!-- 3rdparty Loggers -->
-        <Logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="error"/>
+        <Logger name="software.amazon.awssdk.profiles.internal.ProfileFileReader" level="error"/>
 
         <Logger name="org.springframework" level="warn"/>
 

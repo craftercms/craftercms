@@ -120,7 +120,7 @@
 		<json-smart.version>2.4.9</json-smart.version>
 		<jgit.version>6.9.0.202403050737-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
-		<aws.sdk.version>1.12.729</aws.sdk.version>
+		<aws.sdk.version>2.25.45</aws.sdk.version>
 		<box.sdk.version>4.9.1</box.sdk.version>
 		<sardine.version>5.12</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
@@ -796,30 +796,35 @@
 
 			<!-- AWS -->
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-bom</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
 				<version>${aws.sdk.version}</version>
 				<type>pom</type>
 
 			</dependency>
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-s3</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>s3</artifactId>
 				<version>${aws.sdk.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-sts</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>s3-transfer-manager</artifactId>
 				<version>${aws.sdk.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-elastictranscoder</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>sts</artifactId>
 				<version>${aws.sdk.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-mediaconvert</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>elastictranscoder</artifactId>
+				<version>${aws.sdk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>mediaconvert</artifactId>
 				<version>${aws.sdk.version}</version>
 			</dependency>
 
