@@ -17,13 +17,13 @@ package upgrade
 
 @Grapes([
     @Grab(group = 'org.slf4j', module = 'slf4j-nop', version = '1.7.36'),
-    @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.12.0'),
+    @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.14.0'),
     @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.4'),
-    @Grab(group = 'org.apache.commons', module = 'commons-configuration2', version = '2.9.0'),
-    @Grab(group = 'org.apache.commons', module = 'commons-text', version = '1.10.0'),
+    @Grab(group = 'org.apache.commons', module = 'commons-configuration2', version = '2.10.1'),
+    @Grab(group = 'org.apache.commons', module = 'commons-text', version = '1.12.0'),
     @Grab(group = 'commons-beanutils', module = 'commons-beanutils', version = '1.9.4'),
     @Grab(group = 'org.yaml', module = 'snakeyaml', version = '2.2'),
-    @Grab(group = 'io.github.http-builder-ng', module = 'http-builder-ng-core', version = '1.0.3')
+    @Grab(group = 'io.github.http-builder-ng', module = 'http-builder-ng-core', version = '1.0.4')
 ])
 
 import org.apache.commons.collections4.CollectionUtils

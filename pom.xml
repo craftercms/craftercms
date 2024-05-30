@@ -21,7 +21,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.craftercms</groupId>
 	<artifactId>craftercms</artifactId>
-	<version>4.1.4</version><!-- craftercms version flag -->
+	<version>4.1.5</version><!-- craftercms version flag -->
 
 	<name>CrafterCMS</name>
 	<description>CrafterCMS Parent POM</description>
@@ -184,7 +184,7 @@
 		<de.flapdoodle.embed.mongo.version>2.2.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.9.1</xmlunit.core.version>
-		<tomcat.version>9.0.86</tomcat.version>
+		<tomcat.version>9.0.89</tomcat.version>
 
 		<!-- Build -->
 		<maven.compiler.version>3.11.0</maven.compiler.version>

@@ -1,0 +1,424 @@
+/*
+ * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+import org.apache.commons.io.FilenameUtils
+
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath group: 'commons-io', name: 'commons-io', version: project.property('commons-io.version')
+	}
+}
+
+// TODO: Use a Docker Gradle plugin to push up if possible
+// TODO: See https://plugins.gradle.org/search?term=docker
+
+ext {
+	imagesDir = "${projectDir}/resources/docker/images"
+	imagesBuildDir = "${buildDir}/images"
+	tempDir = "${buildDir}/temp"
+	libDir = "${buildDir}/lib"
+
+	authoringBuildTarget = 'main'
+
+	// Authoring bundle
+	authoringBundleSource = "${projectDir}/bundles/crafter-cms-authoring-${project.version}-linux-x86_64.tar.gz"
+	authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleSource)
+	authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleSource) + "/crafter"
+	// Delivery bundle
+	deliveryBundleSource = "${projectDir}/bundles/crafter-cms-delivery-${project.version}-linux-x86_64.tar.gz"
+	deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleSource)
+	deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleSource) + "/crafter"
+
+	defaultTomcatBinExcludes = [
+		"migration",
+		"upgrade",
+		"crafter-deployer",
+		"opensearch",
+		"dbms",
+		"cli",
+		"mongodb",
+		"crafter-cli",
+		"apache-tomcat/work/**",
+		"apache-tomcat/temp/**",
+		"apache-tomcat/webapps/crafter-search*",
+		"apache-tomcat/webapps/crafter-social*",
+		"apache-tomcat/webapps/crafter-profile*",
+		"apache-tomcat/webapps/ROOT",
+		"apache-tomcat/webapps/studio",
+		"**/*.pid"
+	]
+
+	defaultTomcatLocalBinExcludes = [
+		"migration",
+		"upgrade",
+		"mongodb",
+		"apache-tomcat/work/**",
+		"apache-tomcat/temp/**",
+		"apache-tomcat/webapps/crafter-search*",
+		"apache-tomcat/webapps/crafter-social*",
+		"apache-tomcat/webapps/crafter-profile*",
+		"apache-tomcat/webapps/ROOT",
+		"apache-tomcat/webapps/studio",
+		"**/*.pid"
+	]
+}
+
+ext.pushTagDockerImage = { dockerImage ->
+	if (pushDockerImages) {
+		exec {
+			commandLine 'docker', 'push', dockerImage + ":${project.version}"
+		}
+	}
+
+	if (!tagDockerImages.isEmpty()) {
+		exec {
+			commandLine 'docker', 'image', 'tag', dockerImage + ":${project.version}", dockerImage + ":" + tagDockerImages
+		}
+		exec {
+			commandLine 'docker', 'push', dockerImage + ":" + tagDockerImages
+		}
+	}
+}
+
+task downloadLibSsl(type: Download) {
+	src 'https://downloads.craftercms.org/misc/libssl.so.1.1'
+	overwrite false
+	dest "${libDir}/libssl.so.1.1"
+}
+
+task downloadLibCrypto(type: Download) {
+	src 'https://downloads.craftercms.org/misc/libcrypto.so.1.1'
+	overwrite false
+	dest "${libDir}/libcrypto.so.1.1"
+}
+
+task expandAuthoringBundle(type: Copy) {
+	dependsOn = [ "bundle" ]
+	from tarTree(authoringBundleSource)
+	into "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile)
+}
+
+task expandDeliveryBundle(type: Copy) {
+	dependsOn = [ "bundle" ]
+	from tarTree(deliveryBundleSource)
+	into "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile)
+}
+
+task prepareAuthoringBundle() {
+	dependsOn expandAuthoringBundle
+	dependsOn downloadLibSsl
+	dependsOn downloadLibCrypto
+	doLast {
+		copy {
+			from "${authoringBundleFile}/"
+			into authoringBundleRoot
+		}
+	}
+}
+
+task prepareDeliveryBundle() {
+	dependsOn expandDeliveryBundle
+	doLast {
+		copy {
+			from "${deliveryBundleFile}/"
+			into deliveryBundleRoot
+		}
+	}
+}
+
+task copyAuthoringCustomWebapps() {
+	dependsOn prepareAuthoringBundle
+
+	if (project.hasProperty("authoringCustomWebapps")) {
+		doLast {
+			project.property('authoringCustomWebapps').split(',').each { war ->
+				copy {
+					from war
+					into "${authoringBundleRoot}/bin/apache-tomcat/webapps"
+				}
+			}
+		}
+	}
+}
+
+task copyDeliveryCustomWebapps() {
+	dependsOn prepareDeliveryBundle
+
+	if (project.hasProperty("deliveryCustomWebapps")) {
+		doLast {
+			project.property('deliveryCustomWebapps').split(',').each { war ->
+				copy {
+					from war
+					into "${deliveryBundleRoot}/bin/apache-tomcat/webapps"
+				}
+			}
+		}
+	}
+}
+
+task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tomcat Docker image") {
+	dependsOn prepareAuthoringBundle
+	dependsOn copyAuthoringCustomWebapps
+
+	def imageBuildDir = "${imagesBuildDir}/authoring/tomcat"
+
+	doFirst {
+		delete imageBuildDir
+	}
+	doLast {
+		copy {
+			from "${imagesDir}/authoring/tomcat/"
+			into imageBuildDir
+		}
+
+		copy {
+			from "${authoringBundleRoot}/bin/"
+			into "${imageBuildDir}/bin"
+			exclude defaultTomcatBinExcludes
+		}
+
+		copy {
+			from "${libDir}/"
+			into "${imageBuildDir}/mariadb-lib-deps"
+		}
+
+		exec {
+			commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringTomcatImageName}:${project.version}", imageBuildDir
+		}
+
+		pushTagDockerImage(project.authoringTomcatImageName)
+	}
+}
+
+task buildAuthoringLocal(group: "Build", description: "Builds the Authoring Tomcat Docker Local image") {
+	dependsOn prepareAuthoringBundle
+	dependsOn copyAuthoringCustomWebapps
+
+	def imageBuildDir = "${imagesBuildDir}/authoring_local/tomcat"
+
+	doFirst {
+		delete imageBuildDir
+	}
+	doLast {
+		copy {
+			from "${imagesDir}/authoring_local/tomcat/"
+			into imageBuildDir
+		}
+
+		copy {
+			from "${authoringBundleRoot}/bin/"
+			into "${imageBuildDir}/bin"
+			exclude defaultTomcatLocalBinExcludes
+		}
+
+		copy {
+			from "${libDir}/"
+			into "${imageBuildDir}/mariadb-lib-deps"
+		}
+
+		exec {
+			commandLine 'docker', 'build', '--target', authoringBuildTarget, '-t', "${project.authoringLocalImageName}:${project.version}", imageBuildDir
+		}
+
+		pushTagDockerImage(project.authoringLocalImageName)
+	}
+}
+
+task buildAuthoringTomcatWithImageMagick(group: "Build", description: "Builds the Authoring Tomcat Docker image, including the ImageMagick binary") {
+	dependsOn buildAuthoringTomcat
+
+	def imageBuildDir = "${imagesBuildDir}/authoring/tomcat"
+
+	doLast {
+		exec {
+			commandLine 'docker', 'build', '--target', 'imagemagick', '-t', "${project.authoringTomcatWithImageMagickImageName}:${project.version}", imageBuildDir
+		}
+
+		pushTagDockerImage(project.authoringTomcatWithImageMagickImageName)
+	}
+}
+
+task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomcat Docker image") {
+	dependsOn prepareDeliveryBundle
+	dependsOn copyDeliveryCustomWebapps
+
+	def imageBuildDir = "${imagesBuildDir}/delivery/tomcat"
+
+	doFirst {
+		delete imageBuildDir
+	}
+	doLast {
+		copy {
+			from "${imagesDir}/delivery/tomcat/"
+			into imageBuildDir
+		}
+
+		copy {
+			from "${deliveryBundleRoot}/bin/"
+			into "${imageBuildDir}/bin"
+			exclude defaultTomcatBinExcludes
+		}
+
+		exec {
+			commandLine 'docker', 'build', '-t', "${project.deliveryTomcatImageName}:${project.version}", imageBuildDir
+		}
+
+		pushTagDockerImage(project.deliveryTomcatImageName)
+	}
+}
+
+task buildDeployer(group: "Build", description: "Builds the Deployer Docker image") {
+	dependsOn prepareDeliveryBundle
+
+	def imageBuildDir = "${imagesBuildDir}/deployer"
+
+	doFirst {
+		delete imageBuildDir
+	}
+	doLast {
+		copy {
+			from "${imagesDir}/deployer/"
+			into imageBuildDir
+		}
+		copy {
+			from "${deliveryBundleRoot}/bin/"
+			into "${imageBuildDir}/bin"
+			exclude "migration"
+			exclude "upgrade"
+			exclude "cli"
+			exclude "mongodb"
+			exclude "crafter-cli"
+			exclude "apache-tomcat"
+			exclude "opensearch"
+			exclude "**/*.pid"
+		}
+
+		exec {
+			commandLine 'docker', 'build', '-t', "${project.deployerImageName}:${project.version}", imageBuildDir
+		}
+
+		pushTagDockerImage(project.deployerImageName)
+	}
+}
+
+task buildProfile(group: "Build", description: "Builds the Profile Docker image")  {
+	dependsOn buildDeliveryTomcat
+
+	def imageBuildDir = "${imagesBuildDir}/profile"
+
+	doFirst {
+		delete imageBuildDir
+	}
+	doLast {
+		copy {
+			duplicatesStrategy = 'include'
+
+			from "${imagesBuildDir}/delivery/tomcat/"
+			from "${imagesDir}/profile/"
+			into imageBuildDir
+		}
+
+		copy {
+			from "${deliveryBundleRoot}/bin/apache-tomcat/webapps/crafter-profile.war"
+			from "${deliveryBundleRoot}/bin/apache-tomcat/webapps/crafter-profile-admin.war"
+			into "${imageBuildDir}/bin/apache-tomcat/webapps"
+		}
+
+		exec {
+			commandLine 'docker', 'build', '-t', "${project.profileImageName}:${project.version}", imageBuildDir
+		}
+
+		pushTagDockerImage(project.profileImageName)
+	}
+}
+
+task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server Docker image")  {
+	def imageBuildDir = "${imagesBuildDir}/git_ssh_server"
+
+	doFirst {
+		delete imageBuildDir
+	}
+	doLast {
+		copy {
+			from "${imagesDir}/git_ssh_server/"
+			into imageBuildDir
+		}
+
+		exec {
+			commandLine 'docker', 'build', '-t', "${project.gitSshServerImageName }:${project.version}", imageBuildDir
+		}
+
+		pushTagDockerImage(project.gitSshServerImageName)
+	}
+}
+
+task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Server Docker image")  {
+	def imageBuildDir = "${imagesBuildDir}/git_https_server"
+
+	doFirst {
+		delete imageBuildDir
+	}
+	doLast {
+		copy {
+			from "${imagesDir}/git_https_server/"
+			into imageBuildDir
+		}
+
+		exec {
+			commandLine 'docker', 'build', '-t', "${project.gitHttpsServerImageName}:${project.version}", imageBuildDir
+		}
+
+		pushTagDockerImage(project.gitHttpsServerImageName)
+	}
+}
+
+task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker image")  {
+	def imageBuildDir = "${imagesBuildDir}/logrotate"
+
+	doFirst {
+		delete imageBuildDir
+	}
+	doLast {
+		copy {
+			from "${imagesDir}/logrotate/"
+			into imageBuildDir
+		}
+
+		exec {
+			commandLine 'docker', 'build', '-t', "${project.logrotateImageName}:${project.version}", imageBuildDir
+		}
+
+		pushTagDockerImage(project.logrotateImageName)
+	}
+}
+
+task buildMainImages(group: "Build", description: "Builds main Docker images") {
+	dependsOn buildLogrotate
+	dependsOn buildAuthoringTomcat
+	dependsOn buildAuthoringLocal
+	dependsOn buildDeliveryTomcat
+	dependsOn buildDeployer
+	dependsOn buildGitSshServer
+	dependsOn buildGitHttpsServer
+	if (project.hasProperty("enterprise")) {
+		if (project.hasProperty("imagemagick")) {
+			dependsOn buildAuthoringTomcatWithImageMagick
+		}
+	}
+}

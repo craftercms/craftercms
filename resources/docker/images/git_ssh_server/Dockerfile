@@ -1,0 +1,58 @@
+# Copyright (C) 2007-2023 Crafter Software Corporation. All Rights Reserved.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 3 as published by
+# the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+FROM alpine:3.19 as main
+
+# Update & Upgrade existing packages
+RUN apk update && apk upgrade
+
+# Install dependencies
+RUN apk add --no-cache bash shadow openssh git su-exec vim nano
+
+# Create folders for crafter user
+RUN mkdir -p /opt/crafter/data
+
+# Create volumes
+VOLUME [ "/opt/crafter/data" ]
+
+# - Add the Crafter user
+# - Make git-shell the default shell of the crafter user
+# - Remove root default shell access
+# - Enable public key auth and disable other type of auth. Also set the host key algorithms to just RSA to avoid issues
+#   with JGit/JSch
+RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
+    usermod -p '*' crafter; \
+    chown -R crafter:crafter /opt/crafter/data; \
+    usermod -s $(command -v git-shell) crafter; \
+    usermod -s /sbin/nologin root; \
+    sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/g' /etc/ssh/sshd_config; \
+    sed -i 's/#ChallengeResponseAuthentication yes/ChallengeResponseAuthentication no/g' /etc/ssh/sshd_config; \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config; \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/g' /etc/ssh/sshd_config; \
+    echo '' >> /etc/ssh/sshd_config; \
+    echo 'HostKeyAlgorithms ssh-rsa' >> /etc/ssh/sshd_config
+
+# Copy no-interactive-login file to the crafter's user home and make it executable
+COPY --chown=crafter:crafter no-interactive-login /home/crafter/git-shell-commands/no-interactive-login
+RUN chmod +x /home/crafter/git-shell-commands/no-interactive-login
+
+# Copy entrypoint script and make it executable
+COPY docker-entrypoint.sh .
+RUN chmod +x docker-entrypoint.sh
+
+# Expose port
+EXPOSE 22
+
+# Entrypoint and command (run by default)
+ENTRYPOINT [ "./docker-entrypoint.sh" ]
+CMD [ "run" ]

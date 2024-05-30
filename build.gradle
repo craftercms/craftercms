@@ -21,7 +21,7 @@ plugins {
 apply plugin: "groovy"
 apply plugin: 'de.undercouch.download'
 
-project.version = "4.1.4" // craftercms version flag
+project.version = "4.1.5" // craftercms version flag
 
 apply from: "global-settings.gradle"
 apply from: "commons.gradle"
@@ -30,6 +30,7 @@ apply from: "environments.gradle"
 apply from: "downloads.gradle"
 apply from: "deploy.gradle"
 apply from: "run.gradle"
+apply from: "docker.gradle"
 
 task splash() {
 	description 'Displays splash screen'
