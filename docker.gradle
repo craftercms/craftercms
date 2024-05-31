@@ -423,7 +423,7 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
 	}
 }
 
-task buildAll(group: "Build", description: "Builds all Docker images") {
+task buildAllImages(group: "Build", description: "Builds all Docker images") {
 	dependsOn buildMainImages
 	dependsOn buildProfile
 }

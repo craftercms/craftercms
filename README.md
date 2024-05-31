@@ -71,6 +71,7 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `buildGitHttpServer` Build a Git HTTP server Docker image
 * `buildLogRotate` Build a LogRotate Docker image
 * `buildMainImages` Build the main Docker images
+* `buildAllImages` Build all the Docker images
 
 ## 2.2 Options
 
