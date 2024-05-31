@@ -71,6 +71,7 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `buildGitHttpServer` Build a Git HTTP server Docker image
 * `buildLogRotate` Build a LogRotate Docker image
 * `buildMainImages` Build the main Docker images
+* `buildAllImages` Build all the Docker images
 
 ## 2.2 Options
 
