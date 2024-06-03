@@ -99,7 +99,7 @@
 		<junit.vintage.version>5.10.2</junit.vintage.version>
 
 		<!-- build -->
-		<maven.javadoc.version>3.6.3</maven.javadoc.version>
+		<maven.javadoc.version>3.7.0</maven.javadoc.version>
 		<maven.source.version>3.3.1</maven.source.version>
 		<maven.jar.version>3.3.0</maven.jar.version>
 		<buildnumber.maven.version>3.2.0</buildnumber.maven.version>
