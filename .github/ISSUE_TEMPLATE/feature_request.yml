@@ -9,12 +9,6 @@ body:
         Enter the CI number if known. This is the number that is generated when you create a support ticket.
       placeholder: N/A
 
-  - type: input
-    attributes:
-      label: CI Number
-      description: |
-        Enter the CI number if known. This is the number that is generated when you create a support ticket.
-      placeholder: N/A
   - type: checkboxes
     attributes:
       label: Duplicates
