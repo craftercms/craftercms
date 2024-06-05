@@ -103,7 +103,7 @@
 		<slf4j.version>2.0.13</slf4j.version>
 		<log4j.version>2.23.1</log4j.version>
 		<quartz.version>2.5.0-rc1</quartz.version>
-		<freemarker.version>2.3.33-SNAPSHOT</freemarker.version>
+		<freemarker.version>2.3.33</freemarker.version>
 		<aspectj.version>1.9.22.1</aspectj.version>
 		<bouncycastle.version>1.78.1</bouncycastle.version>
 		<jakarta.mail.version>2.0.1</jakarta.mail.version>
@@ -1804,16 +1804,6 @@
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
 				<checksumPolicy>fail</checksumPolicy>
-			</snapshots>
-		</repository>
-		<repository><!-- remove once the new FreeMarker is released -->
-			<id>apache-snapshot-repository</id>
-			<url>https://repository.apache.org/content/repositories/snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
 			</snapshots>
 		</repository>
 	</repositories>
