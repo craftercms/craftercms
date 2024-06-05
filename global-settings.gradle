@@ -116,3 +116,4 @@ if (currentPlatform == "darwin") {
 }
 project.ext.set("pushDockerImages", getPropertySafelyWithDefaults("pushDockerImages", "false").toBoolean())
 project.ext.set("tagDockerImages", getPropertySafelyWithDefaults("tagDockerImages", ""))
+project.ext.set("rootlessDockerImages", getPropertySafelyWithDefaults("rootlessDockerImages", "false").toBoolean())

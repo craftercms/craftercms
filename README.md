@@ -96,6 +96,7 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `currentArch`: What arch to build to (`aarch64` or `x86_64`), default is the build machine's arch
 * `pushDockerImages`: Push the Docker images to DockerHub (if you have the right permissions), default `false`
 * `tagDockerImages`: Tag the Docker images with the tag provided (if you have the right permissions), default is not to tag
+* `rootlessDockerImages`: Docker images without using root at runtime, default `false`
 
 # 3. Build Deployable Binaries
 

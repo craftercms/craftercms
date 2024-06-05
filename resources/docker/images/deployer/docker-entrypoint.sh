@@ -14,6 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Function to run commands as 'crafter' if the current user is 'root'
+run_as_crafter() {
+    if [ "$(id -u)" != "$(id -u crafter)" ]; then
+        exec gosu crafter "$@"
+    else
+        exec "$@"
+    fi
+}
+
 chown_dir() {
   local dir="$1"
   owner=$(stat -c "%U:%G" "$dir")
@@ -99,11 +108,11 @@ fi
 
 if [ "$1" = 'run' ]; then
     cd $DEPLOYER_HOME
-    exec gosu crafter $CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
+    run_as_crafter $CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
 elif [ "$1" = 'debug' ]; then
     export JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
     cd $DEPLOYER_HOME
-    exec gosu crafter $CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
+    run_as_crafter $CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
 else
     exec "$@"
 fi

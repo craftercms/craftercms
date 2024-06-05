@@ -96,6 +96,15 @@ ext.pushTagDockerImage = { dockerImage ->
 	}
 }
 
+ext.updateDockerfileUser = { dockerFile ->
+	if (rootlessDockerImages) {
+		File dockerfile = file(dockerFile)
+		String dockerfileContent = dockerfile.text
+		dockerfileContent = dockerfileContent.replaceAll('USER root\n', 'USER crafter\n')
+		dockerfile.write(dockerfileContent)
+	}
+}
+
 task downloadLibSsl(type: Download) {
 	src 'https://downloads.craftercms.org/misc/libssl.so.1.1'
 	overwrite false
@@ -187,6 +196,8 @@ task buildAuthoringTomcat(group: "Build", description: "Builds the Authoring Tom
 			into imageBuildDir
 		}
 
+		updateDockerfileUser("${imageBuildDir}/Dockerfile")
+
 		copy {
 			from "${authoringBundleRoot}/bin/"
 			into "${imageBuildDir}/bin"
@@ -220,6 +231,8 @@ task buildAuthoringLocal(group: "Build", description: "Builds the Authoring Tomc
 			from "${imagesDir}/authoring_local/tomcat/"
 			into imageBuildDir
 		}
+
+		updateDockerfileUser("${imageBuildDir}/Dockerfile")
 
 		copy {
 			from "${authoringBundleRoot}/bin/"
@@ -269,6 +282,8 @@ task buildDeliveryTomcat(group: "Build", description: "Builds the Delivery Tomca
 			into imageBuildDir
 		}
 
+		updateDockerfileUser("${imageBuildDir}/Dockerfile")
+
 		copy {
 			from "${deliveryBundleRoot}/bin/"
 			into "${imageBuildDir}/bin"
@@ -296,6 +311,9 @@ task buildDeployer(group: "Build", description: "Builds the Deployer Docker imag
 			from "${imagesDir}/deployer/"
 			into imageBuildDir
 		}
+
+		updateDockerfileUser("${imageBuildDir}/Dockerfile")
+
 		copy {
 			from "${deliveryBundleRoot}/bin/"
 			into "${imageBuildDir}/bin"
@@ -334,6 +352,8 @@ task buildProfile(group: "Build", description: "Builds the Profile Docker image"
 			into imageBuildDir
 		}
 
+		updateDockerfileUser("${imageBuildDir}/Dockerfile")
+
 		copy {
 			from "${deliveryBundleRoot}/bin/apache-tomcat/webapps/crafter-profile.war"
 			from "${deliveryBundleRoot}/bin/apache-tomcat/webapps/crafter-profile-admin.war"
@@ -356,7 +376,7 @@ task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server D
 	}
 	doLast {
 		copy {
-			from "${imagesDir}/git_ssh_server/"
+			from "${imagesDir}/git_ssh_server${rootlessDockerImages ? '_rootless' : ''}/"
 			into imageBuildDir
 		}
 
@@ -376,7 +396,7 @@ task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Serv
 	}
 	doLast {
 		copy {
-			from "${imagesDir}/git_https_server/"
+			from "${imagesDir}/git_https_server${rootlessDockerImages ? '_rootless' : ''}/"
 			into imageBuildDir
 		}
 
@@ -396,7 +416,7 @@ task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker im
 	}
 	doLast {
 		copy {
-			from "${imagesDir}/logrotate/"
+			from "${imagesDir}/logrotate${rootlessDockerImages ? '_rootless' : ''}/"
 			into imageBuildDir
 		}
 

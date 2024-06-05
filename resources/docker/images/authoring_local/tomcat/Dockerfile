@@ -144,6 +144,9 @@ RUN sed -i '/export CATALINA_HOME=$CRAFTER_BIN_DIR\/apache-tomcat/d' ./bin/craft
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
+# Run the application as following user
+USER root
+
 # Expose debug port
 EXPOSE 8000
 
