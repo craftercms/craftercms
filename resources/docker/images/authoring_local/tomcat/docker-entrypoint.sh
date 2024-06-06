@@ -14,6 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# Function to run commands as 'crafter' if the current user is not 'crafter'
+run_as() {
+    if [ "$(id -u)" != "$(id -u crafter)" ]; then
+        exec gosu crafter "$@"
+    else
+        exec "$@"
+    fi
+}
+
 chown_dir() {
   local dir="$1"
   owner=$(stat -c "%U:%G" "$dir")
@@ -112,16 +121,16 @@ if [ -d $TRUSTED_CERTS_DIR ]; then
 fi
 
 if [ "$1" = 'run' ]; then
-    exec gosu crafter $CRAFTER_BIN_DIR/crafter.sh start tailTomcat
+    run_as $CRAFTER_BIN_DIR/crafter.sh start tailTomcat
 elif [ "$1" = 'backup' ]; then
-    exec gosu crafter $CRAFTER_BIN_DIR/crafter.sh backup
+    run_as $CRAFTER_BIN_DIR/crafter.sh backup
 elif [ "$1" = 'restore' ]; then
     if [ -z "$2" ]; then
         echo "The backup path parameter was not specified"
         exit 1
     fi
 
-    exec gosu crafter $CRAFTER_BIN_DIR/crafter.sh restore "$2"
+    run_as $CRAFTER_BIN_DIR/crafter.sh restore "$2"
 else
     exec "$@"
 fi

@@ -75,6 +75,9 @@ RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
 COPY docker-entrypoint.sh .
 RUN chmod +x docker-entrypoint.sh
 
+# Run the application as following user
+USER root
+
 # Expose port
 EXPOSE 9191
 
