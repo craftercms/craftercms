@@ -14,15 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# Function to run commands as 'crafter' if the current user is not 'crafter'
-run_as() {
-    if [ "$(id -u)" != "$(id -u crafter)" ]; then
-        exec gosu crafter "$@"
-    else
-        exec "$@"
-    fi
-}
-
 chown_dir() {
   local dir="$1"
   owner=$(stat -c "%U:%G" "$dir")
@@ -32,30 +23,29 @@ chown_dir() {
   fi
 }
 
-export CRAFTER_HOME=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
-export CRAFTER_BIN_DIR=$CRAFTER_HOME/bin
+# Generate host keys (if not mounted)
+ssh-keygen -t rsa -f $SSHD_HOME/ssh_host_rsa_key
+ssh-keygen -t dsa -f $SSHD_HOME/ssh_host_dsa_key
+ssh-keygen -t ecdsa -f $SSHD_HOME/ssh_host_ecdsa_key
+ssh-keygen -t ed25519 -f $SSHD_HOME/ssh_host_ed25519_key
 
-. "$CRAFTER_BIN_DIR/crafter-setenv.sh"
+# Fix for ssh key permissions
+MOUNTED_SSH_DIR=/opt/crafter/.ssh
+USER_HOME_SSH_DIR=/home/crafter/.ssh
 
-chown_dir "$CRAFTER_LOGS_DIR"
-chown_dir "$CRAFTER_TEMP_DIR"
+if [ -d $MOUNTED_SSH_DIR ]; then
+    mkdir -p $USER_HOME_SSH_DIR
+    cp -L $MOUNTED_SSH_DIR/* $USER_HOME_SSH_DIR
 
-if [ ! -d $CATALINA_LOGS_DIR ]; then
-    mkdir -p $CATALINA_LOGS_DIR
-    chown_dir "$CATALINA_LOGS_DIR"
+    chown_dir "$USER_HOME_SSH_DIR"
+    chmod 700 $USER_HOME_SSH_DIR
+    chmod 600 $USER_HOME_SSH_DIR/*
+    chmod 644 $USER_HOME_SSH_DIR/*.pub
 fi
-if [ ! -d $CATALINA_TMPDIR ]; then
-    mkdir -p $CATALINA_TMPDIR
-    chown_dir "$CATALINA_TMPDIR"
-fi
-
-# Export the crafter HOME dir
-export HOME=/home/crafter
 
 if [ "$1" = 'run' ]; then
-    run_as $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run
-elif [ "$1" = 'debug' ]; then
-    run_as $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda run
+    # Do not detach, run in foreground (-D)
+    exec /usr/sbin/sshd -D
 else
     exec "$@"
 fi
