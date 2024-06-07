@@ -151,8 +151,8 @@
 		<joda.time.version>2.12.7</joda.time.version>
 		<hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
 		<jakarta.validation.api.version>3.1.0</jakarta.validation.api.version>
-		<opensearch.version>2.14.0</opensearch.version>
-		<opensearch.runner.version>2.11.0.0</opensearch.runner.version>
+		<opensearch.version>2.13.0</opensearch.version>
+		<opensearch.runner.version>2.13.0.0</opensearch.runner.version>
 		<opensearch.client.version>2.10.2</opensearch.client.version>
 		<tika.version>2.9.2</tika.version>
 		<poi.version>5.2.5</poi.version>
