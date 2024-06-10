@@ -48,6 +48,7 @@
 
         <!-- 3rdparty Loggers -->
         <Logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="error"/>
+        <Logger name="org.apache.commons.beanutils.FluentPropertyBeanIntrospector" level="warn"/>
 
         <Logger name="org.springframework" level="warn"/>
 

@@ -27,7 +27,7 @@
             <DefaultRolloverStrategy max="10"/>
             <SizeBasedTriggeringPolicy size="10MB"/>
         </RollingFile>
-        
+
         <CircularQueueLogAppender name="circularQueueLogAppender" maxQueueSize="100"
                                   dateFormat="yyyy-MM-dd'T'HH:mm:ss.SSSZ" global="true">
             <PatternLayout pattern="[%p] %d{ISO8601} | %m"/>
@@ -42,6 +42,7 @@
 
         <!-- 3rdparty Loggers -->
         <Logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="error"/>
+        <Logger name="org.apache.commons.beanutils.FluentPropertyBeanIntrospector" level="warn"/>
 
         <Logger name="org.springframework" level="warn"/>
 
