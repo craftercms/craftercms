@@ -121,7 +121,7 @@
 		<jgit.version>6.9.0.202403050737-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
 		<aws.sdk.version>2.25.66</aws.sdk.version>
-		<box.sdk.version>4.9.1</box.sdk.version>
+		<box.sdk.version>4.10.0</box.sdk.version>
 		<sardine.version>5.12</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
 		<jaxen.version>2.0.0</jaxen.version>
@@ -151,9 +151,9 @@
 		<joda.time.version>2.12.7</joda.time.version>
 		<hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
 		<jakarta.validation.api.version>3.1.0</jakarta.validation.api.version>
-		<opensearch.version>2.13.0</opensearch.version>
+		<opensearch.version>2.14.0</opensearch.version>
 		<opensearch.runner.version>2.13.0.0</opensearch.runner.version>
-		<opensearch.client.version>2.10.2</opensearch.client.version>
+		<opensearch.client.version>2.10.4</opensearch.client.version>
 		<tika.version>2.9.2</tika.version>
 		<poi.version>5.2.5</poi.version>
 		<metadata.extractor.version>2.19.0</metadata.extractor.version>
@@ -194,7 +194,7 @@
 		<!-- Build -->
 		<maven.compiler.version>3.13.0</maven.compiler.version>
 		<maven.source.version>3.3.1</maven.source.version>
-		<maven.javadoc.version>3.6.3</maven.javadoc.version>
+		<maven.javadoc.version>3.7.0</maven.javadoc.version>
 		<maven.resources.version>3.3.1</maven.resources.version><!-- should upgrade to 3.3.1 when possible -->
 		<maven.jar.version>3.4.1</maven.jar.version>
 		<maven.war.version>3.4.0</maven.war.version>
