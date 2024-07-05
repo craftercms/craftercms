@@ -186,7 +186,7 @@
 		<testng.engine.version>1.0.5</testng.engine.version>
 		<mockito.version>5.12.0</mockito.version>
 		<embedmongo.maven.version>0.4.2</embedmongo.maven.version>
-		<de.flapdoodle.embed.mongo.version>4.13.1</de.flapdoodle.embed.mongo.version>
+		<de.flapdoodle.embed.mongo.version>4.15.0</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.10.0</xmlunit.core.version>
 		<tomcat.version>10.1.24</tomcat.version>
