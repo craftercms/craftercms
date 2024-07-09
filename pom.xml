@@ -207,7 +207,7 @@
 		<maven.assembly.version>3.5.0</maven.assembly.version>
 		<nexus.staging.maven.version>1.6.13</nexus.staging.maven.version>
 		<frontend.maven.version>1.14.2</frontend.maven.version>
-		<studio.ui.node.version>v21.1.0</studio.ui.node.version>
+		<studio.ui.node.version>v21.7.3</studio.ui.node.version>
 		<studio.ui.yarn.version>v1.22.19</studio.ui.yarn.version>
 		<cyclonedx.maven.version>2.7.11</cyclonedx.maven.version>
 	</properties>
