@@ -97,6 +97,10 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `pushDockerImages`: Push the Docker images to DockerHub (if you have the right permissions), default `false`
 * `tagDockerImages`: Tag the Docker images with the tag provided (if you have the right permissions), default is not to tag
 * `rootlessDockerImages`: Docker images without using root at runtime, default `false`
+* `tag`: Docker build option. The tag used on image build, typically will be the version number (e.g. `4.2.0`).
+* `enterprise`: Docker build option. If the enterprise edition and enterprise only images should be built.
+* `authoringBundle`: Docker build option. Can be the URL to download the authoring bundle, or the local tar.gz of the bundle, or the directory with the expanded bundle.
+* `deliveryBundle`: Docker build option. Can be the URL to download the delivery bundle, or the local tar.gz of the bundle, or the directory with the expanded bundle.
 
 # 3. Build Deployable Binaries
 
