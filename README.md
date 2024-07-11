@@ -19,13 +19,13 @@ Download a pre-built binary archive here: https://craftercms.org/downloads
 
 Read the docs here: https://docs.craftercms.org/current
 
-This repository is for developers interested in contributing to CrafterCMS, customizing their own release, or building the latest. This parent project helps you build the following: 
+This repository is for developers interested in contributing to CrafterCMS, customizing their own release, or building the latest. This parent project helps you build the following:
 
 1. Deployable CrafterCMS binaries
 2. Docker images
 3. Developer's environment so you can compile and contribute to CrafterCMS
 
-**WARNING:** CrafterCMS source code development and building is 
+**WARNING:** CrafterCMS source code development and building is
 _only_ supported on Unix based systems. If you want to use CrafterCMS in Windows, install Windows Subsystem for Linux (WSL) by following the instructions [here](https://docs.microsoft.com/en-us/windows/wsl/install) then use the WSL 2 terminal for all the commands below.  Please refer to the documentation
 in [Installing CrafterCMS on WSL 2](https://docs.craftercms.org/current/system-administrators/activities/installing-craftercms-on-wsl2.html).
 
@@ -75,9 +75,9 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 
 ## 2.2 Options
 
-* `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `true` 
-* `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false` 
-* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: Elasticsearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false` 
+* `overwriteChangedFiles`: Update and overwrite the deployed environment (authoring or delivery) files (binaries, configuration, etc.), default `true`
+* `refreshEnv`: Update the deployed environment (authoring or delivery) with any changes to the scripts, default `false`
+* `overwriteArtifact`: Update and overwrite the downloaded artifacts (example: Elasticsearch, Tomcat, ...) that's cached in the downloads folder by downloading it again, default `false`
 * `gitRemote`: Git remote name to use in cloned modules, default `origin`
 * `gitBranch`: Git branch to use when cloning modules, default `develop` (for develop branch)
 * `gitUrl`: Which Git URL to use, default `https://github.com/craftercms/`
@@ -95,6 +95,10 @@ git clone -b develop https://github.com/craftercms/craftercms.git
 * `currentPlatform`: What platform to build to (`linux` or `darwin`), default is the build machine's OS
 * `pushDockerImages`: Push the Docker images to DockerHub (if you have the right permissions), default `false`
 * `tagDockerImages`: Tag the Docker images with the tag provided (if you have the right permissions), default is not to tag
+* `tag`: Docker build option. The tag used on image build, typically will be the version number (e.g. `4.2.0`).
+* `enterprise`: Docker build option. If the enterprise edition and enterprise only images should be built.
+* `authoringBundle`: Docker build option. Can be the URL to download the authoring bundle, or the local tar.gz of the bundle, or the directory with the expanded bundle.
+* `deliveryBundle`: Docker build option. Can be the URL to download the delivery bundle, or the local tar.gz of the bundle, or the directory with the expanded bundle.
 
 # 3. Build Deployable Binaries
 
@@ -142,7 +146,7 @@ When using a tag-based build, you're essentially cloning a point in time to buil
 CrafterCMS comprises a number of headless API-first (GraphQL, REST, in-process)  modules that work together to provide the final solution. In this section, we'll start with the simple case of _build everything_/_run everything_, and then move on to building/hacking individual modules.
 
 
-## 4.1. Build, Start and Stop All 
+## 4.1. Build, Start and Stop All
 ### 4.1.1. Build All
 Build all CrafterCMS modules
 
@@ -152,7 +156,7 @@ Build all CrafterCMS modules
 
 ### 3.1.2. Start All
 Start CrafterCMS,
- 
+
  ```bash
     ./gradlew start
 ```
@@ -160,7 +164,7 @@ Start CrafterCMS,
 You can now point your browser to [http://localhost:8080/studio](http://localhost:8080/studio) and start using CrafterCMS. To get started with your first CrafterCMS experience, you can follow this guide: [https://docs.craftercms.org/current/content-authors/index.html](https://docs.craftercms.org/current/content-authors/index.html).
 
 ##### Note
-* The authoring environment runs on port `8080`, a great place to start, while the delivery environment runs on port 
+* The authoring environment runs on port `8080`, a great place to start, while the delivery environment runs on port
 `9080`.
 
 ### 4.1.3. Stop All
