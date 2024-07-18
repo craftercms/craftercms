@@ -60,13 +60,8 @@ project.ext.set("currentArch", getPropertySafelyWithDefaults("currentArch", Syst
 project.ext.set("mongodbPlatform", getPropertySafelyWithDefaults("mongodbPlatform", currentPlatform == "darwin" ? "osx" : currentPlatform))
 project.ext.set("mongodbBinary", getPropertySafelyWithDefaults("mongodbBinary", currentPlatform == "darwin" ? "osx-ssl" : currentPlatform))
 project.ext.set("pushDockerImages", getPropertySafelyWithDefaults("pushDockerImages", "false").toBoolean())
-<<<<<<< HEAD
 project.ext.set("tagDockerImages", getPropertySafelyWithDefaults("tagDockerImages", ""))
-=======
-project.ext.set("tagDockerImages", getPropertySafelyWithDefaults("tagDockerImages", ""))
-project.ext.set("rootlessDockerImages", getPropertySafelyWithDefaults("rootlessDockerImages", "false").toBoolean())
 project.ext.set("dockerTag", getPropertySafelyWithDefaults("dockerTag", ""))
 project.ext.set("dockerEnterprise", getPropertySafelyWithDefaults("dockerEnterprise", "false").toBoolean())
 project.ext.set("dockerAuthoringBundle", getPropertySafelyWithDefaults("dockerAuthoringBundle", ""))
 project.ext.set("dockerDeliveryBundle", getPropertySafelyWithDefaults("dockerDeliveryBundle", ""))
->>>>>>> 786fe50 (Update docker build variables)
