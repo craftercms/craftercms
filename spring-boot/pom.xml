@@ -82,7 +82,7 @@
 		<bouncycastle.version>1.78.1</bouncycastle.version>
 
 		<!-- Override property setup by Spring Boot Parent -->
-		<jackson.version>2.17.1</jackson.version>
+		<jackson.version>2.17.2</jackson.version>
 		<aws.version>2.26.20</aws.version>
 		<jose4j.version>0.9.6</jose4j.version>
 		<box.sdk.version>4.11.1</box.sdk.version>
