@@ -202,6 +202,7 @@ task prepareAuthoringBundle() {
 	} else if (file(authoringBundleFile).file) {
 		dependsOn expandAuthoringBundle
 	} else {
+		dependsOn expandAuthoringBundle
 		doLast {
 			copy {
 				from "${authoringBundleFile}/"
@@ -218,6 +219,7 @@ task prepareDeliveryBundle() {
 	} else if (file(deliveryBundleFile).file) {
 		dependsOn expandDeliveryBundle
 	} else {
+		dependsOn expandDeliveryBundle
 		doLast {
 			copy {
 				from "${deliveryBundleFile}/"
