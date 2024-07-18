@@ -25,9 +25,9 @@ buildscript {
 	}
 }
 
-if (project.hasProperty("tag")) {
-	project.version = project.property("tag")
-} else if (project.hasProperty("enterprise")) {
+if (!dockerTag.isEmpty()) {
+	project.version = dockerTag
+} else if (dockerEnterprise) {
 	project.version = project.version.replace("-SNAPSHOT", "E-BETA") // craftercms enterprise version flag
 }
 
@@ -42,23 +42,23 @@ ext {
 
 	authoringBuildTarget = 'main'
 
-	if (project.hasProperty("enterprise")) {
+	if (dockerEnterprise) {
 		downloadsRootFolder = "ent/${project.version}"
 		authoringBuildTarget = 'enterprise'
 	}
 
-	if (project.hasProperty("authoringBundle")) {
+	if (!dockerAuthoringBundle.isEmpty()) {
 		authoringBundleSource = ""
-		if (project.property("authoringBundle") ==~ /^https?:\/\/.+$/) {
-			authoringBundleUrl = project.property("authoringBundle")
+		if (dockerAuthoringBundle ==~ /^https?:\/\/.+$/) {
+			authoringBundleUrl = dockerAuthoringBundle
 			authoringBundleFile = "${tempDir}/" + FilenameUtils.getName(authoringBundleUrl)
 			authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleUrl) + "/crafter"
 		} else {
 			authoringBundleUrl = ""
-			authoringBundleFile = project.property("authoringBundle")
+			authoringBundleFile = dockerAuthoringBundle
 			authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleFile) + "/crafter"
 		}
-  } else {
+	} else {
 		// Authoring bundle
 		authoringBundleUrl = ""
 		authoringBundleSource = "${projectDir}/bundles/crafter-cms-authoring-${project.version}-linux-x86_64.tar.gz"
@@ -66,15 +66,15 @@ ext {
 		authoringBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(authoringBundleSource) + "/crafter"
 	}
 
-	if (project.hasProperty("deliveryBundle")) {
+	if (!dockerDeliveryBundle.isEmpty()) {
 		deliveryBundleSource = ""
-		if (project.property("deliveryBundle") ==~ /^https?:\/\/.+$/) {
-				deliveryBundleUrl = project.property("deliveryBundle")
+		if (dockerDeliveryBundle ==~ /^https?:\/\/.+$/) {
+				deliveryBundleUrl = dockerDeliveryBundle
 				deliveryBundleFile = "${tempDir}/" + FilenameUtils.getName(deliveryBundleUrl)
 				deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleUrl) + "/crafter"
 		} else {
 				deliveryBundleUrl = ""
-				deliveryBundleFile = project.property("deliveryBundle")
+				deliveryBundleFile = dockerDeliveryBundle
 				deliveryBundleRoot = "${tempDir}/" + FilenameUtils.getBaseName(deliveryBundleFile) + "/crafter"
 		}
 	} else {
@@ -411,7 +411,7 @@ task buildDeployer(group: "Build", description: "Builds the Deployer Docker imag
 	}
 }
 
-task buildProfile(group: "Build", description: "Builds the Profile Docker image")  {
+task buildProfile(group: "Build", description: "Builds the Profile Docker image") {
 	dependsOn buildDeliveryTomcat
 
 	def imageBuildDir = "${imagesBuildDir}/profile"
@@ -444,7 +444,7 @@ task buildProfile(group: "Build", description: "Builds the Profile Docker image"
 	}
 }
 
-task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server Docker image")  {
+task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server Docker image") {
 	def imageBuildDir = "${imagesBuildDir}/git_ssh_server"
 
 	doFirst {
@@ -464,7 +464,7 @@ task buildGitSshServer(group: "Build", description: "Builds the Git SSH Server D
 	}
 }
 
-task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Server Docker image")  {
+task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Server Docker image") {
 	def imageBuildDir = "${imagesBuildDir}/git_https_server"
 
 	doFirst {
@@ -484,7 +484,7 @@ task buildGitHttpsServer(group: "Build", description: "Builds the Git HTTPS Serv
 	}
 }
 
-task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker image")  {
+task buildLogrotate(group: "Build", description: "Builds the Logrotate Docker image") {
 	def imageBuildDir = "${imagesBuildDir}/logrotate"
 
 	doFirst {
@@ -512,7 +512,7 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
 	dependsOn buildDeployer
 	dependsOn buildGitSshServer
 	dependsOn buildGitHttpsServer
-	if (project.hasProperty("enterprise")) {
+	if (dockerEnterprise) {
 		if (project.hasProperty("imagemagick")) {
 			dependsOn buildAuthoringTomcatWithImageMagick
 		}
