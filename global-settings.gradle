@@ -117,3 +117,7 @@ if (currentPlatform == "darwin") {
 project.ext.set("pushDockerImages", getPropertySafelyWithDefaults("pushDockerImages", "false").toBoolean())
 project.ext.set("tagDockerImages", getPropertySafelyWithDefaults("tagDockerImages", ""))
 project.ext.set("rootlessDockerImages", getPropertySafelyWithDefaults("rootlessDockerImages", "false").toBoolean())
+project.ext.set("dockerTag", getPropertySafelyWithDefaults("dockerTag", ""))
+project.ext.set("dockerEnterprise", getPropertySafelyWithDefaults("dockerEnterprise", "false").toBoolean())
+project.ext.set("dockerAuthoringBundle", getPropertySafelyWithDefaults("dockerAuthoringBundle", ""))
+project.ext.set("dockerDeliveryBundle", getPropertySafelyWithDefaults("dockerDeliveryBundle", ""))
