@@ -99,7 +99,7 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `rootlessDockerImages`: Docker images without using root at runtime, default `false`
 * `dockerTag`: Tag used to build a Docker image, typically the version number, e.g. `4.2.0`
 * `dockerEnterprise`: Set to `true` to build Enterprise Edition Docker images
-* `dockerAuthoringBundle`: Use to point to an external authoring bundle from which to build the Docker images. This can be a remote URL, a local `.tar.gz` file path, or an expanded bundle path
+* `dockerAuthoringBundle`: Use to point to an external authoring bundle from which to build the Docker images. This can be a remote URL, a local `.tar.gz` file path, or an expanded bundle path.
 * `dockerDeliveryBundle`: Use to point to an external delivery bundle from which to build the Docker images. This can be a remote URL, a local `.tar.gz` file path, or an expanded bundle path.
 
 # 3. Build Deployable Binaries
