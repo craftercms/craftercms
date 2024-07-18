@@ -121,7 +121,7 @@
 		<jgit.version>6.10.0.202406032230-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
 		<aws.sdk.version>2.26.20</aws.sdk.version>
-		<box.sdk.version>4.10.0</box.sdk.version>
+		<box.sdk.version>4.11.1</box.sdk.version>
 		<sardine.version>5.12</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
 		<jaxen.version>2.0.0</jaxen.version>
