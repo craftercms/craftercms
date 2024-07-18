@@ -189,11 +189,11 @@ task prepareAuthoringBundle() {
 	dependsOn downloadLibCrypto
 	if (authoringBundleUrl) {
 		dependsOn downloadAuthoringBundle
-		dependsOn expandAuthoringBundle
-	} else if (file(authoringBundleFile).file) {
+	}
+
+	if (authoringBundleSource || authoringBundleUrl || file(authoringBundleFile).file) {
 		dependsOn expandAuthoringBundle
 	} else {
-		dependsOn expandAuthoringBundle
 		doLast {
 			copy {
 				from "${authoringBundleFile}/"
@@ -206,11 +206,11 @@ task prepareAuthoringBundle() {
 task prepareDeliveryBundle() {
 	if (deliveryBundleUrl) {
 		dependsOn downloadDeliveryBundle
-		dependsOn expandDeliveryBundle
-	} else if (file(deliveryBundleFile).file) {
+	}
+
+	if (deliveryBundleSource || deliveryBundleUrl || file(deliveryBundleFile).file) {
 		dependsOn expandDeliveryBundle
 	} else {
-		dependsOn expandDeliveryBundle
 		doLast {
 			copy {
 				from "${deliveryBundleFile}/"
