@@ -71,7 +71,7 @@
 		<spring.version>6.1.11</spring.version>
 		<spring.security.version>6.3.1</spring.security.version>
 		<spring.data.version>3.3.0</spring.data.version>
-		<spring.ldap.version>3.2.3</spring.ldap.version>
+		<spring.ldap.version>3.2.4</spring.ldap.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
 		<spring.social.facebook.version>2.0.3.RELEASE</spring.social.facebook.version>
 
@@ -79,7 +79,7 @@
 		<commons.lang3.version>3.15.0</commons.lang3.version>
 		<commons.collections.version>3.2.2</commons.collections.version>
 		<commons.collections4.version>4.4</commons.collections4.version>
-		<commons.codec.version>1.17.0</commons.codec.version>
+		<commons.codec.version>1.17.1</commons.codec.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
 		<commons.io.version>2.16.1</commons.io.version>
 		<commons.configuration.version>2.11.0</commons.configuration.version>
@@ -186,7 +186,7 @@
 		<testng.engine.version>1.0.5</testng.engine.version>
 		<mockito.version>5.12.0</mockito.version>
 		<embedmongo.maven.version>0.4.2</embedmongo.maven.version>
-		<de.flapdoodle.embed.mongo.version>4.16.0</de.flapdoodle.embed.mongo.version>
+		<de.flapdoodle.embed.mongo.version>4.16.1</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.10.0</xmlunit.core.version>
 		<tomcat.version>10.1.26</tomcat.version>
