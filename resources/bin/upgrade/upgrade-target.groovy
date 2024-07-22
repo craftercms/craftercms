@@ -20,7 +20,8 @@ package upgrade
     @Grab(group = 'org.apache.commons', module = 'commons-lang3', version = '3.14.0'),
     @Grab(group = 'org.apache.commons', module = 'commons-collections4', version = '4.4'),
     @Grab(group = 'commons-codec', module = 'commons-codec', version = '1.17.0'),
-    @Grab(group = 'commons-io', module = 'commons-io', version = '2.16.1')
+    @Grab(group = 'commons-io', module = 'commons-io', version = '2.16.1'),
+    @Grab(group='com.vdurmont', module='semver4j', version='3.1.0')
 ])
 
 import groovy.cli.commons.CliBuilder
@@ -36,6 +37,8 @@ import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.collections4.CollectionUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.BooleanUtils
+
+import com.vdurmont.semver4j.Semver
 
 import utils.NioUtils
 
@@ -517,10 +520,20 @@ def upgrade(Path targetFolder) {
 
     setupPostUpgradeScript(binFolder.resolve("upgrade"), oldVersion, newVersion)
 
+    Semver oldSemver = new Semver(oldVersion, Semver.SemverType.NPM).withClearedSuffixAndBuild()
+    Semver newSemver = new Semver(newVersion, Semver.SemverType.NPM).withClearedSuffixAndBuild()
+
     println "========================================================================"
     println "Upgrade completed"
     println "========================================================================"
-    println "!!! Please read the release notes and make any necessary manual changes, then run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh !!!"
+    if ((oldSemver.satisfies('3.1.x') || oldSemver.satisfies('4.0.x')) && newSemver.equals(new Semver('4.2.0'))) {
+        println "!!! Please read the release notes and make any necessary manual changes, then run the following scripts in order:"
+        println "!!! 1. Please run the database upgrade script: ${binFolder.toAbsolutePath()}/crafter.sh upgradedb !!!"
+        println "!!! 2. Please run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh !!!"
+    } else {
+        println "!!! Please read the release notes and make any necessary manual changes, then run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh !!!"
+    }
+
 }
 
 checkDownloadGrapesOnlyMode(getClass())
