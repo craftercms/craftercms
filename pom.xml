@@ -157,7 +157,7 @@
 		<tika.version>2.9.2</tika.version>
 		<poi.version>5.2.5</poi.version>
 		<metadata.extractor.version>2.19.0</metadata.extractor.version>
-		<jsoup.version>1.17.2</jsoup.version>
+		<jsoup.version>1.18.1</jsoup.version>
 		<protobuf.java.version>4.27.2</protobuf.java.version>
 		<unit.api.version>2.2</unit.api.version>
 		<javax.inject.version>1</javax.inject.version>
