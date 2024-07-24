@@ -204,7 +204,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.craftercms</groupId>
-				<artifactId>craftercms-shared-dependencies</artifactId>
+				<artifactId>shared-dependencies</artifactId>
 				<version>${project.version}</version>
 				<type>pom</type>
 				<scope>import</scope>

@@ -13,7 +13,7 @@ updates:
     time: "04:30"
 
 - package-ecosystem: "maven"
-  directory: "/craftercms-shared-dependencies-pom.xml"
+  directory: "/shared-dependencies"
   schedule:
     interval: "daily"
     time: "05:00"
