@@ -6,14 +6,26 @@ updates:
     interval: "daily"
     time: "04:00"
 
-- package-ecosystem: "gradle"
-  directory: "/"
-  schedule:
-    interval: "daily"
-    time: "06:00"
-
 - package-ecosystem: "maven"
   directory: "/spring-boot"
   schedule:
     interval: "daily"
+    time: "04:30"
+
+- package-ecosystem: "maven"
+  directory: "/craftercms-shared-dependencies-pom.xml"
+  schedule:
+    interval: "daily"
     time: "05:00"
+
+- package-ecosystem: "gradle"
+  directory: "/"
+  schedule:
+    interval: "daily"
+    time: "05:30"
+
+- package-ecosystem: "gradle"
+  directory: "/resources"
+  schedule:
+    interval: "daily"
+    time: "06:00"

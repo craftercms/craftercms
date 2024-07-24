@@ -58,14 +58,17 @@
 	<properties>
 		<!-- Main Settings -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.test.sourceEncoding>UTF-8</project.test.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<project.test.sourceEncoding>UTF-8</project.test.sourceEncoding>
+		<tomcat.version>10.1.26</tomcat.version>
 		<java.version>21</java.version>
+		<groovy.version>4.0.22</groovy.version>
 		<servlet.api.version>6.1.0</servlet.api.version>
 		<servlet.jsp.api.version>3.1.1</servlet.jsp.api.version>
 		<servlet.jstl.version>3.0.0</servlet.jstl.version>
 
 		<!-- Dependency Version Numbers -->
+
 		<!-- Main -->
 		<!-- Spring -->
 		<spring.version>6.1.11</spring.version>
@@ -81,19 +84,14 @@
 		<commons.collections4.version>4.4</commons.collections4.version>
 		<commons.codec.version>1.17.1</commons.codec.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
-		<commons.io.version>2.16.1</commons.io.version>
-		<commons.configuration.version>2.11.0</commons.configuration.version>
 		<commons.text.version>1.12.0</commons.text.version>
 		<commons.cli.version>1.8.0</commons.cli.version>
 		<commons.dbcp2.version>2.12.0</commons.dbcp2.version>
 		<commons.fileupload2.version>2.0.0-M2</commons.fileupload2.version>
 		<commons.compress.version>1.26.2</commons.compress.version>
-		<commons.csv.version>1.11.0</commons.csv.version>
 
 		<httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
 		<httpcomponents.httpclient5.version>5.3.1</httpcomponents.httpclient5.version>
-
-		<jackson.version>2.17.2</jackson.version>
 
 		<mongo.version>5.1.2</mongo.version>
 		<jongo.version>1.5.1</jongo.version>
@@ -101,12 +99,8 @@
 		<velocity.engine.version>2.3</velocity.engine.version>
 		<xstream.version>1.4.20</xstream.version>
 		<slf4j.version>2.0.13</slf4j.version>
-		<log4j.version>2.23.1</log4j.version>
-		<quartz.version>2.5.0-rc1</quartz.version>
 		<freemarker.version>2.3.33</freemarker.version>
 		<aspectj.version>1.9.22.1</aspectj.version>
-		<bouncycastle.version>1.78.1</bouncycastle.version>
-		<jakarta.mail.version>2.0.1</jakarta.mail.version>
 		<jakarta.activation.version>2.1.3</jakarta.activation.version>
 		<angus.activation.version>2.0.2</angus.activation.version>
 		<jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
@@ -118,25 +112,17 @@
 		<json.path.version>2.9.0</json.path.version>
 		<reactor.version>1.0.1.RELEASE</reactor.version>
 		<json-smart.version>2.4.9</json-smart.version>
-		<jgit.version>6.10.0.202406032230-r</jgit.version>
-		<snakeyaml.version>2.2</snakeyaml.version>
-		<aws.sdk.version>2.26.23</aws.sdk.version>
-		<box.sdk.version>4.11.1</box.sdk.version>
-		<sardine.version>5.12</sardine.version>
 		<dom4j.version>2.1.4</dom4j.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<gson.version>2.11.0</gson.version>
 		<jta.version>1.1</jta.version>
 		<cglib.version>3.3.0</cglib.version>
-		<groovy.version>4.0.22</groovy.version>
 		<script.security.version>${project.version}</script.security.version>
 		<rome.version>1.0</rome.version>
 		<urlrewrite.version>5.1.3</urlrewrite.version>
-		<xerces.version>2.12.2</xerces.version>
 		<graphql.version>22.1</graphql.version>
 		<graphql.extended.scalars.version>22.0</graphql.extended.scalars.version>
 		<httpproxy.version>2.0</httpproxy.version>
-		<ivy.version>2.5.2</ivy.version>
 		<tinify.version>1.8.8</tinify.version>
 		<mariadb4j.version>3.1.0.2</mariadb4j.version>
 		<saxon.version>12.5</saxon.version>
@@ -152,8 +138,8 @@
 		<hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
 		<jakarta.validation.api.version>3.1.0</jakarta.validation.api.version>
 		<opensearch.version>2.15.0</opensearch.version>
-		<opensearch.runner.version>2.15.0.0</opensearch.runner.version>
 		<opensearch.client.version>2.12.0</opensearch.client.version>
+		<opensearch.runner.version>2.15.0.0</opensearch.runner.version>
 		<tika.version>2.9.2</tika.version>
 		<poi.version>5.3.0</poi.version>
 		<metadata.extractor.version>2.19.0</metadata.extractor.version>
@@ -162,7 +148,6 @@
 		<unit.api.version>2.2</unit.api.version>
 		<javax.inject.version>1</javax.inject.version>
 		<semver4j.version>3.1.0</semver4j.version>
-		<jose4j.version>0.9.6</jose4j.version>
 		<httpclient.version>4.5.14</httpclient.version>
 		<picocli.version>4.7.6</picocli.version>
 		<http.builder.version>1.0.4</http.builder.version>
@@ -173,7 +158,6 @@
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<eddsa.version>0.3.0</eddsa.version>
 		<okhttp.version>4.12.0</okhttp.version>
-		<okio.version>3.9.0</okio.version>
 		<zxcvbn.version>1.9.0</zxcvbn.version>
 		<esapi.version>2.5.4.0</esapi.version>
 		<directory-watcher.version>0.18.0</directory-watcher.version>
@@ -182,61 +166,49 @@
 		<testng.version>7.10.2</testng.version>
 		<junit.version>4.13.2</junit.version>
 		<junit.jupiter.version>5.10.3</junit.jupiter.version>
-		<junit.vintage.version>5.10.3</junit.vintage.version>
 		<testng.engine.version>1.0.5</testng.engine.version>
 		<mockito.version>5.12.0</mockito.version>
 		<embedmongo.maven.version>0.4.2</embedmongo.maven.version>
 		<de.flapdoodle.embed.mongo.version>4.16.1</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<xmlunit.core.version>2.10.0</xmlunit.core.version>
-		<tomcat.version>10.1.26</tomcat.version>
 
 		<!-- Build -->
 		<maven.compiler.version>3.13.0</maven.compiler.version>
-		<maven.source.version>3.3.1</maven.source.version>
-		<maven.javadoc.version>3.8.0</maven.javadoc.version>
 		<maven.resources.version>3.3.1</maven.resources.version><!-- should upgrade to 3.3.1 when possible -->
-		<maven.jar.version>3.4.2</maven.jar.version>
 		<maven.war.version>3.4.0</maven.war.version>
+		<maven.javadoc.version>3.8.0</maven.javadoc.version>
+		<maven.source.version>3.3.1</maven.source.version>
+		<maven.jar.version>3.4.2</maven.jar.version>
 		<maven.deploy.version>3.1.2</maven.deploy.version>
 		<maven.gpg.version>3.2.4</maven.gpg.version>
+		<buildnumber.maven.version>3.2.0</buildnumber.maven.version>
 		<maven.shade.version>3.6.0</maven.shade.version>
 		<maven.clean.version>3.4.0</maven.clean.version>
 		<maven.surefire.version>3.3.1</maven.surefire.version>
 		<maven.failsafe.version>3.0.0</maven.failsafe.version>
 		<jacoco.maven.version>0.8.10</jacoco.maven.version>
-		<buildnumber.maven.version>3.2.0</buildnumber.maven.version>
 		<grunt.maven.version>1.5.1</grunt.maven.version>
 		<gmavenplus.version>3.0.2</gmavenplus.version>
 		<appassembler.maven.version>2.1.0</appassembler.maven.version>
 		<maven.assembly.version>3.7.1</maven.assembly.version>
-		<nexus.staging.maven.version>1.7.0</nexus.staging.maven.version>
 		<frontend.maven.version>1.15.0</frontend.maven.version>
 		<studio.ui.node.version>v21.7.3</studio.ui.node.version>
 		<studio.ui.yarn.version>v1.22.22</studio.ui.yarn.version>
 		<exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
+		<nexus.staging.maven.version>1.7.0</nexus.staging.maven.version>
 		<cyclonedx.maven.version>2.8.0</cyclonedx.maven.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- Overrides -->
 			<dependency>
-				<groupId>com.squareup.okio</groupId><!-- Override -->
-				<artifactId>okio-jvm</artifactId>
-				<version>${okio.version}</version>
+				<groupId>org.craftercms</groupId>
+				<artifactId>craftercms-shared-dependencies</artifactId>
+				<version>${project.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
-			<dependency>
-				<groupId>com.squareup.okhttp3</groupId>
-				<artifactId>okhttp</artifactId>
-				<version>${okhttp.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.squareup.okio</groupId>
-				<artifactId>okio</artifactId>
-				<version>${okio.version}</version>
-			</dependency>
-
 			<dependency>
 				<groupId>com.google.protobuf</groupId>
 				<artifactId>protobuf-java</artifactId>
@@ -246,46 +218,6 @@
 				<groupId>org.codehaus.woodstox</groupId>
 				<artifactId>stax2-api</artifactId>
 				<version>${stax2.api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-cbor</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-smile</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-xml</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.dataformat</groupId>
-				<artifactId>jackson-dataformat-yaml</artifactId>
-				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.datatype</groupId>
-				<artifactId>jackson-datatype-jsr310</artifactId>
-				<version>${jackson.version}</version>
 			</dependency>
 
 			<!-- Dependencies -->
@@ -579,11 +511,6 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-configuration2</artifactId>
-				<version>${commons.configuration.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
 				<version>${commons.lang3.version}</version>
 			</dependency>
@@ -591,31 +518,6 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
 				<version>${commons.collections4.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-api</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-jakarta-web</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-slf4j2-impl</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>${commons.io.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-codec</groupId>
@@ -695,11 +597,6 @@
 				<version>${apache.cxf.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-csv</artifactId>
-				<version>${commons.csv.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>commons-cli</groupId>
 				<artifactId>commons-cli</artifactId>
 				<version>${commons.cli.version}</version>
@@ -731,57 +628,12 @@
 				<version>${commons.text.version}</version>
 			</dependency>
 
-			<!-- Groovy -->
-			<dependency>
-				<groupId>org.apache.groovy</groupId>
-				<artifactId>groovy-all</artifactId>
-				<version>${groovy.version}</version>
-				<type>pom</type>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.ivy</groupId>
-				<artifactId>ivy</artifactId>
-				<version>${ivy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.groovy</groupId>
-				<artifactId>groovy</artifactId>
-				<version>${groovy.version}</version>
-				<!-- Updated to avoid exclusions in other places -->
-			</dependency>
-
-
 			<!-- Security -->
 			<dependency>
 				<groupId>org.owasp.esapi</groupId>
 				<artifactId>esapi</artifactId>
 				<classifier>jakarta</classifier>
 				<version>${esapi.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcpkix-jdk18on</artifactId>
-				<version>${bouncycastle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk18on</artifactId>
-				<version>${bouncycastle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcpg-jdk18on</artifactId>
-				<version>${bouncycastle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcmail-jdk18on</artifactId>
-				<version>${bouncycastle.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.bitbucket.b_c</groupId>
-				<artifactId>jose4j</artifactId>
-				<version>${jose4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.i2p.crypto</groupId>
@@ -794,69 +646,11 @@
 				<version>${zxcvbn.version}</version>
 			</dependency>
 
-			<!-- AWS -->
-			<dependency>
-				<groupId>software.amazon.awssdk</groupId>
-				<artifactId>bom</artifactId>
-				<version>${aws.sdk.version}</version>
-				<type>pom</type>
-
-			</dependency>
-			<dependency>
-				<groupId>software.amazon.awssdk</groupId>
-				<artifactId>s3</artifactId>
-				<version>${aws.sdk.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>software.amazon.awssdk</groupId>
-				<artifactId>s3-transfer-manager</artifactId>
-				<version>${aws.sdk.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>software.amazon.awssdk</groupId>
-				<artifactId>sts</artifactId>
-				<version>${aws.sdk.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>software.amazon.awssdk</groupId>
-				<artifactId>elastictranscoder</artifactId>
-				<version>${aws.sdk.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>software.amazon.awssdk</groupId>
-				<artifactId>mediaconvert</artifactId>
-				<version>${aws.sdk.version}</version>
-			</dependency>
-
-			<!-- Box -->
-			<dependency>
-				<groupId>com.box</groupId>
-				<artifactId>box-java-sdk</artifactId>
-				<version>${box.sdk.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.bouncycastle</groupId>
-						<artifactId>bcpkix-jdk15on</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>org.bouncycastle</groupId>
-						<artifactId>bcprov-jdk15on</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
 			<!-- FreeMarker -->
 			<dependency>
 				<groupId>org.freemarker</groupId>
 				<artifactId>freemarker</artifactId>
 				<version>${freemarker.version}</version>
-			</dependency>
-
-			<!-- WebDAV -->
-			<dependency>
-				<groupId>com.github.lookfirst</groupId>
-				<artifactId>sardine</artifactId>
-				<version>${sardine.version}</version>
 			</dependency>
 
 			<!-- GraphQL -->
@@ -940,16 +734,9 @@
 
 			</dependency>
 			<dependency>
-				<groupId>org.junit.vintage</groupId>
-				<artifactId>junit-vintage-engine</artifactId>
-				<version>${junit.vintage.version}</version>
-
-			</dependency>
-			<dependency>
 				<groupId>org.junit.support</groupId>
 				<artifactId>testng-engine</artifactId>
 				<version>${testng.engine.version}</version>
-
 			</dependency>
 			<dependency>
 				<groupId>javax.measure</groupId>
@@ -960,19 +747,16 @@
 				<groupId>org.hamcrest</groupId>
 				<artifactId>hamcrest</artifactId>
 				<version>${hamcrest.version}</version>
-
 			</dependency>
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path-assert</artifactId>
 				<version>${json.path.version}</version>
-
 			</dependency>
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path</artifactId>
 				<version>${json.path.version}</version>
-
 			</dependency>
 			<dependency>
 				<groupId>org.xmlunit</groupId>
@@ -984,12 +768,6 @@
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-websocket</artifactId>
 				<version>${tomcat.version}</version>
-
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jgit</groupId>
-				<artifactId>org.eclipse.jgit.junit</artifactId>
-				<version>${jgit.version}</version>
 			</dependency>
 
 			<!-- Search -->
@@ -1029,30 +807,6 @@
 				<groupId>com.drewnoakes</groupId>
 				<artifactId>metadata-extractor</artifactId>
 				<version>${metadata.extractor.version}</version>
-			</dependency>
-
-			<!-- Git -->
-			<dependency>
-				<groupId>org.eclipse.jgit</groupId>
-				<artifactId>org.eclipse.jgit</artifactId>
-				<version>${jgit.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.bouncycastle</groupId>
-						<artifactId>bcprov-jdk15on</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jgit</groupId>
-				<artifactId>org.eclipse.jgit.archive</artifactId>
-				<version>${jgit.version}</version>
-
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jgit</groupId>
-				<artifactId>org.eclipse.jgit.ssh.apache</artifactId>
-				<version>${jgit.version}</version>
 			</dependency>
 
 			<!-- MongoDB -->
@@ -1095,11 +849,6 @@
 				<version>${slf4j.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.sun.mail</groupId>
-				<artifactId>jakarta.mail</artifactId>
-				<version>${jakarta.mail.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>cglib</groupId>
 				<artifactId>cglib</artifactId>
 				<version>${cglib.version}</version>
@@ -1115,15 +864,9 @@
 				<version>${urlrewrite.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.quartz-scheduler</groupId>
-				<artifactId>quartz</artifactId>
-				<version>${quartz.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-logging</groupId>
-						<artifactId>commons-logging</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp</artifactId>
+				<version>${okhttp.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.thoughtworks.xstream</groupId>
@@ -1191,11 +934,7 @@
 				<artifactId>semver4j</artifactId>
 				<version>${semver4j.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.yaml</groupId>
-				<artifactId>snakeyaml</artifactId>
-				<version>${snakeyaml.version}</version>
-			</dependency>
+
 			<dependency>
 				<groupId>net.sf.saxon</groupId>
 				<artifactId>Saxon-HE</artifactId>
@@ -1210,11 +949,6 @@
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
 				<version>${gson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.groovy</groupId>
-				<artifactId>groovy-sql</artifactId>
-				<version>${groovy.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.findbugs</groupId>
@@ -1281,175 +1015,6 @@
 				<groupId>com.icegreen</groupId>
 				<artifactId>greenmail</artifactId>
 				<version>${greenmail.version}</version>
-
-			</dependency>
-			<dependency>
-				<groupId>jakarta.mail</groupId>
-				<artifactId>jakarta.mail-api</artifactId>
-				<version>${jakarta.mail.version}</version>
-			</dependency>
-
-			<!-- CrafterCMS -->
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>craftercms</artifactId>
-				<type>pom</type>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons-audit</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons-entitlements</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons-git</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons-mongo</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons-plugin</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons-security</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons-upgrade-manager</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons-utilities</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-commons-validation</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-core</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-engine</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-profile-admin-console</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-profile-api</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-profile</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-profile-client</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-profile-integration-tests</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-profile-parent</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-search-batch-indexer</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-search-commons</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-search-opensearch</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-security-provider</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-social-admin</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-social</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-social-parent</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-studio-ui</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>crafter-virus-scanner</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>groovy-sandbox</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>mariaDB4j</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>script-security</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.craftercms</groupId>
-				<artifactId>social-client-proxy</artifactId>
-				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
