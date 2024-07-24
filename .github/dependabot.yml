@@ -23,9 +23,3 @@ updates:
   schedule:
     interval: "daily"
     time: "05:30"
-
-- package-ecosystem: "gradle"
-  directory: "/resources"
-  schedule:
-    interval: "daily"
-    time: "06:00"
