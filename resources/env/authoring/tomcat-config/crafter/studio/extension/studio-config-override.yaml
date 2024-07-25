@@ -225,6 +225,8 @@ studio.search.keepAlive: false
 #       secret_key:
 #       # Namespace to use for CloudFormation resources (required when target template is aws-cloudformed-s3)
 #       namespace: myorganization
+#       # A comma-separated string listing the required capabilities for the CloudFormation stack. Ex: CAPABILITY_IAM,CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND (optional)
+#       # stackCapabilities:
 #       # The domain name of the serverless delivery LB (required when target template is aws-cloudformed-s3)
 #       deliveryLBDomainName:
 #       # The SSL certificate ARN the CloudFront CDN should use (optional when target template is aws-cloudformed-s3)
