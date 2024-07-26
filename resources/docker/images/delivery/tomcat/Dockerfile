@@ -55,25 +55,6 @@ RUN set -eux; \
 #    apk add --no-cache vim; \
     apk add --no-cache nano;
 
-# Install gosu
-ENV GOSU_VERSION 1.17
-RUN set -eux; \
-    apk add --no-cache --virtual .fetch-deps dpkg gnupg; \
-    dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
-    wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch.asc"; \
-    wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
-    GNUPGHOME="$(mktemp -d)"; export GNUPGHOME; \
-    gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4; \
-    gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu; \
-    gpgconf --kill all; \
-    rm -rf "$GNUPGHOME"; unset GNUPGHOME; \
-    apk del --no-network .fetch-deps; \
-    chmod +x /usr/local/bin/gosu; \
-    gosu --version; \
-    gosu nobody true; \
-    # hard link to / for ease of COPY --from
-    ln -v /usr/local/bin/gosu /
-
 # Create folders and make CRAFTER_HOME the workdir
 RUN mkdir -p /opt/crafter; \
     mkdir /opt/crafter/bin; \
@@ -88,7 +69,7 @@ WORKDIR /opt/crafter
 VOLUME [ "/opt/crafter/data", "/opt/crafter/logs", "/opt/crafter/temp" ]
 
 # Add the Crafter user
-RUN addgroup -S -g 1000 crafter && adduser -S -u 1000 -G crafter crafter; \
+RUN addgroup -S -g 1000 crafter && adduser -s /bin/bash -D -u 1000 -G crafter crafter; \
     chown -R crafter:crafter .; \
     chown -R crafter:crafter /usr/local/tomcat/
 
@@ -103,7 +84,7 @@ VOLUME /opt/crafter/bin/grapes
 # Delete the conf and webapps
 RUN rm -rf ./bin/dbms; \
     rm -rf ./bin/apache-tomcat; \
-    gosu crafter ln -s /usr/local/tomcat ./bin/apache-tomcat; \
+    su crafter -c "ln -s /usr/local/tomcat ./bin/apache-tomcat"; \
     rm -rf ./bin/apache-tomcat/conf/* && rm -rf ./bin/apache-tomcat/webapps/*
 
 # Copy Tomcat setenv.sh, config, shared and webapps
