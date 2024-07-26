@@ -135,9 +135,9 @@ ext.cloneModule = { module, gitUrl, shallowClone, gitBranch, gitRemote ->
 
 ext.installPoms = {
 	try {
+		execCommand(mavenCmd + ["install"], "${projectDir}/shared-dependencies")
 		execCommand(mavenCmd + ["install"], "${projectDir}")
 		execCommand(mavenCmd + ["install"], "${projectDir}/spring-boot")
-		execCommand(mavenCmd + ["install"], "${projectDir}/shared-dependencies")
 	} catch (e) {
 		logger.error("Failed to install POMs, exception: {}", e)
 		throw new GradleException("Failed to install POMs.", e)
