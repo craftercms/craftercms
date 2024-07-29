@@ -17,7 +17,7 @@
 # Function to run commands as 'crafter' if the current user is not 'crafter'
 run_as() {
     if [ "$(id -u)" != "$(id -u crafter)" ]; then
-        exec gosu crafter "$@"
+        exec su crafter -c "$@"
     else
         exec "$@"
     fi
@@ -117,18 +117,18 @@ if [ -d $TRUSTED_CERTS_DIR ]; then
 fi
 
 if [ "$1" = 'run' ]; then
-    run_as $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run
+    run_as "$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run"
 elif [ "$1" = 'debug' ]; then
-    run_as $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda run
+    run_as "$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda run"
 elif [ "$1" = 'backup' ]; then
-    run_as $CRAFTER_BIN_DIR/crafter.sh backup
+    run_as "$CRAFTER_BIN_DIR/crafter.sh backup"
 elif [ "$1" = 'restore' ]; then
     if [ -z "$2" ]; then
         echo "The backup path parameter was not specified"
         exit 1
     fi
 
-    run_as $CRAFTER_BIN_DIR/crafter.sh restore "$2"
+    run_as "$CRAFTER_BIN_DIR/crafter.sh restore $2"
 else
     exec "$@"
 fi
