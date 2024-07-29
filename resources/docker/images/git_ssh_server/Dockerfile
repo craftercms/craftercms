@@ -30,7 +30,7 @@ VOLUME [ "/opt/crafter/data" ]
 # - Remove root default shell access
 # - Enable public key auth and disable other type of auth. Also set the host key algorithms to just RSA to avoid issues
 #   with JGit/JSch
-RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter; \
+RUN addgroup -S -g 1000 crafter && adduser -S -D -u 1000 -G crafter crafter; \
     usermod -p '*' crafter; \
     chown -R crafter:crafter /opt/crafter/data; \
     usermod -s $(command -v git-shell) crafter; \

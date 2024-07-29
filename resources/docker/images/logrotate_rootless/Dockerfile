@@ -29,7 +29,7 @@ RUN apk update && apk upgrade
 RUN apk add --no-cache bash shadow logrotate tini gettext libintl vim nano dcron libcap
 
 # Add the Crafter user
-RUN groupadd -r -g 1000 crafter && useradd -r -m -u 1000 -g crafter crafter
+RUN addgroup -S -g 1000 crafter && adduser -S -D -u 1000 -G crafter crafter;
 
 # Copy entrypoint script and make it executable
 COPY docker-entrypoint.sh .

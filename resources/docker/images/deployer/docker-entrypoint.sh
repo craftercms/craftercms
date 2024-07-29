@@ -17,7 +17,7 @@
 # Function to run commands as 'crafter' if the current user is not 'crafter'
 run_as() {
     if [ "$(id -u)" != "$(id -u crafter)" ]; then
-        exec gosu crafter "$@"
+        exec su crafter -c "$@"
     else
         exec "$@"
     fi
@@ -108,11 +108,11 @@ fi
 
 if [ "$1" = 'run' ]; then
     cd $DEPLOYER_HOME
-    run_as $CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
+    run_as "$CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run"
 elif [ "$1" = 'debug' ]; then
     export JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
     cd $DEPLOYER_HOME
-    run_as $CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run
+    run_as "$CRAFTER_BIN_DIR/crafter-deployer/deployer.sh run"
 else
     exec "$@"
 fi
