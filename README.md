@@ -299,7 +299,7 @@ To stop the authoring environment:
 
 For more information about Apache Tomcat, and OpenSearch please refer to the following:
 
- * [Tomcat Script documentation](https://tomcat.apache.org/tomcat-9.0-doc/RUNNING.txt)
+ * [Tomcat Script documentation](https://tomcat.apache.org/tomcat-10.0-doc/RUNNING.txt)
  * [OpenSearch documentation](https://opensearch.org/docs/latest/)
 
 
