@@ -149,7 +149,7 @@
 		<validation.api.version>2.0.1.Final</validation.api.version>
 		<opensearch.version>2.15.0</opensearch.version>
 		<opensearch.runner.version>2.15.0.0</opensearch.runner.version>
-		<opensearch.client.version>2.10.4</opensearch.client.version>
+		<opensearch.client.version>2.13.0</opensearch.client.version>
 		<tika.version>2.9.1</tika.version>
 		<poi.version>5.2.3</poi.version>
 		<metadata.extractor.version>2.18.0</metadata.extractor.version>
