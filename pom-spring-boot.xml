@@ -88,7 +88,7 @@
 		<jose4j.version>0.9.4</jose4j.version>
 		<box.sdk.version>4.8.0</box.sdk.version>
 		<opensearch.version>2.15.0</opensearch.version>
-		<opensearch.client.version>2.10.4</opensearch.client.version>
+		<opensearch.client.version>2.15.0</opensearch.client.version>
 		<tomcat.version>9.0.93</tomcat.version>
 		<mariadb.version>10.4.31.2</mariadb.version>
 		<groovy.version>3.0.21</groovy.version>
