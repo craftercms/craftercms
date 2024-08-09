@@ -63,54 +63,50 @@
 		<tomcat.version>10.1.28</tomcat.version>
 		<java.version>21</java.version>
 		<groovy.version>4.0.22</groovy.version>
-		<servlet.api.version>6.1.0</servlet.api.version>
-		<servlet.jsp.api.version>3.1.1</servlet.jsp.api.version>
-		<servlet.jstl.version>3.0.0</servlet.jstl.version>
+		<jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
+		<jakarta.servlet.jsp-api.version>3.1.1</jakarta.servlet.jsp-api.version>
+		<jakarta.servlet.jsp.jstl-api.version>3.0.0</jakarta.servlet.jsp.jstl-api.version>
 
 		<!-- Dependency Version Numbers -->
 
 		<!-- Main -->
 		<!-- Spring -->
 		<spring.version>6.1.11</spring.version>
-		<spring.security.version>6.3.1</spring.security.version>
-		<spring.data.version>3.3.2</spring.data.version>
-		<spring.ldap.version>3.2.4</spring.ldap.version>
-		<spring.social.version>1.1.6.RELEASE</spring.social.version>
-		<spring.social.facebook.version>2.0.3.RELEASE</spring.social.facebook.version>
+		<spring-security.version>6.3.1</spring-security.version>
+		<spring-data-commons.version>3.3.2</spring-data-commons.version>
+		<spring-ldap-core.version>3.2.4</spring-ldap-core.version>
+		<spring-social-web.version>1.1.6.RELEASE</spring-social-web.version>
+		<spring-social-facebook.version>2.0.3.RELEASE</spring-social-facebook.version>
 
 		<!-- Commons -->
-		<commons.lang3.version>3.15.0</commons.lang3.version>
-		<commons.collections4.version>4.4</commons.collections4.version>
-		<commons.codec.version>1.17.1</commons.codec.version>
-		<commons.beanutils.version>1.9.4</commons.beanutils.version>
-		<commons.text.version>1.12.0</commons.text.version>
-		<commons.cli.version>1.8.0</commons.cli.version>
-		<commons.dbcp2.version>2.12.0</commons.dbcp2.version>
-		<commons.fileupload2.version>2.0.0-M2</commons.fileupload2.version>
-		<commons.compress.version>1.26.2</commons.compress.version>
+		<commons-lang3.version>3.15.0</commons-lang3.version>
+		<commons-collections4.version>4.4</commons-collections4.version>
+		<commons-codec.version>1.17.1</commons-codec.version>
+		<commons-beanutils.version>1.9.4</commons-beanutils.version>
+		<commons-text.version>1.12.0</commons-text.version>
+		<commons-cli.version>1.8.0</commons-cli.version>
+		<commons-dbcp2.version>2.12.0</commons-dbcp2.version>
+		<commons-fileupload2-jakarta-servlet6.version>2.0.0-M2</commons-fileupload2-jakarta-servlet6.version>
+		<commons-compress.version>1.26.2</commons-compress.version>
 
-		<httpcomponents.httpclient.version>4.5.14</httpcomponents.httpclient.version>
-		<httpcomponents.httpclient5.version>5.3.1</httpcomponents.httpclient5.version>
+		<httpmime.version>4.5.14</httpmime.version>
+		<httpclient5.version>5.3.1</httpclient5.version>
 
 		<mongo.version>5.1.2</mongo.version>
 		<jongo.version>1.5.1</jongo.version>
-		<gmongo.version>1.5</gmongo.version>
-		<velocity.engine.version>2.3</velocity.engine.version>
 		<xstream.version>1.4.20</xstream.version>
 		<slf4j.version>2.0.14</slf4j.version>
 		<freemarker.version>2.3.33</freemarker.version>
 		<aspectj.version>1.9.22.1</aspectj.version>
-		<jakarta.activation.version>2.1.3</jakarta.activation.version>
-		<angus.activation.version>2.0.2</angus.activation.version>
+		<jakarta.activation-api.version>2.1.3</jakarta.activation-api.version>
+		<angus-activation.version>2.0.2</angus-activation.version>
 		<jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
 		<guava.version>33.2.1-jre</guava.version>
-		<guava.collections.version>r03</guava.collections.version>
+		<guava-collections.version>r03</guava-collections.version>
 		<findbugs.version>3.0.1</findbugs.version>
 		<bcel.version>6.10.0</bcel.version>
 		<caffeine.version>3.1.8</caffeine.version>
-		<json.path.version>2.9.0</json.path.version>
-		<reactor.version>1.0.1.RELEASE</reactor.version>
-		<json-smart.version>2.4.9</json-smart.version>
+		<json-path.version>2.9.0</json-path.version>
 		<dom4j.version>2.1.4</dom4j.version>
 		<jaxen.version>2.0.0</jaxen.version>
 		<gson.version>2.11.0</gson.version>
@@ -118,41 +114,39 @@
 		<cglib.version>3.3.0</cglib.version>
 		<script.security.version>${project.version}</script.security.version>
 		<rome.version>1.0</rome.version>
-		<urlrewrite.version>5.1.3</urlrewrite.version>
-		<graphql.version>22.1</graphql.version>
-		<graphql.extended.scalars.version>22.0</graphql.extended.scalars.version>
-		<httpproxy.version>2.0</httpproxy.version>
+		<urlrewritefilter.version>5.1.3</urlrewritefilter.version>
+		<graphql-java.version>22.1</graphql-java.version>
+		<graphql-java-extended-scalars.version>22.0</graphql-java-extended-scalars.version>
+		<smiley-http-proxy-servlet.version>2.0</smiley-http-proxy-servlet.version>
 		<tinify.version>1.8.8</tinify.version>
 		<mariadb4j.version>3.1.0.2</mariadb4j.version>
-		<saxon.version>12.5</saxon.version>
-		<apache.cxf.version>4.0.5</apache.cxf.version>
-		<ibatis.sqlmap.version>2.3.4.726</ibatis.sqlmap.version>
-		<mybatis.spring.version>3.0.3</mybatis.spring.version>
+		<Saxon-HE.version>12.5</Saxon-HE.version>
+		<cxf-rt.version>4.0.5</cxf-rt.version>
+		<ibatis-sqlmap.version>2.3.4.726</ibatis-sqlmap.version>
+		<mybatis-spring.version>3.0.3</mybatis-spring.version>
 		<mybatis.version>3.5.16</mybatis.version>
-		<json.lib.version>2.4</json.lib.version>
-		<mariadb.java.client.version>3.4.1</mariadb.java.client.version>
+		<json-lib.version>2.4</json-lib.version>
+		<mariadb-java-client.version>3.4.1</mariadb-java-client.version>
 		<greenmail.version>2.0.1</greenmail.version>
-		<stax2.api.version>4.2.2</stax2.api.version>
-		<joda.time.version>2.12.7</joda.time.version>
-		<hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
-		<jakarta.validation.api.version>3.1.0</jakarta.validation.api.version>
-		<opensearch.version>2.15.0</opensearch.version>
-		<opensearch.client.version>2.13.0</opensearch.client.version>
-		<opensearch.runner.version>2.15.0.0</opensearch.runner.version>
+		<stax2-api.version>4.2.2</stax2-api.version>
+		<joda-time.version>2.12.7</joda-time.version>
+		<hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
+		<jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
+		<opensearch-rest-high-level-client.version>2.16.0</opensearch-rest-high-level-client.version>
+		<opensearch-java.version>2.13.0</opensearch-java.version>
+		<opensearch-runner.version>2.15.0.0</opensearch-runner.version>
 		<tika.version>2.9.2</tika.version>
-		<poi.version>5.3.0</poi.version>
-		<metadata.extractor.version>2.19.0</metadata.extractor.version>
+		<poi-scratchpad.version>5.3.0</poi-scratchpad.version>
+		<metadata-extractor.version>2.19.0</metadata-extractor.version>
 		<jsoup.version>1.18.1</jsoup.version>
-		<protobuf.java.version>4.27.3</protobuf.java.version>
-		<unit.api.version>2.2</unit.api.version>
+		<protobuf-java.version>4.27.3</protobuf-java.version>
+		<unit-api.version>2.2</unit-api.version>
 		<javax.inject.version>1</javax.inject.version>
 		<semver4j.version>3.1.0</semver4j.version>
-		<httpclient.version>4.5.14</httpclient.version>
 		<picocli.version>4.7.6</picocli.version>
-		<http.builder.version>1.0.4</http.builder.version>
-		<jaxb.api.version>2.3.1</jaxb.api.version>
-		<jaxb.core.version>4.0.5</jaxb.core.version>
-		<jaxb.impl.version>4.0.5</jaxb.impl.version>
+		<jaxb-api.version>2.3.1</jaxb-api.version>
+		<jaxb-core.version>4.0.5</jaxb-core.version>
+		<jaxb-impl.version>4.0.5</jaxb-impl.version>
 		<spatial4j.version>0.8</spatial4j.version>
 		<jdom2.version>2.0.6.1</jdom2.version>
 		<eddsa.version>0.3.0</eddsa.version>
@@ -164,39 +158,39 @@
 		<!-- Testing -->
 		<testng.version>7.10.2</testng.version>
 		<junit.version>4.13.2</junit.version>
-		<junit.jupiter.version>5.10.3</junit.jupiter.version>
-		<testng.engine.version>1.0.5</testng.engine.version>
-		<mockito.version>5.12.0</mockito.version>
-		<embedmongo.maven.version>0.4.2</embedmongo.maven.version>
+		<junit-jupiter-engine.version>5.10.3</junit-jupiter-engine.version>
+		<testng-engine.version>1.0.5</testng-engine.version>
+		<mockito-core.version>5.12.0</mockito-core.version>
+		<embedmongo-maven-plugin.version>0.4.2</embedmongo-maven-plugin.version>
 		<de.flapdoodle.embed.mongo.version>4.16.2</de.flapdoodle.embed.mongo.version>
 		<hamcrest.version>3.0</hamcrest.version>
-		<xmlunit.core.version>2.10.0</xmlunit.core.version>
+		<xmlunit-core.version>2.10.0</xmlunit-core.version>
 
 		<!-- Build -->
-		<maven.compiler.version>3.13.0</maven.compiler.version>
-		<maven.resources.version>3.3.1</maven.resources.version><!-- should upgrade to 3.3.1 when possible -->
-		<maven.war.version>3.4.0</maven.war.version>
-		<maven.javadoc.version>3.8.0</maven.javadoc.version>
-		<maven.source.version>3.3.1</maven.source.version>
-		<maven.jar.version>3.4.2</maven.jar.version>
-		<maven.deploy.version>3.1.2</maven.deploy.version>
-		<maven.gpg.version>3.2.4</maven.gpg.version>
-		<buildnumber.maven.version>3.2.0</buildnumber.maven.version>
-		<maven.shade.version>3.6.0</maven.shade.version>
-		<maven.clean.version>3.4.0</maven.clean.version>
-		<maven.surefire.version>3.3.1</maven.surefire.version>
-		<maven.failsafe.version>3.0.0</maven.failsafe.version>
-		<jacoco.maven.version>0.8.10</jacoco.maven.version>
-		<grunt.maven.version>1.5.1</grunt.maven.version>
-		<gmavenplus.version>3.0.2</gmavenplus.version>
-		<appassembler.maven.version>2.1.0</appassembler.maven.version>
-		<maven.assembly.version>3.7.1</maven.assembly.version>
-		<frontend.maven.version>1.15.0</frontend.maven.version>
+		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+		<maven-resources-plugin.version>3.3.1</maven-resources-plugin.version><!-- should upgrade to 3.3.1 when possible -->
+		<maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+		<maven-javadoc-plugin.version>3.8.0</maven-javadoc-plugin.version>
+		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+		<maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+		<maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
+		<maven-gpg-plugin.version>3.2.4</maven-gpg-plugin.version>
+		<buildnumber-maven-plugin.version>3.2.0</buildnumber-maven-plugin.version>
+		<maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
+		<maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
+		<maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
+		<maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
+<!--		<jacoco.maven.version>0.8.10</jacoco.maven.version>-->
+<!--		<grunt.maven.version>1.5.1</grunt.maven.version>-->
+		<gmavenplus-plugin.version>3.0.2</gmavenplus-plugin.version>
+		<appassembler-maven-plugin.version>2.1.0</appassembler-maven-plugin.version>
+		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+		<frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
 		<studio.ui.node.version>v21.7.3</studio.ui.node.version>
 		<studio.ui.yarn.version>v1.22.22</studio.ui.yarn.version>
 		<exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
-		<nexus.staging.maven.version>1.7.0</nexus.staging.maven.version>
-		<cyclonedx.maven.version>2.8.1</cyclonedx.maven.version>
+		<nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
+		<cyclonedx-maven-plugin.version>2.8.1</cyclonedx-maven-plugin.version>
 	</properties>
 
 	<dependencyManagement>
@@ -211,12 +205,12 @@
 			<dependency>
 				<groupId>com.google.protobuf</groupId>
 				<artifactId>protobuf-java</artifactId>
-				<version>${protobuf.java.version}</version>
+				<version>${protobuf-java.version}</version>
 			</dependency>
 			<dependency> <!-- Workaround for jackson-dataformat-xml issue #340 of forgetting to update stax2-api  -->
 				<groupId>org.codehaus.woodstox</groupId>
 				<artifactId>stax2-api</artifactId>
-				<version>${stax2.api.version}</version>
+				<version>${stax2-api.version}</version>
 			</dependency>
 
 			<!-- Dependencies -->
@@ -224,17 +218,17 @@
 			<dependency>
 				<groupId>jakarta.servlet</groupId>
 				<artifactId>jakarta.servlet-api</artifactId>
-				<version>${servlet.api.version}</version>
+				<version>${jakarta.servlet-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.servlet.jsp</groupId>
 				<artifactId>jakarta.servlet.jsp-api</artifactId>
-				<version>${servlet.jsp.api.version}</version>
+				<version>${jakarta.servlet.jsp-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.servlet.jsp.jstl</groupId>
 				<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
-				<version>${servlet.jstl.version}</version>
+				<version>${jakarta.servlet.jsp.jstl-api.version}</version>
 				<exclusions>
 					<!-- Exclude Commons Logging in favor of SLF4j -->
 					<exclusion>
@@ -319,7 +313,7 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-core</artifactId>
-				<version>${spring.security.version}</version>
+				<version>${spring-security.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.springframework</groupId>
@@ -338,7 +332,7 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-config</artifactId>
-				<version>${spring.security.version}</version>
+				<version>${spring-security.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.springframework</groupId>
@@ -357,7 +351,7 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-web</artifactId>
-				<version>${spring.security.version}</version>
+				<version>${spring-security.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.springframework</groupId>
@@ -395,12 +389,12 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-messaging</artifactId>
-				<version>${spring.security.version}</version>
+				<version>${spring-security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.ldap</groupId>
 				<artifactId>spring-ldap-core</artifactId>
-				<version>${spring.ldap.version}</version>
+				<version>${spring-ldap-core.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.springframework</groupId>
@@ -423,7 +417,7 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-ldap</artifactId>
-				<version>${spring.security.version}</version>
+				<version>${spring-security.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.springframework</groupId>
@@ -446,12 +440,12 @@
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-commons</artifactId>
-				<version>${spring.data.version}</version>
+				<version>${spring-data-commons.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.social</groupId>
 				<artifactId>spring-social-web</artifactId>
-				<version>${spring.social.version}</version>
+				<version>${spring-social-web.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.springframework</groupId>
@@ -466,7 +460,7 @@
 			<dependency>
 				<groupId>org.springframework.social</groupId>
 				<artifactId>spring-social-facebook</artifactId>
-				<version>${spring.social.facebook.version}</version>
+				<version>${spring-social-facebook.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.springframework</groupId>
@@ -495,7 +489,7 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents.client5</groupId>
 				<artifactId>httpclient5</artifactId>
-				<version>${httpcomponents.httpclient5.version}</version>
+				<version>${httpclient5.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>commons-logging</groupId>
@@ -506,38 +500,38 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpmime</artifactId>
-				<version>${httpcomponents.httpclient.version}</version>
+				<version>${httpmime.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>${commons.lang3.version}</version>
+				<version>${commons-lang3.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
-				<version>${commons.collections4.version}</version>
+				<version>${commons-collections4.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
-				<version>${commons.codec.version}</version>
+				<version>${commons-codec.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
-				<version>${commons.compress.version}</version>
+				<version>${commons-compress.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.ibatis</groupId>
 				<artifactId>ibatis-sqlmap</artifactId>
-				<version>${ibatis.sqlmap.version}</version>
+				<version>${ibatis-sqlmap.version}</version>
 
 			</dependency>
 			<dependency>
 				<groupId>org.mybatis</groupId>
 				<artifactId>mybatis-spring</artifactId>
-				<version>${mybatis.spring.version}</version>
+				<version>${mybatis-spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.mybatis</groupId>
@@ -547,17 +541,17 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-dbcp2</artifactId>
-				<version>${commons.dbcp2.version}</version>
+				<version>${commons-dbcp2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
-				<version>${commons.fileupload2.version}</version>
+				<version>${commons-fileupload2-jakarta-servlet6.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.sf.json-lib</groupId>
 				<artifactId>json-lib</artifactId>
-				<version>${json.lib.version}</version>
+				<version>${json-lib.version}</version>
 				<classifier>jdk15</classifier>
 				<exclusions>
 					<exclusion>
@@ -578,43 +572,43 @@
 			<dependency>
 				<groupId>jakarta.validation</groupId>
 				<artifactId>jakarta.validation-api</artifactId>
-				<version>${jakarta.validation.api.version}</version>
+				<version>${jakarta.validation-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-frontend-jaxws</artifactId>
-				<version>${apache.cxf.version}</version>
+				<version>${cxf-rt.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-transports-http</artifactId>
-				<version>${apache.cxf.version}</version>
+				<version>${cxf-rt.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-ws-policy</artifactId>
-				<version>${apache.cxf.version}</version>
+				<version>${cxf-rt.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-cli</groupId>
 				<artifactId>commons-cli</artifactId>
-				<version>${commons.cli.version}</version>
+				<version>${commons-cli.version}</version>
 				<optional>true</optional>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.activation</groupId>
 				<artifactId>jakarta.activation-api</artifactId>
-				<version>${jakarta.activation.version}</version>
+				<version>${jakarta.activation-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.angus</groupId>
 				<artifactId>angus-activation</artifactId>
-				<version>${angus.activation.version}</version>
+				<version>${angus-activation.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-beanutils</groupId>
 				<artifactId>commons-beanutils</artifactId>
-				<version>${commons.beanutils.version}</version>
+				<version>${commons-beanutils.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.inject</groupId>
@@ -624,7 +618,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-text</artifactId>
-				<version>${commons.text.version}</version>
+				<version>${commons-text.version}</version>
 			</dependency>
 
 			<!-- Security -->
@@ -656,12 +650,12 @@
 			<dependency>
 				<groupId>com.graphql-java</groupId>
 				<artifactId>graphql-java</artifactId>
-				<version>${graphql.version}</version>
+				<version>${graphql-java.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.graphql-java</groupId>
 				<artifactId>graphql-java-extended-scalars</artifactId>
-				<version>${graphql.extended.scalars.version}</version>
+				<version>${graphql-java-extended-scalars.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.locationtech.spatial4j</groupId>
@@ -678,14 +672,14 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava-collections</artifactId>
-				<version>${guava.collections.version}</version>
+				<version>${guava-collections.version}</version>
 			</dependency>
 
 			<!-- HTTP Proxy -->
 			<dependency>
 				<groupId>org.mitre.dsmiley.httpproxy</groupId>
 				<artifactId>smiley-http-proxy-servlet</artifactId>
-				<version>${httpproxy.version}</version>
+				<version>${smiley-http-proxy-servlet.version}</version>
 			</dependency>
 
 			<!-- Directory Watcher -->
@@ -717,7 +711,7 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>${mockito.version}</version>
+				<version>${mockito-core.version}</version>
 
 			</dependency>
 			<dependency>
@@ -729,18 +723,18 @@
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
-				<version>${junit.jupiter.version}</version>
+				<version>${junit-jupiter-engine.version}</version>
 
 			</dependency>
 			<dependency>
 				<groupId>org.junit.support</groupId>
 				<artifactId>testng-engine</artifactId>
-				<version>${testng.engine.version}</version>
+				<version>${testng-engine.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.measure</groupId>
 				<artifactId>unit-api</artifactId>
-				<version>${unit.api.version}</version>
+				<version>${unit-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
@@ -750,17 +744,17 @@
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path-assert</artifactId>
-				<version>${json.path.version}</version>
+				<version>${json-path.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path</artifactId>
-				<version>${json.path.version}</version>
+				<version>${json-path.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.xmlunit</groupId>
 				<artifactId>xmlunit-core</artifactId>
-				<version>${xmlunit.core.version}</version>
+				<version>${xmlunit-core.version}</version>
 
 			</dependency>
 			<dependency>
@@ -773,17 +767,17 @@
 			<dependency>
 				<groupId>org.opensearch.client</groupId>
 				<artifactId>opensearch-rest-high-level-client</artifactId>
-				<version>${opensearch.version}</version>
+				<version>${opensearch-rest-high-level-client.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.opensearch.client</groupId>
 				<artifactId>opensearch-java</artifactId>
-				<version>${opensearch.client.version}</version>
+				<version>${opensearch-java.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.codelibs.opensearch</groupId>
 				<artifactId>opensearch-runner</artifactId>
-				<version>${opensearch.runner.version}</version>
+				<version>${opensearch-runner.version}</version>
 
 			</dependency>
 			<dependency>
@@ -800,12 +794,12 @@
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-scratchpad</artifactId>
-				<version>${poi.version}</version>
+				<version>${poi-scratchpad.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.drewnoakes</groupId>
 				<artifactId>metadata-extractor</artifactId>
-				<version>${metadata.extractor.version}</version>
+				<version>${metadata-extractor.version}</version>
 			</dependency>
 
 			<!-- MongoDB -->
@@ -860,7 +854,7 @@
 			<dependency>
 				<groupId>org.tuckey</groupId>
 				<artifactId>urlrewritefilter</artifactId>
-				<version>${urlrewrite.version}</version>
+				<version>${urlrewritefilter.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.squareup.okhttp3</groupId>
@@ -901,7 +895,7 @@
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>${joda.time.version}</version>
+				<version>${joda-time.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jsoup</groupId>
@@ -911,7 +905,7 @@
 			<dependency>
 				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator</artifactId>
-				<version>${hibernate.validator.version}</version>
+				<version>${hibernate-validator.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.craftercms.mariaDB4j</groupId>
@@ -921,7 +915,7 @@
 			<dependency>
 				<groupId>org.mariadb.jdbc</groupId>
 				<artifactId>mariadb-java-client</artifactId>
-				<version>${mariadb.java.client.version}</version>
+				<version>${mariadb-java-client.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jdom</groupId>
@@ -937,7 +931,7 @@
 			<dependency>
 				<groupId>net.sf.saxon</groupId>
 				<artifactId>Saxon-HE</artifactId>
-				<version>${saxon.version}</version>
+				<version>${Saxon-HE.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.tinify</groupId>
@@ -982,17 +976,17 @@
 			<dependency>
 				<groupId>javax.xml.bind</groupId>
 				<artifactId>jaxb-api</artifactId>
-				<version>${jaxb.api.version}</version>
+				<version>${jaxb-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.bind</groupId>
 				<artifactId>jaxb-core</artifactId>
-				<version>${jaxb.core.version}</version>
+				<version>${jaxb-core.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.sun.xml.bind</groupId>
 				<artifactId>jaxb-impl</artifactId>
-				<version>${jaxb.impl.version}</version>
+				<version>${jaxb-impl.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jenkins-ci</groupId>
@@ -1026,7 +1020,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>buildnumber-maven-plugin</artifactId>
-					<version>${buildnumber.maven.version}</version>
+					<version>${buildnumber-maven-plugin.version}</version>
 					<executions>
 						<execution>
 							<phase>validate</phase>
@@ -1045,12 +1039,12 @@
 				<plugin>
 					<groupId>com.github.eirslett</groupId>
 					<artifactId>frontend-maven-plugin</artifactId>
-					<version>${frontend.maven.version}</version>
+					<version>${frontend-maven-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>${maven.jar.version}</version>
+					<version>${maven-jar-plugin.version}</version>
 					<configuration>
 						<warName>${project.artifactId}</warName>
 						<archive>
@@ -1069,7 +1063,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>${maven.resources.version}</version>
+					<version>${maven-resources-plugin.version}</version>
 					<configuration>
 						<encoding>${project.build.sourceEncoding}</encoding>
 					</configuration>
@@ -1077,7 +1071,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>${maven.compiler.version}</version>
+					<version>${maven-compiler-plugin.version}</version>
 					<configuration>
 						<source>${java.version}</source>
 						<target>${java.version}</target>
@@ -1087,7 +1081,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>${maven.war.version}</version>
+					<version>${maven-war-plugin.version}</version>
 					<configuration>
 						<attachClasses>true</attachClasses>
 						<archive>
@@ -1105,7 +1099,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
-					<version>${maven.clean.version}</version>
+					<version>${maven-clean-plugin.version}</version>
 					<configuration>
 						<filesets>
 							<fileset>
@@ -1120,7 +1114,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>${maven.source.version}</version>
+					<version>${maven-source-plugin.version}</version>
 					<executions>
 						<execution>
 							<id>attach-sources</id>
@@ -1138,23 +1132,23 @@
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>${jacoco.maven.version}</version>
 				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>${maven.failsafe.version}</version>
-				</plugin>
 				-->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>${maven-failsafe-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>${maven.surefire.version}</version>
+					<version>${maven-surefire-plugin.version}</version>
 				</plugin>
 
 				<!-- JavaDoc Plugins -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>${maven.javadoc.version}</version>
+					<version>${maven-javadoc-plugin.version}</version>
 					<executions>
 						<execution>
 							<id>validate</id>
@@ -1175,31 +1169,31 @@
 				<plugin>
 					<groupId>org.codehaus.gmavenplus</groupId>
 					<artifactId>gmavenplus-plugin</artifactId>
-					<version>${gmavenplus.version}</version>
+					<version>${gmavenplus-plugin.version}</version>
 				</plugin>
 
 				<!-- Generate the scripts & repo with all dependencies -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>appassembler-maven-plugin</artifactId>
-					<version>${appassembler.maven.version}</version>
+					<version>${appassembler-maven-plugin.version}</version>
 				</plugin>
 
 				<!-- Package the app for distribution -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>${maven.assembly.version}</version>
+					<version>${maven-assembly-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-shade-plugin</artifactId>
-					<version>${maven.shade.version}</version>
+					<version>${maven-shade-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.cyclonedx</groupId>
 					<artifactId>cyclonedx-maven-plugin</artifactId>
-					<version>${cyclonedx.maven.version}</version>
+					<version>${cyclonedx-maven-plugin.version}</version>
 					<configuration>
 						<projectType>application</projectType>
 						<schemaVersion>1.4</schemaVersion>
@@ -1216,6 +1210,11 @@
 						<outputDirectory>${project.build.directory}</outputDirectory><!-- usually target, if not redefined in pom.xml -->
 						<verbose>false</verbose><!-- = ${cyclonedx.verbose} -->
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>com.github.joelittlejohn.embedmongo</groupId>
+					<artifactId>embedmongo-maven-plugin</artifactId>
+					<version>${embedmongo-maven-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -1268,7 +1267,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>${maven.source.version}</version>
+						<version>${maven-source-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>attach-sources</id>
@@ -1313,7 +1312,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-deploy-plugin</artifactId>
-						<version>${maven.deploy.version}</version>
+						<version>${maven-deploy-plugin.version}</version>
 						<configuration>
 							<skip>true</skip>
 						</configuration>
@@ -1321,7 +1320,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>${maven.gpg.version}</version>
+						<version>${maven-gpg-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -1335,7 +1334,7 @@
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>${nexus.staging.maven.version}</version>
+						<version>${nexus-staging-maven-plugin.version}</version>
 						<executions>
 							<execution>
 								<id>default-deploy</id>
