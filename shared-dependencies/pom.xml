@@ -59,12 +59,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<commons.configuration.version>2.11.0</commons.configuration.version>
-		<commons.io.version>2.16.1</commons.io.version>
-		<commons.csv.version>1.11.0</commons.csv.version>
+		<commons-configuration2.version>2.11.0</commons-configuration2.version>
+		<commons-io.version>2.16.1</commons-io.version>
+		<commons-csv.version>1.11.0</commons-csv.version>
 		<log4j2.version>2.23.1</log4j2.version>
-		<jakarta.mail.version>2.0.1</jakarta.mail.version>
-		<junit.vintage.version>5.10.3</junit.vintage.version>
+		<jakarta-mail.version>2.0.1</jakarta-mail.version>
+		<junit-vintage.version>5.10.3</junit-vintage.version>
 
 		<jgit.version>6.10.0.202406032230-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
@@ -74,7 +74,7 @@
 		<bouncycastle.version>1.78.1</bouncycastle.version>
 		<jackson.version>2.17.2</jackson.version>
 		<aws.sdk.version>2.26.31</aws.sdk.version>
-		<box.sdk.version>4.11.1</box.sdk.version>
+		<box-java-sdk.version>4.11.1</box-java-sdk.version>
 		<jose4j.version>0.9.6</jose4j.version>
 		<groovy.version>4.0.22</groovy.version>
 		<ivy.version>2.5.2</ivy.version>
@@ -86,17 +86,17 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-configuration2</artifactId>
-				<version>${commons.configuration.version}</version>
+				<version>${commons-configuration2.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>${commons.io.version}</version>
+				<version>${commons-io.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-csv</artifactId>
-				<version>${commons.csv.version}</version>
+				<version>${commons-csv.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
@@ -121,17 +121,17 @@
 			<dependency>
 				<groupId>com.sun.mail</groupId>
 				<artifactId>jakarta.mail</artifactId>
-				<version>${jakarta.mail.version}</version>
+				<version>${jakarta-mail.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.mail</groupId>
 				<artifactId>jakarta.mail-api</artifactId>
-				<version>${jakarta.mail.version}</version>
+				<version>${jakarta-mail.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.junit.vintage</groupId>
 				<artifactId>junit-vintage-engine</artifactId>
-				<version>${junit.vintage.version}</version>
+				<version>${junit-vintage.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.jgit</groupId>
@@ -283,7 +283,7 @@
 			<dependency>
 				<groupId>com.box</groupId>
 				<artifactId>box-java-sdk</artifactId>
-				<version>${box.sdk.version}</version>
+				<version>${box-java-sdk.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.bouncycastle</groupId>
