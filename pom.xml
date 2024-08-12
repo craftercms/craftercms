@@ -123,7 +123,7 @@
 		<Saxon-HE.version>12.5</Saxon-HE.version>
 		<cxf-rt.version>4.0.5</cxf-rt.version>
 		<ibatis-sqlmap.version>2.3.4.726</ibatis-sqlmap.version>
-		<mybatis-spring.version>3.0.3</mybatis-spring.version>
+		<mybatis-spring.version>3.0.4</mybatis-spring.version>
 		<mybatis.version>3.5.16</mybatis.version>
 		<json-lib.version>2.4</json-lib.version>
 		<mariadb-java-client.version>3.4.1</mariadb-java-client.version>
