@@ -125,7 +125,6 @@
 		<ibatis-sqlmap.version>2.3.4.726</ibatis-sqlmap.version>
 		<mybatis-spring.version>3.0.4</mybatis-spring.version>
 		<mybatis.version>3.5.16</mybatis.version>
-		<json-lib.version>2.4</json-lib.version>
 		<mariadb-java-client.version>3.4.1</mariadb-java-client.version>
 		<greenmail.version>2.0.1</greenmail.version>
 		<stax2-api.version>4.2.2</stax2-api.version>
@@ -397,12 +396,6 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-fileupload2-jakarta-servlet6</artifactId>
 				<version>${commons-fileupload2-jakarta-servlet6.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sf.json-lib</groupId>
-				<artifactId>json-lib</artifactId>
-				<version>${json-lib.version}</version>
-				<classifier>jdk15</classifier>
 			</dependency>
 			<dependency>
 				<groupId>javax.transaction</groupId>
