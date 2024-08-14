@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id "de.undercouch.download" version "${undercouchDownloadVersion}"
+	id "de.undercouch.download" version "${undercouchDownloadVersion}"
 }
 
 apply plugin: "groovy"
@@ -41,10 +41,10 @@ task splash() {
 
 task preFlightCheck() {
 	description 'Checks dependencies'
-	dependsOn = [ "splash" ]
+	dependsOn = ["splash"]
 	doFirst {
-		if (JavaVersion.current() != project.targetCompatibility) {
-    		throw new GradleException("The java version used ${JavaVersion.current()} is not the expected version ${project.targetCompatibility}.")
+		if (JavaVersion.current() != JavaVersion.VERSION_21) {
+			throw new GradleException("The java version used ${JavaVersion.current()} is not the expected version ${project.targetCompatibility}.")
 		}
 
 		def command = "mvn -v"
@@ -61,7 +61,7 @@ task preFlightCheck() {
 
 task download() {
 	description 'Downloads dependencies if required.'
-	dependsOn = [ "preFlightCheck" ]
+	dependsOn = ["preFlightCheck"]
 	doFirst {
 		def performDownload = true
 		getDownloads().each { download ->
@@ -73,14 +73,14 @@ task download() {
 
 			if (performDownload) {
 				downloadArtifact(
-						download['name'],
-						download['url'],
-						download['destinationFile'],
-						download['checksumAlgorithm'],
-						overwriteArtifact,
-						download['verifyArtifact'] == false ? false : true /* verify artifact */,
-						download['expand'].toBoolean(),
-						download['expandFolder']
+					download['name'],
+					download['url'],
+					download['destinationFile'],
+					download['checksumAlgorithm'],
+					overwriteArtifact,
+					download['verifyArtifact'] == false ? false : true /* verify artifact */,
+					download['expand'].toBoolean(),
+					download['expandFolder']
 				)
 			}
 		}
@@ -89,7 +89,7 @@ task download() {
 
 task clone() {
 	description 'Clones the modules if required.'
-	dependsOn = [ "download" ]
+	dependsOn = ["download"]
 	doFirst {
 		getAllModules().each { module ->
 			cloneModule(module, gitUrl, shallowClone, gitBranch, gitRemote)
@@ -99,7 +99,7 @@ task clone() {
 
 task selfUpdate() {
 	description 'Updates the CrafterCMS parent project.'
-	dependsOn = [ "clone" ]
+	dependsOn = ["clone"]
 	doFirst {
 		execCommand(["git", "pull", gitRemote, gitBranch], "${projectDir}")
 	}
@@ -107,7 +107,7 @@ task selfUpdate() {
 
 task update() {
 	description 'Updates the modules.'
-	dependsOn = [ "clone" ]
+	dependsOn = ["clone"]
 	doFirst {
 		getAllModules().each { module ->
 			println "Updating $module"
@@ -120,7 +120,7 @@ task update() {
 clean() {
 	description 'Cleans the modules.'
 	mustRunAfter update
-	dependsOn = [ "clone", "installPomFiles" ]
+	dependsOn = ["clone", "installPomFiles"]
 	doFirst {
 		getBuildModules().each { module ->
 			println "Cleaning $module"
@@ -133,7 +133,7 @@ clean() {
 task installPomFiles() {
 	description 'Installs the main POMs.'
 	mustRunAfter selfUpdate
-	dependsOn = [ "preFlightCheck" ]
+	dependsOn = ["preFlightCheck"]
 	doFirst {
 		println "Installing main POMs"
 		installPoms()
@@ -143,7 +143,7 @@ task installPomFiles() {
 build() {
 	description 'Builds the modules and prepares the binaries for deployment.'
 	mustRunAfter clean
-	dependsOn = [ "clone", "installPomFiles" ]
+	dependsOn = ["clone", "installPomFiles"]
 	doFirst {
 		getBuildModules().each { module ->
 			println "Building $module"
@@ -155,7 +155,7 @@ build() {
 
 task buildBaseEnvs() {
 	description 'Build base target environments.'
-	dependsOn = [ "clone" ]
+	dependsOn = ["clone"]
 	doFirst {
 		getEnvironments().each { environment ->
 			println "Deploying the foundation of $environment"
@@ -167,7 +167,7 @@ task buildBaseEnvs() {
 
 task buildBom() {
 	description 'Builds the Software Bill of Materials (BOM).'
-	dependsOn = [ "clone", "installPomFiles" ]
+	dependsOn = ["clone", "installPomFiles"]
 	doFirst {
 		println "Build the Software Bill of Materials (BOM)"
 
@@ -184,7 +184,7 @@ task buildBom() {
 task deploy() {
 	description 'Deploys the module artifacts prepares the authoring/delivery environments.'
 	mustRunAfter build
-	dependsOn = [ "buildBaseEnvs" ]
+	dependsOn = ["buildBaseEnvs"]
 	doFirst {
 		getEnvironments().each { environment ->
 			println "Deploying $environment"
@@ -195,7 +195,7 @@ task deploy() {
 
 task upgrade() {
 	description 'Upgrades all modules and redeploys them'
-	dependsOn = [ "installPomFiles", "update", "clean", "build", "deploy" ]
+	dependsOn = ["installPomFiles", "update", "clean", "build", "deploy"]
 }
 
 task start() {
@@ -204,7 +204,7 @@ task start() {
 		getEnvironments().each { environment ->
 			println "Starting $environment"
 
-			def command = [ startCommand ]
+			def command = [startCommand]
 			if (!startSearch)
 				command += ["skipSearch"]
 			if (startMongoDB)
@@ -220,7 +220,7 @@ task stop() {
 		getEnvironments().each { environment ->
 			println "Stopping $environment"
 
-			def command = [ stopCommand ]
+			def command = [stopCommand]
 			if (!startSearch)
 				command += ["skipSearch"]
 			if (startMongoDB)
@@ -234,7 +234,7 @@ task status() {
 	description 'Reports CrafterCMS status'
 	doFirst {
 		getEnvironments().each { environment ->
-			def command = [ statusCommand ]
+			def command = [statusCommand]
 			if (!startSearch)
 				command += ["skipSearch"]
 			if (startMongoDB)
@@ -246,7 +246,7 @@ task status() {
 
 task bundle() {
 	description 'Bundles the authoring/delivery environments into tarballs for distribution.'
-	dependsOn = [ "deploy" ]
+	dependsOn = ["deploy"]
 	doFirst {
 		getEnvironments().each { environment ->
 			println "Bundling $environment"
