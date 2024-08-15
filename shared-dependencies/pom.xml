@@ -69,7 +69,6 @@
 		<jgit.version>6.10.0.202406032230-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
 		<sardine.version>5.12</sardine.version>
-		<!--xerces.version>2.12.2</xerces.version-->
 		<okio.version>3.9.0</okio.version>
 		<bouncycastle.version>1.78.1</bouncycastle.version>
 		<jackson.version>2.17.2</jackson.version>
@@ -162,6 +161,12 @@
 				<groupId>com.github.lookfirst</groupId>
 				<artifactId>sardine</artifactId>
 				<version>${sardine.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-simple</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>com.squareup.okio</groupId><!-- Override -->
