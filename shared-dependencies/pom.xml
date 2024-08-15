@@ -161,7 +161,7 @@
 				<groupId>com.github.lookfirst</groupId>
 				<artifactId>sardine</artifactId>
 				<version>${sardine.version}</version>
-				<exclusions>
+				<exclusions><!-- exclude because it breaks things -->
 					<exclusion>
 						<groupId>org.slf4j</groupId>
 						<artifactId>slf4j-simple</artifactId>
