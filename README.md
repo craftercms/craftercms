@@ -72,6 +72,7 @@ For more information on CrafterCMS Git Workflow, please review: https://github.c
 * `buildLogRotate` Build a LogRotate Docker image
 * `buildMainImages` Build the main Docker images
 * `buildAllImages` Build all the Docker images
+* `deleteDockerArtifacts` Delete all Docker artifacts (CrafterCMS and non-CrafterCMS, including containers, images, and volumes)
 
 ## 2.2 Options
 

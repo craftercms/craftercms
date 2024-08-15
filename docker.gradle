@@ -16,6 +16,8 @@
 
 import org.apache.commons.io.FilenameUtils
 
+apply from: "commons.gradle"
+
 buildscript {
 	repositories {
 		mavenCentral()
@@ -499,4 +501,12 @@ task buildMainImages(group: "Build", description: "Builds main Docker images") {
 task buildAllImages(group: "Build", description: "Builds all Docker images") {
 	dependsOn buildMainImages
 	dependsOn buildProfile
+}
+
+task deleteDockerArtifacts(group: "Build", description: "Deletes Docker build artifacts") {
+	doLast {
+		execCommand(["docker", "container", "prune", "-f"], "${projectDir}")
+		execCommand(["docker", "image", "prune", "-af"], "${projectDir}")
+		execCommand(["docker", "volume", "prune", "-af"], "${projectDir}")
+	}
 }
