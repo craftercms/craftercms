@@ -64,7 +64,7 @@
 		<commons-csv.version>1.11.0</commons-csv.version>
 		<log4j2.version>2.23.1</log4j2.version>
 		<jakarta-mail.version>2.0.1</jakarta-mail.version>
-		<junit-vintage.version>5.10.3</junit-vintage.version>
+		<junit-vintage.version>5.11.0</junit-vintage.version>
 
 		<jgit.version>6.10.0.202406032230-r</jgit.version>
 		<snakeyaml.version>2.2</snakeyaml.version>
