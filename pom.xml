@@ -65,7 +65,7 @@
 		<groovy.version>4.0.22</groovy.version>
 		<jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
 		<jakarta.servlet.jsp-api.version>3.1.1</jakarta.servlet.jsp-api.version>
-		<jakarta.servlet.jsp.jstl-api.version>3.0.1</jakarta.servlet.jsp.jstl-api.version>
+		<jakarta.servlet.jsp.jstl-api.version>3.0.2</jakarta.servlet.jsp.jstl-api.version>
 
 		<!-- Dependency Version Numbers -->
 
