@@ -369,6 +369,12 @@
 				<groupId>org.craftercms</groupId>
 				<artifactId>crafter-commons-validation</artifactId>
 				<version>${project.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.craftercms</groupId>
@@ -424,6 +430,12 @@
 				<groupId>org.craftercms</groupId>
 				<artifactId>crafter-search-opensearch</artifactId>
 				<version>${project.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.craftercms</groupId>
