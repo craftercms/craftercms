@@ -68,7 +68,7 @@
 		<junit-vintage.version>5.11.0</junit-vintage.version>
 
 		<jgit.version>6.10.0.202406032230-r</jgit.version>
-		<snakeyaml.version>2.2</snakeyaml.version>
+		<snakeyaml.version>2.3</snakeyaml.version>
 		<sardine.version>5.12</sardine.version>
 		<okio.version>3.9.0</okio.version>
 		<bouncycastle.version>1.78.1</bouncycastle.version>
