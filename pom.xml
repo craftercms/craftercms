@@ -115,7 +115,7 @@
 		<script.security.version>${project.version}</script.security.version>
 		<rome.version>1.0</rome.version>
 		<urlrewritefilter.version>5.1.3</urlrewritefilter.version>
-		<graphql-java.version>22.2</graphql-java.version>
+		<graphql-java.version>22.3</graphql-java.version>
 		<graphql-java-extended-scalars.version>22.0</graphql-java-extended-scalars.version>
 		<smiley-http-proxy-servlet.version>2.0</smiley-http-proxy-servlet.version>
 		<tinify.version>1.8.8</tinify.version>
