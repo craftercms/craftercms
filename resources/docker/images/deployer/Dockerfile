@@ -42,6 +42,10 @@ RUN addgroup -S -g 1000 crafter && adduser -s /bin/bash -D -u 1000 -G crafter cr
 # Copy bin folder
 COPY --chown=crafter:crafter ./bin ./bin/
 
+# Remove vulnerable packages
+RUN rm -f /opt/crafter/bin/groovy/lib/testng-7.5.jar; \
+    rm -f /opt/crafter/bin/groovy/lib/testng-7.5.1.jar
+
 # Replace ports for default ones
 RUN sed -i 's/8695/8983/g' ./bin/crafter-setenv.sh; \
     sed -i 's/9202/9200/g' ./bin/crafter-setenv.sh; \
