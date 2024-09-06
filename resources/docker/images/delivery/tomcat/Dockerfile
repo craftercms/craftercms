@@ -77,8 +77,7 @@ RUN addgroup -S -g 1000 crafter && adduser -s /bin/bash -D -u 1000 -G crafter cr
 COPY --chown=crafter:crafter ./bin ./bin/
 
 # Remove vulnerable packages
-RUN rm -f /opt/crafter/bin/groovy/lib/testng-7.5.jar; \
-    rm -f /opt/crafter/bin/groovy/lib/testng-7.5.1.jar
+RUN rm -f /opt/crafter/bin/groovy/lib/testng-7.5.jar
 
 # Make the Grapes dir a volume
 VOLUME /opt/crafter/bin/grapes
