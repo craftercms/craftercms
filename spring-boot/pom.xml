@@ -67,7 +67,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Version Numbers -->
-		<tomcat.version>10.1.26</tomcat.version>
+		<tomcat.version>10.1.29</tomcat.version>
 		<java.version>21</java.version>
 		<handlebars.version>4.4.0</handlebars.version>
 		<script.security.version>${project.version}</script.security.version>
