@@ -70,7 +70,7 @@
 		<jgit.version>7.0.0.202409031743-r</jgit.version>
 		<snakeyaml.version>2.3</snakeyaml.version>
 		<sardine.version>5.12</sardine.version>
-		<okio.version>3.9.0</okio.version>
+		<okio.version>3.9.1</okio.version>
 		<bouncycastle.version>1.78.1</bouncycastle.version>
 		<jackson.version>2.17.2</jackson.version>
 		<aws.sdk.version>2.27.24</aws.sdk.version>
