@@ -64,7 +64,7 @@
 
 	<properties>
 		<!-- Version Numbers -->
-		<spring-framework.version>5.3.34</spring-framework.version>
+		<spring-framework.version>5.3.40</spring-framework.version>
 		<spring-security.version>5.7.12</spring-security.version>
 		<commons.configuration.version>2.9.0</commons.configuration.version>
 		<commons.csv.version>1.10.0</commons.csv.version>
