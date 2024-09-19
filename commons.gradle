@@ -180,6 +180,32 @@ ext.buildModule = { module, unitTest ->
 	}
 }
 
+ext.deployArtifact = { module, dir, unitTest ->
+	try {
+		if (unitTest)
+			execCommand(mavenCmd + ["deploy", "-Prelease-sign-artifacts"], dir)
+		else
+			execCommand(mavenCmd + ["deploy", "-DskipTests", "-Prelease-sign-artifacts"], dir)
+	} catch (e) {
+		logger.error("Failed to deploy module: {}, exception: {}", module, e)
+		throw new GradleException("Failed to deploy module.", e)
+	}
+}
+
+ext.deployModule = { module, unitTest ->
+	def dir
+
+	if (module == "craftercms") {
+		dir = projectDir
+		deployArtifact(module, "$dir/shared-dependencies", unitTest)
+		deployArtifact(module, "$dir/spring-boot", unitTest)
+	} else {
+		dir = srcFolder + module
+	}
+
+	deployArtifact(module, dir, unitTest)
+}
+
 ext.buildBom = { module ->
 	def dir = srcFolder + module
 

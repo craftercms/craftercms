@@ -153,6 +153,18 @@ build() {
 	}
 }
 
+task deployToMaven() {
+	description 'Deploys the modules to Maven Central.'
+	dependsOn = ["clone", "installPomFiles"]
+	doFirst {
+		getDeployToMavenModules().each { module ->
+			println "Deploying $module"
+
+			deployModule(module, unitTest)
+		}
+	}
+}
+
 task buildBaseEnvs() {
 	description 'Build base target environments.'
 	dependsOn = ["clone"]
