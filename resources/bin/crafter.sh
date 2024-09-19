@@ -431,14 +431,14 @@ function doBackup() {
   if [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]]; then
     banner "Backing up external DB"
 
-    # Check that the mysqldump is in the path
-    if type "mysqldump" >/dev/null 2>&1; then
+    # Check that the mariadb-dump is in the path
+    if type "mariadb-dump" >/dev/null 2>&1; then
       export MYSQL_PWD=$MARIADB_PASSWD
-      mysqldump --databases crafter --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
-      mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
+      mariadb-dump --databases crafter --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
+      mariadb-dump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
       abortOnError
     else
-      cecho "External DB backup failed, unable to find mysqldump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed\n" "error"
+      cecho "External DB backup failed, unable to find mariadb-dump in the PATH. Please make sure you have a proper MariaDB/MySQL client installed\n" "error"
       exit 13
     fi
   elif [ -d "$MARIADB_DATA_DIR" ]; then
@@ -455,8 +455,8 @@ function doBackup() {
     #Do dump
     banner "Backing up embedded DB"
     export MYSQL_PWD=$MARIADB_ROOT_PASSWD
-    "$CRAFTER_BIN_DIR"/dbms/bin/mysqldump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
-    "$CRAFTER_BIN_DIR"/dbms/bin/mysqldump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
+    "$CRAFTER_BIN_DIR"/dbms/bin/mariadb-dump --databases crafter --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --routines > "$tempFolder/crafter.sql"
+    "$CRAFTER_BIN_DIR"/dbms/bin/mariadb-dump --user=$MARIADB_ROOT_USER --password=$MARIADB_ROOT_PASSWD --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --skip-add-drop-table --no-create-info --insert-ignore --complete-insert mysql user db global_priv -r $tempFolder/users.sql
     abortOnError
 
     if [ "$DB_STARTED" = true ]; then
@@ -673,18 +673,18 @@ function doRestore() {
     if [[ $SPRING_PROFILES_ACTIVE = *crafter.studio.externalDb* ]]; then
       banner "Restoring external DB"
 
-      # Check that the mysql is in the path
-      if type "mysql" >/dev/null 2>&1; then
+      # Check that the mariadb is in the path
+      if type "mariadb" >/dev/null 2>&1; then
         export MYSQL_PWD=$MARIADB_PASSWD
-        mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
+        mariadb --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
         if [ -f "$tempFolder/users.sql" ]; then
-          mysql --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
+          mariadb --user=$MARIADB_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
         else
           cecho "Users backup does not exists. Skipping restore users\n" "warning"
         fi
         abortOnError
       else
-        cecho "External DB restore failed, unable to find mysql in the PATH. Please make sure you have a proper MariaDB/MySQL client installed\n" "error"
+        cecho "External DB restore failed, unable to find mariadb in the PATH. Please make sure you have a proper MariaDB/MySQL client installed\n" "error"
         exit 17
       fi
     else
@@ -697,9 +697,9 @@ function doRestore() {
       # Import
       banner "Restoring embedded DB"
       export MYSQL_PWD=$MARIADB_ROOT_PASSWD
-      $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
+      $CRAFTER_BIN_DIR/dbms/bin/mariadb --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode < "$tempFolder/crafter.sql"
       if [ -f "$tempFolder/users.sql" ]; then
-        $CRAFTER_BIN_DIR/dbms/bin/mysql --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
+        $CRAFTER_BIN_DIR/dbms/bin/mariadb --user=$MARIADB_ROOT_USER --host=$MARIADB_HOST --port=$MARIADB_PORT --protocol=tcp --binary-mode mysql < "$tempFolder/users.sql"
       else
         cecho "Users backup does not exists. Skipping restore users\n" "warning"
       fi
@@ -857,8 +857,7 @@ function createOpenSearchDocker() {
     cecho "Docker image $SEARCH_DOCKER_NAME found, unable to start. Please remove this image before starting.\n To remove the image, run: docker rm $SEARCH_DOCKER_NAME\n" "error"
     exit 21
   else
-    docker create -p $SEARCH_PORT:9200 -e "discovery.type=single-node" -e "DISABLE_SECURITY_PLUGIN=true" -v "$SEARCH_INDEXES_DIR":/usr/share/opensearch/data/ --name "$SEARCH_DOCKER_NAME"
-    opensearchproject/opensearch:2.15.0 > /dev/null 2>&1
+    docker create -p $SEARCH_PORT:9200 -e "discovery.type=single-node" -e "DISABLE_SECURITY_PLUGIN=true" -v "$SEARCH_INDEXES_DIR":/usr/share/opensearch/data/ --name "$SEARCH_DOCKER_NAME" opensearchproject/opensearch:2.15.0 > /dev/null 2>&1
   fi
 }
 

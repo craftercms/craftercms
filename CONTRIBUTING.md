@@ -1,7 +1,7 @@
 # CrafterCMS Contribution Guidelines
 
 ## General Policy
-CrafterCMS is happy to accept outside contributions of code, documentation, artistic work or other work that helps the project.
+CrafterCMS is happy to accept outside contributions of code, documentation, artistic work, or other work that helps the project.
 
 Contributing to the project means:
 * You'll be given full credit for your work.
