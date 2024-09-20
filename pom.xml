@@ -154,7 +154,7 @@
 		<poi.version>5.2.3</poi.version>
 		<metadata.extractor.version>2.18.0</metadata.extractor.version>
 		<jsoup.version>1.16.1</jsoup.version>
-		<protobuf.java.version>3.22.4</protobuf.java.version>
+		<protobuf.java.version>3.25.5</protobuf.java.version>
 		<unit.api.version>2.1.3</unit.api.version>
 		<javax.inject.version>1</javax.inject.version>
 		<hazelcast.version>5.3.5</hazelcast.version>
