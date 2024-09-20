@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2007-2021 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -17,7 +17,7 @@
 # Function to run commands as 'crafter' if the current user is not 'crafter'
 run_as() {
     if [ "$(id -u)" != "$(id -u crafter)" ]; then
-        exec su crafter -c "$@"
+        exec su crafter -c "$*"
     else
         exec "$@"
     fi
@@ -53,9 +53,9 @@ fi
 export HOME=/home/crafter
 
 if [ "$1" = 'run' ]; then
-    run_as "$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run"
+    run_as $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run
 elif [ "$1" = 'debug' ]; then
-    run_as "$CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda run"
+    run_as $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda run
 else
     exec "$@"
 fi
