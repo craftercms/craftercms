@@ -599,7 +599,8 @@ def authoringTokens = [
   VERSION              : project.version,
   GIT_BUILD_ID         : gitRevisionId,
   SMTP_PORT            : String.valueOf(authoringSmtpPort),
-  MARIADB_VERSION      : String.valueOf(mariaDbVersion)
+  MARIADB_VERSION      : String.valueOf(mariaDbVersion),
+  SEARCH_VERSION       : String.valueOf(openSearchVersion)
 ]
 
 def deliveryTokens = [
@@ -616,7 +617,8 @@ def deliveryTokens = [
   ENV                  : "delivery",
   VERSION              : project.version,
   GIT_BUILD_ID         : gitRevisionId,
-  SMTP_PORT            : String.valueOf(deliverySmtpPort)
+  SMTP_PORT            : String.valueOf(deliverySmtpPort),
+  SEARCH_VERSION       : String.valueOf(openSearchVersion)
 ]
 
 ext.getEnvironments = { ->
