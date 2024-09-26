@@ -526,13 +526,7 @@ def upgrade(Path targetFolder) {
     println "========================================================================"
     println "Upgrade completed"
     println "========================================================================"
-    if ((oldSemver.satisfies('3.1.x') || oldSemver.satisfies('4.0.x') || oldSemver.satisfies('4.1.x')) && newSemver.equals(new Semver('4.2.0'))) {
-        println "!!! Please read the release notes and make any necessary manual changes, then run the following scripts in order:"
-        println "!!! 1. Please run the database upgrade script: ${binFolder.toAbsolutePath()}/crafter.sh upgradedb !!!"
-        println "!!! 2. Please run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh !!!"
-    } else {
-        println "!!! Please read the release notes and make any necessary manual changes, then run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh !!!"
-    }
+    println "!!! Please read the release notes and make any necessary manual changes, then run the post upgrade script: ${binFolder.toAbsolutePath()}/upgrade/post-upgrade.sh !!!"
 
 }
 

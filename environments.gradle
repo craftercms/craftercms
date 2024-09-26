@@ -598,7 +598,8 @@ def authoringTokens = [
   ENV                  : "authoring",
   VERSION              : project.version,
   GIT_BUILD_ID         : gitRevisionId,
-  SMTP_PORT            : String.valueOf(authoringSmtpPort)
+  SMTP_PORT            : String.valueOf(authoringSmtpPort),
+  MARIADB_VERSION      : String.valueOf(mariaDbVersion)
 ]
 
 def deliveryTokens = [
