@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+# Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as published by
@@ -752,6 +752,37 @@ function doUpgradeDB() {
   fi
 }
 
+function doUpgradeDBIfNeeded() {
+  banner "Check if upgrade is needed for embedded database $MARIADB_DATA_DIR"
+  if checkIfDBUpgradeIsNeeded; then
+    doUpgradeDB "$@"
+  fi
+}
+
+function checkIfDBUpgradeIsNeeded() {
+  if [ ! -f "$CRAFTER_DATA_DIR"/db/mariadb_upgrade_info ]; then
+  		echo "MariaDB upgrade information missing, assuming required"
+  		return 0
+  fi
+  mariadbVersion="@MARIADB_VERSION@"
+
+  read -r dataCurrentVersion < "$CRAFTER_DATA_DIR"/db/mariadb_upgrade_info || true
+
+  IFS='.-' read -ra newversion <<<"$mariadbVersion"
+  IFS='.-' read -ra oldversion <<<"$dataCurrentVersion"
+
+  if [[ ${#newversion[@]} -lt 2 ]] || [[ ${#oldversion[@]} -lt 2 ]] \
+    || [[ ${oldversion[0]} -lt ${newversion[0]} ]] \
+    || [[ ${oldversion[0]} -eq ${newversion[0]} && ${oldversion[1]} -lt ${newversion[1]} ]]; then
+      cecho "DB version ${dataCurrentVersion}, new DB engine version ${mariadbVersion}\n" "strong"
+      cecho "MariaDB upgrade REQUIRED\n" "strong"
+      return 0
+  fi
+  cecho "DB version ${dataCurrentVersion} is up to date with new DB engine version ${mariadbVersion}\n" "strong"
+  cecho "MariaDB upgrade is not REQUIRED\n" "strong"
+  return 1
+}
+
 # Help for those who need it
 function help() {
   cecho "$(basename $BASH_SOURCE)\n\n" "strong"
@@ -796,6 +827,7 @@ function help() {
   cecho "    backup <name>, Perform a backup of all data\n" "info"
   cecho "    restore <file>, Perform a restore of all data\n" "info"
   cecho "    upgradedb, Perform database upgrade (mariadb-upgrade)\n" "info"
+  cecho "    upgradedb_if_needed, Perform database upgrade (mariadb-upgrade) is required\n" "info"
   cecho "    \n" "info"
   cecho "    To log output to a file, set the environment variable CRAFTER_SCRIPT_LOG to point to a log file\n" "info"
   exit 18;
@@ -1187,10 +1219,12 @@ function executeAction() {
   case $1 in
     debug)
       splash
+      doUpgradeDBIfNeeded $2
       debug "$@"
     ;;
     start)
       splash
+      doUpgradeDBIfNeeded $2
       start "$@"
     ;;
     stop)
@@ -1238,10 +1272,12 @@ function executeAction() {
     ;;
     debug_tomcat)
       splash
+      doUpgradeDBIfNeeded $2
       debugTomcat
     ;;
     start_tomcat)
       splash
+      doUpgradeDBIfNeeded $2
       startTomcat start
     ;;
     stop_tomcat)
@@ -1282,6 +1318,9 @@ function executeAction() {
     ;;
     upgradedb)
       doUpgradeDB $2
+    ;;
+    upgradedb_if_needed)
+      doUpgradeDBIfNeeded $2
     ;;
     status_engine)
       engineStatus
