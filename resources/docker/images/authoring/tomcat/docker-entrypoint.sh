@@ -121,8 +121,10 @@ if [ -d $TRUSTED_CERTS_DIR ]; then
 fi
 
 if [ "$1" = 'run' ]; then
+    su crafter -c "$CRAFTER_BIN_DIR/crafter.sh upgradedb_if_needed"
     run_as $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh run
 elif [ "$1" = 'debug' ]; then
+    su crafter -c "$CRAFTER_BIN_DIR/crafter.sh upgradedb_if_needed"
     run_as $CRAFTER_BIN_DIR/apache-tomcat/bin/catalina.sh jpda run
 elif [ "$1" = 'backup' ]; then
     run_as $CRAFTER_BIN_DIR/crafter.sh backup
