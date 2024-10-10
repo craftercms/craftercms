@@ -26,7 +26,7 @@ ENV CRON_SCHEDULE='0 * * * *' \
 RUN apk update && apk upgrade
 
 # Install dependencies
-RUN apk add --no-cache bash shadow logrotate tini gettext libintl vim nano dcron libcap
+RUN apk add --no-cache bash shadow logrotate tini gettext libintl nano dcron libcap
 
 # Add the Crafter user
 RUN addgroup -S -g 1000 crafter && adduser -S -D -u 1000 -G crafter crafter;

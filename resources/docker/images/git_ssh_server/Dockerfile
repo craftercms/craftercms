@@ -17,7 +17,7 @@ FROM alpine:3.20 AS main
 RUN apk update && apk upgrade
 
 # Install dependencies
-RUN apk add --no-cache bash shadow openssh git su-exec vim nano
+RUN apk add --no-cache bash shadow openssh git su-exec nano
 
 # Create folders for crafter user
 RUN mkdir -p /opt/crafter/data
