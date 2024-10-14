@@ -1022,7 +1022,7 @@ function stopTomcat() {
 
 function startMongoDB() {
   module="MongoDB"
-  executable="\$0/bin/mongod --dbpath=\$1/mongodb --directoryperdb --fork --journal --logpath=\$2/mongod.log --port \$3"
+  executable="\$0/bin/mongod --dbpath=\$1/mongodb --directoryperdb --fork --logpath=\$2/mongod.log --port \$3"
   port=$MONGODB_PORT
   foldersToCreate=("$MONGODB_DATA_DIR" "$MONGODB_LOGS_DIR")
   pidFile="$MONGODB_PID"
