@@ -55,7 +55,13 @@ public class ConfigAwareCookieLocaleResolver implements LocaleResolver {
 			return locale;
 		}
 		CookieLocaleResolver delegate = new CookieLocaleResolver(getCookieName());
-		delegate.setDefaultLocaleFunction(r -> getDefaultLocaleFromConfig());
+		delegate.setDefaultLocaleFunction(r -> {
+			Locale defaultLocale = getDefaultLocaleFromConfig();
+			if (defaultLocale != null) {
+				return defaultLocale;
+			}
+			return r.getLocale();
+		});
 
 		return delegate.resolveLocale(request);
 	}
