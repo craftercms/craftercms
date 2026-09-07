@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+  * Copyright (C) 2007-2026 Crafter Software Corporation. All Rights Reserved.
   *
   * This program is free software: you can redistribute it and/or modify
   * it under the terms of the GNU General Public License version 3 as published by
@@ -298,6 +298,10 @@
         <constructor-arg name="dateConverter" ref="crafter.stringToUtcDateConverter"/>
     </bean>
 
+    <bean id="crafter.includeByUrlItemPredicate" class="org.craftercms.engine.util.predicates.IncludeByUrlPredicate">
+        <constructor-arg name="includeRegexes" value="${crafter.engine.site.default.descriptors.allowed.paths}"/>
+    </bean>
+
     <bean id="crafter.excludeLevelDescriptorItemFilter" class="org.craftercms.engine.service.filter.ExcludeByNameItemFilter">
         <constructor-arg name="excludeRegex"
                          value="${crafter.core.merger.strategy.inheritLevels.levelDescriptor.name}"/>
@@ -315,10 +319,15 @@
         <constructor-arg name="predicate" ref="crafter.expiredDtItemPredicate"/>
     </bean>
 
+    <bean id="crafter.includeByUrlItemFilter" class="org.craftercms.engine.util.predicates.PredicateBasedFilter">
+        <constructor-arg name="predicate" ref="crafter.includeByUrlItemPredicate"/>
+    </bean>
+
     <util:list id="crafter.defaultItemPredicates">
         <ref bean="crafter.disabledItemPredicate"/>
         <ref bean="crafter.expiredItemPredicate"/>
         <ref bean="crafter.expiredDtItemPredicate"/>
+		<ref bean="crafter.includeByUrlItemPredicate"/>
     </util:list>
 
     <util:list id="crafter.defaultItemFilters">
