@@ -80,6 +80,9 @@ import { ensureSingleSlash } from '../../../utils/string';
 import { isPagePath } from '../../../utils/path';
 import { nou } from '../../../utils/object';
 
+/**
+ * Returns the scroll container for the form's container.
+ **/
 export function getScrollContainer(container: HTMLElement): HTMLElement {
 	const mainContent = container.querySelector('[data-area-id="formMainContent"]');
 	return mainContent instanceof HTMLElement ? mainContent : container;
