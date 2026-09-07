@@ -105,7 +105,6 @@ import {
 	internalLockContentService,
 	internalUnlockContentService,
 	prepareEmbeddedItemForm,
-	produceCreationMessage,
 	setFieldAtoms,
 	useUnlockOnClose,
 	useValidateFormProps
@@ -496,7 +495,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
 				fileName: atom(''),
 				// Default version comment for new content.
-				versionComment: atom(produceCreationMessage('', formatMessage))
+				versionComment: atom(generateDefaultCreationComment('', formatMessage))
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
 			const values = createParsedValuesObject(
@@ -728,7 +727,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	});
 	// Holds the create mode comment generated last, so that a comment written by the user isn't overwritten. Starts off
 	// with the default comment the version comment atom was created with.
-	const lastCreationCommentRef = useRef(produceCreationMessage('', formatMessage));
+	const lastCreationCommentRef = useRef(generateDefaultCreationComment('', formatMessage));
 	const [collapseHeader, setCollapseHeader] = useState(false);
 	const [saveAsDraftAction, setSaveAsDraftAction] = useState(false);
 	const [invalidForm, setInvalidForm] = useState(false);
@@ -767,9 +766,9 @@ function FormOrchestrator(props: FormsEngineProps) {
 			if (isCreateMode) {
 				const newMessage = generateDefaultCreationComment(
 					store.get(effectRefs.current.fileNameAtom),
+					formatMessage,
 					store.get(versionCommentAtom).trim(),
 					lastCreationCommentRef.current,
-					formatMessage
 				);
 				if (newMessage) {
 					lastCreationCommentRef.current = newMessage;

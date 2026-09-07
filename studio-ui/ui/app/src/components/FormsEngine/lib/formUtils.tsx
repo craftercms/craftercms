@@ -797,16 +797,6 @@ export function generateDefaultChangesComment(
 }
 
 /**
- * Produces the "save comment" for content being created at the supplied page URL (file name). An empty page URL
- * produces the generic comment new content forms start off with.
- **/
-export function produceCreationMessage(pageUrl: string, formatMessage: IntlShape['formatMessage']): string {
-	return pageUrl
-		? formatMessage({ defaultMessage: 'Created {pageUrl}' }, { pageUrl })
-		: formatMessage({ defaultMessage: 'Created content' });
-}
-
-/**
  * Generates the default "save comment" for content being created, based on the page URL (file name) it will be
  * created at.
  * @param pageUrl The current value of the file name field.
@@ -816,13 +806,18 @@ export function produceCreationMessage(pageUrl: string, formatMessage: IntlShape
  **/
 export function generateDefaultCreationComment(
 	pageUrl: string,
-	currentMessage: string,
-	lastGeneratedMessage: string,
-	formatMessage: IntlShape['formatMessage']
+	formatMessage: IntlShape['formatMessage'],
+	currentMessage?: string,
+	lastGeneratedMessage?: string,
 ): string | undefined {
 	const newMessage = pageUrl
 		? formatMessage({ defaultMessage: 'Created {pageUrl}' }, { pageUrl })
 		: formatMessage({ defaultMessage: 'Created content' });
+
+	if (!currentMessage || !lastGeneratedMessage) {
+		return newMessage;
+	}
+		
 	if (
 		// Nothing to change
 		currentMessage === newMessage ||
