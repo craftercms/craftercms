@@ -152,7 +152,7 @@ public class HttpMessageConvertingResponseWriter {
     protected MediaType getMostSpecificMediaType(MediaType acceptType, MediaType produceType) {
         produceType = produceType.copyQualityValue(acceptType);
 
-		return acceptType.isMoreSpecific(produceType) ? acceptType : produceType;
+		return acceptType.isLessSpecific(produceType) ? produceType : acceptType;
     }
 
     /**
