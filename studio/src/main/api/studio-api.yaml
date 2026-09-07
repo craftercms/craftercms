@@ -2171,7 +2171,7 @@ paths:
             summary: Check if a site exists
             description: |
                     Module: Studio <br>
-                    Required permission "site_member"
+                    Required permission "LOGGED_IN"
             operationId: siteExists
             tags:
                 - sites
