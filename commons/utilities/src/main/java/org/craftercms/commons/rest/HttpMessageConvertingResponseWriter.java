@@ -157,7 +157,7 @@ public class HttpMessageConvertingResponseWriter {
 
     /**
      * Return the media types supported by all provided message converters sorted by specificity via
-     * {@link MediaTypeUtils#sortBySpecificity(List)}.
+     * {@link MimeTypeUtils#sortBySpecificity(List)}.
      */
     protected List<MediaType> getAllSupportedMediaTypes(List<HttpMessageConverter<?>> messageConverters) {
         Set<MediaType> allSupportedMediaTypes = new LinkedHashSet<MediaType>();
