@@ -272,7 +272,7 @@ When the second argument is a configuration object, depth defaults to `1`.
 | Parameters    |                |
 | ------------- |:--------------:|
 | path          | The folder’s path |
-| depth         | Amount of levels to include. Optional when omitted or when config is passed as the second argument. Default is `1` |
+| depth         | Amount of levels to include. Optional. When omitted or when config is passed as the second argument, default is `1` |
 | config        | Crafter configuration. Optional. Default value in [here](https://github.com/craftersoftware/craftercms/blob/support/4.x/js-sdk/packages/models/README.md#CrafterConfig). |
 
 #### Returns
