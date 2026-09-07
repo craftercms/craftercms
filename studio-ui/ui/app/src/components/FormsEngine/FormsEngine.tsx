@@ -1013,7 +1013,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 							))
 						)}
 						{/* Spacer & back to top */}
-						<FormBackToTop containerRef={containerRef} />
+						<FormBackToTop containerRef={containerRef} getScrollContainer={getScrollContainer} />
 					</Grid>
 					<Grid size="grow">
 						<StickyBox className="space-y" sx={{ height: 'auto' }}>
