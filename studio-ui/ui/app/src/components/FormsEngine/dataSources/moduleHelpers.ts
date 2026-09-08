@@ -193,10 +193,10 @@ export function toAssetSelection(item: unknown): DataSourceAssetSelection {
 		}
 		const name = meta.name ?? (typeof candidate.name === 'string' ? candidate.name : '');
 		const path = meta.path ?? '';
-		if (!path && !name) {
+		if (!path) {
 			throw new Error('Unable to map data-source result to an asset selection: missing path.');
 		}
-		const relativeUrl = path && name ? `${path.replace(/\/$/, '')}/${name}` : path || name;
+		const relativeUrl = path; // `path` includes the full path to the file, including the filename
 		return {
 			kind: 'asset',
 			relativeUrl,
@@ -287,7 +287,11 @@ export function createBrowseAction(options: {
 				path: expanded,
 				contentTypes,
 				mimeTypes,
-				multiSelect: (ctx.remainingCapacity ?? 2) !== 1
+				multiSelect: (ctx.remainingCapacity ?? 2) !== 1,
+				initialParameters: {
+					sortBy: options.meta?.sortBy,
+					sortOrder: options.meta?.sortOrder
+				}
 			});
 			if (!items.length) return null;
 			return selection === 'asset' ? toAssetSelections(items) : toItemSelections(items);
@@ -367,7 +371,10 @@ export function createSearchAction(options: {
 		},
 		async run(ctx) {
 			const expanded = toSearchPath(expandPathOrRaw(ctx, path));
-			const initialParameters: Record<string, unknown> = {};
+			const initialParameters: Record<string, unknown> = {
+				sortBy: options.meta?.sortBy,
+				sortOrder: options.meta?.sortOrder
+			};
 			if (mimeTypes?.length) {
 				initialParameters.filters = { 'mime-type': mimeTypes };
 			}

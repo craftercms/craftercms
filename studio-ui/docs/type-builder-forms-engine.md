@@ -311,6 +311,8 @@ Additional current FE control gaps:
 - `hasJsController` is parsed onto the `ContentType` model but not consumed by React FE
 - Item/media controls group resolved actions by manager binding + intent (browse/search/upload/create). Every displayed choice retains its owning action; plugin `MenuItem`/`Dialog` actions use a standalone custom lane.
 
+**System-field catalog vs FE2 render type:** TB palette entries `disabled` and `internal-name` are not meant to be separate FE2 control implementations. On insert, `getNewFieldFromDescriptor` applies `systemFieldsTypesMap` (`disabled` → `checkbox`, `internal-name` → `input`) and locks the field id via `systemFieldsIdsMap` / `readOnlyFieldsIds`. Persisted form-definition `type` is therefore the remapped built-in; FE2 `controlMap` renders `Checkbox` / `Text`. Unused legacy stubs `link-input`, `link-textarea`, and `linked-dropdown` were removed from the built-in maps/descriptors.
+
 `proposal.xml` sketches a `craftercms.components.FormsEngine` widget with a configurable control/validator map, but no current new-FE code path was found that reads that widget configuration.
 
 #### Data sources
@@ -339,7 +341,7 @@ Built-in `DataSourceModule`s are registered for all TB descriptors (except dead 
 - `buildActionGroups` creates one presentation group per manager binding + intent while retaining an owner-bound `DataSourceActionChoice` for every concrete option.
 - NodeSelector keeps its richer create/type/path picker, but browse/search/upload and create acceptance invoke the selected owning action. Duplicate-looking create destinations expose the contributing datasource rather than silently merging behavior.
 - ImagePicker, VideoPicker, TranscodedVideoPicker, and RTE use grouped choices; custom `MenuItem`/`Dialog` actions remain standalone.
-- Dropdown / CheckboxGroup / LinkedDropdown use `instance.list`. Dropdown/LinkedDropdown may render multiple bound list groups; CheckboxGroup follows the TB/legacy single-datasource contract and uses the first list group only.
+- Dropdown / CheckboxGroup use `instance.list`. Dropdown may render multiple bound list groups; CheckboxGroup follows the TB/legacy single-datasource contract and uses the first list group only.
 - `createContent` resolves after the nested form saves or closes, allowing create actions to return semantic selections to the control.
 
 Legacy item-picker summaries are now a NodeSelector presentation adapter only. They carry owner-bound choices and are not an execution contract. Metadata-only media consolidation is retired.
@@ -633,6 +635,8 @@ Separate **completed design decisions** (`[x]`) from **remaining implementation 
 - [x] **Form-controller design** — type-local FE2 ESM (`FormController` hooks), fetch via form_controller API, not `PluginDescriptor`. See §5.9. Implementation still open (below).
 - [x] **Control-plugin ownership** — after `importPlugin()`, ownership is validated against loaded `PluginDescriptor.id` (not the form-definition locator `pluginId`). See `controlPluginLoader.ts`.
 - [x] **Atomic FE plugin registration** — `registerPlugin` preflights all DS + control contributions before any registry commit.
+- [x] **Retire unused built-in controls** — remove `link-input`, `link-textarea`, and `linked-dropdown` from `BuiltInControlType` / FE2 `controlMap`, DS bindings, validators/retrievers/serializers, and TB descriptors (unused; not in BPs).
+- [x] **System-field control remapping** — TB does not need dedicated FE2 renderers for `disabled` / `internal-name`. On insert, `systemFieldsTypesMap` in `ContentTypeManagement/utils.ts` remaps `disabled` → `checkbox` and `internal-name` → `input`; `systemFieldsIdsMap` / `readOnlyFieldsIds` lock the field id (e.g. variable name `disabled`) as non-editable. FE2 therefore renders via the remapped built-in (`Checkbox` / `Text`). `controlMap` may still list those catalog ids as `null`; that is expected — persisted form-definition `type` is the remapped control.
 
 ### Remaining implementation / validation
 
@@ -660,6 +664,7 @@ Separate **completed design decisions** (`[x]`) from **remaining implementation 
 
 Keep newest first. One short bullet per meaningful session.
 
+- **2026-08-06** — Controls cleanup (`7418`): retired unused `link-input` / `link-textarea` / `linked-dropdown` from FE2 maps + TB descriptors. Closed the former “non-rendering control-map entries” open item: those three are removed; `disabled` / `internal-name` remain TB catalog ids that remap on insert via `systemFieldsTypesMap` to `checkbox` / `input` (locked field ids). Documented under completed design decisions.
 - **2026-08-05** — Implemented WebDAV uploads (`img-WebDAV-upload`, `video-WebDAV-upload`, `WebDAV-upload`) on `uploadExternalAssets` (`profileType: 'webdav'`). Removed emptied `remoteStubs.ts`; only `video-S3-transcoding` remains as a hard-fail stub.
 - **2026-08-05** — Implemented `S3-upload` FE2 upload (`item` selection, no file-type filter) on the shared `uploadExternalAssets` path.
 - **2026-08-05** — Implemented `img-S3-upload` FE2 upload (`IMAGE_MIME_TYPES`, `profileType: 'aws'`) on the shared `uploadExternalAssets` path.
