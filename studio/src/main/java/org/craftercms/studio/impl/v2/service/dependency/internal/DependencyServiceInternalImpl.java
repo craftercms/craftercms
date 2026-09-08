@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2024 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2026 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -18,6 +18,7 @@ package org.craftercms.studio.impl.v2.service.dependency.internal;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.craftercms.commons.security.permissions.PermissionEvaluator;
 import org.craftercms.studio.api.v1.constant.DmConstants;
 import org.craftercms.studio.api.v1.exception.ServiceLayerException;
 import org.craftercms.studio.api.v1.service.GeneralLockService;
@@ -32,6 +33,7 @@ import org.craftercms.studio.api.v2.dal.DependencyDAO;
 import org.craftercms.studio.api.v2.dal.RetryingDatabaseOperationFacade;
 import org.craftercms.studio.api.v2.service.dependency.internal.DependencyServiceInternal;
 import org.craftercms.studio.api.v2.service.item.internal.ItemServiceInternal;
+import org.craftercms.studio.api.v2.service.security.SecurityService;
 import org.craftercms.studio.api.v2.utils.StudioConfiguration;
 import org.craftercms.studio.impl.v1.util.ContentUtils;
 import org.craftercms.studio.model.rest.content.DependencyItem;
@@ -55,6 +57,9 @@ import static org.craftercms.studio.api.v2.dal.ItemState.MODIFIED_MASK;
 import static org.craftercms.studio.api.v2.dal.ItemState.NEW_MASK;
 import static org.craftercms.studio.api.v2.utils.StudioConfiguration.CONFIGURATION_DEPENDENCY_ITEM_SPECIFIC_PATTERNS;
 import static org.craftercms.studio.impl.v2.utils.DependencyUtils.isValidDependencyPath;
+import static org.craftercms.studio.permissions.StudioPermissionsConstants.PATH_RESOURCE_ID;
+import static org.craftercms.studio.permissions.StudioPermissionsConstants.PERMISSION_PUBLISH;
+import static org.craftercms.studio.permissions.StudioPermissionsConstants.SITE_ID_RESOURCE_ID;
 
 public class DependencyServiceInternalImpl implements DependencyServiceInternal {
 
@@ -68,21 +73,29 @@ public class DependencyServiceInternalImpl implements DependencyServiceInternal 
     private ServicesConfig servicesConfig;
     private GeneralLockService generalLockService;
     private RetryingDatabaseOperationFacade retryingDatabaseOperationFacade;
+	private PermissionEvaluator permissionEvaluator;
+	private SecurityService securityService;
 
     @Override
     @LogExecutionTime
     public Collection<String> getSoftDependencies(String site, List<String> paths) {
         logger.trace("Get all soft dependencies for site '{}' paths '{}'", site, paths);
         Set<String> pathsParams = new HashSet<>(paths);
-        Set<String> result = new HashSet<>();
-        List<Map<String, String>> deps = dependencyDao.getSoftDependenciesForList(site, pathsParams, getItemSpecificDependenciesPatterns(),
-                MODIFIED_MASK, NEW_MASK);
-        for (Map<String, String> d : deps) {
-            String targetPath = d.get(TARGET_PATH_COLUMN_NAME);
-            if (!pathsParams.contains(targetPath)) {
-                result.add(targetPath);
-            }
-        }
+		Set<String> result = new HashSet<>();
+		List<Map<String, String>> deps = dependencyDao.getSoftDependenciesForList(site, pathsParams,
+				getItemSpecificDependenciesPatterns(),
+				MODIFIED_MASK, NEW_MASK);
+		for (Map<String, String> d : deps) {
+			String targetPath = d.get(TARGET_PATH_COLUMN_NAME);
+			if (!pathsParams.contains(targetPath)) {
+				Object resource = Map.of(SITE_ID_RESOURCE_ID, site, PATH_RESOURCE_ID, targetPath);
+				boolean hasPermission = permissionEvaluator.isAllowed(securityService.getCurrentUser(), resource,
+						PERMISSION_PUBLISH);
+				if (hasPermission) {
+					result.add(targetPath);
+				}
+			}
+		}
         return result;
     }
 
@@ -344,4 +357,12 @@ public class DependencyServiceInternalImpl implements DependencyServiceInternal 
     public void setRetryingDatabaseOperationFacade(RetryingDatabaseOperationFacade retryingDatabaseOperationFacade) {
         this.retryingDatabaseOperationFacade = retryingDatabaseOperationFacade;
     }
+
+	public void setPermissionEvaluator(PermissionEvaluator permissionEvaluator) {
+		this.permissionEvaluator = permissionEvaluator;
+	}
+
+	public void setSecurityService(SecurityService securityService) {
+		this.securityService = securityService;
+	}
 }
