@@ -119,7 +119,7 @@ export function useSaveForm(props: UseSaveFormProps) {
 		};
 		// Bootstrap may have recorded preload failures for this form instance. Clear them and let the
 		// preload below re-attempt the import; `controlPluginCache` drops failed entries so a retry is possible.
-		stableFormContext.affectedPluginControlFields = null;
+		stableFormContext.affectedPluginControlFields = [];
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const validityStates = await Promise.all(
 			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
