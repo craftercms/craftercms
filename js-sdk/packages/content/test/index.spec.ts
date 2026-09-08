@@ -19,7 +19,10 @@ import {
   NavigationService,
   UrlTransformationService,
   parseDescriptor,
-  extractContent, parseProps, parseFieldValue, preParseSearchResults
+  extractContent,
+  parseProps,
+  parseFieldValue,
+  preParseSearchResults
 } from '@craftercms/content';
 import { crafterConf } from '@craftercms/classes';
 import 'url-search-params-polyfill';
@@ -29,8 +32,8 @@ import * as nock from 'nock';
 
 // https://github.com/nock/nock/issues/2397
 import fetch, { Headers, Request, Response } from 'node-fetch';
-import {item2, parsedItem, parsedSearchHit, unparsedSearchHit} from "../../../util/mock-responses-common";
-import {ContentInstance} from "../../../dist/packages/models";
+import { item2, parsedItem, parsedSearchHit, unparsedSearchHit } from '../../../util/mock-responses-common';
+import { ContentInstance } from '../../../dist/packages/models';
 
 if (!globalThis.fetch) {
   (globalThis as any).fetch = fetch;
@@ -64,7 +67,8 @@ describe('Engine Client', () => {
           .get(endpoints.GET_ITEM_URL)
           .query({
             crafterSite,
-            url: '/site/website/index.xml'
+            url: '/site/website/index.xml',
+            flatten: false
           })
           .reply(200, item);
 
@@ -81,28 +85,6 @@ describe('Engine Client', () => {
       });
     });
 
-    describe('getDescriptor', () => {
-      // Tests the contentStore getDescriptor method. Checks that it returns the index descriptor of the site editorial.
-      it('return the index descriptor', (done) => {
-        nock(baseUrl)
-          .get(endpoints.GET_DESCRIPTOR)
-          .query({
-            crafterSite,
-            flatten: false,
-            url: '/site/website/index.xml'
-          })
-          .reply(200, descriptor);
-
-        ContentStoreService.getDescriptor('/site/website/index.xml').subscribe(
-          (respDescriptor) => {
-            expect(respDescriptor).to.not.be.null;
-            expect(respDescriptor.page.objectId).to.equal(descriptor.page.objectId);
-            done();
-          }
-        );
-      });
-    });
-
     describe('getChildren', () => {
       // Tests the contentStore getChildren method. Checks that it returns the children of the index page of the site editorial.
       // The children length at its ids should match the expected values.
@@ -111,15 +93,28 @@ describe('Engine Client', () => {
           .get(endpoints.GET_CHILDREN)
           .query({
             crafterSite,
-            url: '/site/website/'
+            url: '/site/website/',
+            flatten: false
           })
           .reply(200, children);
 
         ContentStoreService.getChildren('/site/website/').subscribe((respChildren) => {
-          const childrenNames = ['articles', 'crafter-level-descriptor.level.xml', 'entertainment', 'health', 'index.xml', 'search-results', 'style', 'technology'];
+          const childrenNames = [
+            'articles',
+            'crafter-level-descriptor.level.xml',
+            'entertainment',
+            'health',
+            'index.xml',
+            'search-results',
+            'style',
+            'technology'
+          ];
           const allChildrenExist = childrenNames.every((name) => respChildren.find((child) => child.name === name));
           expect(respChildren, `index should have ${children.length} child pages`).to.have.lengthOf(children.length);
-          expect(allChildrenExist, 'all children from getChildren response should match the expected children from mock response').to.be.true;
+          expect(
+            allChildrenExist,
+            'all children from getChildren response should match the expected children from mock response'
+          ).to.be.true;
           done();
         });
       });
@@ -133,7 +128,8 @@ describe('Engine Client', () => {
           .query({
             crafterSite,
             depth: 3,
-            url: '/site/website/articles/2021'
+            url: '/site/website/articles/2021',
+            flatten: false
           })
           .reply(200, tree);
 
@@ -185,20 +181,19 @@ describe('Engine Client', () => {
           })
           .reply(200, navBreadcrumb);
 
-        NavigationService.getNavBreadcrumb('/site/website/style/index.xml').subscribe(
-          (respNavBreadcrumb) => {
-            expect(respNavBreadcrumb, `breadcrumb should have ${navBreadcrumb.length} items`).to.have.lengthOf(
-              navBreadcrumb.length
-            );
-            expect(respNavBreadcrumb[0].label, `first item should be ${navBreadcrumb[0].label}`).to.equal(
-              navBreadcrumb[0].label
-            );
-            expect(respNavBreadcrumb[respNavBreadcrumb.length - 1].label, `last item should be ${navBreadcrumb[navBreadcrumb.length - 1].label}`).to.equal(
-              navBreadcrumb[navBreadcrumb.length - 1].label
-            );
-            done();
-          }
-        );
+        NavigationService.getNavBreadcrumb('/site/website/style/index.xml').subscribe((respNavBreadcrumb) => {
+          expect(respNavBreadcrumb, `breadcrumb should have ${navBreadcrumb.length} items`).to.have.lengthOf(
+            navBreadcrumb.length
+          );
+          expect(respNavBreadcrumb[0].label, `first item should be ${navBreadcrumb[0].label}`).to.equal(
+            navBreadcrumb[0].label
+          );
+          expect(
+            respNavBreadcrumb[respNavBreadcrumb.length - 1].label,
+            `last item should be ${navBreadcrumb[navBreadcrumb.length - 1].label}`
+          ).to.equal(navBreadcrumb[navBreadcrumb.length - 1].label);
+          done();
+        });
       });
     });
   });
@@ -217,10 +212,7 @@ describe('Engine Client', () => {
           })
           .reply(200, `"${renderUrl}"`);
 
-        UrlTransformationService.transform(
-          'storeUrlToRenderUrl',
-          '/site/website/style/index.xml'
-        ).subscribe((url) => {
+        UrlTransformationService.transform('storeUrlToRenderUrl', '/site/website/style/index.xml').subscribe((url) => {
           expect(url).to.equal(renderUrl);
           done();
         });
@@ -238,12 +230,10 @@ describe('Engine Client', () => {
           })
           .reply(200, `"${storeUrl}"`);
 
-        UrlTransformationService.transform('renderUrlToStoreUrl', '/technology').subscribe(
-          (url) => {
-            expect(url).to.equal(storeUrl);
-            done();
-          }
-        );
+        UrlTransformationService.transform('renderUrlToStoreUrl', '/technology').subscribe((url) => {
+          expect(url).to.equal(storeUrl);
+          done();
+        });
       });
     });
   });
@@ -266,7 +256,7 @@ describe('Object Utils', () => {
         ignoredProps: ['hero_image'],
         systemProps: ['internal-name', 'disabled', 'objectId']
       });
-      expect(parsedDescriptorWOptions.selected_b).to.equal("true");
+      expect(parsedDescriptorWOptions.selected_b).to.equal('true');
       // @ts-ignore - systemProp 'label' has been changed to 'itemName'
       expect(parsedDescriptorWOptions.craftercms.itemName).to.equal(parsedItem.craftercms.label);
       // 'hero_image' was set to be ignored in the options
@@ -289,7 +279,7 @@ describe('Object Utils', () => {
           disabled: false
         }
       };
-      const parsedProps = parseProps(descriptor.page, parsed,{ parseFieldValueTypes: true });
+      const parsedProps = parseProps(descriptor.page, parsed, { parseFieldValueTypes: true });
       expect(parsedProps).to.not.be.null;
       expect(parsedProps.selected_b).to.equal(true);
       expect(parsedProps.craftercms.label).to.equal(parsedItem.craftercms.label);
@@ -300,7 +290,7 @@ describe('Object Utils', () => {
         parseFieldValueTypes: false,
         systemPropMap: { 'internal-name': 'itemName' }
       });
-      expect(parsedPropsWOptions.selected_b).to.equal("true");
+      expect(parsedPropsWOptions.selected_b).to.equal('true');
       // @ts-ignore - systemProp 'label' has been changed to 'itemName'
       expect(parsedPropsWOptions.craftercms.itemName).to.equal(parsedItem.craftercms.label);
     });

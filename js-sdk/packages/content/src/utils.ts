@@ -14,9 +14,9 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  */
 
-import { ContentInstance, Descriptor, DescriptorResponse, Item } from '@craftercms/models';
+import type { ContentInstance, CrafterConfig, Descriptor, DescriptorResponse, Item } from '@craftercms/models';
 import { urlTransform } from './UrlTransformationService';
-import { getDescriptor, GetDescriptorConfig } from './ContentStoreService';
+import { getItem } from './ContentStoreService';
 import { map, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -26,7 +26,7 @@ export const systemPropMap = {
   objectId: 'id',
   localId: 'path',
   'file-name': 'fileName',
-  'file__name': 'fileName',
+  file__name: 'fileName',
   placeInNav: 'placeInNav',
   'internal-name': 'label',
   internal__name: 'label',
@@ -51,12 +51,15 @@ export const ignoredProps = [
 export const systemProps = Object.keys(systemPropMap).concat(Object.values(systemPropMap));
 
 function mixParseDescriptorOptions(options: ParseDescriptorOptions = {}): ParseDescriptorOptions {
-  return Object.assign({
-    systemPropMap,
-    ignoredProps,
-    systemProps,
-    parseFieldValueTypes: false
-  }, options);
+  return Object.assign(
+    {
+      systemPropMap,
+      ignoredProps,
+      systemProps,
+      parseFieldValueTypes: false
+    },
+    options
+  );
 }
 
 export type ParseDescriptorOptions = Partial<{
@@ -90,10 +93,10 @@ export function parseDescriptor(
     // The getChildren call contains certain items that can't be parsed into content items.
     throw new Error(
       '[parseDescriptor] Invalid descriptor supplied. Did you call ' +
-      'parseDescriptor with a `getChildren` API response? The `getChildren` API ' +
-      'response may contain certain items that are not parsable into ContentInstances. ' +
-      'Try a different API (getItem, getDescriptor or getTree) or filter out the metadata ' +
-      'items which descriptorDom property has a `page` or `component` property with the content item.'
+        'parseDescriptor with a `getChildren` API response? The `getChildren` API ' +
+        'response may contain certain items that are not parsable into ContentInstances. ' +
+        'Try a different API (getItem or getTree) or filter out the metadata ' +
+        'items which descriptorDom property has a `page` or `component` property with the content item.'
     );
   }
   let parsed: ContentInstance = {
@@ -116,11 +119,7 @@ export function parseProps<Props = object, Target = object>(
   options?: ParseDescriptorOptions
 ): Target {
   options = mixParseDescriptorOptions(options);
-  let {
-    systemPropMap,
-    ignoredProps,
-    systemProps
-  } = options;
+  let { systemPropMap, ignoredProps, systemProps } = options;
   Object.entries(props).forEach(([prop, value]) => {
     if (ignoredProps.includes(prop)) {
       return; // continue, skip prop.
@@ -158,18 +157,18 @@ export function parseProps<Props = object, Target = object>(
       }
       parsed[prop] = parsed[prop].map((item) => {
         const { key, value, component, include } = item;
-        if ((item.component) || (item.key && item.include)) {
+        if (item.component || (item.key && item.include)) {
           // Components
           const newComponent = {
             label: value,
             ...component,
             path: key?.startsWith('/')
               ? key
-              : (
-                include?.startsWith('/')
-                  ? include
-                  : component?.path ? component.path : null
-              )
+              : include?.startsWith('/')
+                ? include
+                : component?.path
+                  ? component.path
+                  : null
           };
           return parseDescriptor(newComponent, options);
         } else {
@@ -178,9 +177,7 @@ export function parseProps<Props = object, Target = object>(
         }
       });
     } else {
-      parsed[prop] = value != null
-        ? options.parseFieldValueTypes ? parseFieldValue(prop, value) : value
-        : null;
+      parsed[prop] = value != null ? (options.parseFieldValueTypes ? parseFieldValue(prop, value) : value) : null;
     }
   });
   return parsed;
@@ -210,32 +207,38 @@ export function parseFieldValue(propName: string, propValue: any): number | stri
 }
 
 export function fetchModelByPath(path: string): Observable<ContentInstance>;
-export function fetchModelByPath(path: string, options: Partial<GetDescriptorConfig & ParseDescriptorOptions>): Observable<ContentInstance>;
 export function fetchModelByPath(
   path: string,
-  options?: Partial<GetDescriptorConfig & ParseDescriptorOptions>
+  options: Partial<CrafterConfig & ParseDescriptorOptions>
+): Observable<ContentInstance>;
+export function fetchModelByPath(
+  path: string,
+  options?: Partial<CrafterConfig & ParseDescriptorOptions>
 ): Observable<ContentInstance> {
   let pdo = mixParseDescriptorOptions({ parseFieldValueTypes: true, ...options });
-  return getDescriptor(path, { flatten: true, ...options }).pipe(
-    map((descriptor) => parseDescriptor(descriptor, pdo))
+  return getItem(path, { flatten: true, ...options }).pipe(
+    map(({ descriptorDom }) => parseDescriptor(descriptorDom, pdo))
   );
 }
 
 export function fetchModelByUrl(webUrl: string): Observable<ContentInstance>;
-export function fetchModelByUrl(webUrl: string, options: Partial<GetDescriptorConfig & ParseDescriptorOptions>): Observable<ContentInstance>;
 export function fetchModelByUrl(
   webUrl: string,
-  options?: Partial<GetDescriptorConfig & ParseDescriptorOptions>
+  options: Partial<CrafterConfig & ParseDescriptorOptions>
+): Observable<ContentInstance>;
+export function fetchModelByUrl(
+  webUrl: string,
+  options?: Partial<CrafterConfig & ParseDescriptorOptions>
 ): Observable<ContentInstance> {
   let pdo = mixParseDescriptorOptions({ parseFieldValueTypes: true, ...options });
   return urlTransform('renderUrlToStoreUrl', webUrl).pipe(
-    switchMap((path) => getDescriptor(path as string, { flatten: true, ...options })),
-    map((descriptor) => parseDescriptor(descriptor, pdo))
+    switchMap((path) => getItem(path as string, { flatten: true, ...options })),
+    map(({ descriptorDom }) => parseDescriptor(descriptorDom, pdo))
   );
 }
 
 /**
- * Inspects the data for getItem or getDescriptor responses and returns the inner content object
+ * Inspects the data for getItem responses and returns the inner content object
  */
 export function extractContent(data: Descriptor | Item) {
   let output = data;
@@ -265,13 +268,7 @@ export function extractChildren(children: Array<ItemWithChildren>) {
   });
 }
 
-const propsToRemove = [
-  'rootId',
-  'crafterSite',
-  'crafterPublishedDate',
-  'crafterPublishedDate_dt',
-  'inheritsFrom_smv'
-];
+const propsToRemove = ['rootId', 'crafterSite', 'crafterPublishedDate', 'crafterPublishedDate_dt', 'inheritsFrom_smv'];
 export function preParseSearchResults<T extends object = {}>(source: T): ContentInstance {
   Object.entries(source).forEach(([prop, value]) => {
     if (propsToRemove.includes(prop)) {

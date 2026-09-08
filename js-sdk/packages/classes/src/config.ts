@@ -34,7 +34,8 @@ const DEFAULTS: CrafterConfig = {
   },
   fetchConfig: {},
   contentTypeRegistry: {},
-  headers: {}
+  headers: {},
+  flatten: false
 };
 
 class ConfigManager {
@@ -54,10 +55,12 @@ class ConfigManager {
   subscribe(observerOrNext: ObserverOrNext<CrafterConfig>): Subscription;
   subscribe<T extends CrafterConfig, R>(
     observerOrNext: ObserverOrNext<R>,
-    ...operators: OperatorFunction<T, R>[]): Subscription;
+    ...operators: OperatorFunction<T, R>[]
+  ): Subscription;
   subscribe<T extends CrafterConfig, R>(
     observerOrNext: ObserverOrNext<R>,
-    ...operators: OperatorFunction<T, R>[]): Subscription {
+    ...operators: OperatorFunction<T, R>[]
+  ): Subscription {
     return this.config$.pipe.apply(this.config$, operators).subscribe(observerOrNext);
   }
 
@@ -66,18 +69,19 @@ class ConfigManager {
   entry(propPath: string, nextValue?: any): any | void {
     const config = this.config;
     if (!propPath) return { ...config };
-    const getter = (nextValue == null);
+    const getter = nextValue == null;
     const path = propPath.split('.');
-    const prop = (!getter) && (path.pop());
+    const prop = !getter && path.pop();
     const value = (() => {
       try {
         const l = path.length - 1;
-        return path.length ? path.reduce(
-          (cfg, property, i) =>
-            getter && (l === i) && isPlainObject(cfg[property])
-              ? { ...cfg[property] }
-              : cfg[property],
-          config) : config;
+        return path.length
+          ? path.reduce(
+              (cfg, property, i) =>
+                getter && l === i && isPlainObject(cfg[property]) ? { ...cfg[property] } : cfg[property],
+              config
+            )
+          : config;
       } catch (e) {
         log(`Error retrieving crafter config prop '${propPath}': ${e.message || e}`, log.WARN);
         return null;
@@ -85,10 +89,7 @@ class ConfigManager {
     })();
     if (getter) {
       return value;
-    } else if (
-      (prop in value) ||
-      (path[path.length - 1] === 'contentTypeRegistry')
-    ) {
+    } else if (prop in value || path[path.length - 1] === 'contentTypeRegistry') {
       this.publishConfig({ ...value, [prop]: nextValue });
     }
   }
@@ -102,8 +103,11 @@ class ConfigManager {
     if ('cors' in mixin) {
       const { cors } = mixin;
       mixin.fetchConfig = mixin.fetchConfig ?? {};
-      mixin.fetchConfig.mode = typeof cors === 'boolean' ? cors ? 'cors' : 'no-cors' : cors;
-      console.log('%c[CrafterCMS] The `crafterConf.cors` property is deprecated and will be removed in following versions. Use `fetchConfig.mode` instead.', 'color:red');
+      mixin.fetchConfig.mode = typeof cors === 'boolean' ? (cors ? 'cors' : 'no-cors') : cors;
+      console.log(
+        '%c[CrafterCMS] The `crafterConf.cors` property is deprecated and will be removed in following versions. Use `fetchConfig.mode` instead.',
+        'color:red'
+      );
     }
     return extendDeepExistingProps({ ...this.config }, mixin);
   }
