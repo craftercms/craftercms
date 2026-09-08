@@ -92,7 +92,23 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const { setRenamedPath, triggerReload, setSavedCreatePath } = useContext(RenamedPathContext);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
 	const item = useContext(ItemContext);
+	const { affectedPluginControlFields = [] } = stableFormContext;
 	return async (draft?: boolean) => {
+		if (affectedPluginControlFields.length) {
+			const fieldList = affectedPluginControlFields
+				.map((field) => `"${field.fieldName}" (${field.fieldId})`)
+				.join(', ');
+			return showAlert({
+				dispatch,
+				message: formatMessage(
+					{
+						defaultMessage:
+							'Cannot save: one or more control plugins failed to load ({fields}). If the problem continues, contact your administrator.'
+					},
+					{ fields: fieldList }
+				)
+			});
+		}
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const validityStates = await Promise.all(
 			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))

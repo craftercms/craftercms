@@ -291,7 +291,7 @@ export default {
 };
 ```
 
-Lookup order for IO and validators: built-in `valueRetrieverLookup` / `valueSerializersLookup` / `validatorsMap` first (`Object.hasOwn`), then plugin contribution for `field.type`. Required/empty checks stay in `validateFieldValue` (host). FE preloads all `field.properties.plugin` locators before form value parse and again before save (`preloadControlPluginsForFields`) so custom retrievers/serializers/validators are registered in time.
+Lookup order for IO and validators: built-in `valueRetrieverLookup` / `valueSerializersLookup` / `validatorsMap` first (`Object.hasOwn`), then plugin contribution for `field.type`. Required/empty checks stay in `validateFieldValue` (host). FE preloads all `field.properties.plugin` locators before form value parse (`preloadControlPluginsForFields`) so custom retrievers/serializers/validators are registered in time. Preload failures are recorded on `StableFormContext.affectedPluginControlFields`; save is hard-blocked while that list is non-empty (avoids writing unconverted XML shapes).
 
 Eager alternative for UMD loaders: `craftercms.formsEngine.controls.registerDataSourceBindings(type, bindings)` (bindings only; prefer `descriptor.controls` for the component). Host also exposes `getValueRetriever` / `getValueSerializer` / `getValidator` for inspection.
 

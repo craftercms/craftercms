@@ -126,7 +126,11 @@ import SectionAccordion from './components/SectionAccordion';
 import useSaveForm from './lib/useSaveForm';
 import { FormPrepError } from './components/FormPrepError';
 import { createParsedValuesObject } from './lib/valueRetrievers';
-import { preloadControlPluginsForFields } from './lib/controlPluginLoader';
+import {
+	collectAffectedPluginControlFields,
+	preloadControlPluginsForFields,
+	type ControlPluginPreloadFailure
+} from './lib/controlPluginLoader';
 import { fromString } from '../../utils/xml';
 import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
@@ -350,11 +354,28 @@ function FormBootstrap(props: FormsEngineProps) {
 		const initializeState = (
 			atoms: FormsEngineAtoms,
 			values: LookupTable<unknown>,
-			itemMeta: FormsEngineItemMetaContextProps
+			itemMeta: FormsEngineItemMetaContextProps,
+			pluginPreloadFailures: ControlPluginPreloadFailure[] = []
 		) => {
 			stableFormContextRef.current.atoms = atoms;
 			stableFormContextRef.current.originalValues = values;
 			stableFormContextRef.current.itemMeta = itemMeta;
+			stableFormContextRef.current.affectedPluginControlFields = (() => {
+				const affected = collectAffectedPluginControlFields(
+					itemMeta.contentType.fields,
+					pluginPreloadFailures,
+					values,
+					effectRefs.current.contentTypesById
+				);
+				// If import failed but no field mapped (defensive), still surface something so save stays blocked.
+				if (pluginPreloadFailures.length && !affected.length) {
+					return pluginPreloadFailures.map((failure) => ({
+						fieldId: failure.plugin.name,
+						fieldName: failure.plugin.name
+					}));
+				}
+				return affected;
+			})();
 			setItemMeta(stableFormContextRef.current.itemMeta);
 			setReady(true);
 		};
@@ -452,28 +473,29 @@ function FormBootstrap(props: FormsEngineProps) {
 			const parentLockResult = store.get(parentAtoms.lockResult);
 			const isParentLocked = parentLockResult.locked;
 			const invokePrepareFn = (locked: boolean, lockError: ApiResponse, affectedPackages: PublishPackage[]) => {
-				preloadControlPluginsForFields(siteId, contentType.fields, update.values, effectRefs.current.contentTypesById)
-					.catch((error) => {
-						console.error('Failed to preload control plugins before embedded-form value parse.', error);
-					})
-					.then(() => {
-						if (disposed) return;
-						const requirements = prepareEmbeddedItemForm({
-							username,
-							contentType,
-							locked,
-							lockError,
-							affectedPackages,
-							update,
-							parentStackData,
-							stableFormContextRef,
-							parentPathInSite,
-							siteId,
-							contentTypesById: effectRefs.current.contentTypesById,
-							customControls
-						});
-						initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
+				preloadControlPluginsForFields(
+					siteId,
+					contentType.fields,
+					update.values,
+					effectRefs.current.contentTypesById
+				).then((failures) => {
+					if (disposed) return;
+					const requirements = prepareEmbeddedItemForm({
+						username,
+						contentType,
+						locked,
+						lockError,
+						affectedPackages,
+						update,
+						parentStackData,
+						stableFormContextRef,
+						parentPathInSite,
+						siteId,
+						contentTypesById: effectRefs.current.contentTypesById,
+						customControls
 					});
+					initializeState(requirements.atoms, requirements.values, requirements.itemMeta, failures);
+				});
 			};
 			if (readonly === isParentReadonly) {
 				invokePrepareFn(isParentLocked, parentLockResult.lockError, parentLockResult.affectedPackages);
@@ -509,7 +531,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				fileName: atom('')
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
-			const initCreateForm = () => {
+			const initCreateForm = (failures: ControlPluginPreloadFailure[] = []) => {
 				if (disposed) return;
 				const values = createParsedValuesObject(
 					contentType.fields,
@@ -532,28 +554,29 @@ function FormBootstrap(props: FormsEngineProps) {
 				const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
 
 				const objectId = contentObject[XmlKeys.modelId] as string;
-				initializeState(atoms, values, {
-					id: objectId,
-					// TODO: Should/could we somehow deduce the target path?
-					path: null,
-					// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
-					sourceMap: null,
-					pathInSite: processPathMacros({
-						path: create.path,
-						objectId,
-						fullParentPath: '',
-						useUUID: false
-					}),
-					contentType,
-					contentObject,
-					contentXml: buildContentXml(valuesWithoutFileName, contentTypesById)
-				});
+				initializeState(
+					atoms,
+					values,
+					{
+						id: objectId,
+						// TODO: Should/could we somehow deduce the target path?
+						path: null,
+						// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
+						sourceMap: null,
+						pathInSite: processPathMacros({
+							path: create.path,
+							objectId,
+							fullParentPath: '',
+							useUUID: false
+						}),
+						contentType,
+						contentObject,
+						contentXml: buildContentXml(valuesWithoutFileName, contentTypesById)
+					},
+					failures
+				);
 			};
-			preloadControlPluginsForFields(siteId, contentType.fields, contentObject, contentTypesById)
-				.catch((error) => {
-					console.error('Failed to preload control plugins before create-form value parse.', error);
-				})
-				.then(initCreateForm);
+			preloadControlPluginsForFields(siteId, contentType.fields, contentObject, contentTypesById).then(initCreateForm);
 			return () => {
 				disposed = true;
 			};
@@ -601,32 +624,31 @@ function FormBootstrap(props: FormsEngineProps) {
 						requirements.contentType.fields,
 						requirements.contentObject,
 						effectRefs.current.contentTypesById
-					)
-						.catch((error) => {
-							console.error('Failed to preload control plugins before edit-form value parse.', error);
-						})
-						.then(() => {
-							if (disposed) return;
-							const values = createParsedValuesObject(
-								requirements.contentType.fields,
-								requirements.contentObject,
-								effectRefs.current.contentTypesById,
-								(fieldId, value, isAdditional) => {
-									setFieldAtoms(
-										stableFormContextRef,
-										requirements.contentType,
-										requirements.contentType.fields,
-										fieldId,
-										atoms,
-										value,
-										{ siteId, contentTypesById: effectRefs.current.contentTypesById },
-										isAdditional
-									);
-								},
-								customControls
-							);
+					).then((failures) => {
+						if (disposed) return;
+						const values = createParsedValuesObject(
+							requirements.contentType.fields,
+							requirements.contentObject,
+							effectRefs.current.contentTypesById,
+							(fieldId, value, isAdditional) => {
+								setFieldAtoms(
+									stableFormContextRef,
+									requirements.contentType,
+									requirements.contentType.fields,
+									fieldId,
+									atoms,
+									value,
+									{ siteId, contentTypesById: effectRefs.current.contentTypesById },
+									isAdditional
+								);
+							},
+							customControls
+						);
 
-							initializeState(atoms, values, {
+						initializeState(
+							atoms,
+							values,
+							{
 								id: values[XmlKeys.modelId] as string,
 								path: requirements.item.path,
 								// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
@@ -635,8 +657,10 @@ function FormBootstrap(props: FormsEngineProps) {
 								contentType: requirements.contentType,
 								contentXml: requirements.contentXml,
 								contentObject: requirements.contentObject
-							});
-						});
+							},
+							failures
+						);
+					});
 				});
 			return () => {
 				disposed = true;

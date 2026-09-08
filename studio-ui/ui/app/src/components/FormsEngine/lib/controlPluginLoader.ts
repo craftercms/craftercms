@@ -107,6 +107,24 @@ export function collectControlPluginLocators(
 	return out;
 }
 
+/** Locator identity used to match preload failures back to form fields. */
+function pluginLocatorKey(plugin: FormDefinitionPlugin): string {
+	return `${plugin.pluginId}|${plugin.type}|${plugin.name}|${plugin.filename}`;
+}
+
+/** A control plugin that failed to import during form bootstrap preload. */
+export interface ControlPluginPreloadFailure {
+	plugin: FormDefinitionPlugin;
+	url: string;
+	reason: unknown;
+}
+
+/** Form field whose control plugin failed to preload (IO hooks may be missing). */
+export interface AffectedPluginControlField {
+	fieldId: string;
+	fieldName: string;
+}
+
 /**
  * Demand-loads every control plugin referenced by `fields` so `valueRetriever` /
  * `valueSerializer` / `validator` contributions are registered before form bootstrap
@@ -117,16 +135,20 @@ export function collectControlPluginLocators(
  * Pass `values` + `contentTypesLookup` when parsing content that may include node-selector
  * embeds so embedded content-type control plugins are registered before
  * `createParsedValueForField` walks `item.component`.
+ *
+ * Resolves with the list of failed imports (empty on full success). Callers should
+ * still parse/init the form, then block save when any failure maps to a field.
  */
 export function preloadControlPluginsForFields(
 	siteId: string,
 	fields: LookupTable<ContentTypeField> | ContentTypeField[] | undefined | null,
 	values?: LookupTable<unknown> | null,
 	contentTypesLookup?: LookupTable<ContentType> | null
-): Promise<void> {
+): Promise<ControlPluginPreloadFailure[]> {
 	const locators = collectControlPluginLocators(fields, values, contentTypesLookup);
-	if (!locators.length) return Promise.resolve();
-	return Promise.allSettled(
+	if (!locators.length) return Promise.resolve([]);
+	// Load in parallel; convert each rejection into a failure object so siblings still finish.
+	return Promise.all(
 		locators.map((plugin) => {
 			const builder = {
 				site: siteId,
@@ -148,14 +170,63 @@ export function preloadControlPluginsForFields(
 				});
 				controlPluginCache.set(url, loading);
 			}
-			return loading;
+			return loading.then(
+				(): ControlPluginPreloadFailure | null => null,
+				(reason): ControlPluginPreloadFailure => ({ plugin, url, reason })
+			);
 		})
-	).then((results) => {
-		const firstRejection = results.find((result): result is PromiseRejectedResult => result.status === 'rejected');
-		if (firstRejection) {
-			throw firstRejection.reason;
+	).then((results) => results.filter((result): result is ControlPluginPreloadFailure => result != null));
+}
+
+/**
+ * Maps preload failures to the form fields that reference those plugin locators
+ * (including nested repeat / node-selector embed fields when values are provided).
+ */
+export function collectAffectedPluginControlFields(
+	fields: LookupTable<ContentTypeField> | ContentTypeField[] | undefined | null,
+	failures: ControlPluginPreloadFailure[],
+	values?: LookupTable<unknown> | null,
+	contentTypesLookup?: LookupTable<ContentType> | null
+): AffectedPluginControlField[] {
+	if (!failures.length) return [];
+	const failedKeys = new Set(failures.map((failure) => pluginLocatorKey(failure.plugin)));
+	const out: AffectedPluginControlField[] = [];
+	const seenFieldIds = new Set<string>();
+	const collectFromFields = (list: ContentTypeField[], currentValues?: LookupTable<unknown> | null) => {
+		for (const field of list) {
+			const plugin = field.properties?.plugin as FormDefinitionPlugin | undefined;
+			if (plugin?.pluginId && plugin.type && plugin.name && plugin.filename) {
+				if (failedKeys.has(pluginLocatorKey(plugin)) && !seenFieldIds.has(field.id)) {
+					seenFieldIds.add(field.id);
+					out.push({ fieldId: field.id, fieldName: field.name });
+				}
+			}
+			if (field.fields) {
+				const nestedFields = toFieldList(field.fields);
+				collectFromFields(nestedFields);
+				if (field.type === 'repeat' && currentValues) {
+					for (const item of toItemList(currentValues[field.id])) {
+						if (item && typeof item === 'object') {
+							collectFromFields(nestedFields, item as LookupTable<unknown>);
+						}
+					}
+				}
+			}
+			if (field.type === 'node-selector' && currentValues && contentTypesLookup) {
+				for (const item of toItemList(currentValues[field.id])) {
+					const component = (item as { component?: LookupTable<unknown> } | null | undefined)?.component;
+					if (!component) continue;
+					const contentTypeId = (component[XmlKeys.contentTypeId] as string | undefined)?.trim();
+					const contentType = contentTypeId ? contentTypesLookup[contentTypeId] : undefined;
+					if (contentType?.fields) {
+						collectFromFields(toFieldList(contentType.fields), component);
+					}
+				}
+			}
 		}
-	});
+	};
+	collectFromFields(toFieldList(fields), values);
+	return out;
 }
 
 /** Builds the Studio plugin file URL for a form-definition plugin ref (same shape as DS plugin load). */
