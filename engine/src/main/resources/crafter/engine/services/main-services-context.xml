@@ -340,6 +340,7 @@
         <ref bean="crafter.excludeDisabledItemFilter"/>
         <ref bean="crafter.excludeExpiredItemFilter"/>
         <ref bean="crafter.excludeExpiredDtItemFilter"/>
+		<ref bean="crafter.includeByUrlItemFilter"/>
     </util:list>
 
     <bean id="crafter.siteItemService" class="org.craftercms.engine.service.impl.SiteItemServiceImpl">
