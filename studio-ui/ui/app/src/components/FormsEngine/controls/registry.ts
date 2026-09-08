@@ -38,8 +38,8 @@ const registeredControls = new Map<string, RegisteredControlContribution>();
  *
  * Idempotent for the same owning plugin + Component. Throws if another plugin's descriptor already
  * claims the type (even with an identical Component reference), so binding/IO metadata cannot be
- * overwritten under a retained first owner. Re-entry with the same owner+Component refreshes
- * bindings and optional valueRetriever/valueSerializer/validator.
+ * overwritten under a retained first owner. Re-entry with the same owner+Component replaces
+ * bindings and optional valueRetriever/valueSerializer/validator (omitted hooks are cleared).
  */
 export function registerControlContribution(controlType: string, contribution: RegisteredControlContribution): void {
 	if (!controlType) {
@@ -59,14 +59,6 @@ export function registerControlContribution(controlType: string, contribution: R
 					` by plugin "${existing.pluginId}".`
 			);
 		}
-		registeredControls.set(controlType, {
-			...existing,
-			bindings: contribution.bindings,
-			valueRetriever: contribution.valueRetriever ?? existing.valueRetriever,
-			valueSerializer: contribution.valueSerializer ?? existing.valueSerializer,
-			validator: contribution.validator ?? existing.validator
-		});
-		return;
 	}
 	registeredControls.set(controlType, contribution);
 }
