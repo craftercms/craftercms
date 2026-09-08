@@ -31,6 +31,7 @@ import useLoadableAtom from '../lib/useLoadableAtom';
 import Skeleton from '@mui/material/Skeleton';
 import ErrorBoundary from '../../ErrorBoundary';
 import FieldStateIndicator from './FieldStateIndicator';
+import { XmlKeys } from '../lib/formConsts';
 
 export interface TableOfContentsProps {
 	containerRef: RefObject<HTMLDivElement>;
@@ -146,10 +147,10 @@ function TreeItemLabel({
 	atoms
 }: {
 	field: ContentTypeField;
-	atoms: Pick<FormsEngineAtoms, 'valueByFieldId' | 'validationByFieldId'>;
+	atoms: Pick<FormsEngineAtoms, 'valueByFieldId' | 'validationByFieldId' | 'fileName'>;
 }) {
 	// If field.id is 'file-name', we'll be using `atoms.fileName` as the field value.
-	const valueAtom = atoms.valueByFieldId[field.id];
+	const valueAtom = field.id === XmlKeys.fileName ? atoms.fileName : atoms.valueByFieldId[field.id];
 	if (!valueAtom) return null;
 	return (
 		<TreeItemLabelContent field={field} valueAtom={valueAtom} validationAtom={atoms.validationByFieldId[field.id]} />
@@ -162,7 +163,7 @@ function TreeItemLabelContent({
 	validationAtom
 }: {
 	field: ContentTypeField;
-	valueAtom: NonNullable<FormsEngineAtoms['valueByFieldId'][string]>;
+	valueAtom: NonNullable<FormsEngineAtoms['valueByFieldId'][string] | FormsEngineAtoms['fileName']>;
 	validationAtom: FormsEngineAtoms['validationByFieldId'][string];
 }) {
 	const value = useAtomValue(valueAtom);
