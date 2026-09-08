@@ -51,7 +51,7 @@ import { buildContentXml } from './valueSerializers';
 import { flushSync } from 'react-dom';
 import LookupTable from '../../../models/LookupTable';
 import { checkMinimumSaveRequirementsFulfilled, isInternalNameValid } from './validators';
-import ContentType from '../../../models/ContentType';
+import ContentType, { ContentTypeField } from '../../../models/ContentType';
 import { cancelPackages } from '../../../services/workflow';
 import { switchMap } from 'rxjs';
 import { validateActionPolicy } from '../../../services/sites';
@@ -72,6 +72,8 @@ export interface UseSaveFormProps {
 	isEmbedded: boolean;
 	/** True when this form was opened via pushForm on top of another form. */
 	isStackedForm?: boolean;
+	/** Repeat stacked forms: sub-fields of the repeat group (same set as bootstrap). */
+	fieldsToRender?: ContentTypeField[];
 	onBeforeSave?: FormsEngineProps['onSave'];
 	onSave?: FormsEngineProps['onSave'];
 	onClose?(): void;
@@ -87,7 +89,16 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const dispatch = useDispatch();
 	const { formatMessage } = useIntl();
 	const siteId = useActiveSiteId();
-	const { isEmbedded, isStackedForm = false, isRepeatMode, isCreateMode, onClose, onMinimize, createPath } = props;
+	const {
+		isEmbedded,
+		isStackedForm = false,
+		isRepeatMode,
+		isCreateMode,
+		onClose,
+		onMinimize,
+		createPath,
+		fieldsToRender
+	} = props;
 	const { id, contentType, contentObject, path: itemPath } = useContext(ItemMetaContext);
 	const isPage = contentType.type === 'page';
 	const stableFormContext = useContext(StableFormContext);
@@ -180,15 +191,17 @@ export function useSaveForm(props: UseSaveFormProps) {
 		// Re-walk current values (incl. embeds added after open) so serializers exist before XML build.
 		// Runs before the repeat early-return so a failed bootstrap preload can retry on save in
 		// repeat stacked forms as well as create/edit/embedded.
+		// Repeat mode: only the repeat item's fields (fieldsToRender). Root/embedded: full content type.
+		const fieldsForPluginPreload = isRepeatMode ? fieldsToRender : contentType.fields;
 		const pluginPreloadFailures = await preloadControlPluginsForFields(
 			siteId,
-			contentType.fields,
+			fieldsForPluginPreload,
 			values,
 			contentTypesById
 		);
 		if (pluginPreloadFailures.length) {
 			const affected = collectAffectedPluginControlFields(
-				contentType.fields,
+				fieldsForPluginPreload,
 				pluginPreloadFailures,
 				values,
 				contentTypesById

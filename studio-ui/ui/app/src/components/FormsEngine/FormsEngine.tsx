@@ -980,6 +980,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		isStackedForm,
 		isCreateMode,
 		isRepeatMode,
+		fieldsToRender,
 		createPath: Boolean(create?.path) ? pathInSite : undefined, // pathInSite is the result of processing the create path with macros.
 		onClose: () => onCloseHandler(null, null),
 		onMinimize: () => props.onMinimize?.()
