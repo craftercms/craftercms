@@ -2,7 +2,7 @@
 
 > Living backbone for TB/FE modernization work. **Read this first** in any new agent/session before changing related code. Keep it current: update _Open decisions_, _Progress_, and _Known pitfalls_ when you learn something durable.
 
-Last updated: 2026-08-03
+Last updated: 2026-08-05
 
 ---
 
@@ -311,6 +311,8 @@ Additional current FE control gaps:
 - `hasJsController` is parsed onto the `ContentType` model but not consumed by React FE
 - Item/media controls group resolved actions by manager binding + intent (browse/search/upload/create). Every displayed choice retains its owning action; plugin `MenuItem`/`Dialog` actions use a standalone custom lane.
 
+**System-field catalog vs FE2 render type:** TB palette entries `disabled` and `internal-name` are not meant to be separate FE2 control implementations. On insert, `getNewFieldFromDescriptor` applies `systemFieldsTypesMap` (`disabled` → `checkbox`, `internal-name` → `input`) and locks the field id via `systemFieldsIdsMap` / `readOnlyFieldsIds`. Persisted form-definition `type` is therefore the remapped built-in; FE2 `controlMap` renders `Checkbox` / `Text`. Unused legacy stubs `link-input`, `link-textarea`, and `linked-dropdown` were removed from the built-in maps/descriptors.
+
 `proposal.xml` sketches a `craftercms.components.FormsEngine` widget with a configurable control/validator map, but no current new-FE code path was found that reads that widget configuration.
 
 #### Data sources
@@ -339,7 +341,7 @@ Built-in `DataSourceModule`s are registered for all TB descriptors (except dead 
 - `buildActionGroups` creates one presentation group per manager binding + intent while retaining an owner-bound `DataSourceActionChoice` for every concrete option.
 - NodeSelector keeps its richer create/type/path picker, but browse/search/upload and create acceptance invoke the selected owning action. Duplicate-looking create destinations expose the contributing datasource rather than silently merging behavior.
 - ImagePicker, VideoPicker, TranscodedVideoPicker, and RTE use grouped choices; custom `MenuItem`/`Dialog` actions remain standalone.
-- Dropdown / CheckboxGroup / LinkedDropdown use `instance.list`. Dropdown/LinkedDropdown may render multiple bound list groups; CheckboxGroup follows the TB/legacy single-datasource contract and uses the first list group only.
+- Dropdown / CheckboxGroup use `instance.list`. Dropdown may render multiple bound list groups; CheckboxGroup follows the TB/legacy single-datasource contract and uses the first list group only.
 - `createContent` resolves after the nested form saves or closes, allowing create actions to return semantic selections to the control.
 
 Legacy item-picker summaries are now a NodeSelector presentation adapter only. They carry owner-bound choices and are not an execution contract. Metadata-only media consolidation is retired.
@@ -633,6 +635,8 @@ Separate **completed design decisions** (`[x]`) from **remaining implementation 
 - [x] **Form-controller design** — type-local FE2 ESM (`FormController` hooks), fetch via form_controller API, not `PluginDescriptor`. See §5.9. Implementation still open (below).
 - [x] **Control-plugin ownership** — after `importPlugin()`, ownership is validated against loaded `PluginDescriptor.id` (not the form-definition locator `pluginId`). See `controlPluginLoader.ts`.
 - [x] **Atomic FE plugin registration** — `registerPlugin` preflights all DS + control contributions before any registry commit.
+- [x] **Retire unused built-in controls** — remove `link-input`, `link-textarea`, and `linked-dropdown` from `BuiltInControlType` / FE2 `controlMap`, DS bindings, validators/retrievers/serializers, and TB descriptors (unused; not in BPs).
+- [x] **System-field control remapping** — TB does not need dedicated FE2 renderers for `disabled` / `internal-name`. On insert, `systemFieldsTypesMap` in `ContentTypeManagement/utils.ts` remaps `disabled` → `checkbox` and `internal-name` → `input`; `systemFieldsIdsMap` / `readOnlyFieldsIds` lock the field id (e.g. variable name `disabled`) as non-editable. FE2 therefore renders via the remapped built-in (`Checkbox` / `Text`). `controlMap` may still list those catalog ids as `null`; that is expected — persisted form-definition `type` is the remapped control.
 - [x] **Stacked drawer FormBootstrap remount** — drawer mounts only the top stacked form; `key` includes `stackFormCount` so the parent slot remounts when a child closes. Prep restores existing `formsStackData[stackIndex].atoms` / `itemMeta` on first mount of that instance so in-memory parent edits (e.g. NodeSelector) survive embedded create from a stacked form; reload and later prep effect runs still re-fetch.
 
 ### Remaining implementation / validation
@@ -647,7 +651,7 @@ Separate **completed design decisions** (`[x]`) from **remaining implementation 
 - [ ] Align project-plugin auto-wiring with TB2 catalog discovery (`site-config-tools.xml` vs `ui.xml`) and define FE1 package migration.
 - [ ] Normalize plugin identity/locator vocabulary and resolve `file` vs `filename` across XML, frontend, docs, and backend.
 - [ ] Fix the `hasJsController` / “Client-side Controller” UI path currently opening `controller.groovy` (and wire FE2 to consume the flag).
-- [ ] **S3 / WebDAV capability stubs** — remote modules load but ops hard-fail via `unsupportedRemoteError` until `DataSourceServices` gains dedicated platform support.
+- [ ] **S3 / WebDAV capability stubs** — All remote browse and upload modules work via `browseExternalAssets` / `uploadExternalAssets`. Remaining gap: `video-S3-transcoding` still hard-fails via `unsupportedRemoteError` until dedicated transcoding platform support exists.
 - [ ] **Non-rendering control-map entries** — `disabled`, `internal-name`, `link-input`, `link-textarea` (and any other null map slots) need real FE2 controls or an explicit retire/alias decision.
 - [ ] **FE2 Crafter-specific RTE plugin parity** — audit FE1 TinyMCE/Crafter plugins vs current `rteUtils` externals (`craftercms_paste`, `editform`, …) and implement missing FE2 equivalents.
 - [ ] **Focused compatibility / plugin tests** — no Jest/Vitest harness in `ui/app` yet; need coverage for locator≠descriptor id, multi-control URL, registry conflicts, atomic registration failure, partial DS resolve, and TB plugin locator round-trip.
@@ -661,6 +665,15 @@ Separate **completed design decisions** (`[x]`) from **remaining implementation 
 
 Keep newest first. One short bullet per meaningful session.
 
+- **2026-08-06** — Controls cleanup (`7418`): retired unused `link-input` / `link-textarea` / `linked-dropdown` from FE2 maps + TB descriptors. Closed the former “non-rendering control-map entries” open item: those three are removed; `disabled` / `internal-name` remain TB catalog ids that remap on insert via `systemFieldsTypesMap` to `checkbox` / `input` (locked field ids). Documented under completed design decisions.
+- **2026-08-05** — Implemented WebDAV uploads (`img-WebDAV-upload`, `video-WebDAV-upload`, `WebDAV-upload`) on `uploadExternalAssets` (`profileType: 'webdav'`). Removed emptied `remoteStubs.ts`; only `video-S3-transcoding` remains as a hard-fail stub.
+- **2026-08-05** — Implemented `S3-upload` FE2 upload (`item` selection, no file-type filter) on the shared `uploadExternalAssets` path.
+- **2026-08-05** — Implemented `img-S3-upload` FE2 upload (`IMAGE_MIME_TYPES`, `profileType: 'aws'`) on the shared `uploadExternalAssets` path.
+- **2026-08-05** — Implemented `video-S3-upload`: registered `ExternalAssetUploadDialog`, added `uploadExternalAssets` / `createExternalUploadAction`, and mapped S3 response `item.url` into asset selections. Remaining remote upload stubs still open.
+- **2026-08-05** — Implemented `WebDAV-repo` (item) and `video-WebDAV-repo` (asset, `type: 'video'`) FE2 browse (`profileType: 'webdav'`, `repoPath` + `profileId`). All remote browse stubs are now real; only upload/transcoding stubs remain.
+- **2026-08-05** — Implemented `video-S3-repo` (asset, `type: 'video'`) and `S3-repo` (item, no type filter) FE2 browse on the shared `browseExternalAssets` path.
+- **2026-08-04** — Implemented `img-WebDAV-repo` FE2 browse on the same `browseExternalAssets` / `BrowseExternalAssetDialog` path as S3 (`profileType: 'webdav'`, `repoPath` + `profileId`, `type: 'image'`).
+- **2026-08-04** — Implemented `img-S3-repo` FE2 browse: registered `BrowseExternalAssetDialog` in `studioUI`, added `showBrowseExternalAssetDialog` + `DataSourceServices.browseExternalAssets` + `createExternalBrowseAction`, and replaced the stub module with a real browse action (`profileType: 'aws'`, `type: 'image'`). Remaining S3/WebDAV stubs still open.
 - **2026-08-24** — Stacked drawer remounts `FormBootstrap` for the parent slot when a child closes (`key` includes `stackFormCount`). Prep now restores existing `formsStackData[stackIndex].atoms` / `itemMeta` on first mount of that instance so NodeSelector (and other in-memory parent edits) survive creating an embedded from a stacked form. Reload / later effect runs still re-prep. Recorded under §8 completed design decisions — no open decision remains for this behavior.
 - **2026-08-03** — Convergence-gap audit reflected in §8: remaining work includes S3/WebDAV stubs, null control-map entries (`disabled` / `internal-name` / `link-input` / `link-textarea`), FE2 RTE plugin parity, and focused compatibility tests. Control-plugin `PluginDescriptor.id` ownership checks and atomic `registerPlugin` preflight were already implemented — recorded under completed design decisions, not left as open gaps.
 - **2026-08-03** — Refined §5.9: all `FormController` hooks may be async (host awaits); clarified on-disk path, form_controller API, and FE2 loader call site (`formControllerLoader` from form bootstrap — not `importPlugin`).

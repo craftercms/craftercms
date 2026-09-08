@@ -34,7 +34,7 @@ public class PackageSubmitterAnnotationHandler {
 		this.publishDao = publishDao;
 	}
 
-	@Around("@annotation(PackageSubmitter) || within(PackageSubmitter)")
+	@Around("@annotation(PackageSubmitter) || @within(PackageSubmitter)")
 	public Object checkPublishPackageSubmitter(ProceedingJoinPoint pjp) throws Throwable {
 		Method method = AopUtils.getActualMethod(pjp);
 		String siteId = StudioAnnotationUtils.getAnnotationValue(pjp, method, SiteId.class, String.class);
@@ -51,7 +51,7 @@ public class PackageSubmitterAnnotationHandler {
 		if (publishPackage.getSubmitterId() != user.getId()) {
 			throw new PackageSubmitterCheckException(
 					"Unable to update publish package '%s' in site '%s' because user is not the submitter"
-							.formatted(siteId, packageId));
+							.formatted(packageId, siteId));
 		}
 		return pjp.proceed();
 	}

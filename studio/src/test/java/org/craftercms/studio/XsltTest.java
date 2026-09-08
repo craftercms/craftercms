@@ -426,6 +426,29 @@ public class XsltTest {
 		testXsltTemplate(template, content, expected, params);
 	}
 
+	@DataProvider(name = "siteConfig5000TestData")
+	public Object[][] siteConfig5000TestData() {
+		return new Object[][]{
+			new Object[] {
+				new ClassPathResource("crafter/studio/upgrade/5.0.x/config/site-config/site-config-v5.0.0.0.xslt"),
+				new ClassPathResource("crafter/studio/upgrade/xslt/site-config/5.0.0.0/add/input.xml"),
+				new ClassPathResource("crafter/studio/upgrade/xslt/site-config/5.0.0.0/add/expected.xml"),
+				emptyMap()
+			},
+			new Object[] {
+				new ClassPathResource("crafter/studio/upgrade/5.0.x/config/site-config/site-config-v5.0.0.0.xslt"),
+				new ClassPathResource("crafter/studio/upgrade/xslt/site-config/5.0.0.0/existed/input.xml"),
+				new ClassPathResource("crafter/studio/upgrade/xslt/site-config/5.0.0.0/existed/expected.xml"),
+				emptyMap()
+			}
+		};
+	}
+
+	@Test(dataProvider = "siteConfig5000TestData")
+	public void siteConfig5000Test(Resource template, Resource content, Resource expected, Map<String, Object> params) throws IOException, TransformerException {
+		testXsltTemplate(template, content, expected, params);
+	}
+
 	@DataProvider(name = "globalPermissions50010TestData")
 	public Object[][] globalPermissions50010TestData() {
 		return new Object[][]{

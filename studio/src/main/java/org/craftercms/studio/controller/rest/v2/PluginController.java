@@ -110,7 +110,7 @@ public class PluginController extends ManagementTokenAware {
 	/**
 	 * Executes a rest script for the given site
 	 */
-	@RequestMapping(value = "/script/**", produces = APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/script/**")
 	public ResultOne<Object> runScript(@ValidSiteId @RequestParam String siteId, HttpServletRequest request, HttpServletResponse response)
 		throws ResourceException, ScriptException, ConfigurationException {
 		// No better way to do this for now, later can be replaced by "/script/{*scriptUrl}"
