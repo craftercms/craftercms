@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2026 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -14,6 +14,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.craftercms.engine.service.impl;
+
+import static org.craftercms.engine.util.LocaleUtils.resolveLocalePath;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,14 +47,6 @@ import org.craftercms.engine.service.filter.ExcludeByNameItemFilter;
 import org.craftercms.engine.service.filter.ExpectedNodeValueItemFilter;
 import org.craftercms.engine.service.filter.IncludeByNameItemFilter;
 import org.dom4j.Element;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.craftercms.engine.util.LocaleUtils.resolveLocalePath;
 
 /**
  * Default implementation of {@link SiteItemService}.
@@ -231,6 +231,11 @@ public class SiteItemServiceImpl implements SiteItemService {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean exists(String path) {
+        return storeService.exists(getSiteContext().getContext(), path);
     }
 
     protected SiteContext getSiteContext() {

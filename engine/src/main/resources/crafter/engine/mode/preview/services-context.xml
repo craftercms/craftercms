@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+  ~ Copyright (C) 2007-2026 Crafter Software Corporation. All Rights Reserved.
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License version 3 as published by
@@ -101,7 +101,11 @@
     <!--									-->
     <!-- ////////////////////////////////// -->
 
-    <util:list id="crafter.defaultItemPredicates"/>
+    
+    <util:list id="crafter.defaultItemPredicates">
+        <!-- Allow items matching the include regexes only -->
+        <ref bean="crafter.includeByUrlItemPredicate"/>
+    </util:list>
 
     <bean id="crafter.cacheTemplate" class="org.craftercms.core.util.cache.impl.NoopCacheTemplate">
         <constructor-arg name="cacheService" ref="crafter.cacheService" />

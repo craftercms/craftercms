@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2026 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -131,4 +131,11 @@ public interface SiteItemService {
     SiteItem getSiteTree(String url, int depth, String includeByNameRegex, String excludeByNameRegex,
                          Map<String, String> nodeXPathAndExpectedValuePairs);
 
+    /**
+     * Checks if the item exists at the given path.
+     *
+     * @param path the path to check
+     * @return true if the item exists, false otherwise
+     */
+    boolean exists(String path);
 }
