@@ -104,6 +104,7 @@ import {
 	internalLockContentService,
 	internalUnlockContentService,
 	prepareEmbeddedItemForm,
+	scrollToFieldWhenSettled,
 	setFieldAtoms,
 	useUnlockOnClose,
 	useValidateFormProps
@@ -166,6 +167,8 @@ export interface BaseProps extends Partial<UpdateModeProps & RepeatModeProps & C
 	onCancelFullScreen?: EnhancedDialogProps['onCancelFullScreen'];
 	/** The form will render only the specified fields from the main content type being worked with */
 	fieldsToRender?: ContentTypeField[];
+	/** Id of a field the form should scroll into view once rendered. Expands the field's section if collapsed. */
+	fieldToScroll?: string;
 	// Controls like the Item Selector and Repeat use the onSave to update once the form they opened is "saved".
 	// Executing the onClose without the "timeout", causes values set at the control prior to closing to get lost somehow.
 	// The promise works as a timeout and allows the control to do async operations before the form acts on its result.
@@ -278,7 +281,9 @@ function FormBootstrap(props: FormsEngineProps) {
 	const [contentTypesLoaded, setContentTypesLoaded] = useState(Boolean(contentTypesById));
 	const { formsStackData, api } = useContext(StableGlobalContext);
 	const [itemMeta, setItemMeta] = useState<FormsEngineItemMetaContextProps>(formsStackData[stackIndex].itemMeta);
-	const [ready, setReady] = useState(false);
+	const [ready, setReady] = useState(() =>
+		Boolean(formsStackData[stackIndex]?.atoms?.valueByFieldId && formsStackData[stackIndex].itemMeta)
+	);
 	const [prepError, setPrepError] = useState<symbol>();
 	const store = useJotaiStore();
 	const theme = useTheme();
@@ -286,6 +291,9 @@ function FormBootstrap(props: FormsEngineProps) {
 	const username = useActiveUser()?.username;
 	const effectRefs = useUpdateRefs({ contentTypesById, username });
 	const stableFormContextRef = useRef<StableFormContextProps>(formsStackData[stackIndex]);
+	// The drawer mounts only the top stacked form. When a child is closed, this instance remounts
+	// for the parent slot; skip full prep if that slot already has atoms so in-memory edits survive.
+	const prepStartedRef = useRef(false);
 	const [renamedPath, setRenamedPath] = useState<string | null>(null);
 	const [reloadNonce, setReloadNonce] = useState(0);
 	const triggerReload = useCallback(() => setReloadNonce((nonce) => nonce + 1), []);
@@ -339,6 +347,15 @@ function FormBootstrap(props: FormsEngineProps) {
 	useEffect(() => {
 		// Guard statement: If content types are not loaded, we can't proceed.
 		if (!contentTypesLoaded) return;
+		const stackEntry = formsStackData[stackIndex];
+		const alreadyPrepared = Boolean(stackEntry?.atoms?.valueByFieldId && stackEntry.itemMeta);
+		if (!prepStartedRef.current && alreadyPrepared) {
+			prepStartedRef.current = true;
+			setItemMeta(stackEntry.itemMeta);
+			setReady(true);
+			return;
+		}
+		prepStartedRef.current = true;
 		let disposed = false;
 		// TODO: If props are changed, things can be left off... previous item locked, edits get lost, etc. Not sure how much support for prop changes we should implement.
 		const isChildForm = stackIndex > 0;
@@ -538,6 +555,8 @@ function FormBootstrap(props: FormsEngineProps) {
 					contentObject,
 					contentTypesById,
 					(fieldId, value, isAdditional) => {
+						// If the form is for an embedded component, we don't need to set the fileName atom.
+						if (create.embedded && fieldId === XmlKeys.fileName) return;
 						setFieldAtoms(
 							stableFormContextRef,
 							contentType,
@@ -556,7 +575,7 @@ function FormBootstrap(props: FormsEngineProps) {
 				const objectId = contentObject[XmlKeys.modelId] as string;
 				initializeState(
 					atoms,
-					values,
+					create.embedded ? valuesWithoutFileName : values,
 					{
 						id: objectId,
 						// TODO: Should/could we somehow deduce the target path?
@@ -729,6 +748,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		stackIndex = 0,
 		stackTransitionEnded,
 		fieldsToRender,
+		fieldToScroll,
 		isDialog = false,
 		onSave,
 		onClose: onCloseProp
@@ -949,6 +969,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const saveFn = useSaveForm({
 		onSave,
 		isEmbedded,
+		isStackedForm,
 		isCreateMode,
 		isRepeatMode,
 		createPath: Boolean(create?.path) ? pathInSite : undefined, // pathInSite is the result of processing the create path with macros.
@@ -969,6 +990,8 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const [mainContent, setMainContent] = useState(null);
 	const collapseHeaderAllowed = useRef(false);
 	const sentinelRef = useRef<HTMLDivElement>(null);
+	const cancelFieldScrollRef = useRef<(() => void) | null>(null);
+	const pendingFieldScrollRef = useRef<{ sectionId: string; start: () => void } | null>(null);
 
 	const mainContentRefCallback: RefCallback<HTMLDivElement> = (element) => {
 		setMainContent(element);
@@ -977,6 +1000,13 @@ function FormOrchestrator(props: FormsEngineProps) {
 			collapseHeaderAllowed.current = element.scrollHeight - element.clientHeight > 100;
 		}
 	};
+
+	const beginSettledFieldScroll = useCallback((fieldId: string) => {
+		cancelFieldScrollRef.current?.();
+		const root = containerRef.current;
+		if (!root) return;
+		cancelFieldScrollRef.current = scrollToFieldWhenSettled(root, fieldId);
+	}, []);
 
 	// Monitor when sentinel element crosses the threshold
 	useEffect(() => {
@@ -1002,6 +1032,33 @@ function FormOrchestrator(props: FormsEngineProps) {
 			observer?.disconnect();
 		};
 	}, [mainContent]);
+
+	// Scroll to the field requested via the `fieldToScroll` prop, once form body layout settles
+	// (lazy controls, RTEs, images can still grow after first paint).
+	useEffect(() => {
+		if (!fieldToScroll || !mainContent) return;
+		const cancelSettle = () => {
+			cancelFieldScrollRef.current?.();
+			cancelFieldScrollRef.current = null;
+		};
+		// The field may be inside a collapsed section; it needs to be expanded for the field to be scrolled to.
+		const sectionId = contentTypeSections.find((section) => section.fields.includes(fieldToScroll))?.id;
+		const expandedAtom = sectionId ? atoms.expandedStateBySectionId[sectionId] : null;
+		const isExpanding = expandedAtom && !store.get(expandedAtom);
+		if (isExpanding) {
+			store.set(expandedAtom, true);
+			pendingFieldScrollRef.current = {
+				sectionId,
+				start: () => beginSettledFieldScroll(fieldToScroll)
+			};
+			return () => {
+				pendingFieldScrollRef.current = null;
+				cancelSettle();
+			};
+		}
+		beginSettledFieldScroll(fieldToScroll);
+		return cancelSettle;
+	}, [fieldToScroll, mainContent, contentTypeSections, atoms.expandedStateBySectionId, store, beginSettledFieldScroll]);
 
 	const bodyFragment = (
 		<FormLayout
@@ -1111,6 +1168,17 @@ function FormOrchestrator(props: FormsEngineProps) {
 								<SectionAccordion
 									key={sectionIndex}
 									section={section}
+									slotProps={{
+										transition: {
+											onEntered: () => {
+												const pending = pendingFieldScrollRef.current;
+												if (pending?.sectionId === section.id) {
+													pending.start();
+													pendingFieldScrollRef.current = null;
+												}
+											}
+										}
+									}}
 									renderControl={(fieldId, fieldIndex) =>
 										renderFieldControl(
 											contentTypeFields[fieldId],

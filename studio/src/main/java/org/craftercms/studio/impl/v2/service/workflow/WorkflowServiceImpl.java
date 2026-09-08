@@ -85,7 +85,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
 	@Override
 	@RequireSiteExists
-	@HasPermission(type = DefaultPermission.class, action = PERMISSION_PUBLISH_APPROVE)
+	// Notice that here we just validate the user is a member of the site. The actual permission checking will
+	// be done in the internal service by checking all the items in the packages.
+	@HasPermission(type = DefaultPermission.class, action = PERMISSION_CONTENT_READ)
 	@PeerReviewCapable
 	public void approvePackages(@SiteId String siteId, @PackageIds Collection<Long> packageIds, Instant schedule, boolean updateSchedule, String comment)
 		throws AuthenticationException, ServiceLayerException {
@@ -94,7 +96,9 @@ public class WorkflowServiceImpl implements WorkflowService {
 
 	@Override
 	@RequireSiteExists
-	@HasPermission(type = DefaultPermission.class, action = PERMISSION_PUBLISH_REJECT)
+	// Notice that here we just validate the user is a member of the site. The actual permission checking will
+	// be done in the internal service by checking all the items in the packages.
+	@HasPermission(type = DefaultPermission.class, action = PERMISSION_CONTENT_READ)
 	public void rejectPackages(@SiteId String siteId, Collection<Long> packageIds, String comment) throws ServiceLayerException, AuthenticationException {
 		workflowServiceInternal.rejectPackages(siteId, packageIds, comment);
 	}
