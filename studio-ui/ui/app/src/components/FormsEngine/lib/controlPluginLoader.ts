@@ -128,16 +128,17 @@ export interface AffectedPluginControlField {
 /**
  * Demand-loads every control plugin referenced by `fields` so `valueRetriever` /
  * `valueSerializer` / `validator` contributions are registered before form bootstrap
- * parse, validation, and save. Safe to call repeatedly; uses the same URL-keyed
- * importPlugin cache as control rendering.
+ * parse and before XML serialize on save. Safe to call repeatedly; uses the same
+ * URL-keyed importPlugin cache as control rendering.
  * “Load those plugins now, not when React first draws the control.”
  *
- * Pass `values` + `contentTypesLookup` when parsing content that may include node-selector
- * embeds so embedded content-type control plugins are registered before
- * `createParsedValueForField` walks `item.component`.
+ * Pass `values` + `contentTypesLookup` when parsing or saving content that may include
+ * node-selector embeds so embedded content-type control plugins are registered before
+ * `createParsedValueForField` / `buildContentXml` walks `item.component`.
  *
- * Resolves with the list of failed imports (empty on full success). Callers should
- * still parse/init the form, then block save when any failure maps to a field.
+ * Resolves with the list of failed imports (empty on full success). Bootstrap callers
+ * record failures on `StableFormContext.affectedPluginControlFields`; save callers
+ * should block when any failure maps to a field (avoids unconverted XML shapes).
  */
 export function preloadControlPluginsForFields(
 	siteId: string,

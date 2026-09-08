@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2025 Crafter Software Corporation. All Rights Reserved.
+ * Copyright (C) 2007-2026 Crafter Software Corporation. All Rights Reserved.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 3 as published by
@@ -60,7 +60,11 @@ import { nanoid } from 'nanoid';
 import { popDialog, pushDialog } from '../../../state/actions/dialogStack';
 import { atom, PrimitiveAtom, useAtom } from 'jotai';
 import { showSystemNotification } from '../../../state/actions/system';
-
+import {
+	AffectedPluginControlField,
+	collectAffectedPluginControlFields,
+	preloadControlPluginsForFields
+} from './controlPluginLoader';
 export interface UseSaveFormProps {
 	createPath?: string;
 	isRepeatMode: boolean;
@@ -99,12 +103,9 @@ export function useSaveForm(props: UseSaveFormProps) {
 	const { setRenamedPath, triggerReload, setSavedCreatePath } = useContext(RenamedPathContext);
 	const initialFileName = itemPath ? getFileNameValueFromPath(itemPath, isPage) : '';
 	const item = useContext(ItemContext);
-	const { affectedPluginControlFields = [] } = stableFormContext;
 	return async (draft?: boolean) => {
-		if (affectedPluginControlFields.length) {
-			const fieldList = affectedPluginControlFields
-				.map((field) => `"${field.fieldName}" (${field.fieldId})`)
-				.join(', ');
+		const blockSaveForPluginFailures = (fields: AffectedPluginControlField[]) => {
+			const fieldList = fields.map((field) => `"${field.fieldName}" (${field.fieldId})`).join(', ');
 			return showAlert({
 				dispatch,
 				message: formatMessage(
@@ -115,6 +116,10 @@ export function useSaveForm(props: UseSaveFormProps) {
 					{ fields: fieldList }
 				)
 			});
+		};
+		// Fast path: bootstrap already recorded preload failures for this form instance.
+		if (stableFormContext.affectedPluginControlFields?.length) {
+			return blockSaveForPluginFailures(stableFormContext.affectedPluginControlFields);
 		}
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const validityStates = await Promise.all(
@@ -179,8 +184,34 @@ export function useSaveForm(props: UseSaveFormProps) {
 		}
 
 		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
+		const contentTypesById = store.getState().contentTypes.byId;
+		// Re-walk current values (incl. embeds added after open) so serializers exist before XML build.
+		const pluginPreloadFailures = await preloadControlPluginsForFields(
+			siteId,
+			contentType.fields,
+			values,
+			contentTypesById
+		);
+		if (pluginPreloadFailures.length) {
+			const affected = collectAffectedPluginControlFields(
+				contentType.fields,
+				pluginPreloadFailures,
+				values,
+				contentTypesById
+			);
+			const fields =
+				affected.length > 0
+					? affected
+					: // Defensive: import failed but no field mapped — still block save.
+						pluginPreloadFailures.map((failure) => ({
+							fieldId: failure.plugin.name,
+							fieldName: failure.plugin.name
+						}));
+			stableFormContext.affectedPluginControlFields = fields;
+			return blockSaveForPluginFailures(fields);
+		}
 		const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
-		const xml = buildContentXml(valuesWithoutFileName, store.getState().contentTypes.byId);
+		const xml = buildContentXml(valuesWithoutFileName, contentTypesById);
 		// Embedded handled here. If true, execution ends inside if statement.
 		if (isEmbedded) {
 			// Validate minimum embedded requirements to save as draft. Execution stops if minimum reqs aren't fulfilled.

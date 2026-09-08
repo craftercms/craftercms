@@ -119,7 +119,7 @@ export interface StableFormContextProps {
 	originalValues: LookupTable<unknown>;
 	props: FormsEngineProps;
 	state: FormsEngineCachedStackedFormState;
-	/** Fields whose control plugins failed preload; save is blocked while non-empty. */
+	/** Fields whose control plugins failed preload (bootstrap or save); save is blocked while non-empty. */
 	affectedPluginControlFields: AffectedPluginControlField[];
 }
 
