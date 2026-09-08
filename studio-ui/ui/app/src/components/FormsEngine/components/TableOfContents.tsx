@@ -149,12 +149,10 @@ function TreeItemLabel({
 	field: ContentTypeField;
 	atoms: Pick<FormsEngineAtoms, 'valueByFieldId' | 'validationByFieldId' | 'fileName'>;
 }) {
-	// If field.id is 'file-name', we'll be using `atoms.fileName` as the field value.
 	const valueAtom = field.id === XmlKeys.fileName ? atoms.fileName : atoms.valueByFieldId[field.id];
-	if (!valueAtom) return null;
-	return (
-		<TreeItemLabelContent field={field} valueAtom={valueAtom} validationAtom={atoms.validationByFieldId[field.id]} />
-	);
+	const validationAtom = atoms.validationByFieldId[field.id];
+	if (!valueAtom || !validationAtom) return null;
+	return <TreeItemLabelContent field={field} valueAtom={valueAtom} validationAtom={validationAtom} />;
 }
 
 function TreeItemLabelContent({
