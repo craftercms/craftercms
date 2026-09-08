@@ -117,10 +117,9 @@ export function useSaveForm(props: UseSaveFormProps) {
 				)
 			});
 		};
-		// Fast path: bootstrap already recorded preload failures for this form instance.
-		if (stableFormContext.affectedPluginControlFields?.length) {
-			return blockSaveForPluginFailures(stableFormContext.affectedPluginControlFields);
-		}
+		// Bootstrap may have recorded preload failures for this form instance. Clear them and let the
+		// preload below re-attempt the import; `controlPluginCache` drops failed entries so a retry is possible.
+		stableFormContext.affectedPluginControlFields = null;
 		const values = extractAtomValues(jotai, stableFormContext.atoms.valueByFieldId);
 		const validityStates = await Promise.all(
 			Object.values(stableFormContext.atoms.validationByFieldId).map((validityDataAtom) => jotai.get(validityDataAtom))
