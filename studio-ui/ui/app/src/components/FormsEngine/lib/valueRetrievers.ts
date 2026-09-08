@@ -193,8 +193,8 @@ export function retrieveFieldValue<T = unknown>(field: ContentTypeField, value: 
 	const defaultValue = field.defaultValue as string;
 	// Value considering the defaultValue
 	const fieldValue = value ?? (nnou(defaultValue) && defaultValue !== '' ? defaultValue : undefined);
+	// Built-in `null` and omitted plugin `valueRetriever` both mean identity (pass-through).
 	if (!retriever) {
-		console.warn(`No value retriever for field ${field.id} of type ${field.type}`);
 		return fieldValue as T;
 	}
 	return retriever(fieldValue, field);

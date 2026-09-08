@@ -33,6 +33,7 @@ export interface ControlPluginContribution {
 	/**
 	 * Optional XML → form value conversion for this control type.
 	 * Must be registered before form bootstrap parses content (FE preloads plugin locators).
+	 * Falls back to identity (pass-through) when omitted.
 	 */
 	valueRetriever?: ValueRetriever;
 	/**
