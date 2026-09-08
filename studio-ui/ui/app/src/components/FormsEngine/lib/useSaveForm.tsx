@@ -176,15 +176,10 @@ export function useSaveForm(props: UseSaveFormProps) {
 			});
 		};
 
-		// Repeat handled here. If true, execution ends inside if statement.
-		if (isRepeatMode) {
-			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
-			return;
-		}
-
-		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
 		const contentTypesById = store.getState().contentTypes.byId;
 		// Re-walk current values (incl. embeds added after open) so serializers exist before XML build.
+		// Runs before the repeat early-return so a failed bootstrap preload can retry on save in
+		// repeat stacked forms as well as create/edit/embedded.
 		const pluginPreloadFailures = await preloadControlPluginsForFields(
 			siteId,
 			contentType.fields,
@@ -209,6 +204,14 @@ export function useSaveForm(props: UseSaveFormProps) {
 			stableFormContext.affectedPluginControlFields = fields;
 			return blockSaveForPluginFailures(fields);
 		}
+
+		// Repeat handled here. If true, execution ends inside if statement.
+		if (isRepeatMode) {
+			(onSave?.({ values, versionComment }) as Promise<FormSavePromiseResult>)?.then(onSavePromiseHandler);
+			return;
+		}
+
+		complementValuesWithSystemProps(id, values, contentObject, contentType, saveAsDraft);
 		const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
 		const xml = buildContentXml(valuesWithoutFileName, contentTypesById);
 		// Embedded handled here. If true, execution ends inside if statement.
