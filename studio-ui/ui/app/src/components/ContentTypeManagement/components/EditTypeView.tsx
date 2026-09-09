@@ -724,10 +724,14 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 
 	const handleReorderSectionFields = (fields: ReorderFieldsDialogProps['fields'], sectionId: string) => {
+		onUpdateHasPendingChanges(true);
 		setType((currentType) => {
 			const nextType = reorderSectionFields(currentType, fields, sectionId);
-			const nextSection = getSectionFromType(nextType, sectionId);
-			handleSectionSelected(nextSection, nextType);
+			// Refresh the section form when that section is already open in the drawer.
+			if (fieldFormViewProps?.section?.id === sectionId) {
+				const nextSection = getSectionFromType(nextType, sectionId);
+				handleSectionSelected(nextSection, nextType);
+			}
 			return nextType;
 		});
 	};
@@ -839,6 +843,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 						onFieldSelected={handleFieldSelected}
 						onDataSourceSelected={handleDataSourceSelected}
 						onSectionSelected={handleSectionSelected}
+						onReorderSectionFields={handleReorderSectionFields}
 						fieldPathsWithErrors={fieldPathsWithErrors}
 						selectedFieldIdPath={selectedFieldIdPath}
 						performCurrentFormErrorCheckAndWarning={performCurrentFormErrorCheckAndWarning}

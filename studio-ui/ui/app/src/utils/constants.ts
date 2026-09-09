@@ -17,6 +17,7 @@
 // region State
 //                                                          6 |    5    |    4    |    3    |    2    |    1    |     0
 //                                                         321|987654321|987654321|987654321|987654321|987654321|9876543210
+import { BuiltInControlType } from '../components/FormsEngine/lib/controlMap';
 import PluginDescriptorWithSource from '../models/PluginDescriptorWithSource';
 import WidgetRecord from '../models/WidgetRecord';
 
@@ -134,3 +135,14 @@ export const PACKAGE_TYPE_INITIAL_PUBLISH = 'INITIAL_PUBLISH';
 
 export const webDAVUploadUri = '/api/2/webdav/upload';
 export const s3UploadUri = '/api/2/aws/s3/upload.json';
+
+export const systemFieldsIds: BuiltInControlType[] = [
+	'file-name',
+	'auto-filename',
+	'internal-name',
+	'disabled',
+	'page-nav-order',
+	'locale-selector',
+	'expired-date',
+	'forcehttps'
+];
