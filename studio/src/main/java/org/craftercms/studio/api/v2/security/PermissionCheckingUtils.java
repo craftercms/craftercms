@@ -15,6 +15,8 @@
  */
 package org.craftercms.studio.api.v2.security;
 
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.craftercms.studio.impl.v2.utils.security.SecurityUtils.getCurrentUsername;
 import static org.craftercms.studio.permissions.StudioPermissionsConstants.PATH_LIST_RESOURCE_ID;
 import static org.craftercms.studio.permissions.StudioPermissionsConstants.SITE_ID_RESOURCE_ID;
@@ -25,6 +27,8 @@ import java.util.Map;
 
 import org.craftercms.commons.security.exception.ActionDeniedException;
 import org.craftercms.commons.security.permissions.PermissionEvaluator;
+import org.craftercms.studio.api.v2.dal.publish.PublishDAO;
+import org.craftercms.studio.api.v2.dal.publish.PublishItem;
 
 /**
  * Utility class for checking permissions.
@@ -86,5 +90,33 @@ public class PermissionCheckingUtils {
 	 */
 	public static Object getSecuredResource(String siteId, Collection<String> paths) {
 		return Map.of(SITE_ID_RESOURCE_ID, siteId, PATH_LIST_RESOURCE_ID, paths);
+	}
+
+	/**
+	 * Checks if the current user has all the given permissions for the give package
+	 * items
+	 *
+	 * @param permissionEvaluator the permission evaluator
+	 * @param publishDao          the publish DAO
+	 * @param siteId              the site id
+	 * @param packageId           the package id
+	 * @param permissions         the permissions to check
+	 * @throws ActionDeniedException if the current user does not have all the given
+	 *                               permissions
+	 */
+	public static void checkPermissions(PermissionEvaluator permissionEvaluator, PublishDAO publishDao,
+			String siteId, long packageId, Collection<String> permissions) {
+		Collection<PublishItem> publishItems = publishDao.getPublishItems(siteId, packageId);
+		Object resource;
+		if (isEmpty(publishItems)) {
+			resource = getSecuredResource(siteId);
+		} else {
+			resource = getSecuredResource(siteId, publishItems.stream()
+					.map(PublishItem::getPath)
+					.collect(toSet()));
+		}
+		checkPermissions(permissionEvaluator,
+				resource,
+				permissions);
 	}
 }

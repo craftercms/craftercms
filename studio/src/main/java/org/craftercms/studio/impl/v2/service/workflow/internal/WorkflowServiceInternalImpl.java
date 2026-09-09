@@ -115,9 +115,6 @@ public class WorkflowServiceInternalImpl implements WorkflowService, Application
 		checkReviewPermissions(siteId, packageIds);
 		for (Long packageId : packageIds) {
 			doReviewPackage(siteId, packageId, p -> {
-				if (APPROVED == p.getApprovalState()) {
-					throw new PackageAlreadyApprovedException(siteId, packageId);
-				}
 				if (updateSchedule) {
 					p.setSchedule(schedule);
 				}
@@ -135,17 +132,7 @@ public class WorkflowServiceInternalImpl implements WorkflowService, Application
 	 */
 	private void checkReviewPermissions(String siteId, Collection<Long> packageIds) {
 		for (long packageId : packageIds) {
-			Collection<PublishItem> publishItems = publishDao.getPublishItems(siteId, packageId);
-			Object resource;
-			if (isEmpty(publishItems)) {
-				resource = PermissionCheckingUtils.getSecuredResource(siteId);
-			} else {
-				resource = PermissionCheckingUtils.getSecuredResource(siteId, publishItems.stream()
-						.map(PublishItem::getPath)
-						.collect(toSet()));
-			}
-			PermissionCheckingUtils.checkPermissions(permissionEvaluator,
-					resource,
+			PermissionCheckingUtils.checkPermissions(permissionEvaluator, publishDao, siteId, packageId,
 					List.of(PERMISSION_PUBLISH_REVIEW));
 		}
 	}

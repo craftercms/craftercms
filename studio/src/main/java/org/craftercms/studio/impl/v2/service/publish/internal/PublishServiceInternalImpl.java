@@ -38,8 +38,10 @@ import org.craftercms.studio.api.v2.dal.repository.RepoOperation;
 import org.craftercms.studio.api.v2.event.publish.RequestPublishEvent;
 import org.craftercms.studio.api.v2.event.workflow.WorkflowEvent;
 import org.craftercms.studio.api.v2.exception.InvalidParametersException;
+import org.craftercms.studio.api.v2.exception.publish.InvalidPackageStateException;
 import org.craftercms.studio.api.v2.exception.publish.InvalidTargetException;
 import org.craftercms.studio.api.v2.exception.repository.RepositoryException;
+import org.craftercms.studio.api.v2.exception.security.PeerReviewCheckException;
 import org.craftercms.studio.api.v2.repository.GitContentRepository;
 import org.craftercms.studio.api.v2.security.PermissionCheckingUtils;
 import org.craftercms.studio.api.v2.security.SemanticsAvailableActionsResolver;
@@ -70,22 +72,27 @@ import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.*;
 import static org.apache.commons.collections4.CollectionUtils.*;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.ArrayUtils.contains;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.apache.commons.lang3.Strings.CS;
 import static org.apache.tika.io.FilenameUtils.getName;
 import static org.craftercms.studio.api.v2.dal.AuditLog.createAuditLogEntry;
 import static org.craftercms.studio.api.v2.dal.AuditLogConstants.*;
+import static org.craftercms.studio.api.v2.dal.ItemState.IN_WORKFLOW;
 import static org.craftercms.studio.api.v2.dal.ItemState.isNew;
 import static org.craftercms.studio.api.v2.dal.publish.PublishDAO.ACTIVE_APPROVAL_STATES;
 import static org.craftercms.studio.api.v2.dal.publish.PublishItem.Action.*;
 import static org.craftercms.studio.api.v2.dal.publish.PublishPackage.ApprovalState.APPROVED;
+import static org.craftercms.studio.api.v2.dal.publish.PublishPackage.ApprovalState.REJECTED;
 import static org.craftercms.studio.api.v2.dal.publish.PublishPackage.ApprovalState.SUBMITTED;
 import static org.craftercms.studio.api.v2.dal.publish.PublishPackage.PackageState.PROCESSING;
 import static org.craftercms.studio.api.v2.dal.publish.PublishPackage.PackageState.READY;
 import static org.craftercms.studio.api.v2.dal.publish.PublishPackage.PackageType.*;
 import static org.craftercms.studio.api.v2.event.workflow.WorkflowEvent.WorkFlowEventType.DIRECT_PUBLISH;
 import static org.craftercms.studio.api.v2.event.workflow.WorkflowEvent.WorkFlowEventType.SUBMIT;
+import static org.craftercms.studio.api.v2.utils.StudioUtils.getPublishPackageLockKey;
 import static org.craftercms.studio.api.v2.utils.StudioUtils.getSandboxRepoLockKey;
 import static org.craftercms.studio.impl.v1.repository.git.GitContentRepositoryConstants.IGNORE_FILES;
 import static org.craftercms.studio.impl.v2.utils.security.SecurityUtils.getAuthentication;
@@ -589,8 +596,66 @@ public class PublishServiceInternalImpl implements PublishService, ApplicationCo
 		return routePackageSubmission(siteId, publishingTarget, paths, commitIds, schedule, title, comment, true, publishAll);
 	}
 
+	@Override
+	public void updatePublishPackage(String siteId, long packageId, Instant schedule,
+			boolean updateSchedule, String submitterComment, String title, boolean requestApproval)
+			throws InvalidPackageStateException, AuthenticationException, SiteNotFoundException {
+		boolean resubmit = false;
+		String packageLockKey = getPublishPackageLockKey(packageId);
+		generalLockService.lock(packageLockKey);
+		try {
+			PublishPackage publishPackage = publishDao.getByStringSiteId(siteId, packageId);
+			if (publishPackage.getApprovalState() == REJECTED) {
+				throw new InvalidPackageStateException(
+						"Updating a rejected publish package is not allowed", siteId,
+						packageId);
+			}
+			if (!READY.matches(publishPackage.getPackageState())) {
+				throw new InvalidPackageStateException(
+						"Updating a non-ready publish package is not allowed", siteId,
+						packageId);
+			}
+			if (publishPackage.getApprovalState() == APPROVED) {
+				if (requestApproval) {
+					publishPackage.setApprovalState(SUBMITTED);
+					resubmit = true;
+				} else {
+					if (servicesConfig.isRequirePeerReview(siteId)) {
+						throw new PeerReviewCheckException(
+								"Users are not allowed to update approved packages when peer-review is enabled");
+					}
+					PermissionCheckingUtils.checkPermissions(permissionEvaluator,
+							publishDao, siteId, packageId, List.of(PERMISSION_PUBLISH_REVIEW));
+				}
+			}
+
+			if (isNotEmpty(submitterComment)) {
+				publishPackage.setSubmitterComment(submitterComment);
+			}
+			if (isNotEmpty(title)) {
+				publishPackage.setTitle(title);
+			}
+			if (updateSchedule) {
+				publishPackage.setSchedule(schedule);
+			}
+
+			if (resubmit) {
+				retryingDatabaseOperationFacade
+						.retry(() -> publishDao.resubmitPackage(publishPackage));
+				auditPublishSubmission(publishPackage, OPERATION_REQUEST_PUBLISH);
+				applicationContext.publishEvent(new WorkflowEvent(getAuthentication(), siteId, packageId, SUBMIT));
+			} else {
+				retryingDatabaseOperationFacade.retry(() -> publishDao.updatePackage(publishPackage));
+				auditPublishSubmission(publishPackage, OPERATION_UPDATE_PUBLISH_PACKAGE);
+			}
+		} finally {
+			generalLockService.unlock(packageLockKey);
+		}
+	}
+
 	/**
-	 * Routes the request to the appropriate method based on the site's publishing repo status.
+	 * Routes the request to the appropriate method based on the site's publishing
+	 * repo status.
 	 */
 	protected long routePackageSubmission(final String siteId, final String publishingTarget,
 										final List<PublishRequestPath> paths, final List<String> commitIds,
@@ -674,7 +739,7 @@ public class PublishServiceInternalImpl implements PublishService, ApplicationCo
 		publishPackage.setSubmitterComment(comment);
 		publishPackage.setSubmitterId(SecurityUtils.getCurrentUser().getId());
 		publishPackage.setCommitId(site.getLastCommitId());
-		publishPackage.setApprovalState(requestApproval ? SUBMITTED:APPROVED);
+		publishPackage.setApprovalState(requestApproval ? SUBMITTED : APPROVED);
 		return publishPackage;
 	}
 

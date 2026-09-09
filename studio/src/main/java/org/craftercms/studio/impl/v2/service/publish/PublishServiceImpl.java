@@ -32,10 +32,12 @@ import org.craftercms.studio.api.v2.annotation.resourceids.SiteId;
 import org.craftercms.studio.api.v2.dal.publish.PublishItem;
 import org.craftercms.studio.api.v2.dal.publish.PublishItemWithMetadata;
 import org.craftercms.studio.api.v2.dal.publish.PublishPackage;
+import org.craftercms.studio.api.v2.exception.publish.InvalidPackageStateException;
 import org.craftercms.studio.api.v2.exception.publish.PublishPackageNotFoundException;
 import org.craftercms.studio.api.v2.exception.repository.RepositoryException;
 import org.craftercms.studio.api.v2.security.HasAllPermissions;
 import org.craftercms.studio.api.v2.security.publish.PeerReviewCapable;
+import org.craftercms.studio.api.v2.security.publish.PackageSubmitter;
 import org.craftercms.studio.api.v2.service.publish.PublishService;
 import org.craftercms.studio.model.publish.PublishingTarget;
 import org.craftercms.studio.permissions.CompositePermission;
@@ -206,6 +208,15 @@ public class PublishServiceImpl implements PublishService {
 	@HasPermission(type = DefaultPermission.class, action = PERMISSION_CONTENT_READ)
 	public boolean isSitePublished(@SiteId String siteId) throws SiteNotFoundException, RepositoryException {
 		return publishServiceInternal.isSitePublished(siteId);
+	}
+
+	@Override
+	@RequireSiteExists
+	@PackageSubmitter
+	@HasPermission(type = DefaultPermission.class, action = PERMISSION_CONTENT_READ)
+	public void updatePublishPackage(@SiteId String site, @PackageId long packageId, Instant schedule,
+			boolean updateSchedule, String submitterComment, String title, boolean requestApproval) throws InvalidPackageStateException, AuthenticationException, SiteNotFoundException {
+		publishServiceInternal.updatePublishPackage(site, packageId, schedule, updateSchedule, submitterComment, title, requestApproval);
 	}
 
 	@SuppressWarnings("unused")

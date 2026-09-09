@@ -1554,9 +1554,12 @@ public class GitContentRepositoryImpl implements GitContentRepository, GitPublis
 			}
 			try {
 				boolean create = !branchExists(publishedRepo, sandboxBranch);
-				helper.checkoutBranch(publishedRepo, sourceSandboxBranch, sandboxBranch, create);
-			} catch (GitAPIException e) {
-				throw new ServiceLayerException(format("Failed to duplicate site '%s' to '%s'", sourceSiteId, siteId), e);
+				if (create) {
+					helper.createBranch(publishedRepo, siteId, sourceSandboxBranch, sandboxBranch);
+				}
+			} catch (RepositoryException e) {
+				throw new ServiceLayerException(format("Failed to duplicate site '%s' to '%s'", sourceSiteId, siteId),
+						e);
 			}
 		} finally {
 			generalLockService.unlock(repoLockKey);

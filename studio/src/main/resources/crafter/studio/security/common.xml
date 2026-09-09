@@ -185,6 +185,10 @@
 		<constructor-arg name="publishDao" ref="publishDao"/>
 	</bean>
 
+	<bean id="studio.packageSubmitterAnnotationHandler" class="org.craftercms.studio.api.v2.security.publish.PackageSubmitterAnnotationHandler">
+		<constructor-arg name="publishDao" ref="publishDao"/>
+	</bean>
+
 	<bean id="studio.requireSiteExistsAnnotationHandler" class="org.craftercms.studio.api.v2.annotation.precondition.RequireSiteExistsAnnotationHandler">
 		<constructor-arg name="sitesService" ref="sitesService"/>
 	</bean>

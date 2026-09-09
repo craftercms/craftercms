@@ -259,12 +259,20 @@ Get the list of Items directly under a folder in the content store.
 ### Get Tree
 Get the complete Item hierarchy under the specified folder in the content store.
 
-`getTree(path: string, depth: number, config: CrafterConfig)`
+```typescript
+getTree(path: string): Observable<Item>;
+getTree(path: string, depth: number): Observable<Item>;
+getTree(path: string, depth: number, config: Partial<CrafterConfig>): Observable<Item>;
+getTree(path: string, config: Partial<CrafterConfig>): Observable<Item>;
+getTree(path: string, depth: number | Partial<CrafterConfig> = 1, config?: Partial<CrafterConfig>): Observable<Item>;
+```
+
+When the second argument is a configuration object, depth defaults to `1`.
 
 | Parameters    |                |
 | ------------- |:--------------:|
 | path          | The folder’s path |
-| depth         | Amount of levels to include. Optional. Default is `1` |
+| depth         | Amount of levels to include. Optional. When omitted or when config is passed as the second argument, default is `1` |
 | config        | Crafter configuration. Optional. Default value in [here](https://github.com/craftersoftware/craftercms/blob/support/4.x/js-sdk/packages/models/README.md#CrafterConfig). |
 
 #### Returns
@@ -278,15 +286,23 @@ Get the complete Item hierarchy under the specified folder in the content store.
 ```typescript
   import { getTree } from '@craftercms/content';
 
-  // This call will get 3 levels of the tree under the specified folder
+  // Example 1: Services pre-configured, default depth (1)
+  getTree('/site/website').subscribe((tree) => {
+    console.log(tree);
+  });
 
-  // Example 1: Config supplied inline
+  // Example 2: Services pre-configured (see "Usage" section above), depth only
+  getTree('/site/website', 3).subscribe((tree) => {
+    console.log(tree);
+  });
+
+  // Example 3: Depth and config supplied inline
   getTree('/site/website', 3, { site: 'editorial' }).subscribe((tree) => {
     console.log(tree);
   });
 
-  // Example 2: Services pre-configured (see "Usage" section above), config param omitted.
-  getTree('/site/website', 3).subscribe((tree) => {
+  // Example 4: Config as second argument (depth defaults to 1)
+  getTree('/site/website', { site: 'editorial' }).subscribe((tree) => {
     console.log(tree);
   });
 ```
@@ -294,7 +310,7 @@ Get the complete Item hierarchy under the specified folder in the content store.
 ### Get Navigation Tree
 Returns the navigation tree with the specified depth for the specified store URL.
 
-`getNavTree(path: string, depth: number, currentPageUrl: string, config: CrafterConfig)`
+`getNavTree(path: string, depth?: number, currentPageUrl?: string, config?: CrafterConfig)`
 
 | Parameters     |                |
 | -------------- |:--------------:|
@@ -312,15 +328,15 @@ Returns the navigation tree with the specified depth for the specified store URL
 - Get the navigation tree of the root folder from the site (depth = 3):
 
 ```typescript
-  import { getTree } from '@craftercms/content';
+  import { getNavTree } from '@craftercms/content';
 
   // Example 1: Config supplied inline
-  getTree('/site/website', 3, { site: 'editorial' }).subscribe((tree) => {
+  getNavTree('/site/website', 3, '', { site: 'editorial', baseUrl: 'http://localhost:8080', headers: {} }).subscribe((tree) => {
     console.log(tree);
   });
 
   // Example 2: Services pre-configured (see "Usage" section above), config param omitted.
-  getTree('/site/website', 3).subscribe((tree) => {
+  getNavTree('/site/website', 3).subscribe((tree) => {
     console.log(tree);
   });
 ```
@@ -328,7 +344,7 @@ Returns the navigation tree with the specified depth for the specified store URL
 ### Get Navigation Breadcrumb
 Returns the navigation items that form the breadcrumb for the specified store URL.
 
-`getNavBreadcrumb(path: string, root: string, config: CrafterConfig)`
+`getNavBreadcrumb(path: string, root?: string, config?: CrafterConfig)`
 
 | Parameters     |                |
 | -------------- |:--------------:|
@@ -361,7 +377,7 @@ Returns the navigation items that form the breadcrumb for the specified store UR
 ### Transform
 Transforms a URL, based on the current site’s configuration.
 
-- `transform(transformerName: string, path: string, config: CrafterConfig)`
+- `urlTransform(transformerName: string, path: string, config?: Partial<CrafterConfig>)`
 
 | Parameters      |                |
 | --------------- |:--------------:|
@@ -394,17 +410,17 @@ string - URL transformed according to transformer applied.
 - Transform a render path into a store path
 
 ```typescript
-  import { transform } from '@craftercms/content';
+  import { urlTransform } from '@craftercms/content';
 
   // Assuming that you already set the configuration (as explained above)
 
   // Example 1: Config supplied inline
-  transform('renderUrlToStoreUrl', '/technology', { site: 'editorial' }).subscribe((path) => {
+  urlTransform('renderUrlToStoreUrl', '/technology', { site: 'editorial' }).subscribe((path) => {
     console.log(path); // "/site/website/technology/index.xml"
   });
 
   // Example 2: Services pre-configured (see "Usage" section above), config param omitted.
-  transform('renderUrlToStoreUrl', '/technology').subscribe((path) => {
+  urlTransform('renderUrlToStoreUrl', '/technology').subscribe((path) => {
     console.log(path); // "/site/website/technology/index.xml"
   })
 ```

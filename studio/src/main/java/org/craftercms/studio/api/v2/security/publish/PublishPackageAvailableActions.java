@@ -64,7 +64,7 @@ public final class PublishPackageAvailableActions {
 	 */
 	public static long getPossibleActionsForPackageStates(final long packageState,
 														  final ApprovalState approvalState) {
-		if (matchesState(packageState, READY)) {
+		if (READY.matches(packageState)) {
 			long result = switch (approvalState) {
 				case SUBMITTED -> APPROVE | REJECT;
 				case APPROVED -> REJECT;
@@ -72,16 +72,9 @@ public final class PublishPackageAvailableActions {
 			};
 			return result | CANCEL;
 		}
-		if (matchesState(packageState, COMPLETED) || matchesState(packageState, CANCELLED)) {
+		if(COMPLETED.matches(packageState) || CANCELLED.matches(packageState)) {
 			return RESUBMIT;
 		}
 		return 0;
-	}
-
-	/**
-	 * Check if a package state bitmap contains a specific state's flag
-	 */
-	private static boolean matchesState(final long bitmap, PackageState state) {
-		return (state.value & bitmap) != 0;
 	}
 }
