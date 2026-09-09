@@ -838,12 +838,13 @@ function FormOrchestrator(props: FormsEngineProps) {
 
 	const handleOpenDrawerSidebar = () => {
 		const scroller = getScrollContainer(containerRef.current);
-		scroller.style.setProperty('--scroll-top', `${containerRef.current.scrollTop}px`);
+		scroller.style.setProperty('--scroll-top', `${scroller.scrollTop}px`);
 		scroller.style.overflowY = 'hidden';
 		setOpenDrawerSidebar(true);
 	};
 	const handleCloseDrawerSidebar: DrawerProps['onClose'] = () => {
-		containerRef.current.style.overflowY = '';
+		const scroller = getScrollContainer(containerRef.current);
+		scroller.style.overflowY = '';
 		setOpenDrawerSidebar(false);
 	};
 	const handleCloseDrawerForm: DrawerProps['onClose'] = () => {
@@ -1127,7 +1128,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 							))
 						)}
 						{/* Spacer & back to top */}
-						<FormBackToTop containerRef={containerRef} />
+						<FormBackToTop containerRef={containerRef} getScrollContainer={getScrollContainer} />
 					</Grid>
 					<Grid size="grow">
 						<StickyBox className="space-y" sx={{ height: 'auto' }}>

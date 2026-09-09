@@ -181,6 +181,7 @@ export const FormLayout = forwardRef<HTMLDivElement, FormLayoutProps>(function (
 			</Paper>
 			<Box
 				ref={mainContentRefCallback}
+				data-area-id="formMainContent"
 				sx={{
 					// TODO: Tabs will be done at a later phase.
 					// display: activeTab === 0 ? 'inherit' : 'none',
