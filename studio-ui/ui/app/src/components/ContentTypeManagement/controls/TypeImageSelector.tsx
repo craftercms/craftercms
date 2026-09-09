@@ -101,6 +101,7 @@ export function TypeImageSelector(props: TypeImageSelectorProps) {
 											restrictions: TYPE_IMAGE_RESTRICTIONS,
 											writeContent: false,
 											onCrop: (blob: Blob) => {
+												URL.revokeObjectURL(objectUrl);
 												const formData = new FormData();
 												formData.append('file', blob, uploaded.name);
 												formData.append('path', path);
