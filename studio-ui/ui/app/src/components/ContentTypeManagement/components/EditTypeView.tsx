@@ -393,6 +393,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 	const effectRefs = useUpdateRefs({
 		jotai,
+		open,
 		selectedFieldIdPath,
 		fieldPathsWithErrors,
 		activeFormHasErrors,
@@ -751,6 +752,8 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	// `fieldUpdates$` subscription
 	useEffect(() => {
 		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(async () => {
+			// Ignore queued updates after close/rollback so they can't re-dirty or write stale values.
+			if (!effectRefs.current.open) return;
 			const { fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges, jotai } = effectRefs.current;
 			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
