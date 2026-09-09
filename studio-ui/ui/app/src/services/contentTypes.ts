@@ -30,7 +30,7 @@ import {
 	ValidationKeys
 } from '../models/ContentType';
 import { LookupTable } from '../models/LookupTable';
-import { camelize, capitalize, isBlank, toColor } from '../utils/string';
+import { camelize, capitalize, ensureSingleSlash, isBlank, toColor } from '../utils/string';
 import { Observable, of } from 'rxjs';
 import { CONTENT_TYPE_JSON, get, getBinary, getGlobalHeaders, post } from '../utils/ajax';
 import { map, switchMap } from 'rxjs/operators';
@@ -679,7 +679,7 @@ export function fetchContentTypePreviewImageUrl(
 	thumbnailFileName?: string
 ): Observable<string> {
 	if (thumbnailFileName) {
-		const path = `/config/studio/content-types${contentTypeId}/${thumbnailFileName}`;
+		const path = ensureSingleSlash(`/config/studio/content-types/${contentTypeId}/${thumbnailFileName}`);
 		return getBinary(
 			`/studio/api/2/content/get_content_by_commit_id${toQueryString({ siteId: site, path, commitId: 'HEAD' })}`,
 			void 0,
