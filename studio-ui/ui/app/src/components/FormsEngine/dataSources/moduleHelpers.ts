@@ -339,7 +339,7 @@ export function createExternalBrowseAction(options: {
 				profileId,
 				profileType,
 				type,
-				multiSelect: Array.isArray(ctx.value) && (ctx.remainingCapacity ?? 2) !== 1
+				multiSelect: Array.isArray(ctx.value) && (ctx.remainingCapacity ?? 2) > 1
 			});
 			if (!items.length) return null;
 			return selection === 'asset' ? toAssetSelections(items) : toItemSelections(items);
