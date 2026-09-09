@@ -50,6 +50,7 @@ import {
 } from '../utils/contentType';
 import { XmlKeys } from '../components/FormsEngine/lib/formConsts';
 import { ajax, AjaxResponse } from 'rxjs/ajax';
+import { DEFAULT_CONTENT_TYPE_PREVIEW_IMAGE_URL } from '../utils/constants';
 
 // FE2 TODO: Verify removal
 // const typeMap = {
@@ -664,6 +665,28 @@ export function dissociateTemplate(site: string, contentTypeId: string): Observa
 export function fetchPreviewImage(site: string, contentTypeId: string): Observable<AjaxResponse<Blob>> {
 	const qs = toQueryString({ contentTypeId });
 	return getBinary(`/studio/api/2/configuration/content_types/${site}/preview_image${qs}`);
+}
+
+/**
+ * Returns a URL for a content type thumbnail.
+ * When `thumbnailFileName` is provided, loads that file from the type's config folder (works with unsaved draft filenames)
+ * and returns an object URL. When empty/absent, returns the static default placeholder (does not use preview_image,
+ * which would still serve the saved form-definition thumbnail until save).
+ */
+export function fetchContentTypePreviewImageUrl(
+	site: string,
+	contentTypeId: string,
+	thumbnailFileName?: string
+): Observable<string> {
+	if (thumbnailFileName) {
+		const path = `/config/studio/content-types${contentTypeId}/${thumbnailFileName}`;
+		return getBinary(
+			`/studio/api/2/content/get_content_by_commit_id${toQueryString({ siteId: site, path, commitId: 'HEAD' })}`,
+			void 0,
+			'blob'
+		).pipe(map((ajax) => URL.createObjectURL(ajax.response as Blob)));
+	}
+	return of(DEFAULT_CONTENT_TYPE_PREVIEW_IMAGE_URL);
 }
 
 /**

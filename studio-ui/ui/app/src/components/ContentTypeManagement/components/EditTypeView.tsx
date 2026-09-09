@@ -751,14 +751,14 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	// `fieldUpdates$` subscription
 	useEffect(() => {
 		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(async () => {
-			const { fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
+			const { fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges, jotai } = effectRefs.current;
 			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
 			const nextFieldPathsWithErrors = { ...fieldPathsWithErrors };
 			// Check validation atoms of the form to see if there are any unfulfilled validations.
 			setValidatingForm(true);
 			const hasErrors = await validityAtomsHaveErrors(
-				effectRefs.current.jotai,
+				jotai,
 				stateRef.current?.activeFormContext?.atoms?.validationByFieldId
 			);
 			setActiveFormHasErrors(hasErrors);
@@ -767,6 +767,19 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 			setFieldPathsWithErrors(nextFieldPathsWithErrors);
 			setValidatingForm(false);
+
+			// Live-sync draft thumbnailFileName while the type properties form is open,
+			// so TypeCardMedia can reload by filename without waiting for form commit / save.
+			const { selectedField, selectedSection, selectedDataSource, activeFormContext } = stateRef.current;
+			if (!selectedField && !selectedSection && !selectedDataSource && activeFormContext) {
+				const thumbnailAtom = activeFormContext.atoms.valueByFieldId.thumbnailFileName;
+				if (thumbnailAtom) {
+					const thumbnailFileName = (jotai.get(thumbnailAtom) as string) || null;
+					setType((current) =>
+						current.thumbnailFileName === thumbnailFileName ? current : { ...current, thumbnailFileName }
+					);
+				}
+			}
 		});
 		return () => {
 			sub.unsubscribe();

@@ -146,3 +146,7 @@ export const systemFieldsIds: BuiltInControlType[] = [
 	'expired-date',
 	'forcehttps'
 ];
+
+/** Static placeholder used when a content type has no thumbnail ("Screenshot not set"). */
+export const DEFAULT_CONTENT_TYPE_PREVIEW_IMAGE_URL =
+	'/studio/static-assets/themes/cstudioTheme/images/default-contentType.jpg';
