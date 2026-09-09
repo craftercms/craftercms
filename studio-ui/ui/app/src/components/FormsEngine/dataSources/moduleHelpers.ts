@@ -288,7 +288,7 @@ export function createBrowseAction(options: {
 				path: expanded,
 				contentTypes,
 				mimeTypes,
-				multiSelect: multiSelect ? (ctx.remainingCapacity ?? 2) !== 1 : false,
+				multiSelect: multiSelect ? (ctx.remainingCapacity ?? 2) > 1 : false,
 				initialParameters: {
 					sortBy: options.meta?.sortBy,
 					sortOrder: options.meta?.sortOrder
