@@ -96,6 +96,7 @@ import {
 	displayFormBeingSavedSnack,
 	fetchUpdateRequirements,
 	generateDefaultChangesComment,
+	generateDefaultCreationComment,
 	getAdditionalFieldsIdsFromDescriptor,
 	resolveControlDescriptors,
 	getCurrentChildFormStateSummary,
@@ -294,6 +295,7 @@ function FormBootstrap(props: FormsEngineProps) {
 	const triggerReload = useCallback(() => setReloadNonce((nonce) => nonce + 1), []);
 	const effectiveUpdatePath = renamedPath ?? update?.path;
 	const customControls = useSelection((state) => state.uiConfig.controls);
+	const { formatMessage } = useIntl();
 
 	const contextApi = useMemo<FormsEngineFormApiContextProps>(() => {
 		const getInitialValues = () => stableFormContextRef.current.originalValues;
@@ -508,7 +510,9 @@ function FormBootstrap(props: FormsEngineProps) {
 				lockResult: lockResultAtom,
 				readonly: atom(false),
 				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
-				fileName: atom('')
+				fileName: atom(''),
+				// Default version comment for new content.
+				versionComment: atom(generateDefaultCreationComment('', formatMessage))
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
 			const values = createParsedValuesObject(
@@ -738,8 +742,12 @@ function FormOrchestrator(props: FormsEngineProps) {
 	const effectRefs = useUpdateRefs({
 		fieldsToRender,
 		versionCommentAtom: stableFormContext.atoms.versionComment,
+		fileNameAtom: stableFormContext.atoms.fileName,
 		lockStatus
 	});
+	// Holds the create mode comment generated last, so that a comment written by the user isn't overwritten. Starts off
+	// with the default comment the version comment atom was created with.
+	const lastCreationCommentRef = useRef(generateDefaultCreationComment('', formatMessage));
 	const [collapseHeader, setCollapseHeader] = useState(false);
 	const [saveAsDraftAction, setSaveAsDraftAction] = useState(false);
 	const [invalidForm, setInvalidForm] = useState(false);
@@ -772,9 +780,22 @@ function FormOrchestrator(props: FormsEngineProps) {
 			// String-type fields have auto-rollback detection; the fieldUpdates$ will emit anyway. Checking if the fieldId
 			// emitted is in changedFieldIds should tell if the field was rolled back.
 			setHasPendingChanges(changedFieldIds.size > 0);
-			// No comment generation for content creation.
-			if (isCreateMode) return;
 			const versionCommentAtom = effectRefs.current.versionCommentAtom;
+			// Create mode bases the comment off of the page URL (file-name) instead of the fields changed. Note that any
+			// field update re-runs this since every field's validation depends on the file name.
+			if (isCreateMode) {
+				const newMessage = generateDefaultCreationComment(
+					store.get(effectRefs.current.fileNameAtom),
+					formatMessage,
+					store.get(versionCommentAtom).trim(),
+					lastCreationCommentRef.current,
+				);
+				if (newMessage) {
+					lastCreationCommentRef.current = newMessage;
+					store.set(versionCommentAtom, newMessage);
+				}
+				return;
+			}
 			const newMessage = generateDefaultChangesComment(
 				contentType.fields,
 				effectRefs.current.fieldsToRender,
@@ -786,7 +807,16 @@ function FormOrchestrator(props: FormsEngineProps) {
 		return () => {
 			sub.unsubscribe();
 		};
-	}, [changedFieldIds, contentType.fields, effectRefs, setHasPendingChanges, fieldUpdates$, store, isCreateMode]);
+	}, [
+		changedFieldIds,
+		contentType.fields,
+		effectRefs,
+		setHasPendingChanges,
+		fieldUpdates$,
+		store,
+		isCreateMode,
+		formatMessage
+	]);
 
 	const sourceMapPaths = useMemo(() => Object.values(sourceMap ?? []).sort(), [sourceMap]);
 	useFetchContentItems(sourceMapPaths);
