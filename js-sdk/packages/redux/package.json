@@ -19,7 +19,7 @@
   "author": "CrafterCMS",
   "license": "GNU LGPL 3.0",
   "scripts": {
-    "rollup": "../../node_moduleSs/rollup/bin/rollup -c rollup.config.js",
+    "rollup": "../../node_modules/rollup/bin/rollup -c rollup.config.js",
     "build:ts": "tsc -p tsconfig.build.json",
     "clean:ts": "../../node_modules/rimraf/bin.js ts-out",
     "build": "npm run build:ts && npm run rollup && npm run clean:ts",
