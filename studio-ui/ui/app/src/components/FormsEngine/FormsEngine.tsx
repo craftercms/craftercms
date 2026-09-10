@@ -128,6 +128,11 @@ import SectionAccordion from './components/SectionAccordion';
 import useSaveForm from './lib/useSaveForm';
 import { FormPrepError } from './components/FormPrepError';
 import { createParsedValuesObject } from './lib/valueRetrievers';
+import {
+	collectAffectedPluginControlFields,
+	preloadControlPluginsForFields,
+	type ControlPluginPreloadFailure
+} from './lib/controlPluginLoader';
 import { fromString } from '../../utils/xml';
 import { displayWithPendingChangesConfirm } from '../../utils/ui';
 import useActiveUser from '../../hooks/useActiveUser';
@@ -353,6 +358,7 @@ function FormBootstrap(props: FormsEngineProps) {
 			return;
 		}
 		prepStartedRef.current = true;
+		let disposed = false;
 		// TODO: If props are changed, things can be left off... previous item locked, edits get lost, etc. Not sure how much support for prop changes we should implement.
 		const isChildForm = stackIndex > 0;
 		// In the form stack, the present form being opened would be in the last position [length-1], the parent form state would be on [length-2] if it is nested (e.g. Root => Component(L1) => Repeat(L2)|Component(L2)). Otherwise,the parent should be the root.
@@ -367,11 +373,28 @@ function FormBootstrap(props: FormsEngineProps) {
 		const initializeState = (
 			atoms: FormsEngineAtoms,
 			values: LookupTable<unknown>,
-			itemMeta: FormsEngineItemMetaContextProps
+			itemMeta: FormsEngineItemMetaContextProps,
+			pluginPreloadFailures: ControlPluginPreloadFailure[] = []
 		) => {
 			stableFormContextRef.current.atoms = atoms;
 			stableFormContextRef.current.originalValues = values;
 			stableFormContextRef.current.itemMeta = itemMeta;
+			stableFormContextRef.current.affectedPluginControlFields = (() => {
+				const affected = collectAffectedPluginControlFields(
+					itemMeta.contentType.fields,
+					pluginPreloadFailures,
+					values,
+					effectRefs.current.contentTypesById
+				);
+				// If import failed but no field mapped (defensive), still surface something so save stays blocked.
+				if (pluginPreloadFailures.length && !affected.length) {
+					return pluginPreloadFailures.map((failure) => ({
+						fieldId: failure.plugin.name,
+						fieldName: failure.plugin.name
+					}));
+				}
+				return affected;
+			})();
 			setItemMeta(stableFormContextRef.current.itemMeta);
 			setReady(true);
 		};
@@ -382,6 +405,7 @@ function FormBootstrap(props: FormsEngineProps) {
 		) {
 			const contentType = parentContentType ? effectRefs.current.contentTypesById[parentContentType.id] : undefined;
 			if (!contentType) return setPrepError(ContentTypeNotFoundError);
+			const contentTypesById = effectRefs.current.contentTypesById;
 			const parentLockResult = store.get(parentAtoms.lockResult);
 			const isParentLocked = parentLockResult.locked;
 			const isCreate = nou(parentPath);
@@ -396,67 +420,74 @@ function FormBootstrap(props: FormsEngineProps) {
 				expandedStateBySectionId: buildSectionExpandedStateAtoms(contentType.sections),
 				fileName: atom('')
 			});
-			const atomValueCreator: Parameters<typeof createParsedValuesObject>[3] = (fieldId, value, isAdditional) => {
-				setFieldAtoms(
-					stableFormContextRef,
-					contentType,
-					contentType.fields[repeat.fieldId].fields,
-					fieldId,
-					atoms,
-					value,
-					{ siteId, contentTypesById: effectRefs.current.contentTypesById },
-					isAdditional
-				);
-			};
-			const values = repeat.values
-				? { ...repeat.values }
-				: createParsedValuesObject(
-						fieldsToRender,
-						{},
-						effectRefs.current.contentTypesById,
-						atomValueCreator,
-						customControls
+			const seedValues = repeat.values ? { ...repeat.values } : {};
+			preloadControlPluginsForFields(siteId, fieldsToRender, seedValues, contentTypesById).then((failures) => {
+				if (disposed) return;
+				const atomValueCreator: Parameters<typeof createParsedValuesObject>[3] = (fieldId, value, isAdditional) => {
+					setFieldAtoms(
+						stableFormContextRef,
+						contentType,
+						contentType.fields[repeat.fieldId].fields,
+						fieldId,
+						atoms,
+						value,
+						{ siteId, contentTypesById },
+						isAdditional
 					);
+				};
+				const values = repeat.values
+					? seedValues
+					: createParsedValuesObject(fieldsToRender, {}, contentTypesById, atomValueCreator, customControls);
 
-			const descriptors = resolveControlDescriptors(customControls);
-			const additionalFieldsIds: string[] = [];
-			// If repeat.values was provided, `createCleanValuesObject` didn't run; hence, atomValueCreator needs to be run manually.
-			if (repeat.values) {
-				// First gather all additional fields ids from the provided values
-				(fieldsToRender ?? []).forEach((field) => {
-					const descriptor = descriptors[field.type];
-					if (!descriptor) return;
-					additionalFieldsIds.push(...getAdditionalFieldsIdsFromDescriptor(field.id, descriptor));
-				});
-				// Ensure descriptor additional fields exist in values so atoms are created
-				additionalFieldsIds.forEach((additionalFieldId) => {
-					if (!(additionalFieldId in values)) {
-						values[additionalFieldId] = undefined;
-					}
-				});
-				// Run atomValueCreator for each field considering the additional fields
-				Object.keys(values).forEach((fieldId) => {
-					const isAdditional = additionalFieldsIds.includes(fieldId);
-					atomValueCreator(fieldId, values[fieldId], isAdditional);
-				});
-			}
+				const descriptors = resolveControlDescriptors(customControls);
+				const additionalFieldsIds: string[] = [];
+				// If repeat.values was provided, `createCleanValuesObject` didn't run; hence, atomValueCreator needs to be run manually.
+				if (repeat.values) {
+					// First gather all additional fields ids from the provided values
+					(fieldsToRender ?? []).forEach((field) => {
+						const descriptor = descriptors[field.type];
+						if (!descriptor) return;
+						additionalFieldsIds.push(...getAdditionalFieldsIdsFromDescriptor(field.id, descriptor));
+					});
+					// Ensure descriptor additional fields exist in values so atoms are created
+					additionalFieldsIds.forEach((additionalFieldId) => {
+						if (!(additionalFieldId in values)) {
+							values[additionalFieldId] = undefined;
+						}
+					});
+					// Run atomValueCreator for each field considering the additional fields
+					Object.keys(values).forEach((fieldId) => {
+						const isAdditional = additionalFieldsIds.includes(fieldId);
+						atomValueCreator(fieldId, values[fieldId], isAdditional);
+					});
+				}
 
-			const xmlDoc = fromString(parentStackData.itemMeta.contentXml ?? '');
-			const fieldId = repeat.fieldId;
-			const index = repeat.index ?? 0;
-			const element = xmlDoc?.querySelector(`:scope > ${fieldId}`)?.children[index];
-			const contentObject =
-				(parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })?.item?.[index] ?? {};
+				const xmlDoc = fromString(parentStackData.itemMeta.contentXml ?? '');
+				const fieldId = repeat.fieldId;
+				const index = repeat.index ?? 0;
+				const element = xmlDoc?.querySelector(`:scope > ${fieldId}`)?.children[index];
+				const contentObject =
+					(parentStackData.itemMeta.contentObject[fieldId] as { item: Array<LookupTable<unknown>> })?.item?.[index] ??
+					{};
 
-			initializeState(atoms, values, {
-				id: parentId,
-				path: parentPath,
-				sourceMap: null,
-				pathInSite: parentPathInSite,
-				contentType: parentContentType,
-				contentObject,
-				contentXml: element?.outerHTML ?? ''
+				initializeState(
+					atoms,
+					values,
+					{
+						id: parentId,
+						path: parentPath,
+						sourceMap: null,
+						pathInSite: parentPathInSite,
+						contentType: parentContentType,
+						contentObject,
+						contentXml: element?.outerHTML ?? ''
+					},
+					failures
+				);
 			});
+			return () => {
+				disposed = true;
+			};
 		} else if (
 			// An embedded component is being opened as a stacked form.
 			isChildForm &&
@@ -469,29 +500,43 @@ function FormBootstrap(props: FormsEngineProps) {
 			const parentLockResult = store.get(parentAtoms.lockResult);
 			const isParentLocked = parentLockResult.locked;
 			const invokePrepareFn = (locked: boolean, lockError: ApiResponse, affectedPackages: PublishPackage[]) => {
-				const requirements = prepareEmbeddedItemForm({
-					username,
-					contentType,
-					locked,
-					lockError,
-					affectedPackages,
-					update,
-					parentStackData,
-					stableFormContextRef,
-					parentPathInSite,
+				preloadControlPluginsForFields(
 					siteId,
-					contentTypesById: effectRefs.current.contentTypesById,
-					customControls
+					contentType.fields,
+					update.values,
+					effectRefs.current.contentTypesById
+				).then((failures) => {
+					if (disposed) return;
+					const requirements = prepareEmbeddedItemForm({
+						username,
+						contentType,
+						locked,
+						lockError,
+						affectedPackages,
+						update,
+						parentStackData,
+						stableFormContextRef,
+						parentPathInSite,
+						siteId,
+						contentTypesById: effectRefs.current.contentTypesById,
+						customControls
+					});
+					initializeState(requirements.atoms, requirements.values, requirements.itemMeta, failures);
 				});
-				initializeState(requirements.atoms, requirements.values, requirements.itemMeta);
 			};
 			if (readonly === isParentReadonly) {
 				invokePrepareFn(isParentLocked, parentLockResult.lockError, parentLockResult.affectedPackages);
+				return () => {
+					disposed = true;
+				};
 			} else {
 				const sub = internalLockContentService(siteId, update.path).subscribe((result) => {
 					invokePrepareFn(result.locked, result.lockError, result.affectedPackages);
 				});
-				return () => sub.unsubscribe();
+				return () => {
+					disposed = true;
+					sub.unsubscribe();
+				};
 			}
 		} else if (
 			create // Create mode (stacked or not)
@@ -515,45 +560,57 @@ function FormBootstrap(props: FormsEngineProps) {
 				versionComment: atom(generateDefaultCreationComment('', formatMessage))
 			});
 			const contentObject = createObjectWithSystemProps(contentType);
-			const values = createParsedValuesObject(
-				contentType.fields,
-				contentObject,
-				contentTypesById,
-				(fieldId, value, isAdditional) => {
-					// If the form is for an embedded component, we don't need to set the fileName atom.
-					if (create.embedded && fieldId === XmlKeys.fileName) return;
-					setFieldAtoms(
-						stableFormContextRef,
-						contentType,
-						contentType.fields,
-						fieldId,
-						atoms,
-						value,
-						{ siteId, contentTypesById },
-						isAdditional
-					);
-				},
-				customControls
-			);
-			const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
+			const initCreateForm = (failures: ControlPluginPreloadFailure[] = []) => {
+				if (disposed) return;
+				const values = createParsedValuesObject(
+					contentType.fields,
+					contentObject,
+					contentTypesById,
+					(fieldId, value, isAdditional) => {
+						// If the form is for an embedded component, we don't need to set the fileName atom.
+						if (create.embedded && fieldId === XmlKeys.fileName) return;
+						setFieldAtoms(
+							stableFormContextRef,
+							contentType,
+							contentType.fields,
+							fieldId,
+							atoms,
+							value,
+							{ siteId, contentTypesById },
+							isAdditional
+						);
+					},
+					customControls
+				);
+				const { [XmlKeys.fileName]: _, ...valuesWithoutFileName } = values;
 
-			const objectId = contentObject[XmlKeys.modelId] as string;
-			initializeState(atoms, create.embedded ? valuesWithoutFileName : values, {
-				id: objectId,
-				// TODO: Should/could we somehow deduce the target path?
-				path: null,
-				// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
-				sourceMap: null,
-				pathInSite: processPathMacros({
-					path: create.path,
-					objectId,
-					fullParentPath: '',
-					useUUID: false
-				}),
-				contentType,
-				contentObject,
-				contentXml: buildContentXml(valuesWithoutFileName, contentTypesById)
-			});
+				const objectId = contentObject[XmlKeys.modelId] as string;
+				initializeState(
+					atoms,
+					create.embedded ? valuesWithoutFileName : values,
+					{
+						id: objectId,
+						// TODO: Should/could we somehow deduce the target path?
+						path: null,
+						// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
+						sourceMap: null,
+						pathInSite: processPathMacros({
+							path: create.path,
+							objectId,
+							fullParentPath: '',
+							useUUID: false
+						}),
+						contentType,
+						contentObject,
+						contentXml: buildContentXml(valuesWithoutFileName, contentTypesById)
+					},
+					failures
+				);
+			};
+			preloadControlPluginsForFields(siteId, contentType.fields, contentObject, contentTypesById).then(initCreateForm);
+			return () => {
+				disposed = true;
+			};
 		} /* if (isUpdateMode) */ else {
 			const subscription = fetchUpdateRequirements({
 				siteId,
@@ -593,37 +650,53 @@ function FormBootstrap(props: FormsEngineProps) {
 						expandedStateBySectionId: buildSectionExpandedStateAtoms(requirements.contentType.sections),
 						fileName: createFileNameAtom(requirements.item.path)
 					});
-					const values = createParsedValuesObject(
+					preloadControlPluginsForFields(
+						siteId,
 						requirements.contentType.fields,
 						requirements.contentObject,
-						effectRefs.current.contentTypesById,
-						(fieldId, value, isAdditional) => {
-							setFieldAtoms(
-								stableFormContextRef,
-								requirements.contentType,
-								requirements.contentType.fields,
-								fieldId,
-								atoms,
-								value,
-								{ siteId, contentTypesById },
-								isAdditional
-							);
-						},
-						customControls
-					);
+						effectRefs.current.contentTypesById
+					).then((failures) => {
+						if (disposed) return;
+						const values = createParsedValuesObject(
+							requirements.contentType.fields,
+							requirements.contentObject,
+							effectRefs.current.contentTypesById,
+							(fieldId, value, isAdditional) => {
+								setFieldAtoms(
+									stableFormContextRef,
+									requirements.contentType,
+									requirements.contentType.fields,
+									fieldId,
+									atoms,
+									value,
+									{ siteId, contentTypesById: effectRefs.current.contentTypesById },
+									isAdditional
+								);
+							},
+							customControls
+						);
 
-					initializeState(atoms, values, {
-						id: values[XmlKeys.modelId] as string,
-						path: requirements.item.path,
-						// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
-						sourceMap: requirements.sourceMap,
-						pathInSite: requirements.pathInSite,
-						contentType: requirements.contentType,
-						contentXml: requirements.contentXml,
-						contentObject: requirements.contentObject
+						initializeState(
+							atoms,
+							values,
+							{
+								id: values[XmlKeys.modelId] as string,
+								path: requirements.item.path,
+								// TODO: Sourcemap? How can we determine what would be inherited by this content? New API?
+								sourceMap: requirements.sourceMap,
+								pathInSite: requirements.pathInSite,
+								contentType: requirements.contentType,
+								contentXml: requirements.contentXml,
+								contentObject: requirements.contentObject
+							},
+							failures
+						);
 					});
 				});
-			return () => subscription.unsubscribe();
+			return () => {
+				disposed = true;
+				subscription.unsubscribe();
+			};
 		}
 	}, [
 		contentTypesLoaded,
@@ -938,6 +1011,7 @@ function FormOrchestrator(props: FormsEngineProps) {
 		isStackedForm,
 		isCreateMode,
 		isRepeatMode,
+		fieldsToRender,
 		createPath: Boolean(create?.path) ? pathInSite : undefined, // pathInSite is the result of processing the create path with macros.
 		onClose: () => onCloseHandler(null, null),
 		onMinimize: () => props.onMinimize?.()
@@ -1330,7 +1404,6 @@ export default FormGuard;
 //  - Where do we put the "config" to determine whether to use new or old form engine?
 //  - Form controller loading and execution
 //  - FOR LATER...
-//    - Allow overriding/extending validators, retrievers, [and maybe] controlMap through plugins
 //    - Inherited non overridable if not in the model
 //    - AI
 //    - Edit template & controller

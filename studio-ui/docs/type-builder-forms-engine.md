@@ -2,7 +2,7 @@
 
 > Living backbone for TB/FE modernization work. **Read this first** in any new agent/session before changing related code. Keep it current: update _Open decisions_, _Progress_, and _Known pitfalls_ when you learn something durable.
 
-Last updated: 2026-08-05
+Last updated: 2026-09-08
 
 ---
 
@@ -302,9 +302,11 @@ Example: `samples/fe2-control-plugin.example.mjs`.
 The runtime control contract is `ControlProps` (`value`, `setValue`, `field`, `contentType`, `readonly`, `autoFocus`, optional `dataSources`). Host helpers:
 
 - `window.craftercms.formsEngine.dataSources` — DS module registry
-- `window.craftercms.formsEngine.controls` — `getControl(type)`, `registerDataSourceBindings`, `getDataSourceBindings`
+- `window.craftercms.formsEngine.controls` — `getControl(type)`, `registerDataSourceBindings`, `getDataSourceBindings`, `getValueRetriever`, `getValueSerializer`, `getValidator`, `FormsEngineField`
 
-This path is functional for plugin metadata already present in a form definition. `customControlMap` exists as an override seam used by Type Builder descriptor forms. Validators, value retrievers, and serializers remain static maps/switches, so a truly novel control may still need more than a React component + bindings export.
+Plugin controls are rendered bare by `ResolvedControlRenderer` (built-ins wrap themselves in `FormsEngineField`). A plugin that wants label, required/invalid styling, and validity messages must wrap its input in the host-provided `FormsEngineField`; otherwise a failing validator only surfaces in the Table of Contents and the save gate.
+
+This path is functional for plugin metadata already present in a form definition. `customControlMap` exists as an override seam used by Type Builder descriptor forms. Plugin controls may supply optional `valueRetriever` / `valueSerializer` / `validator` on `ControlPluginContribution` (built-in static maps still win when they define the type). Required/empty validation stays host-owned in `validateFieldValue`.
 
 Additional current FE control gaps:
 
@@ -635,9 +637,12 @@ Separate **completed design decisions** (`[x]`) from **remaining implementation 
 - [x] **Form-controller design** — type-local FE2 ESM (`FormController` hooks), fetch via form_controller API, not `PluginDescriptor`. See §5.9. Implementation still open (below).
 - [x] **Control-plugin ownership** — after `importPlugin()`, ownership is validated against loaded `PluginDescriptor.id` (not the form-definition locator `pluginId`). See `controlPluginLoader.ts`.
 - [x] **Atomic FE plugin registration** — `registerPlugin` preflights all DS + control contributions before any registry commit.
+- [x] **Plugin control valueRetriever / valueSerializer** — optional on `ControlPluginContribution`; registered with the control; FE preloads plugin locators at form bootstrap (parse) and again in `useSaveForm` before `buildContentXml` (covers embeds added after open)
 - [x] **Retire unused built-in controls** — remove `link-input`, `link-textarea`, and `linked-dropdown` from `BuiltInControlType` / FE2 `controlMap`, DS bindings, validators/retrievers/serializers, and TB descriptors (unused; not in BPs).
 - [x] **System-field control remapping** — TB does not need dedicated FE2 renderers for `disabled` / `internal-name`. On insert, `systemFieldsTypesMap` in `ContentTypeManagement/utils.ts` remaps `disabled` → `checkbox` and `internal-name` → `input`; `systemFieldsIdsMap` / `readOnlyFieldsIds` lock the field id (e.g. variable name `disabled`) as non-editable. FE2 therefore renders via the remapped built-in (`Checkbox` / `Text`). `controlMap` may still list those catalog ids as `null`; that is expected — persisted form-definition `type` is the remapped control.
 - [x] **Stacked drawer FormBootstrap remount** — drawer mounts only the top stacked form; `key` includes `stackFormCount` so the parent slot remounts when a child closes. Prep restores existing `formsStackData[stackIndex].atoms` / `itemMeta` on first mount of that instance so in-memory parent edits (e.g. NodeSelector) survive embedded create from a stacked form; reload and later prep effect runs still re-fetch.
+- [x] **Plugin control valueRetriever / valueSerializer** — optional on `ControlPluginContribution`; registered with the control; FE preloads plugin locators before form parse and save.
+- [x] **Plugin control validator** — optional on `ControlPluginContribution`; looked up via `getFieldValidator` after built-in `validatorsMap`; ToC uses `hasFieldValidator`. Required/empty remains host-owned.
 
 ### Remaining implementation / validation
 
@@ -665,6 +670,12 @@ Separate **completed design decisions** (`[x]`) from **remaining implementation 
 
 Keep newest first. One short bullet per meaningful session.
 
+- **2026-09-08** — Repeat stacked-form bootstrap now awaits `preloadControlPluginsForFields` for `fieldsToRender` (+ item values for nested embeds) before `createParsedValuesObject`/`setFieldAtoms`, and passes failures into `initializeState` (parity with create/edit/embedded). Same day earlier: `useSaveForm` awaits preload before `buildContentXml`; bootstrap preload failures map to `affectedPluginControlFields` and block save.
+- **2026-08-12** — `collectControlPluginLocators` / `preloadControlPluginsForFields` now walk node-selector `item.component` values (resolve embedded content types + nested fields, including repeats) so embedded plugin controls register before `createParsedValueForField`. Call sites pass content object + `contentTypesById`.
+- **2026-08-11** — Embedded stacked-form bootstrap now awaits `preloadControlPluginsForFields` for the embedded content type before `prepareEmbeddedItemForm`/`setFieldAtoms` (parity with create/edit preload so plugin validators/retrievers exist).
+- **2026-08-07** — Expose `FormsEngineField` on `craftercms.formsEngine.controls`. Plugin controls render bare (built-ins wrap themselves), so a failing plugin validator previously showed only in the ToC; wrapping in the host field chrome restores parity (label, invalid styling, validity messages).
+- **2026-08-07** — Plugin control validators: optional `ControlPluginContribution.validator` installed by `registerPlugin`; `getFieldValidator` / `hasFieldValidator` fall back after built-in `validatorsMap`; host `getValidator`; sample rejects angle brackets. Same preload path as IO hooks.
+- **2026-08-07** — Plugin control IO hooks: `ControlPluginContribution.valueRetriever` / `valueSerializer` installed by `registerPlugin`, looked up after built-in maps in `valueRetrievers` / `valueSerializers`. Form bootstrap preloads via `preloadControlPluginsForFields` before parse; save-time preload added later (see 2026-09-08). Host: `craftercms.formsEngine.controls.getValueRetriever` / `getValueSerializer`. Sample updated.
 - **2026-08-06** — Controls cleanup (`7418`): retired unused `link-input` / `link-textarea` / `linked-dropdown` from FE2 maps + TB descriptors. Closed the former “non-rendering control-map entries” open item: those three are removed; `disabled` / `internal-name` remain TB catalog ids that remap on insert via `systemFieldsTypesMap` to `checkbox` / `input` (locked field ids). Documented under completed design decisions.
 - **2026-08-05** — Implemented WebDAV uploads (`img-WebDAV-upload`, `video-WebDAV-upload`, `WebDAV-upload`) on `uploadExternalAssets` (`profileType: 'webdav'`). Removed emptied `remoteStubs.ts`; only `video-S3-transcoding` remains as a hard-fail stub.
 - **2026-08-05** — Implemented `S3-upload` FE2 upload (`item` selection, no file-type filter) on the shared `uploadExternalAssets` path.
