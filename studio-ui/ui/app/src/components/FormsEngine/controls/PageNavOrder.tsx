@@ -91,7 +91,7 @@ export function PageNavOrder(props: PageNavOrderProps) {
 	const orderDefaultAtom = formContext.atoms.valueByFieldId[ORDER_DEFAULT_FIELD_ID] as
 		| PrimitiveAtom<number | string | null | undefined>
 		| undefined;
-	if (!orderDefaultAtom || true) {
+	if (!orderDefaultAtom) {
 		throw new Error(`Missing "${ORDER_DEFAULT_FIELD_ID}" atom; computed nav order was not applied to the form.`);
 	}
 	const effectRefs = useUpdateRefs({
