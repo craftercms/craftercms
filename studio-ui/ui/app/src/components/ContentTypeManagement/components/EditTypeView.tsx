@@ -393,6 +393,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 	const effectRefs = useUpdateRefs({
 		jotai,
+		open,
 		selectedFieldIdPath,
 		fieldPathsWithErrors,
 		activeFormHasErrors,
@@ -724,10 +725,14 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	};
 
 	const handleReorderSectionFields = (fields: ReorderFieldsDialogProps['fields'], sectionId: string) => {
+		onUpdateHasPendingChanges(true);
 		setType((currentType) => {
 			const nextType = reorderSectionFields(currentType, fields, sectionId);
-			const nextSection = getSectionFromType(nextType, sectionId);
-			handleSectionSelected(nextSection, nextType);
+			// Refresh the section form when that section is already open in the drawer.
+			if (fieldFormViewProps?.section?.id === sectionId) {
+				const nextSection = getSectionFromType(nextType, sectionId);
+				handleSectionSelected(nextSection, nextType);
+			}
 			return nextType;
 		});
 	};
@@ -747,14 +752,16 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 	// `fieldUpdates$` subscription
 	useEffect(() => {
 		const sub = stateRef.current.fieldUpdates$.pipe(debounceTime(500)).subscribe(async () => {
-			const { fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges } = effectRefs.current;
+			// Ignore queued updates after close/rollback so they can't re-dirty or write stale values.
+			if (!effectRefs.current.open) return;
+			const { fieldPathsWithErrors, selectedFieldIdPath, onUpdateHasPendingChanges, jotai } = effectRefs.current;
 			onUpdateHasPendingChanges(true);
 			stateRef.current.formFieldsChanged = true;
 			const nextFieldPathsWithErrors = { ...fieldPathsWithErrors };
 			// Check validation atoms of the form to see if there are any unfulfilled validations.
 			setValidatingForm(true);
 			const hasErrors = await validityAtomsHaveErrors(
-				effectRefs.current.jotai,
+				jotai,
 				stateRef.current?.activeFormContext?.atoms?.validationByFieldId
 			);
 			setActiveFormHasErrors(hasErrors);
@@ -763,6 +770,19 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 
 			setFieldPathsWithErrors(nextFieldPathsWithErrors);
 			setValidatingForm(false);
+
+			// Live-sync draft thumbnailFileName while the type properties form is open,
+			// so TypeCardMedia can reload by filename without waiting for form commit / save.
+			const { selectedField, selectedSection, selectedDataSource, activeFormContext } = stateRef.current;
+			if (!selectedField && !selectedSection && !selectedDataSource && activeFormContext) {
+				const thumbnailAtom = activeFormContext.atoms.valueByFieldId.thumbnailFileName;
+				if (thumbnailAtom) {
+					const thumbnailFileName = (jotai.get(thumbnailAtom) as string) || null;
+					setType((current) =>
+						current.thumbnailFileName === thumbnailFileName ? current : { ...current, thumbnailFileName }
+					);
+				}
+			}
 		});
 		return () => {
 			sub.unsubscribe();
@@ -839,6 +859,7 @@ export const EditTypeView = forwardRef<HTMLDivElement, EditTypeAppProps>((props,
 						onFieldSelected={handleFieldSelected}
 						onDataSourceSelected={handleDataSourceSelected}
 						onSectionSelected={handleSectionSelected}
+						onReorderSectionFields={handleReorderSectionFields}
 						fieldPathsWithErrors={fieldPathsWithErrors}
 						selectedFieldIdPath={selectedFieldIdPath}
 						performCurrentFormErrorCheckAndWarning={performCurrentFormErrorCheckAndWarning}
