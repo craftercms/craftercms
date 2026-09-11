@@ -81,7 +81,7 @@
 		"autosuggest-highlight": "^3.3.4",
 		"clsx": "^2.1.1",
 		"diff": "^8.0.3",
-		"dompurify": "^3.3.3",
+		"dompurify": "^3.4.15",
 		"fast-xml-parser": "^5.5.3",
 		"graphiql": "^5.4.0",
 		"graphql": "^16.13.1",
