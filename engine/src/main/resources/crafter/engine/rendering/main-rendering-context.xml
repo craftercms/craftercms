@@ -72,9 +72,6 @@
 
     <!-- Used to overwrite certain <mvc:annotation-driven> configuration -->
     <bean id="crafter.annotationDrivenConfigCustomizer" class="org.craftercms.engine.util.spring.mvc.AnnotationDrivenConfigCustomizer">
-        <property name="contentNegotiationManager" ref="crafter.contentNegotiationManager"/>
-        <property name="messageConverters" ref="crafter.messageConverters"/>
-        <property name="interceptors" ref="crafter.interceptors"/>
     </bean>
 
     <bean id="crafter.contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
