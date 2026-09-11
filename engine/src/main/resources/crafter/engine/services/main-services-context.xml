@@ -71,6 +71,15 @@
         <property name="validator" ref="commonValidator"/>
     </bean>
 
+	<bean class="org.craftercms.commons.spring.InfrastructureConfigurerBean">
+		<property name="beanNames">
+			<list>
+				<value>commonValidator</value>
+				<value>messageSource</value>
+			</list>
+		</property>
+	</bean>
+
     <!-- Runs after the mode post processors -->
     <bean class="org.craftercms.commons.spring.ListMergingPostProcessor">
         <property name="order" value="1000" />

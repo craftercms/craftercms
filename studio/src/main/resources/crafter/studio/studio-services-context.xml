@@ -1371,6 +1371,16 @@
         <constructor-arg name="configLocation" value="crafter/studio/studio-config.yaml"/>
     </bean>
 
+	<bean class="org.craftercms.commons.spring.InfrastructureConfigurerBean">
+		<property name="beanNames">
+			<list>
+				<value>studioConfiguration</value>
+				<value>studioTaskExecutor</value>
+				<value>configurationCache</value>
+			</list>
+		</property>
+	</bean>
+
     <bean id="configurationCache" class="org.craftercms.commons.cache.GuavaCacheFactoryBean">
         <!-- These properties can't be externalized because the bean is created before the yaml is loaded -->
         <property name="maxSize" value="100"/>
